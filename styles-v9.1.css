@@ -2262,3 +2262,40 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
 .save-code{ width:100%; box-sizing:border-box; margin-top:10px; padding:10px; border-radius:10px;
   background:#0c0812; border:1px solid #6b5a30; color:#cbb98a; font:11px monospace; resize:vertical; }
 @media (prefers-reduced-motion:reduce){ .cutin-layer{ display:none!important; } .story-box{ animation:none; } }
+/* v9.1 · Telas de abertura: introdução e idiomas */
+.boot-screen{ position:fixed; inset:0; z-index:340; display:none; align-items:center; justify-content:center;
+  background:radial-gradient(ellipse at 50% 0%,#2c2140 0%,transparent 55%),linear-gradient(180deg,#150f22 0%,#0b0714 55%,#060409 100%);
+  padding:20px; }
+.boot-screen.show{ display:flex; }
+.boot-card{ width:min(92vw,430px); text-align:center; padding:34px 26px; border-radius:20px;
+  background:linear-gradient(160deg,#1c1428,#0d0a14); border:2px solid var(--gold);
+  box-shadow:0 0 40px rgba(0,0,0,.65),0 0 26px rgba(212,175,90,.2);
+  animation:coachIn .5s cubic-bezier(.3,1.3,.4,1) both; }
+.boot-eyebrow{ font-size:10px; letter-spacing:3px; color:#d7ba72; margin-bottom:6px; }
+.boot-title{ margin:0 0 16px; font-size:34px; letter-spacing:5px; font-family:Georgia,serif;
+  background:linear-gradient(90deg,#f6e6b4,#c9a24b,#f6e6b4); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.boot-lore{ font-size:13px; line-height:1.7; opacity:.88; margin:0 0 22px; text-align:justify; }
+.lang-flags{ display:grid; gap:12px; margin-top:16px; }
+.lang-flag{ display:flex; align-items:center; gap:14px; padding:14px 18px; border-radius:14px; cursor:pointer;
+  background:linear-gradient(160deg,rgba(52,39,70,.92),rgba(18,12,28,.96)); border:1px solid var(--line); color:#f7ecd1;
+  transition:transform .2s ease,border-color .15s ease,box-shadow .2s ease; text-align:left; }
+.lang-flag span{ font-size:30px; }
+.lang-flag b{ flex:1; font-size:15px; letter-spacing:1px; }
+.lang-flag small{ font-size:10px; opacity:.6; letter-spacing:1px; }
+.lang-flag:hover{ transform:translateY(-2px); border-color:#f0d488; box-shadow:0 8px 22px rgba(0,0,0,.5); }
+/* v9.1 · Personagens vivos: respiração e balanço em idle */
+.hero-sprite-image{ animation:idleBreath 3.2s ease-in-out infinite; transform-origin:50% 100%; }
+.unit:nth-child(2n) .hero-sprite-image{ animation-duration:3.7s; animation-delay:.45s; }
+.unit:nth-child(3n) .hero-sprite-image{ animation-duration:2.9s; animation-delay:.9s; }
+@keyframes idleBreath{ 0%,100%{ transform:translateY(0) scale(1); } 50%{ transform:translateY(-3px) scale(1.016,1.034); } }
+.enemy-sprite-image{ animation:enemySway 4.2s ease-in-out infinite; transform-origin:50% 100%; }
+.enemy-row .unit:nth-child(2n) .enemy-sprite-image{ animation-duration:4.8s; animation-delay:.6s; }
+.enemy-row .unit:nth-child(3n) .enemy-sprite-image{ animation-duration:3.6s; animation-delay:1.1s; }
+@keyframes enemySway{ 0%,100%{ transform:rotate(-1.2deg) translateY(0); } 50%{ transform:rotate(1.2deg) translateY(-2.5px); } }
+.summon-sprite{ animation:idleBreath 2.6s ease-in-out infinite!important; }
+.unit-ground-shadow{ animation:shadowBreath 3.2s ease-in-out infinite; }
+@keyframes shadowBreath{ 0%,100%{ transform:scale(1); opacity:1; } 50%{ transform:scale(.94); opacity:.85; } }
+@media (prefers-reduced-motion:reduce){
+  .hero-sprite-image,.enemy-sprite-image,.summon-sprite,.unit-ground-shadow{ animation:none!important; }
+  .boot-card,.lang-flag{ animation:none; transition:none; }
+}

@@ -883,19 +883,26 @@ function updateCoinBadge(){
 const IS_DAILY_RUN=new URLSearchParams(location.search).get('daily')==='1';
 
 /* v9.1 · XP e nível por herói (Lv 1-10; +2 de ataque por nível) */
-let heroXp={}; try{ heroXp=JSON.parse(localStorage.getItem('12r_xp')||'{}'); }catch(e){}
-function heroLevel(id){ return Math.min(10, 1+Math.floor(Math.sqrt((heroXp[id]||0)/100))); }
-function heroAtkFor(idx){ const k=KINGDOMS[idx]; return (k.atk||BASE_ATK)+(heroLevel(k.id)-1)*2; }
+/* v9.1 · XP e nível de PERFIL (as cartas não sobem de nível).
+   O nível do perfil dá um bônus global sutil: +1 de ataque a cada 3 níveis. */
+let profileXp=Number(localStorage.getItem('12r_pxp')||0);
+try{ // migração: XP antigo por herói vira XP de perfil (uma única vez)
+  const legado=JSON.parse(localStorage.getItem('12r_xp')||'null');
+  if(legado){
+    profileXp+=Object.values(legado).reduce((a,b)=>a+Number(b||0),0);
+    localStorage.removeItem('12r_xp');
+    localStorage.setItem('12r_pxp',String(profileXp));
+  }
+}catch(e){}
+function profileLevel(){ return Math.min(99, 1+Math.floor(Math.sqrt(profileXp/120))); }
+function profileXpForNext(){ const next=profileLevel()+1; return next>99?null:Math.pow(next-1,2)*120; }
+function heroAtkFor(idx){ const k=KINGDOMS[idx]; return (k.atk||BASE_ATK)+Math.floor((profileLevel()-1)/3); }
 function grantXp(amount){
-  const ups=[];
-  ACTIVE.forEach(idx=>{
-    const id=KINGDOMS[idx].id;
-    const before=heroLevel(id);
-    heroXp[id]=(heroXp[id]||0)+amount;
-    if(heroLevel(id)>before) ups.push(`${KINGDOMS[idx].nome} subiu para Lv ${heroLevel(id)}!`);
-  });
-  localStorage.setItem('12r_xp',JSON.stringify(heroXp));
-  return ups;
+  const before=profileLevel();
+  profileXp+=Math.max(0,Math.round(amount*4)); // 4 heróis contribuíam antes; mantém o ritmo
+  localStorage.setItem('12r_pxp',String(profileXp));
+  const after=profileLevel();
+  return after>before?[T(`Perfil subiu para Lv ${after}!`,`Profile reached Lv ${after}!`,`¡Perfil subió a Nv ${after}!`)]:[];
 }
 
 /* v9.1 · Conquistas */
@@ -911,7 +918,7 @@ const ACHIEVEMENTS=[
   {id:'dark-court', nome:'Corte Sombria', desc:'Vença uma fase com Berenice das Sombras e Mardogear juntos.', icon:'🌑', en:{nome:'Dark Court', desc:'Win a stage with Shadow Berenice and Mardogear together.'}},
   {id:'rich', nome:'Tesouro Real', desc:'Acumule 500 moedas.', icon:'🪙', en:{nome:'Royal Treasure', desc:'Hoard 500 coins.'}},
   {id:'daily', nome:'Ritual Diário', desc:'Conclua um Desafio Diário.', icon:'📅', en:{nome:'Daily Ritual', desc:'Complete a Daily Challenge.'}},
-  {id:'lv5', nome:'Veterano', desc:'Leve um herói ao Lv 5.', icon:'📈', en:{nome:'Veteran', desc:'Raise a hero to Lv 5.'}}
+  {id:'lv5', nome:'Veterano', desc:'Alcance o nível de perfil 5.', icon:'📈', en:{nome:'Veteran', desc:'Reach profile level 5.'}, es:{nome:'Veterano', desc:'Alcanza el nivel de perfil 5.'}}
 ];
 let unlockedAch={}; try{ unlockedAch=JSON.parse(localStorage.getItem('12r_ach')||'{}'); }catch(e){}
 function unlockAch(id){
@@ -938,7 +945,7 @@ function checkAchievements(ctx){
     if(ids.includes('sombras')&&ids.includes('raio')) unlockAch('dark-court');
     const stars=getStars();
     if(Object.values(stars).filter(s=>s===3).length>=5) unlockAch('stars-all');
-    if(ACTIVE.some(i=>heroLevel(KINGDOMS[i].id)>=5)) unlockAch('lv5');
+    if(profileLevel()>=5) unlockAch('lv5');
   }
   if(ctx==='dungeon'){ unlockAch('dungeon'); if(IS_DAILY_RUN) unlockAch('daily'); }
   if(ctx==='tower'){ if(towerFloor>=5) unlockAch('tower5'); if(towerFloor>=10) unlockAch('tower10'); }
@@ -950,16 +957,16 @@ function renderAchievements(){
   grid.innerHTML=ACHIEVEMENTS.map(a=>`
     <div class="ach-item${unlockedAch[a.id]?' unlocked':''}">
       <span class="ach-icon">${a.icon}</span>
-      <div><b>${lang==='en'&&a.en?a.en.nome:a.nome}</b><small>${lang==='en'&&a.en?a.en.desc:a.desc}</small></div>
+      <div><b>${(lang!=='pt'&&(lang==='es'?(a.es||a.en):a.en))?.nome||a.nome}</b><small>${(lang!=='pt'&&(lang==='es'?(a.es||a.en):a.en))?.desc||a.desc}</small></div>
       ${unlockedAch[a.id]?'<span class="ach-check">✓</span>':'<span class="ach-lock">🔒</span>'}
     </div>`).join('');
 }
 
 /* v9.1 · Loja de consumíveis (aplicados no início da próxima batalha) */
 const SHOP_ITEMS=[
-  {id:'shuffle', nome:'Embaralhamento Extra', desc:'+1 embaralhamento real na próxima batalha.', preco:40, icon:'⟳', en:{nome:'Extra Shuffle', desc:'+1 royal shuffle in your next battle.'}},
-  {id:'potion', nome:'Poção Vital', desc:'Recupera 600 de HP no início da próxima batalha.', preco:60, icon:'🧪', en:{nome:'Vital Potion', desc:'Restores 600 HP at the start of your next battle.'}},
-  {id:'blessing', nome:'Bênção dos Reinos', desc:'Comece a próxima batalha com 2 power-ups no tabuleiro.', preco:80, icon:'💠', en:{nome:'Realm Blessing', desc:'Start your next battle with 2 power-ups on the board.'}}
+  {id:'shuffle', nome:'Embaralhamento Extra', desc:'+1 embaralhamento real na próxima batalha.', preco:40, icon:'⟳', en:{nome:'Extra Shuffle', desc:'+1 royal shuffle in your next battle.'}, es:{nome:'Barajado Extra', desc:'+1 barajado real en tu próxima batalla.'}},
+  {id:'potion', nome:'Poção Vital', desc:'Recupera 600 de HP no início da próxima batalha.', preco:60, icon:'🧪', en:{nome:'Vital Potion', desc:'Restores 600 HP at the start of your next battle.'}, es:{nome:'Poción Vital', desc:'Restaura 600 de vida al inicio de tu próxima batalla.'}},
+  {id:'blessing', nome:'Bênção dos Reinos', desc:'Comece a próxima batalha com 2 power-ups no tabuleiro.', preco:80, icon:'💠', en:{nome:'Realm Blessing', desc:'Start your next battle with 2 power-ups on the board.'}, es:{nome:'Bendición de los Reinos', desc:'Comienza tu próxima batalla con 2 potenciadores en el tablero.'}}
 ];
 let inventory={}; try{ inventory=JSON.parse(localStorage.getItem('12r_inv')||'{}'); }catch(e){}
 function saveInventory(){ localStorage.setItem('12r_inv',JSON.stringify(inventory)); }
@@ -978,7 +985,7 @@ function renderShop(){
   list.innerHTML=SHOP_ITEMS.map(i=>`
     <div class="shop-item">
       <span class="shop-icon">${i.icon}</span>
-      <div class="shop-copy"><b>${lang==='en'&&i.en?i.en.nome:i.nome}</b><small>${lang==='en'&&i.en?i.en.desc:i.desc}</small><small class="shop-owned">${T('Na mochila','In bag')}: ${inventory[i.id]||0}</small></div>
+      <div class="shop-copy"><b>${(lang!=='pt'&&(lang==='es'?(i.es||i.en):i.en))?.nome||i.nome}</b><small>${(lang!=='pt'&&(lang==='es'?(i.es||i.en):i.en))?.desc||i.desc}</small><small class="shop-owned">${T('Na mochila','In bag','En la mochila')}: ${inventory[i.id]||0}</small></div>
       <button class="overlay-btn shop-buy" data-item="${i.id}" ${coins<i.preco?'disabled':''}>🪙 ${i.preco}</button>
     </div>`).join('');
   list.querySelectorAll('.shop-buy').forEach(b=>b.addEventListener('click',()=>buyItem(b.dataset.item)));
@@ -1907,46 +1914,49 @@ function checkStageObjective(){
   return false;
 }
 
-/* v9.1 · Idioma da interface (PT/EN). Conteúdo dos heróis permanece PT nesta versão. */
-let lang=localStorage.getItem('12r_lang')==='en'?'en':'pt';
-function T(pt,en){ return lang==='en'?en:pt; }
+/* v9.1 · Idioma da interface (PT/EN/ES). Conteúdo dos heróis permanece PT nesta versão. */
+const VALID_LANGS=['pt','en','es'];
+let lang=VALID_LANGS.includes(localStorage.getItem('12r_lang'))?localStorage.getItem('12r_lang'):'pt';
+function T(pt,en,es){ return lang==='en'?en:lang==='es'?(es||en):pt; }
 const STATIC_I18N=[
-  ['#playBtn .menu-label','Jogar','Play'],
-  ['#galleryBtn .menu-label','Galeria <small class="menu-hint">Cartas e habilidades</small>','Gallery <small class="menu-hint">Cards & abilities</small>'],
-  ['#journeyBtn .menu-label','Jornada <small class="menu-hint">Mapa da masmorra</small>','Journey <small class="menu-hint">Dungeon map</small>'],
-  ['#dailyBtn .menu-label > :first-child, #dailyBtn .menu-label','__daily__','__daily__'],
-  ['#shopBtn .menu-label','Loja <small class="menu-hint">Consumíveis de batalha</small>','Shop <small class="menu-hint">Battle consumables</small>'],
-  ['#achBtn .menu-label','Conquistas','Achievements'],
-  ['#optionsBtn .menu-label','Opções','Options'],
-  ['#helpBtn .menu-label','Como jogar','How to play'],
-  ['#optionsTitle','Opções','Options'],
-  ['#achTitle','Conquistas','Achievements'],
-  ['#shopTitle','Loja Real','Royal Shop'],
-  ['#galleryTitle','Galeria dos Reinos','Gallery of the Realms'],
-  ['#playAgainBtn','Jogar novamente','Play again'],
-  ['#retryBtn','Tentar novamente','Try again'],
-  ['#startBtn','Entrar na Masmorra','Enter the Dungeon'],
-  ['#autoTeamBtn','Equipe sugerida','Suggested team']
+  ['#playBtn .menu-label','Jogar','Play','Jugar'],
+  ['#galleryBtn .menu-label','Galeria <small class="menu-hint">Cartas e habilidades</small>','Gallery <small class="menu-hint">Cards & abilities</small>','Galería <small class="menu-hint">Cartas y habilidades</small>'],
+  ['#journeyBtn .menu-label','Jornada <small class="menu-hint">Mapa da masmorra</small>','Journey <small class="menu-hint">Dungeon map</small>','Travesía <small class="menu-hint">Mapa de la mazmorra</small>'],
+  ['#shopBtn .menu-label','Loja <small class="menu-hint">Consumíveis de batalha</small>','Shop <small class="menu-hint">Battle consumables</small>','Tienda <small class="menu-hint">Consumibles de batalla</small>'],
+  ['#achBtn .menu-label','Conquistas','Achievements','Logros'],
+  ['#optionsBtn .menu-label','Opções','Options','Opciones'],
+  ['#helpBtn .menu-label','Como jogar','How to play','Cómo jugar'],
+  ['#optionsTitle','Opções','Options','Opciones'],
+  ['#achTitle','Perfil & Conquistas','Profile & Achievements','Perfil y Logros'],
+  ['#shopTitle','Loja Real','Royal Shop','Tienda Real'],
+  ['#galleryTitle','Galeria dos Reinos','Gallery of the Realms','Galería de los Reinos'],
+  ['#playAgainBtn','Jogar novamente','Play again','Jugar de nuevo'],
+  ['#retryBtn','Tentar novamente','Try again','Intentar de nuevo'],
+  ['#startBtn','Entrar na Masmorra','Enter the Dungeon','Entrar a la Mazmorra'],
+  ['#autoTeamBtn','Equipe sugerida','Suggested team','Equipo sugerido']
 ];
 function applyLanguage(){
-  STATIC_I18N.forEach(([sel,pt,en])=>{
-    if(pt==='__daily__') return;
-    const el=document.querySelector(sel);
-    if(el) el.innerHTML=lang==='en'?en:pt;
+  const li=lang==='en'?2:lang==='es'?3:1;
+  STATIC_I18N.forEach(entry=>{
+    const el=document.querySelector(entry[0]);
+    if(el) el.innerHTML=entry[li]||entry[1];
   });
   const dailyLabel=document.querySelector('#dailyBtn .menu-label');
   if(dailyLabel){
     const hint=document.getElementById('dailyHint')?.outerHTML||'';
-    dailyLabel.innerHTML=(lang==='en'?'Daily Challenge ':'Desafio Diário ')+hint;
+    dailyLabel.innerHTML=T('Desafio Diário ','Daily Challenge ','Desafío Diario ')+hint;
   }
   const towerLabel=document.querySelector('#towerBtn .menu-label');
   if(towerLabel){
     const hint=document.getElementById('towerHint')?.outerHTML||'';
-    towerLabel.innerHTML=(lang==='en'?'Infinite Tower ':'Torre Infinita ')+hint;
+    towerLabel.innerHTML=T('Torre Infinita ','Infinite Tower ','Torre Infinita ')+hint;
   }
   const sub=document.querySelector('.select-sub');
-  if(sub) sub.textContent=T('Escolha 4 entre 12 personagens oficiais. Toque na carta para escalar e use apenas a lupa para abrir a arte e ler todas as habilidades.','Pick 4 of 12 official heroes. Tap a card to enlist; use the magnifier to open the art and read every ability.');
-  document.querySelectorAll('#langGroup [data-lang]').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
+  if(sub) sub.textContent=T(
+    'Escolha 4 entre 12 personagens oficiais. Toque na carta para escalar e use apenas a lupa para abrir a arte e ler todas as habilidades.',
+    'Pick 4 of 12 official heroes. Tap a card to enlist; use the magnifier to open the art and read every ability.',
+    'Elige 4 de 12 héroes oficiales. Toca la carta para alistar; usa la lupa para abrir el arte y leer todas las habilidades.');
+  document.querySelectorAll('#langGroup [data-lang], #langScreen [data-lang]').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
 }
 
 /* v9.1 · Diálogos de história pré-fase (pulados na Torre e durante o tutorial) */
@@ -2012,7 +2022,9 @@ function renderProfileStats(){
   const favName=fav?(KINGDOMS.find(k=>k.id===fav[0])?.nome||fav[0]):'—';
   const towerBest=Number(localStorage.getItem('12r_tower_best')||0);
   const achCount=Object.keys(unlockedAch).length;
+  const nextXp=profileXpForNext();
   const rows=[
+    [T('Nível do Perfil','Profile Level','Nivel del Perfil'),`Lv ${profileLevel()}${nextXp?` · ${profileXp}/${nextXp} XP`:''}`],
     [T('Vitórias','Wins'),profile.wins],[T('Derrotas','Losses'),profile.losses],
     [T('Dano total','Total damage'),profile.damage.toLocaleString('pt-BR')],
     [T('Maior combo','Best combo'),'×'+profile.maxCombo],
@@ -2085,6 +2097,12 @@ const COACH_STEPS_I18N={
     {text:'Every match charges your heroes\' aura. At 25%, 50% and 75% they unleash automatic passives!'},
     {text:'Match 4+ spheres to craft power-ups: striped ones sweep lines, wrapped ones explode in an area.'},
     {text:'Aura at 100%: the hero glows — tap them to cast the ULTIMATE. Good luck, guardian!'}
+  ],
+  es:[
+    {text:'¡Bienvenido a los 12 Reinos! Arrastra una esfera para intercambiarla y alinear 3 del mismo reino.', auto:'match'},
+    {text:'Cada combinación carga el aura de tus héroes. ¡Al 25%, 50% y 75% lanzan pasivas automáticas!'},
+    {text:'Combina 4+ esferas para crear potenciadores: los rayados barren líneas, los envueltos explotan en área.'},
+    {text:'Aura al 100%: el héroe brilla — tócalo para lanzar la ULTIMATE. ¡Buena suerte, guardián!'}
   ]
 };
 const COACH_STEPS=COACH_STEPS_I18N.pt;
@@ -3537,9 +3555,8 @@ function renderSelectGrid(){
     card.style.setProperty('--realm-light',k.colorLight);
     card.style.setProperty('--realm-dark',k.colorDark);
     const pickOrder = chosenIds.indexOf(idx);
-    const lv = heroLevel(k.id);
     card.innerHTML = `
-      <div class="thumb-wrap"><img src="${k.cardThumb||k.img}" alt="${k.nome}">${pickOrder>=0?`<div class="pick-badge" aria-hidden="true">${pickOrder+1}</div>`:''}${lv>1?`<div class="lv-badge" aria-label="Nível ${lv}">Lv ${lv}</div>`:''}<button class="zoom-btn" type="button" data-idx="${idx}" aria-label="Abrir carta de ${k.nome} em alta resolução">🔍</button></div>
+      <div class="thumb-wrap"><img src="${k.cardThumb||k.img}" alt="${k.nome}">${pickOrder>=0?`<div class="pick-badge" aria-hidden="true">${pickOrder+1}</div>`:''}<button class="zoom-btn" type="button" data-idx="${idx}" aria-label="Abrir carta de ${k.nome} em alta resolução">🔍</button></div>
     `;
     card.setAttribute('role','button');
     card.setAttribute('tabindex','0');
@@ -3864,15 +3881,51 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
   document.getElementById('exportSaveBtn')?.addEventListener('click',()=>{ exportSave(); sfxSelect(); });
   document.getElementById('importSaveBtn')?.addEventListener('click',()=>importSave());
   document.querySelectorAll('#langGroup [data-lang]').forEach(b=>b.addEventListener('click',()=>{
-    lang=b.dataset.lang==='en'?'en':'pt';
+    lang=VALID_LANGS.includes(b.dataset.lang)?b.dataset.lang:'pt';
     localStorage.setItem('12r_lang',lang);
+    localStorage.setItem('12r_lang_set','1');
     applyLanguage();
+    renderIntroTexts();
     renderCoach();
   }));
   applyLanguage();
   if(IS_DAILY_RUN){ towerMode=false; pendingStage=0; showSelection(); }
   updateCoinBadge();
+
+  // v9.1 · Fluxo de abertura: Introdução da história -> Idioma (1ª vez) -> Menu
+  renderIntroTexts();
+  const bootParams=new URLSearchParams(location.search);
+  const skipBoot=bootParams.get('qa')||bootParams.get('daily')==='1';
+  if(!skipBoot) document.getElementById('introScreen')?.classList.add('show');
+  document.getElementById('introNext')?.addEventListener('click',()=>{
+    document.getElementById('introScreen')?.classList.remove('show');
+    if(!localStorage.getItem('12r_lang_set')) document.getElementById('langScreen')?.classList.add('show');
+    sfxSelect();
+  });
+  document.querySelectorAll('#langScreen [data-lang]').forEach(b=>b.addEventListener('click',()=>{
+    lang=VALID_LANGS.includes(b.dataset.lang)?b.dataset.lang:'pt';
+    localStorage.setItem('12r_lang',lang);
+    localStorage.setItem('12r_lang_set','1');
+    applyLanguage();
+    renderIntroTexts();
+    renderCoach();
+    document.getElementById('langScreen')?.classList.remove('show');
+    sfxSelect();
+  }));
 })();
+
+/* v9.1 · Textos da introdução (relocalizáveis) */
+function renderIntroTexts(){
+  const lore=document.getElementById('introLore');
+  if(lore) lore.textContent=T(
+    'Doze reinos, doze coroas, um único Trono. Quando a última aurora tocou as torres de Ygdria, as gemas dos reinos despertaram — e com elas, algo antigo abriu os olhos nas profundezas. Reúna quatro campeões, domine as esferas elementais e devolva a luz ao Trono dos 12 Reinos.',
+    'Twelve realms, twelve crowns, a single Throne. When the last dawn touched the towers of Ygdria, the realm gems awakened — and with them, something ancient opened its eyes in the depths. Gather four champions, master the elemental spheres and return the light to the Throne of the 12 Realms.',
+    'Doce reinos, doce coronas, un único Trono. Cuando la última aurora tocó las torres de Ygdria, las gemas de los reinos despertaron — y con ellas, algo antiguo abrió los ojos en las profundidades. Reúne a cuatro campeones, domina las esferas elementales y devuelve la luz al Trono de los 12 Reinos.');
+  const eyebrow=document.getElementById('introEyebrow');
+  if(eyebrow) eyebrow.textContent=T('AS CRÔNICAS DE YGDRIA','THE CHRONICLES OF YGDRIA','LAS CRÓNICAS DE YGDRIA');
+  const btn=document.getElementById('introNext');
+  if(btn) btn.textContent=T('Começar jornada','Begin the journey','Comenzar la travesía');
+}
 
 /* v9.1 · Smoke test automatizado de gameplay: abra com ?qa=smoke
    Joga de verdade: escala time, entra em batalha, dispara habilidade,
@@ -3904,7 +3957,7 @@ async function runSmokeTest(){
     await wait(350);
     ok('obstáculos nas Dunas', Object.keys(obstaclesMeta).length===3);
     ok('objetivo de coleta ativo', /Colete|esferas/.test(stageObjectiveEl.textContent));
-    ok('moedas e XP operantes', typeof coins==='number'&&typeof heroLevel('fogo')==='number');
+    ok('moedas e XP de perfil operantes', typeof coins==='number'&&typeof profileLevel()==='number');
   }catch(e){
     results.push({name:'exceção: '+e.message, pass:false});
   }
@@ -3913,6 +3966,10 @@ async function runSmokeTest(){
   banner.id='smokeBanner';
   banner.style.cssText='position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:999;padding:10px 18px;border-radius:10px;font:700 13px Georgia,serif;color:#fff;box-shadow:0 4px 18px rgba(0,0,0,.6);background:'+(failed.length?'#8e1b1b':'#1b6e2f');
   banner.textContent=failed.length?`SMOKE FAIL ${failed.length}/${results.length}: `+failed.map(f=>f.name).join(' | '):`SMOKE PASS ${results.length}/${results.length}`;
+  banner.title='Relatório do teste automatizado (?qa=smoke). Toque para fechar.';
+  banner.style.cursor='pointer';
+  banner.addEventListener('click',()=>banner.remove());
+  window.setTimeout(()=>banner.remove(),8000);
   document.body.appendChild(banner);
   console.log('[SMOKE]',JSON.stringify(results));
   localStorage.setItem('12r_smoke',JSON.stringify({t:Date.now(),results}));

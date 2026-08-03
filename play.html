@@ -188,7 +188,7 @@
     <div class="dialog-header"><h2 class="dialog-title" id="optionsTitle">Opções</h2><button class="ghost-btn" data-close="optionsScreen">Fechar</button></div>
     <label class="option-row"><span>Volume geral</span><input id="volumeRange" type="range" min="0" max="100" value="70"></label>
     <div class="option-row"><span>Dificuldade</span><div class="diff-group" id="diffGroup"><button class="battle-tool" data-diff="facil" type="button">Fácil</button><button class="battle-tool" data-diff="normal" type="button">Normal</button><button class="battle-tool" data-diff="pesadelo" type="button">Pesadelo</button></div></div>
-    <div class="option-row"><span>Idioma / Language</span><div class="diff-group" id="langGroup"><button class="battle-tool" data-lang="pt" type="button">Português</button><button class="battle-tool" data-lang="en" type="button">English</button></div></div>
+    <div class="option-row"><span>Idioma / Language</span><div class="diff-group" id="langGroup"><button class="battle-tool" data-lang="pt" type="button">🇧🇷 PT</button><button class="battle-tool" data-lang="en" type="button">🇺🇸 EN</button><button class="battle-tool" data-lang="es" type="button">🇪🇸 ES</button></div></div>
     <div class="option-row"><span>Progresso</span><div class="diff-group"><button class="battle-tool" id="exportSaveBtn" type="button">Exportar</button><button class="battle-tool" id="importSaveBtn" type="button">Importar</button></div></div>
     <textarea id="saveCode" class="save-code" rows="3" placeholder="Exportar: gera e copia o código aqui. Importar: cole o código e toque em Importar."></textarea>
     <label class="option-row"><span>Reduzir animações</span><input class="switch" id="reduceMotionToggle" type="checkbox"></label>
@@ -253,6 +253,24 @@
   </div>
 </div>
 
+<div class="boot-screen" id="introScreen">
+  <div class="boot-card">
+    <div class="boot-eyebrow" id="introEyebrow">AS CRÔNICAS DE YGDRIA</div>
+    <h2 class="boot-title">12 REINOS</h2>
+    <p class="boot-lore" id="introLore"></p>
+    <button class="overlay-btn" id="introNext" type="button">Começar jornada</button>
+  </div>
+</div>
+<div class="boot-screen" id="langScreen">
+  <div class="boot-card">
+    <div class="boot-eyebrow">IDIOMA · LANGUAGE · IDIOMA</div>
+    <div class="lang-flags">
+      <button class="lang-flag" data-lang="pt" type="button"><span>🇧🇷</span><b>Português</b><small>Brasil</small></button>
+      <button class="lang-flag" data-lang="en" type="button"><span>🇺🇸</span><b>English</b><small>USA</small></button>
+      <button class="lang-flag" data-lang="es" type="button"><span>🇪🇸</span><b>Español</b><small>España</small></button>
+    </div>
+  </div>
+</div>
 <div class="story-layer" id="storyLayer" aria-hidden="false">
   <div class="story-box">
     <img class="story-portrait" id="storyPortrait" src="assets/icon.svg" alt="">
