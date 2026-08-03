@@ -32,6 +32,7 @@
       <button class="menu-btn" id="optionsBtn"><span class="menu-icon">⚙</span><span class="menu-label">Opções</span><span>›</span></button>
       <button class="menu-btn" id="helpBtn"><span class="menu-icon">?</span><span class="menu-label">Como jogar</span><span>›</span></button>
     </div>
+    <button class="account-chip" id="accountChip" type="button">🎭 Convidado</button>
     <div class="coin-badge" id="coinBadge">🪙 0</div>
     <div class="menu-footer" id="menuVersion">VERSÃO 9.1 · DEMO OFICIAL MOBILE</div>
   </div>
@@ -169,6 +170,17 @@
     <p style="font-size:10px;opacity:.65;margin:12px 0 0;">Supere uma fase para desbloquear a seguinte. Fases concluídas ficam disponíveis para treino.</p>
   </div>
 </div>
+<div class="pro-overlay" id="accountScreen" role="dialog" aria-modal="true" aria-labelledby="accountTitle">
+  <div class="pro-dialog">
+    <div class="dialog-header"><h2 class="dialog-title" id="accountTitle">Minha Conta</h2><button class="ghost-btn" data-close="accountScreen">Fechar</button></div>
+    <div class="profile-stats" id="accountInfo"></div>
+    <p class="account-note" id="rankNote">🏆 Ranking Global: será ativado junto com o servidor (Firebase). Seu nome de usuário já está reservado localmente.</p>
+    <div class="account-actions">
+      <button class="overlay-btn" id="accountLoginBtn" type="button">Entrar / Criar conta</button>
+      <button class="ghost-btn" id="logoutBtn" type="button">Sair da conta</button>
+    </div>
+  </div>
+</div>
 <div class="pro-overlay" id="achScreen" role="dialog" aria-modal="true" aria-labelledby="achTitle">
   <div class="pro-dialog">
     <div class="dialog-header"><h2 class="dialog-title" id="achTitle">Perfil & Conquistas</h2><button class="ghost-btn" data-close="achScreen">Fechar</button></div>
@@ -268,6 +280,52 @@
       <button class="lang-flag" data-lang="pt" type="button"><span>🇧🇷</span><b>Português</b><small>Brasil</small></button>
       <button class="lang-flag" data-lang="en" type="button"><span>🇺🇸</span><b>English</b><small>USA</small></button>
       <button class="lang-flag" data-lang="es" type="button"><span>🇪🇸</span><b>Español</b><small>España</small></button>
+    </div>
+  </div>
+</div>
+<div class="boot-screen" id="loginScreen">
+  <div class="boot-card">
+    <div class="boot-eyebrow" id="loginEyebrow">SUA LENDA COMEÇA AQUI</div>
+    <h2 class="boot-title small" id="loginTitle" style="font-size:22px">Entrar nos 12 Reinos</h2>
+    <button class="overlay-btn login-guest" id="guestBtn" type="button">🎭 Jogar como Convidado</button>
+    <p class="login-note" id="guestNote">Convidado: sem ranking, sem nuvem e sem PVP (em breve).</p>
+    <div class="login-divider"><span id="loginOu">ou entre com sua conta</span></div>
+    <form id="loginForm" class="login-form">
+      <input id="loginEmail" type="email" placeholder="seu@email.com" autocomplete="username">
+      <input id="loginPass" type="password" placeholder="senha" autocomplete="current-password">
+      <button class="overlay-btn" id="loginSubmit" type="submit">Entrar / Criar conta</button>
+      <div class="err" id="loginError"></div>
+    </form>
+    <button class="google-btn" id="googleBtn" type="button"><span class="g-logo">G</span> Entrar com Google</button>
+    <p class="login-note" id="googleNote"></p>
+  </div>
+</div>
+<div class="boot-screen" id="onboardScreen">
+  <div class="boot-card">
+    <div class="ob-step" id="obStep1">
+      <div class="boot-eyebrow">PASSO 1 DE 3</div>
+      <h3 class="ob-title" id="obT1">Qual a sua data de nascimento?</h3>
+      <input id="obBirth" type="date" class="ob-input" max="2020-12-31" min="1920-01-01">
+      <button class="overlay-btn" id="obNext1" type="button">Continuar</button>
+      <div class="err" id="obErr1"></div>
+    </div>
+    <div class="ob-step" id="obStep2">
+      <div class="boot-eyebrow">PASSO 2 DE 3</div>
+      <h3 class="ob-title" id="obT2">Como deseja ser tratado(a)?</h3>
+      <div class="title-grid">
+        <button class="title-opt" data-title="Rei Mago" type="button">🤴<b>Rei Mago</b></button>
+        <button class="title-opt" data-title="Rainha Maga" type="button">👸<b>Rainha Maga</b></button>
+        <button class="title-opt" data-title="Cavaleiro Mago" type="button">🛡️<b>Cavaleiro Mago</b></button>
+        <button class="title-opt" data-title="Cavaleira Maga" type="button">⚔️<b>Cavaleira Maga</b></button>
+      </div>
+    </div>
+    <div class="ob-step" id="obStep3">
+      <div class="boot-eyebrow">PASSO 3 DE 3</div>
+      <h3 class="ob-title" id="obT3">Como quer ser chamado(a)?</h3>
+      <input id="obName" type="text" class="ob-input" maxlength="20" placeholder="Ex: Julius">
+      <div class="ob-preview-wrap"><small id="obPrevLabel">Você será:</small><div class="ob-preview" id="obPreview">—</div></div>
+      <button class="overlay-btn" id="obFinish" type="button">Confirmar nome</button>
+      <div class="err" id="obError"></div>
     </div>
   </div>
 </div>

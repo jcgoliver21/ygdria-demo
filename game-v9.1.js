@@ -3915,9 +3915,13 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
   const bootParams=new URLSearchParams(location.search);
   const skipBoot=bootParams.get('qa')||bootParams.get('daily')==='1';
   if(!skipBoot) document.getElementById('introScreen')?.classList.add('show');
+  function maybeShowLogin(){
+    if(!hasAccountDecision()) document.getElementById('loginScreen')?.classList.add('show');
+  }
   document.getElementById('introNext')?.addEventListener('click',()=>{
     document.getElementById('introScreen')?.classList.remove('show');
     if(!localStorage.getItem('12r_lang_set')) document.getElementById('langScreen')?.classList.add('show');
+    else maybeShowLogin();
     sfxSelect();
   });
   document.querySelectorAll('#langScreen [data-lang]').forEach(b=>b.addEventListener('click',()=>{
@@ -3928,9 +3932,187 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
     renderIntroTexts();
     renderCoach();
     document.getElementById('langScreen')?.classList.remove('show');
+    maybeShowLogin();
     sfxSelect();
   }));
+
+  // ---- Contas: convidado, email+senha local, Google (aguarda backend) ----
+  document.getElementById('guestBtn')?.addEventListener('click',()=>{
+    localStorage.setItem('12r_guest','1');
+    document.getElementById('loginScreen')?.classList.remove('show');
+    renderAccountChip();
+    sfxSelect();
+  });
+  document.getElementById('loginForm')?.addEventListener('submit',async(ev)=>{
+    ev.preventDefault();
+    const res=await loginOrRegister(document.getElementById('loginEmail').value,document.getElementById('loginPass').value);
+    const err=document.getElementById('loginError');
+    if(res.erro){ if(err) err.textContent=res.erro; sfxInvalid(); return; }
+    if(err) err.textContent='';
+    renderAccountChip();
+    sfxSelect();
+    if(res.precisaOnboarding) openOnboarding();
+    else document.getElementById('loginScreen')?.classList.remove('show');
+  });
+  document.getElementById('googleBtn')?.addEventListener('click',()=>{
+    const note=document.getElementById('googleNote');
+    if(note) note.textContent=T('O login Google chega junto com o servidor (Firebase) — a estrutura já está pronta. Por enquanto, use e-mail/senha ou jogue como Convidado.','Google sign-in arrives with the server (Firebase) — the structure is ready. For now, use e-mail/password or play as Guest.','El acceso con Google llega con el servidor (Firebase). Por ahora, usa correo/contraseña o juega como Invitado.');
+  });
+  // ---- Onboarding ----
+  document.getElementById('obNext1')?.addEventListener('click',()=>{
+    const v=document.getElementById('obBirth')?.value;
+    const err=document.getElementById('obErr1');
+    if(!v){ if(err) err.textContent=T('Escolha a data de nascimento.','Pick your birth date.','Elige tu fecha de nacimiento.'); return; }
+    const [y,m,d]=v.split('-').map(Number);
+    onboardState.birth={d,m,y};
+    showOnboardStep(2);
+    sfxSelect();
+  });
+  document.querySelectorAll('.title-opt').forEach(b=>b.addEventListener('click',()=>{
+    onboardState.title=b.dataset.title;
+    showOnboardStep(3);
+    sfxSelect();
+  }));
+  document.getElementById('obName')?.addEventListener('input',updateNamePreview);
+  document.getElementById('obFinish')?.addEventListener('click',finishOnboarding);
+  // ---- Painel de conta ----
+  document.getElementById('accountChip')?.addEventListener('click',()=>{ renderAccountPanel(); openPanel('accountScreen'); });
+  document.getElementById('accountLoginBtn')?.addEventListener('click',()=>{
+    document.getElementById('accountScreen')?.classList.remove('show');
+    document.getElementById('loginScreen')?.classList.add('show');
+  });
+  document.getElementById('logoutBtn')?.addEventListener('click',logoutAccount);
+  renderAccountChip();
 })();
+
+/* ============================================================
+   v9.1 · SISTEMA DE CONTAS (local-first, pronto para Firebase)
+   Convidado: joga sem conta (sem ranking/nuvem/PVP futuros).
+   Email+senha: conta LOCAL neste aparelho (hash SHA-256).
+   Google: aguarda backend (Firebase) — botão informativo.
+   ============================================================ */
+var account=null; // var: o initV91 roda antes deste bloco no arquivo (funções são hoisted)
+try{ account=JSON.parse(localStorage.getItem('12r_account')||'null'); }catch(e){}
+renderAccountChip();
+function isGuest(){ return !account && localStorage.getItem('12r_guest')==='1'; }
+function hasAccountDecision(){ return !!account || localStorage.getItem('12r_guest')==='1'; }
+
+async function sha256Hex(text){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+/* Gerador de username: Título+Nome com fallbacks na ordem exata:
+   Nome, Nome+Dia, Nome+Mês, Nome+Ano, Nome+Dia+Mês, Nome+Dia+Ano, Nome+Mês+Ano, Nome+Dia+Mês+Ano */
+function sanitizeNamePart(text){
+  return (text||'').normalize('NFD').replace(/[̀-ͯ]/g,'')
+    .replace(/[^A-Za-z0-9 ]/g,'').trim().split(/\s+/)
+    .map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join('');
+}
+function usernameCandidates(title,name,birth){
+  const base=sanitizeNamePart(title)+sanitizeNamePart(name);
+  const dd=String(birth.d).padStart(2,'0'), mm=String(birth.m).padStart(2,'0'), yy=String(birth.y);
+  return [base, base+dd, base+mm, base+yy, base+dd+mm, base+dd+yy, base+mm+yy, base+dd+mm+yy];
+}
+function takenUsernames(){
+  try{ return JSON.parse(localStorage.getItem('12r_usernames')||'[]'); }catch(e){ return []; }
+}
+function claimUsername(title,name,birth){
+  const taken=takenUsernames();
+  const candidate=usernameCandidates(title,name,birth).find(c=>!taken.includes(c));
+  if(!candidate) return null; // todos ocupados (raríssimo)
+  taken.push(candidate);
+  localStorage.setItem('12r_usernames',JSON.stringify(taken));
+  return candidate;
+}
+
+function localUsers(){
+  try{ return JSON.parse(localStorage.getItem('12r_localusers')||'{}'); }catch(e){ return {}; }
+}
+async function loginOrRegister(email,pass){
+  email=(email||'').trim().toLowerCase();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return {erro:T('E-mail inválido.','Invalid e-mail.','Correo inválido.')};
+  if((pass||'').length<4) return {erro:T('Senha muito curta (mín. 4).','Password too short (min 4).','Contraseña muy corta (mín. 4).')};
+  const users=localUsers();
+  const hash=await sha256Hex(pass);
+  if(users[email]){
+    if(users[email].passHash!==hash) return {erro:T('Senha incorreta para este e-mail.','Wrong password for this e-mail.','Contraseña incorrecta para este correo.')};
+    account=users[email].account||{email};
+  }else{
+    users[email]={passHash:hash,account:null};
+    localStorage.setItem('12r_localusers',JSON.stringify(users));
+    account={email};
+  }
+  localStorage.setItem('12r_account',JSON.stringify(account));
+  localStorage.removeItem('12r_guest');
+  return {ok:true, precisaOnboarding:!account.username};
+}
+function persistAccount(){
+  localStorage.setItem('12r_account',JSON.stringify(account));
+  const users=localUsers();
+  if(account?.email&&users[account.email]){ users[account.email].account=account; localStorage.setItem('12r_localusers',JSON.stringify(users)); }
+  renderAccountChip();
+}
+function logoutAccount(){
+  account=null;
+  localStorage.removeItem('12r_account');
+  localStorage.removeItem('12r_guest');
+  renderAccountChip();
+  document.getElementById('accountScreen')?.classList.remove('show');
+  document.getElementById('loginScreen')?.classList.add('show');
+}
+function renderAccountChip(){
+  const chip=document.getElementById('accountChip');
+  if(!chip) return;
+  if(account?.username) chip.innerHTML=`👑 <b>${account.username}</b>`;
+  else chip.innerHTML=`🎭 ${T('Convidado — toque para entrar','Guest — tap to sign in','Invitado — toca para entrar')}`;
+}
+
+/* Onboarding pós-login: nascimento -> título -> nome -> username */
+const TITLES=['Rei Mago','Rainha Maga','Cavaleiro Mago','Cavaleira Maga'];
+var onboardState={};
+function openOnboarding(){
+  onboardState={};
+  document.getElementById('loginScreen')?.classList.remove('show');
+  document.getElementById('onboardScreen')?.classList.add('show');
+  showOnboardStep(1);
+}
+function showOnboardStep(n){
+  [1,2,3].forEach(i=>document.getElementById('obStep'+i)?.classList.toggle('show',i===n));
+  if(n===3) updateNamePreview();
+}
+function updateNamePreview(){
+  const nome=document.getElementById('obName')?.value||'';
+  const prev=document.getElementById('obPreview');
+  if(prev) prev.textContent=onboardState.title&&nome?`${onboardState.title} ${nome.trim()}`:'—';
+}
+async function finishOnboarding(){
+  const nome=(document.getElementById('obName')?.value||'').trim();
+  const err=document.getElementById('obError');
+  if(!nome||sanitizeNamePart(nome).length<2){ if(err) err.textContent=T('Digite um nome válido.','Enter a valid name.','Escribe un nombre válido.'); return; }
+  const username=claimUsername(onboardState.title,nome,onboardState.birth);
+  if(!username){ if(err) err.textContent=T('Nome indisponível — tente outro.','Name unavailable — try another.','Nombre no disponible — prueba otro.'); return; }
+  account={...account, birth:onboardState.birth, title:onboardState.title, displayName:`${onboardState.title} ${nome}`, username, createdAt:Date.now()};
+  persistAccount();
+  document.getElementById('onboardScreen')?.classList.remove('show');
+  setBattleStatus(T(`Bem-vindo(a), ${account.displayName}!`,`Welcome, ${account.displayName}!`,`¡Bienvenido(a), ${account.displayName}!`),'support');
+}
+function renderAccountPanel(){
+  const el=document.getElementById('accountInfo');
+  if(!el) return;
+  if(account?.username){
+    el.innerHTML=`
+      <div class="pstat"><small>${T('Usuário (ranking)','Username (ranking)','Usuario (ranking)')}</small><b>${account.username}</b></div>
+      <div class="pstat"><small>${T('Tratamento','Title','Tratamiento')}</small><b>${account.title}</b></div>
+      <div class="pstat"><small>E-mail</small><b>${account.email||'—'}</b></div>
+      <div class="pstat"><small>${T('Nascimento','Birth date','Nacimiento')}</small><b>${String(account.birth.d).padStart(2,'0')}/${String(account.birth.m).padStart(2,'0')}/${account.birth.y}</b></div>`;
+  }else{
+    el.innerHTML=`<p class="account-note">${T('Você joga como Convidado: sem ranking, sem salvamento na nuvem e sem PVP (em breve). Entre para garantir seu nome de usuário!','You play as a Guest: no ranking, no cloud save and no PVP (soon). Sign in to claim your username!','Juegas como Invitado: sin ranking, sin guardado en la nube y sin PVP (pronto). ¡Inicia sesión para reclamar tu usuario!')}</p>`;
+  }
+  const lb=document.getElementById('accountLoginBtn'), ob=document.getElementById('logoutBtn');
+  if(lb) lb.style.display=account?.username?'none':'inline-block';
+  if(ob) ob.style.display=account?'inline-block':'none';
+}
 
 /* v9.1 · Textos da introdução (relocalizáveis) */
 function renderIntroTexts(){
