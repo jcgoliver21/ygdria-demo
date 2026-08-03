@@ -1021,11 +1021,22 @@ let royalShuffles = 1;
 let formationIndex = 0;
 let bestCombo = 0;
 const BATTLE_SPEEDS = [1,1.5,2];
+/* v9.1 · 12 formações nomeadas (y≈0 = linha de frente, maior escala/z) */
 const HERO_FORMATIONS = [
-  [{x:16,y:42,s:.94,z:18},{x:39,y:46,s:.98,z:20},{x:22,y:4,s:1.17,z:38},{x:48,y:7,s:1.2,z:40}],
-  [{x:15,y:33,s:.98,z:20},{x:36,y:38,s:1.02,z:22},{x:24,y:1,s:1.22,z:40},{x:49,y:2,s:1.24,z:42}],
-  [{x:13,y:44,s:.92,z:18},{x:33,y:25,s:1.08,z:29},{x:17,y:2,s:1.2,z:41},{x:49,y:6,s:1.18,z:39}]
+  { nome:'Clássica',        slots:[{x:16,y:42,s:.94,z:18},{x:39,y:46,s:.98,z:20},{x:22,y:4,s:1.17,z:38},{x:48,y:7,s:1.2,z:40}] },
+  { nome:'Falange',         slots:[{x:6,y:6,s:1.1,z:40},{x:20,y:2,s:1.14,z:42},{x:34,y:4,s:1.12,z:41},{x:48,y:6,s:1.1,z:40}] },
+  { nome:'Muralha',         slots:[{x:8,y:44,s:.94,z:18},{x:22,y:40,s:.96,z:20},{x:36,y:42,s:.95,z:19},{x:50,y:45,s:.93,z:17}] },
+  { nome:'Coluna Diagonal', slots:[{x:12,y:46,s:.9,z:16},{x:24,y:31,s:1.0,z:26},{x:36,y:17,s:1.1,z:34},{x:48,y:3,s:1.2,z:42}] },
+  { nome:'Ponta de Lança',  slots:[{x:50,y:2,s:1.24,z:43},{x:32,y:14,s:1.1,z:34},{x:32,y:32,s:1.0,z:25},{x:14,y:44,s:.9,z:16}] },
+  { nome:'Escudo',          slots:[{x:8,y:4,s:1.16,z:40},{x:50,y:4,s:1.16,z:41},{x:22,y:40,s:.95,z:19},{x:38,y:42,s:.94,z:18}] },
+  { nome:'Escolta Real',    slots:[{x:30,y:2,s:1.24,z:43},{x:8,y:34,s:.98,z:24},{x:28,y:44,s:.93,z:17},{x:48,y:36,s:.97,z:23}] },
+  { nome:'Emboscada',       slots:[{x:6,y:8,s:1.12,z:39},{x:20,y:14,s:1.06,z:35},{x:38,y:36,s:.97,z:22},{x:52,y:44,s:.9,z:16}] },
+  { nome:'Ala Esquerda',    slots:[{x:10,y:2,s:1.2,z:42},{x:12,y:17,s:1.1,z:34},{x:14,y:32,s:1.0,z:25},{x:16,y:46,s:.9,z:16}] },
+  { nome:'Ala Direita',     slots:[{x:52,y:4,s:1.18,z:41},{x:48,y:18,s:1.1,z:34},{x:46,y:32,s:1.0,z:25},{x:44,y:46,s:.9,z:16}] },
+  { nome:'Losango',         slots:[{x:29,y:0,s:1.22,z:42},{x:12,y:24,s:1.04,z:29},{x:48,y:24,s:1.04,z:30},{x:30,y:46,s:.9,z:16}] },
+  { nome:'Estrela do Caos', slots:[{x:8,y:20,s:1.06,z:32},{x:42,y:10,s:1.14,z:37},{x:20,y:4,s:1.18,z:40},{x:52,y:38,s:.95,z:20}] }
 ];
+formationIndex=Math.max(0,Math.min(HERO_FORMATIONS.length-1,Number(localStorage.getItem('12r_formation')||0)));
 const ENEMY_FORMATIONS = {
   1:[{x:80,y:10,s:1.2,z:42}],
   2:[{x:73,y:36,s:.94,z:22},{x:86,y:3,s:1.14,z:44}],
@@ -1449,7 +1460,7 @@ function renderStageProgress(){
 
 
 function applyBattleFormation(){
-  const heroSlots=HERO_FORMATIONS[formationIndex%HERO_FORMATIONS.length];
+  const heroSlots=HERO_FORMATIONS[formationIndex%HERO_FORMATIONS.length].slots;
   const heroUnits=[...partyArenaEl.querySelectorAll('.hero-unit')];
   heroUnits.forEach((unit,i)=>applyFormationSlot(unit,heroSlots[i]||heroSlots[heroSlots.length-1],112));
   const barbaraIdx=ACTIVE.findIndex(idx=>KINGDOMS[idx]?.id==='terra');
@@ -1591,8 +1602,13 @@ function toggleTacticalGrid(){
 
 function cycleHeroFormation(){
   formationIndex=(formationIndex+1)%HERO_FORMATIONS.length;
+  localStorage.setItem('12r_formation',String(formationIndex));
   applyBattleFormation();
-  setBattleStatus(`Formação ${formationIndex+1}/${HERO_FORMATIONS.length} aplicada.`);
+  const f=HERO_FORMATIONS[formationIndex];
+  const tool=document.getElementById('formationTool');
+  if(tool) tool.textContent=`♟ ${f.nome}`;
+  setBattleStatus(`Formação "${f.nome}" (${formationIndex+1}/${HERO_FORMATIONS.length}) aplicada.`,'system');
+  sfxSelect();
 }
 
 async function toggleGameFullscreen(){
@@ -1622,6 +1638,8 @@ function updateBattleToolLabels(){
   document.getElementById('autoTargetTool').classList.toggle('active',autoTargetMode);
   document.getElementById('speedTool').textContent=`» Velocidade ${BATTLE_SPEEDS[battleSpeedIndex]}×`;
   document.getElementById('shuffleTool').textContent=`⟳ Embaralhar (${royalShuffles})`;
+  const formTool=document.getElementById('formationTool');
+  if(formTool) formTool.textContent=`♟ ${HERO_FORMATIONS[formationIndex%HERO_FORMATIONS.length].nome}`;
   const moodTool=document.getElementById('musicMoodTool');
   if(moodTool) moodTool.textContent=`♫ Música: ${['Auto','Calma','Épica'][musicMoodMode]}`;
 }
