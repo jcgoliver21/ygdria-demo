@@ -79,15 +79,15 @@ const KINGDOMS = [
     ]
   },
   {
-    id:'terra', nome:'Barbara', reino:'Reino da Terra', classe:'A Maga Mais Forte · Rainha Maga',
+    id:'terra', nome:'Kallendra', reino:'Reino da Terra', classe:'A Maga Mais Forte · Rainha Maga',
     color:'#8b5a2b', colorLight:'#f0bd78', colorDark:'#3c210d', gem:'gemTopaz', atk:20,
-    img:'assets/cards/barbara-card.png', cardThumb:'assets/thumbs/barbara-card.webp',
+    img:'assets/cards/kallendra-card.png', cardThumb:'assets/cards/kallendra-card.png',
     sprite:'assets/characters/runtime-v4/barbara/single-1.png', fxTheme:'seismic', rarity:'DIVINA', stars:7,
     abilities:[
       {kind:'passive',gems:15, name:'Golpe da Clava', tipo:'stunAndDamageFromLast', turnos:2, mult:2, desc:'Atinge o inimigo com duas vezes o último ataque e o atordoa por dois turnos.'},
       {kind:'passive',gems:25, name:'Armadura de Pedra', tipo:'stoneArmor', turnos:2, reducao:.5, reflexao:.5, desc:'Reduz o dano recebido e devolve parte dele durante dois turnos.'},
       {kind:'passive',gems:45, name:'Terremoto Destruidor', tipo:'damageAllAndVulnerable', valor:100, turnos:2, mult:1.25, desc:'Causa 100 de dano em todos e reduz a defesa inimiga.'},
-      {kind:'active',gems:60, name:'Invocação de Golens', tipo:'summonGolems', quantidade:2, desc:'Invoca dois golens; cada um replica metade do dano de Barbara até o fim da missão.'},
+      {kind:'active',gems:60, name:'Invocação de Golens', tipo:'summonGolems', quantidade:2, desc:'Invoca dois golens; cada um replica metade do dano de Kallendra até o fim da missão.'},
       {kind:'active',gems:75, name:'Força Terra', tipo:'damageAllFixed', valor:300, desc:'Atinge todos os inimigos com 300 de dano.'},
       {kind:'active',gems:100, name:'Terra Viva', tipo:'sacrificeGolems', quantidade:2, valor:1000, requiresGolems:2, desc:'Sacrifica dois golens para infligir 1000 de dano ao alvo.'}
     ]
@@ -2683,7 +2683,7 @@ async function resolveMatches(){
     if(KINGDOMS[colorIdx].id==='terra'&&golemAllies>0&&allEnemiesDefeated()===false){
       const golemDamage=Math.round(dmg*.5*golemAllies);
       applyDamageToEnemy(golemDamage,colorIdx);
-      setBattleStatus(`${golemAllies} golens replicaram ${golemDamage} de dano para Barbara.`,'damage');
+      setBattleStatus(`${golemAllies} golens replicaram ${golemDamage} de dano para Kallendra.`,'damage');
     }
     if(KINGDOMS[colorIdx].id==='vento'&&harpyAllies>0&&allEnemiesDefeated()===false){
       const harpyDamage=Math.round(dmg*.2*harpyAllies);
@@ -3163,9 +3163,9 @@ function triggerAbility(idx, a, options={}){
         if(added>0){
           golemAllies+=added;
           renderGolemUnits(true);
-          setBattleStatus(`${k.nome} invocou ${added} golens ao seu lado. Cada um replica metade do dano de Barbara.`,'support');
+          setBattleStatus(`${k.nome} invocou ${added} golens ao seu lado. Cada um replica metade do dano de Kallendra.`,'support');
         }else{
-          setBattleStatus('Barbara já possui o máximo de quatro golens aliados.','system');
+          setBattleStatus('Kallendra já possui o máximo de quatro golens aliados.','system');
         }
       }
       break;
