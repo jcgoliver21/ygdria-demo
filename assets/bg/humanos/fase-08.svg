@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+<defs>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#131a26"/><stop offset=".62" stop-color="#33455e"/><stop offset="1" stop-color="#5c7690"/>
+  </linearGradient>
+  <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#2c3c50"/><stop offset="1" stop-color="#101820"/>
+  </linearGradient>
+  <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+    <stop offset="0" stop-color="#dce8f5" stop-opacity=".85"/><stop offset="1" stop-color="#dce8f5" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="pool" cx="50%" cy="50%" r="50%">
+    <stop offset="0" stop-color="#c8dcf0" stop-opacity=".28"/><stop offset="1" stop-color="#c8dcf0" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="vig" cx="50%" cy="46%" r="72%">
+    <stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#03020a" stop-opacity=".55"/>
+  </radialGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#sky)"/>
+<ellipse cx="880" cy="318" rx="560" ry="300" fill="url(#glow)"/>
+
+<path d="M0 384 L0 384 L0 234 L1600 234 L1600 384 L1600 384 L1600 900 L0 900 Z" fill="#2a3a50" opacity=".55"/>
+<path d="M0 404 L0 404 L0 194 L120 194 L120 404 L1480 404 L1480 194 L1600 194 L1600 404 L1600 404 L1600 900 L0 900 Z" fill="#182430" opacity=".8"/>
+<rect x="14" y="228" width="42" height="26" fill="#182430" opacity=".9"/><rect x="94" y="228" width="42" height="26" fill="#182430" opacity=".9"/><rect x="174" y="228" width="42" height="26" fill="#182430" opacity=".9"/><rect x="254" y="228" width="42" height="26" fill="#182430" opacity=".9"/><rect x="334" y="228" width="42" height="26" fill="#182430" opacity=".9"/><rect x="414" y="228" width="42" height="26" fill="#182430" opacity=".9"/><rect x="494" y="228" width="42" height="26" fill="#182430" opacity=".9"/><rect x="574" y="228" width="42" height="26" fill="#182430" opacity=".9"/><rect x="654" y="228" width="42" height="26" fill="#182430" opacity=".9"/><rect x="734" y="228" width="42" height="26" fill="#182430" opacity=".9"/><rect x="814" y="228" width="42" height="26" fill="#182430" opacity=".9"/><rect x="894" y="228" width="42" height="26" fill="#182430" opacity=".9"/><rect x="974" y="228" width="42" height="26" fill="#182430" opacity=".9"/><rect x="1054" y="228" width="42" height="26" fill="#182430" opacity=".9"/><rect x="1134" y="228" width="42" height="26" fill="#182430" opacity=".9"/><rect x="1214" y="228" width="42" height="26" fill="#182430" opacity=".9"/><rect x="1294" y="228" width="42" height="26" fill="#182430" opacity=".9"/><rect x="1374" y="228" width="42" height="26" fill="#182430" opacity=".9"/><rect x="1454" y="228" width="42" height="26" fill="#182430" opacity=".9"/><rect x="1534" y="228" width="42" height="26" fill="#182430" opacity=".9"/>
+<rect x="0" y="418" width="1600" height="482" fill="url(#floor)"/>
+<ellipse cx="800" cy="730" rx="520" ry="150" fill="url(#pool)"/>
+<rect x="244" y="260" width="32" height="70" rx="6" fill="#0e1620" opacity=".95"/><circle cx="260" cy="246" r="14" fill="#0e1620" opacity=".95"/><rect x="230" y="326" width="60" height="12" fill="#0a1016" opacity=".95"/><rect x="524" y="260" width="32" height="70" rx="6" fill="#0e1620" opacity=".95"/><circle cx="540" cy="246" r="14" fill="#0e1620" opacity=".95"/><rect x="510" y="326" width="60" height="12" fill="#0a1016" opacity=".95"/><rect x="804" y="260" width="32" height="70" rx="6" fill="#0e1620" opacity=".95"/><circle cx="820" cy="246" r="14" fill="#0e1620" opacity=".95"/><rect x="790" y="326" width="60" height="12" fill="#0a1016" opacity=".95"/><rect x="1084" y="260" width="32" height="70" rx="6" fill="#0e1620" opacity=".95"/><circle cx="1100" cy="246" r="14" fill="#0e1620" opacity=".95"/><rect x="1070" y="326" width="60" height="12" fill="#0a1016" opacity=".95"/><rect x="1364" y="260" width="32" height="70" rx="6" fill="#0e1620" opacity=".95"/><circle cx="1380" cy="246" r="14" fill="#0e1620" opacity=".95"/><rect x="1350" y="326" width="60" height="12" fill="#0a1016" opacity=".95"/>
+<path d="M0 900 L0 518 L120 468 L190 900 Z" fill="#0c1218" opacity=".85"/>
+<path d="M1600 900 L1600 518 L1480 468 L1410 900 Z" fill="#0c1218" opacity=".85"/>
+<rect width="1600" height="900" fill="url(#vig)"/>
+</svg>

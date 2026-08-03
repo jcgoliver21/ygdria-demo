@@ -2331,3 +2331,21 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
 .account-chip:hover{ border-color:#f0d488; }
 .account-note{ font-size:11px; opacity:.75; line-height:1.55; background:rgba(8,5,14,.6); border:1px dashed rgba(212,175,90,.3); border-radius:10px; padding:10px 12px; }
 .account-actions{ display:flex; gap:10px; margin-top:14px; }
+/* v9.1 · Mapa de mundo (Reino dos Humanos) */
+.world-head{ margin-bottom:12px; }
+.world-head b{ display:block; font-size:18px; letter-spacing:2px; color:#f1d98d; font-family:Georgia,serif; }
+.world-head small{ font-size:11px; opacity:.7; letter-spacing:1px; }
+.world-map{ display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:12px; margin-bottom:14px; }
+.fase-node{ position:relative; min-height:110px; border-radius:14px; cursor:pointer; overflow:hidden;
+  display:flex; align-items:flex-end; padding:12px; text-align:left; gap:10px;
+  border:1px solid rgba(212,175,90,.35); background-size:cover; background-position:center;
+  color:#f2e8d0; transition:transform .2s ease,border-color .15s ease,box-shadow .2s ease; }
+.fase-node:not(.locked):hover{ transform:translateY(-3px); border-color:#f0d488; box-shadow:0 10px 26px rgba(0,0,0,.5); }
+.fase-node.locked{ cursor:default; filter:grayscale(.85) brightness(.6); }
+.fase-num{ position:absolute; top:8px; left:10px; width:30px; height:30px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg,#f4dfa0,#b7832c); color:#1a1226; font:700 14px Georgia,serif;
+  box-shadow:0 2px 8px rgba(0,0,0,.6); }
+.fase-copy b{ display:block; font-size:13px; color:#fff3d6; text-shadow:0 1px 3px #000; }
+.fase-copy small{ display:block; font-size:9px; opacity:.8; letter-spacing:.5px; }
+.fase-copy em{ display:block; font-style:normal; font-size:10px; color:#ffd75e; margin-top:4px; letter-spacing:1px; }

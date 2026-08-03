@@ -1455,7 +1455,16 @@ function renderStageProgress(){
   }
   stageLabelEl.textContent = `Fase ${stageIndex+1}/${DUNGEON.length}`;
   dungeonTitleEl.textContent = DUNGEON[stageIndex].title;
-  arenaEl.className = 'arena scene-'+DUNGEON[stageIndex].scene;
+  arenaEl.className = 'arena scene-'+((activeStageData&&Number.isFinite(activeStageData.scene))?activeStageData.scene:DUNGEON[stageIndex].scene);
+  if(activeStageData?.bgUrl){
+    arenaEl.style.setProperty('background-image',`linear-gradient(rgba(6,3,13,.22),rgba(6,3,13,.5)),url('${activeStageData.bgUrl}')`,'important');
+    arenaEl.style.setProperty('background-size','cover');
+    arenaEl.style.setProperty('background-position','center');
+  }else{
+    arenaEl.style.removeProperty('background-image');
+    arenaEl.style.removeProperty('background-size');
+    arenaEl.style.removeProperty('background-position');
+  }
 }
 
 
@@ -1732,7 +1741,8 @@ function loadStage(idx){
   roomClearScheduled = false;
   selected = null;
   stageIndex = idx;
-  const stageData = towerMode ? buildTowerStage(towerFloor) : DUNGEON[idx];
+  const stageData = worldRun.active ? buildWorldLevel() : towerMode ? buildTowerStage(towerFloor) : DUNGEON[idx];
+  activeStageData = stageData;
   const diffM=DIFFICULTY_MULTS[difficulty]||DIFFICULTY_MULTS.normal;
   enemies = stageData.enemies.map(e=>{
     const hp=Math.round(e.hp*diffM.hp), atk=Math.round(e.atk*diffM.atk);
@@ -1908,7 +1918,7 @@ function hitAdjacentObstacles(cells){
 }
 
 /* v9.1 · Objetivos variados por fase */
-function currentObjective(){ return towerMode?null:(DUNGEON[stageIndex]?.objective||null); }
+function currentObjective(){ return activeStageData?.objective||null; }
 function checkStageObjective(){
   const obj=currentObjective();
   if(!obj) return false;
@@ -1995,7 +2005,7 @@ let storyQueue=[];
 function maybeShowStory(idx){
   if(towerMode) return;
   if(coachStep>=0&&coachStep<COACH_STEPS_I18N.pt.length) return;
-  const seq=STAGE_DIALOGS[idx];
+  const seq=worldRun.active?(activeStageData?.dial||null):STAGE_DIALOGS[idx];
   if(!seq||!seq.length) return;
   storyQueue=[...seq];
   renderStoryStep();
@@ -3484,6 +3494,44 @@ function onStageCleared(){
   busy = true;
   combatEpoch++;
   sfxVictory();
+  if(worldRun.active){
+    const world=WORLDS[0];
+    const fase=world.fases[worldRun.fase];
+    if(worldRun.nivel<5){
+      worldRun.nivel++;
+      grantCoins(6+worldRun.fase*2);
+      const starsEl=document.getElementById('stageStars');
+      if(starsEl) starsEl.innerHTML='';
+      document.getElementById('stageClearText').textContent=`${fase.nome}: ${T('nível','level','nivel')} ${worldRun.nivel-1}/5 ${T('superado! Avançando...','cleared! Advancing...','superado! Avanzando...')}`;
+      showOverlay('stageClearOverlay');
+      setTimeout(()=>{ hideOverlay('stageClearOverlay'); loadStage(0); busy=false; },1500);
+      return;
+    }
+    // Chefe vencido — fase completa!
+    const prog=worldProg('humanos');
+    const ratio=playerHP/PLAYER_MAX_HP;
+    const stars=ratio>=.7?3:ratio>=.4?2:1;
+    if((prog.stars[worldRun.fase]||0)<stars) prog.stars[worldRun.fase]=stars;
+    prog.unlocked=Math.max(prog.unlocked,Math.min(world.fases.length-1,worldRun.fase+1));
+    saveWorldProg('humanos',prog);
+    grantCoins(40+worldRun.fase*10);
+    const ups=grantXp(30+worldRun.fase*10);
+    checkAchievements('stage');
+    flushRunToProfile(true);
+    const starsEl=document.getElementById('stageStars');
+    if(starsEl) starsEl.innerHTML=[1,2,3].map(x=>`<span class="star${x<=stars?' on':''}" style="--i:${x}">★</span>`).join('');
+    document.getElementById('stageClearText').textContent=`${fase.boss.n} ${T('derrotado!','defeated!','derrotado!')} ${fase.nome} ${T('conquistada!','conquered!','conquistada!')}${ups.length?' '+ups.join(' '):''}`;
+    showOverlay('stageClearOverlay');
+    setTimeout(()=>{
+      hideOverlay('stageClearOverlay');
+      worldRun.active=false;
+      showMainMenu();
+      renderWorldMap();
+      openPanel('worldScreen');
+      busy=false;
+    },2400);
+    return;
+  }
   if(towerMode){
     const best=Math.max(Number(localStorage.getItem('12r_tower_best')||0),towerFloor);
     localStorage.setItem('12r_tower_best',String(best));
@@ -3665,7 +3713,7 @@ function getSavedProgress(){
 }
 
 function saveProgress(forcedStage){
-  if(towerMode) return; // torre não toca o save da campanha
+  if(towerMode||worldRun.active) return; // torre e mundos não tocam o save da campanha
   if(ACTIVE.length!==4) return;
   const safeStage = Math.max(0,Math.min(DUNGEON.length-1,forcedStage??stageIndex));
   localStorage.setItem('12r_save',JSON.stringify({version:8,stage:safeStage,team:[...ACTIVE],hp:Math.max(1,playerHP),seed:seedText,updated:Date.now()}));
@@ -3747,7 +3795,7 @@ function renderJourneyMap(){
     btn.style.backgroundImage=`linear-gradient(transparent,rgba(4,2,8,.94)),url('${STAGE_ART[idx%STAGE_ART.length]}')`;
     const stars=starsAll[idx]||0;
     btn.innerHTML=`<span>Fase ${idx+1}<br><b>${stage.title}</b>${stars?`<br><span class="node-stars">${'★'.repeat(stars)}${'☆'.repeat(3-stars)}</span>`:''}${locked?'<br>🔒 Bloqueada':''}</span>`;
-    btn.addEventListener('click',()=>{ towerMode=false; pendingStage=idx; closeAllPanels(); if(chosenIds.length===4) beginGame(idx); else showSelection(); });
+    btn.addEventListener('click',()=>{ towerMode=false; worldRun.active=false; pendingStage=idx; closeAllPanels(); if(chosenIds.length===4) beginGame(idx); else showSelection(); });
     map.appendChild(btn);
   });
 }
@@ -3756,6 +3804,7 @@ function openPanel(id){
   if(id==='journeyScreen') renderJourneyMap();
   if(id==='achScreen') renderAchievements();
   if(id==='shopScreen') renderShop();
+  if(id==='worldScreen') renderWorldMap();
   document.getElementById(id).classList.add('show');
 }
 function applySettings(){
@@ -3769,8 +3818,8 @@ function applySettings(){
 }
 
 startBtnEl.addEventListener('click',()=>beginGame(pendingStage));
-document.getElementById('playBtn').addEventListener('click',()=>{ towerMode=false; pendingStage=0; showSelection(); });
-document.getElementById('continueBtn').addEventListener('click',()=>{ const saved=getSavedProgress(); if(!saved)return; towerMode=false; chosenIds=[...saved.team]; beginGame(saved.stage,saved.hp); });
+document.getElementById('playBtn').addEventListener('click',()=>{ towerMode=false; worldRun.active=false; pendingStage=0; showSelection(); });
+document.getElementById('continueBtn').addEventListener('click',()=>{ const saved=getSavedProgress(); if(!saved)return; towerMode=false; worldRun.active=false; chosenIds=[...saved.team]; beginGame(saved.stage,saved.hp); });
 document.getElementById('galleryBtn').addEventListener('click',()=>openPanel('galleryScreen'));
 document.getElementById('selectGalleryBtn').addEventListener('click',()=>openPanel('galleryScreen'));
 document.getElementById('journeyBtn').addEventListener('click',()=>openPanel('journeyScreen'));
@@ -3864,6 +3913,133 @@ renderSelectGrid();
 refreshContinueButton();
 showMainMenu();
 
+/* ============================================================
+   v9.1 · MUNDOS — Reino dos Humanos (Terra dos Reguladores de Ygdria)
+   10 fases × 5 níveis; o nível 5 de cada fase é o CHEFE.
+   Cenários: assets/bg/humanos/fase-XX.svg (troque pelo mesmo nome
+   quando a arte pintada chegar — nada mais precisa mudar).
+   ============================================================ */
+var activeStageData=null;
+var worldRun={active:false,fase:0,nivel:1};
+const ESPR={
+  slime:'assets/enemies/slime/single-1.png',
+  sentinel:'assets/enemies/stone-sentinel/single-1.png',
+  wolf:'assets/enemies/shadow-wolf/single-1.png',
+  wraith:'assets/enemies/cursed-wraith/single-1.png',
+  dragon:'assets/enemies/crimson-dragon/single-1.png'
+};
+const WORLDS=[{
+  id:'humanos', nome:'Reino dos Humanos', titulo:'Terra dos Reguladores de Ygdria',
+  fases:[
+    { nome:'Cidade das Cerejeiras', sub:'Capital de Ygdria', bg:'assets/bg/humanos/fase-01.svg',
+      dial:[{h:'humanos',t:'Minha capital... as cerejeiras choram pétalas. Algo corrompeu a guarda da cidade.'}],
+      pool:[{n:'Gosma de Cereja',s:'slime',t:'hue-rotate(300deg) saturate(1.6) brightness(1.2)'},{n:'Cão de Guarda Real',s:'wolf',t:'sepia(.5) saturate(1.5) brightness(1.15)'}],
+      boss:{n:'Capitão das Cerejeiras',s:'sentinel',t:'hue-rotate(300deg) saturate(1.3) brightness(1.1)'} },
+    { nome:'Catedral de Ygdria', sub:'Onde a fé encontrou a magia', bg:'assets/bg/humanos/fase-02.svg',
+      dial:[{h:'luz',t:'Este lugar já foi sagrado. Os vitrais ainda cantam... mas há sombras entre os bancos.'}],
+      pool:[{n:'Devoto Corrompido',s:'wraith',t:'brightness(1.3) hue-rotate(200deg)'},{n:'Gárgula do Vitral',s:'sentinel',t:'hue-rotate(230deg) brightness(.9)'}],
+      boss:{n:'Bispo Corrompido',s:'wraith',t:'brightness(1.5) hue-rotate(230deg) drop-shadow(0 0 12px rgba(180,150,255,.8))'} },
+    { nome:'Palácio dos Reguladores', sub:'A ordem acima de tudo', bg:'assets/bg/humanos/fase-03.svg',
+      dial:[{h:'humanos',t:'Os Reguladores mantinham o equilíbrio entre os reinos. Quem os dobrou?'}],
+      pool:[{n:'Guarda-Regulador',s:'sentinel',t:'sepia(.4) hue-rotate(280deg)'},{n:'Executor do Decreto',s:'wolf',t:'hue-rotate(260deg) brightness(.9)'}],
+      boss:{n:'Regulador Renegado',s:'sentinel',t:'hue-rotate(270deg) saturate(1.5) brightness(1.05)'} },
+    { nome:'Praça das Doze Essências', sub:'Doze pilares, doze reinos', bg:'assets/bg/humanos/fase-04.svg',
+      objective:{type:'collect',count:45},
+      dial:[{h:'luz',t:'Os pilares das Doze Essências... estão drenando as esferas! Colete-as antes que apaguem.'}],
+      pool:[{n:'Ladrão de Essências',s:'wraith',t:'hue-rotate(160deg) brightness(1.2)'},{n:'Golem de Mana',s:'sentinel',t:'hue-rotate(180deg) saturate(1.6)'}],
+      boss:{n:'Guardião das Essências',s:'sentinel',t:'hue-rotate(160deg) saturate(2) brightness(1.2)'} },
+    { nome:'Academia Real de Magia e Combate', sub:'Onde nascem os magos-cavaleiros', bg:'assets/bg/humanos/fase-05.svg',
+      dial:[{h:'raio',t:'Ha! Estudei aqui... e fui expulso. Hora de mostrar aos instrutores o que aprendi sozinho.'}],
+      pool:[{n:'Aprendiz Possuído',s:'wraith',t:'hue-rotate(120deg) brightness(1.2)'},{n:'Armadura de Treino',s:'sentinel',t:'brightness(1.1) saturate(.6)'}],
+      boss:{n:'Arquimago Instrutor',s:'wraith',t:'hue-rotate(150deg) brightness(1.4) drop-shadow(0 0 10px rgba(120,255,220,.7))'} },
+    { nome:'Mercado Central dos Reinos', sub:'Tudo tem um preço', bg:'assets/bg/humanos/fase-06.svg',
+      objective:{type:'moves',limit:22},
+      dial:[{h:'areia',t:'Conheço mercados assim — e conheço contrabandistas. Sejamos rápidos: eles não gostam de testemunhas.'}],
+      pool:[{n:'Contrabandista',s:'wolf',t:'sepia(.6) saturate(1.8)'},{n:'Capanga do Barão',s:'sentinel',t:'sepia(.5) brightness(.95)'}],
+      boss:{n:'Barão do Contrabando',s:'wolf',t:'sepia(.8) saturate(2.2) brightness(1.15)'} },
+    { nome:'Biblioteca da Eternidade', sub:'Todo saber, um só silêncio', bg:'assets/bg/humanos/fase-07.svg',
+      obstacles:{stone:2},
+      dial:[{h:'chuvas',t:'Séculos de conhecimento... e páginas que viraram criaturas. Cuidado com o que vocês leem.'}],
+      pool:[{n:'Tomo Vivo',s:'slime',t:'sepia(.9) saturate(1.4)'},{n:'Bibliotecário Espectral',s:'wraith',t:'sepia(.7) brightness(1.25)'}],
+      boss:{n:'Guardião da Biblioteca',s:'wraith',t:'sepia(.9) brightness(1.35) drop-shadow(0 0 10px rgba(255,220,140,.7))'} },
+    { nome:'Muralha dos Heróis', sub:'Eles ainda vigiam', bg:'assets/bg/humanos/fase-08.svg',
+      objective:{type:'survive',turns:9}, obstacles:{stone:3},
+      dial:[{h:'terra',t:'As estátuas dos heróis antigos... elas se movem! Aguentem firme — a muralha testa os dignos.'}],
+      pool:[{n:'Estátua Desperta',s:'sentinel',t:'brightness(.85) saturate(.5)'},{n:'Sentinela da Muralha',s:'sentinel',t:'hue-rotate(200deg) brightness(.9)'}],
+      boss:{n:'Colosso da Muralha',s:'sentinel',t:'brightness(.8) saturate(.4) contrast(1.2)'} },
+    { nome:'Lendária Torre de Acesso à Eternidade', sub:'O céu é a porta', bg:'assets/bg/humanos/fase-09.svg',
+      dial:[{h:'sombras',t:'Esta torre toca a Eternidade... sinto o véu fino aqui. O que desce dela não é humano.'}],
+      pool:[{n:'Eco da Eternidade',s:'wraith',t:'brightness(1.6) saturate(.4)'},{n:'Vulto Ascendente',s:'wraith',t:'brightness(1.3) hue-rotate(260deg)'}],
+      boss:{n:'Vigia da Eternidade',s:'wraith',t:'brightness(1.8) saturate(.3) drop-shadow(0 0 16px rgba(230,220,255,.9))'} },
+    { nome:'Castelo da Coroa Humana', sub:'O trono espera seu verdadeiro rei', bg:'assets/bg/humanos/fase-10.svg',
+      dial:[{h:'humanos',t:'O castelo da minha linhagem. Quem quer que vista a coroa falsa... hoje ela cai.'},{h:'fogo',t:'Então é um usurpador com um dragão? Perfeito. Dragões são comigo.'}],
+      pool:[{n:'Cavaleiro da Coroa Falsa',s:'sentinel',t:'sepia(.6) hue-rotate(320deg)'},{n:'Mago da Corte Sombria',s:'wraith',t:'hue-rotate(300deg) brightness(1.1)'}],
+      boss:{n:'Rei Usurpador',s:'dragon',t:'sepia(.5) saturate(1.6) hue-rotate(20deg) brightness(1.05)'} }
+  ]
+}];
+function worldProg(worldId){
+  try{ return JSON.parse(localStorage.getItem('12r_world_'+worldId)||'{"unlocked":0,"stars":{}}'); }
+  catch(e){ return {unlocked:0,stars:{}}; }
+}
+function saveWorldProg(worldId,prog){ localStorage.setItem('12r_world_'+worldId,JSON.stringify(prog)); }
+function buildWorldLevel(){
+  const world=WORLDS[0];
+  const fase=world.fases[worldRun.fase];
+  const f=worldRun.fase, n=worldRun.nivel;
+  const mult=(1+f*0.45)*(1+(n-1)*0.16);
+  const mk=(tpl,hp,atk)=>({name:tpl.n, hp:Math.round(hp*mult), atk:Math.round(atk*mult), sprite:ESPR[tpl.s], tint:tpl.t});
+  let enemies;
+  if(n===5){
+    enemies=[{...mk(fase.boss,900,60), isBoss:true}];
+    enemies[0].hp=Math.round(enemies[0].hp*2.2);
+    if(f>=4) enemies.unshift(mk(fase.pool[0],320,42));
+  }else{
+    const count=n<=1?1:n<=3?2:3;
+    enemies=Array.from({length:count},(_,i)=>mk(fase.pool[i%fase.pool.length],320+i*60,42+i*6));
+  }
+  return {
+    title:`${fase.nome} · Nível ${n}/5${n===5?' · CHEFE':''}`,
+    scene:n===5?4:(f%4),
+    bgUrl:fase.bg,
+    enemies,
+    objective:(n===3&&fase.objective)?fase.objective:null,
+    obstacles:(n===4&&fase.obstacles)?fase.obstacles:null,
+    dial:n===1?fase.dial:null
+  };
+}
+function startWorldFase(faseIdx){
+  const prog=worldProg('humanos');
+  if(faseIdx>prog.unlocked){ sfxInvalid(); return; }
+  worldRun={active:true,fase:faseIdx,nivel:1};
+  towerMode=false;
+  closeAllPanels();
+  pendingStage=0;
+  if(chosenIds.length===4) beginGame(0);
+  else showSelection();
+}
+function renderWorldMap(){
+  const world=WORLDS[0];
+  const head=document.getElementById('worldHead');
+  if(head) head.innerHTML=`<b>${world.nome}</b><small>${world.titulo}</small>`;
+  const map=document.getElementById('worldMap');
+  if(!map) return;
+  const prog=worldProg('humanos');
+  map.innerHTML='';
+  world.fases.forEach((fase,idx)=>{
+    const locked=idx>prog.unlocked;
+    const stars=prog.stars[idx]||0;
+    const node=document.createElement('button');
+    node.className='fase-node'+(locked?' locked':'');
+    node.disabled=locked;
+    node.style.backgroundImage=`linear-gradient(rgba(4,2,8,.25),rgba(4,2,8,.9)),url('${fase.bg}')`;
+    node.innerHTML=`<span class="fase-num">${idx+1}</span>
+      <span class="fase-copy"><b>${fase.nome}</b><small>${fase.sub}</small>
+      <em>${locked?'🔒 '+T('Bloqueada','Locked','Bloqueada'):(stars?'★'.repeat(stars)+'☆'.repeat(3-stars):T('5 níveis · chefe no final','5 levels · boss at the end','5 niveles · jefe al final'))}</em></span>`;
+    node.addEventListener('click',()=>startWorldFase(idx));
+    map.appendChild(node);
+  });
+}
+
 /* v9.1 · Modos, dificuldade e economia: inicialização */
 function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 (function initV91(){
@@ -3885,7 +4061,8 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
   const towerHint=document.getElementById('towerHint');
   const bestT=Number(localStorage.getItem('12r_tower_best')||0);
   if(towerHint&&bestT>0) towerHint.textContent=`Recorde: andar ${bestT}`;
-  document.getElementById('towerBtn')?.addEventListener('click',()=>{ towerMode=true; towerFloor=1; pendingStage=0; showSelection(); });
+  document.getElementById('towerBtn')?.addEventListener('click',()=>{ towerMode=true; worldRun.active=false; towerFloor=1; pendingStage=0; showSelection(); });
+  document.getElementById('worldsBtn')?.addEventListener('click',()=>openPanel('worldScreen'));
   document.getElementById('shopBtn')?.addEventListener('click',()=>openPanel('shopScreen'));
   document.getElementById('achBtn')?.addEventListener('click',()=>openPanel('achScreen'));
   document.getElementById('coachNext')?.addEventListener('click',()=>{ coachStep++; renderCoach(); sfxSelect(); });
@@ -3907,7 +4084,7 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
     renderCoach();
   }));
   applyLanguage();
-  if(IS_DAILY_RUN){ towerMode=false; pendingStage=0; showSelection(); }
+  if(IS_DAILY_RUN){ towerMode=false; worldRun.active=false; pendingStage=0; showSelection(); }
   updateCoinBadge();
 
   // v9.1 · Fluxo de abertura: Introdução da história -> Idioma (1ª vez) -> Menu

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+<defs>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#0a0618"/><stop offset=".62" stop-color="#241a4a"/><stop offset="1" stop-color="#4a3a86"/>
+  </linearGradient>
+  <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#241c48"/><stop offset="1" stop-color="#0c081c"/>
+  </linearGradient>
+  <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+    <stop offset="0" stop-color="#e6dcff" stop-opacity=".85"/><stop offset="1" stop-color="#e6dcff" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="pool" cx="50%" cy="50%" r="50%">
+    <stop offset="0" stop-color="#cfc0ff" stop-opacity=".28"/><stop offset="1" stop-color="#cfc0ff" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="vig" cx="50%" cy="46%" r="72%">
+    <stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#03020a" stop-opacity=".55"/>
+  </radialGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#sky)"/>
+<ellipse cx="800" cy="318" rx="560" ry="300" fill="url(#glow)"/>
+<rect x="770" y="0" width="60" height="378" fill="#cfc0ff" opacity=".14"/><rect x="786" y="0" width="28" height="378" fill="#efe8ff" opacity=".2"/>
+<path d="M0 384 L120 384 L120 254 L160 198 L200 254 L200 384 L1400 384 L1400 254 L1440 198 L1480 254 L1480 384 L1600 384 L1600 900 L0 900 Z" fill="#1e1640" opacity=".55"/>
+<path d="M0 404 L740 404 L740 74 L800 -96 L860 74 L860 404 L1600 404 L1600 900 L0 900 Z" fill="#100b26" opacity=".8"/>
+<rect x="762" y="106" width="10" height="18" fill="#b9a5ff" opacity="0.75"/><rect x="796" y="106" width="10" height="18" fill="#b9a5ff" opacity="0.75"/><rect x="762" y="150" width="10" height="18" fill="#b9a5ff" opacity="0.75"/><rect x="796" y="150" width="10" height="18" fill="#b9a5ff" opacity="0.75"/><rect x="762" y="194" width="10" height="18" fill="#b9a5ff" opacity="0.75"/><rect x="796" y="194" width="10" height="18" fill="#b9a5ff" opacity="0.75"/><rect x="762" y="238" width="10" height="18" fill="#b9a5ff" opacity="0.75"/><rect x="796" y="238" width="10" height="18" fill="#b9a5ff" opacity="0.75"/><rect x="762" y="282" width="10" height="18" fill="#b9a5ff" opacity="0.75"/><rect x="796" y="282" width="10" height="18" fill="#b9a5ff" opacity="0.75"/><rect x="762" y="326" width="10" height="18" fill="#b9a5ff" opacity="0.75"/><rect x="796" y="326" width="10" height="18" fill="#b9a5ff" opacity="0.75"/>
+<rect x="0" y="418" width="1600" height="482" fill="url(#floor)"/>
+<ellipse cx="800" cy="730" rx="520" ry="150" fill="url(#pool)"/>
+<circle cx="420" cy="90" r="2" fill="#efe8ff" opacity=".8"/><circle cx="520" cy="134" r="3" fill="#efe8ff" opacity=".8"/><circle cx="620" cy="178" r="4" fill="#efe8ff" opacity=".8"/><circle cx="720" cy="222" r="2" fill="#efe8ff" opacity=".8"/><circle cx="820" cy="266" r="3" fill="#efe8ff" opacity=".8"/><circle cx="920" cy="90" r="4" fill="#efe8ff" opacity=".8"/><circle cx="1020" cy="134" r="2" fill="#efe8ff" opacity=".8"/><circle cx="1120" cy="178" r="3" fill="#efe8ff" opacity=".8"/><circle cx="1220" cy="222" r="4" fill="#efe8ff" opacity=".8"/>
+<path d="M0 900 L0 518 L120 468 L190 900 Z" fill="#080514" opacity=".85"/>
+<path d="M1600 900 L1600 518 L1480 468 L1410 900 Z" fill="#080514" opacity=".85"/>
+<rect width="1600" height="900" fill="url(#vig)"/>
+</svg>

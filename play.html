@@ -24,6 +24,7 @@
       <button class="menu-btn primary" id="playBtn"><span class="menu-icon">⚔</span><span class="menu-label">Jogar</span><span>›</span></button>
       <button class="menu-btn" id="continueBtn" disabled><span class="menu-icon">✦</span><span class="menu-label">Continuar <small class="menu-hint" id="continueHint">Sem progresso salvo</small></span><span>›</span></button>
       <button class="menu-btn" id="galleryBtn"><span class="menu-icon">▦</span><span class="menu-label">Galeria <small class="menu-hint">Cartas e habilidades</small></span><span>›</span></button>
+      <button class="menu-btn" id="worldsBtn"><span class="menu-icon">🌍</span><span class="menu-label">Mundos <small class="menu-hint">Reino dos Humanos</small></span><span>›</span></button>
       <button class="menu-btn" id="journeyBtn"><span class="menu-icon">⌁</span><span class="menu-label">Jornada <small class="menu-hint">Mapa da masmorra</small></span><span>›</span></button>
       <button class="menu-btn" id="dailyBtn"><span class="menu-icon">📅</span><span class="menu-label">Desafio Diário <small class="menu-hint" id="dailyHint">Seed do dia</small></span><span>›</span></button>
       <button class="menu-btn" id="towerBtn"><span class="menu-icon">🗼</span><span class="menu-label">Torre Infinita <small class="menu-hint" id="towerHint">Inimigos sem fim</small></span><span>›</span></button>
@@ -168,6 +169,14 @@
     <div class="dialog-header"><h2 class="dialog-title" id="journeyTitle">Jornada da Masmorra</h2><button class="ghost-btn" data-close="journeyScreen">Fechar</button></div>
     <div class="journey-map" id="journeyMap"></div>
     <p style="font-size:10px;opacity:.65;margin:12px 0 0;">Supere uma fase para desbloquear a seguinte. Fases concluídas ficam disponíveis para treino.</p>
+  </div>
+</div>
+<div class="pro-overlay" id="worldScreen" role="dialog" aria-modal="true" aria-labelledby="worldTitle">
+  <div class="pro-dialog">
+    <div class="dialog-header"><h2 class="dialog-title" id="worldTitle">Mundos</h2><button class="ghost-btn" data-close="worldScreen">Fechar</button></div>
+    <div class="world-head" id="worldHead"></div>
+    <div class="world-map" id="worldMap"></div>
+    <p class="account-note" id="worldNote">Cada fase tem 5 níveis — o 5º guarda o CHEFE. Vença o chefe para desbloquear a próxima fase. Os demais reinos serão revelados em breve...</p>
   </div>
 </div>
 <div class="pro-overlay" id="accountScreen" role="dialog" aria-modal="true" aria-labelledby="accountTitle">
