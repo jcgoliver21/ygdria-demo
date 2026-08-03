@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<script data-gate>if(sessionStorage.getItem('ygdria_gate')!=='ok')location.replace('./index.html');</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>12 Reinos - Masmorra 1</title>
+<meta name="theme-color" content="#d4af5a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+<link rel="apple-touch-icon" href="assets/icon.svg">
+<link rel="stylesheet" href="styles-v9.1.css">
+</head>
+<body>
+<div class="scene-bg" data-screen="menu"></div>
+<h1 class="maintitle">12 Reinos</h1>
+
+<div id="mainMenu" class="screen-panel">
+  <div class="menu-card">
+    <div class="menu-kicker">Crônicas de Ygdria</div>
+    <div class="menu-title">12<br>Reinos</div>
+    <div class="menu-subtitle">A Masmorra do Trono</div>
+    <div class="menu-actions">
+      <button class="menu-btn primary" id="playBtn"><span class="menu-icon">⚔</span><span class="menu-label">Jogar</span><span>›</span></button>
+      <button class="menu-btn" id="continueBtn" disabled><span class="menu-icon">✦</span><span class="menu-label">Continuar <small class="menu-hint" id="continueHint">Sem progresso salvo</small></span><span>›</span></button>
+      <button class="menu-btn" id="galleryBtn"><span class="menu-icon">▦</span><span class="menu-label">Galeria <small class="menu-hint">Cartas e habilidades</small></span><span>›</span></button>
+      <button class="menu-btn" id="journeyBtn"><span class="menu-icon">⌁</span><span class="menu-label">Jornada <small class="menu-hint">Mapa da masmorra</small></span><span>›</span></button>
+      <button class="menu-btn" id="dailyBtn"><span class="menu-icon">📅</span><span class="menu-label">Desafio Diário <small class="menu-hint" id="dailyHint">Seed do dia</small></span><span>›</span></button>
+      <button class="menu-btn" id="towerBtn"><span class="menu-icon">🗼</span><span class="menu-label">Torre Infinita <small class="menu-hint" id="towerHint">Inimigos sem fim</small></span><span>›</span></button>
+      <button class="menu-btn" id="shopBtn"><span class="menu-icon">🪙</span><span class="menu-label">Loja <small class="menu-hint">Consumíveis de batalha</small></span><span>›</span></button>
+      <button class="menu-btn" id="achBtn"><span class="menu-icon">🏅</span><span class="menu-label">Conquistas</span><span>›</span></button>
+      <button class="menu-btn" id="optionsBtn"><span class="menu-icon">⚙</span><span class="menu-label">Opções</span><span>›</span></button>
+      <button class="menu-btn" id="helpBtn"><span class="menu-icon">?</span><span class="menu-label">Como jogar</span><span>›</span></button>
+    </div>
+    <div class="coin-badge" id="coinBadge">🪙 0</div>
+    <div class="menu-footer" id="menuVersion">VERSÃO 9.1 · DEMO OFICIAL MOBILE</div>
+  </div>
+</div>
+
+<div id="selectScreen" style="display:none;">
+  <div class="screen-toolbar">
+    <button class="ghost-btn" id="selectBackBtn">← Voltar</button>
+    <div class="screen-title-wrap">
+      <div class="screen-eyebrow">Formação do grupo</div>
+      <div class="screen-title">Elenco oficial da demo</div>
+    </div>
+    <button class="ghost-btn" id="selectGalleryBtn">Galeria</button>
+  </div>
+  <div class="select-sub">Escolha 4 entre 12 personagens oficiais. Toque na carta para escalar e use apenas a lupa para abrir a arte e ler todas as habilidades.</div>
+  <div class="select-counter">Escolhidos: <b id="selectCount">0</b>/4</div>
+  <div class="select-grid" id="selectGrid"></div>
+  <div class="selection-footer">
+    <button class="ghost-btn" id="autoTeamBtn">Equipe sugerida</button>
+    <button class="start-btn" id="startBtn" disabled>Entrar na Masmorra</button>
+  </div>
+</div>
+
+<div class="ability-banner" id="abilityBanner">
+  <div class="ab-hero" id="abHero"></div>
+  <div class="ab-name" id="abName"></div>
+  <div class="ab-desc" id="abDesc"></div>
+</div>
+
+<div id="gameScreen" style="display:none; flex-direction:column; align-items:center; width:100%;">
+<div class="game-frame">
+  <div class="arena" id="arena">
+    <header class="mission-topbar">
+      <div class="mission-identity">
+        <div class="arena-stage-label" id="stageLabel">Fase 1/5</div>
+        <div class="arena-dungeon-title" id="dungeonTitle">Portão do Pântano</div>
+        <div class="arena-progress" id="stageProgress"></div>
+      </div>
+      <div class="mission-metrics">
+        <div class="stage-objective" id="stageObjective">Objetivo: derrote todos os inimigos</div>
+        <div class="combo-record" id="comboRecord">RECORDE ×0</div>
+      </div>
+      <div class="mission-actions">
+        <button class="icon-btn" id="pauseBtn" aria-label="Pausar jogo">Ⅱ</button>
+        <button class="icon-btn" id="muteBtn" aria-label="Ativar ou desativar som">🔊</button>
+        <button class="icon-btn battle-tools-toggle" id="battleToolsToggle" type="button" aria-label="Abrir ferramentas táticas" aria-expanded="false">⚙</button>
+      </div>
+    </header>
+
+    <div class="battle-tools-panel" id="battleToolsPanel" aria-hidden="true">
+      <button class="battle-tool" id="cycleTargetTool" type="button">🎯 Próximo alvo</button>
+      <button class="battle-tool" id="autoTargetTool" type="button">◉ Auto: não</button>
+      <button class="battle-tool" id="speedTool" type="button">» Velocidade 1×</button>
+      <button class="battle-tool" id="musicMoodTool" type="button">♫ Música: Auto</button>
+      <button class="battle-tool" id="hintTool" type="button">✦ Sugerir jogada</button>
+      <button class="battle-tool" id="shuffleTool" type="button">⟳ Embaralhar (1)</button>
+      <button class="battle-tool" id="gridTool" type="button">◇ Grade tática</button>
+      <button class="battle-tool" id="formationTool" type="button">♟ Formação</button>
+      <button class="battle-tool" id="fullscreenTool" type="button">⛶ Tela cheia</button>
+    </div>
+
+    <div class="battle-row">
+      <div class="arena-row party-row" id="partyArena"></div>
+      <div class="arena-floor"></div>
+      <div class="arena-row enemy-row" id="enemyArena"></div>
+    </div>
+
+    <div class="battle-feed-row">
+      <div class="battle-status" id="battleStatus">Combine três esferas do mesmo Reino para atacar.</div>
+      <button class="history-btn" id="historyBtn" type="button" aria-label="Abrir histórico completo da batalha">☷</button>
+    </div>
+    <div class="status-tray" id="statusTray" aria-live="polite"></div>
+    <div class="combo-text" id="comboText"></div>
+    <div class="special-fx-layer" id="specialFxLayer"></div>
+  </div>
+
+  <div class="combat-console">
+    <div class="vertical-hp" id="playerHpAnchor" aria-label="HP do grupo">
+      <div class="hp-label">HP</div>
+      <div class="hp-status-icon" id="hpStatusIcon" aria-hidden="true">♥</div>
+      <div class="hp-outer" role="progressbar" aria-label="Pontos de vida" aria-valuemin="0" aria-valuemax="4000">
+        <div class="hp-inner" id="playerHpBar"></div>
+      </div>
+      <div class="hp-values">
+        <strong class="hp-current" id="playerHpText">4000</strong>
+        <span class="hp-total" id="playerHpTotal">Total 4000</span>
+      </div>
+    </div>
+    <div class="board" id="board"></div>
+    <div class="card-strip" id="cardStrip"></div>
+  </div>
+</div>
+
+<button class="reset-btn" id="resetBtn">Reiniciar masmorra</button>
+<button class="swap-btn" id="swapBtn2">Trocar heróis</button>
+
+</div>
+
+<div class="overlay" id="stageClearOverlay"><h2>Fase Concluída!</h2><div class="stage-stars" id="stageStars" aria-hidden="true"></div><p id="stageClearText"></p></div>
+<div class="overlay" id="dungeonClearOverlay">
+  <div class="confetti-layer" id="victoryConfetti" aria-hidden="true"></div>
+  <h2>Masmorra Concluída!</h2>
+  <p>Você superou todas as fases da demo e libertou o Trono dos 12 Reinos.</p>
+  <div class="battle-report" id="victoryReport"></div>
+  <button class="overlay-btn" id="shareDailyBtn" style="display:none" type="button">📋 Compartilhar resultado</button>
+  <button class="overlay-btn" id="playAgainBtn">Jogar novamente</button>
+</div>
+<div class="overlay defeat" id="defeatOverlay">
+  <h2>Derrota</h2>
+  <p>Seu grupo caiu em batalha. As gemas dos reinos ainda esperam por você.</p>
+  <div class="battle-report" id="defeatReport"></div>
+  <button class="overlay-btn" id="retryBtn">Tentar novamente</button>
+</div>
+
+<div class="pro-overlay" id="galleryScreen" role="dialog" aria-modal="true" aria-labelledby="galleryTitle">
+  <div class="pro-dialog">
+    <div class="dialog-header"><h2 class="dialog-title" id="galleryTitle">Galeria dos Reinos</h2><button class="ghost-btn" data-close="galleryScreen">Fechar</button></div>
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </div>
+</div>
+<div class="pro-overlay" id="abilityPickerScreen" role="dialog" aria-modal="true" aria-labelledby="abilityPickerTitle">
+  <div class="pro-dialog ability-picker-dialog">
+    <div class="dialog-header">
+      <h2 class="dialog-title" id="abilityPickerTitle">Habilidades ativas</h2>
+      <button class="ghost-btn" data-close="abilityPickerScreen">Fechar</button>
+    </div>
+    <div class="ability-picker-summary" id="abilityPickerSummary"></div>
+    <div class="ability-picker-list" id="abilityPickerList"></div>
+  </div>
+</div>
+<div class="pro-overlay" id="journeyScreen" role="dialog" aria-modal="true" aria-labelledby="journeyTitle">
+  <div class="pro-dialog">
+    <div class="dialog-header"><h2 class="dialog-title" id="journeyTitle">Jornada da Masmorra</h2><button class="ghost-btn" data-close="journeyScreen">Fechar</button></div>
+    <div class="journey-map" id="journeyMap"></div>
+    <p style="font-size:10px;opacity:.65;margin:12px 0 0;">Supere uma fase para desbloquear a seguinte. Fases concluídas ficam disponíveis para treino.</p>
+  </div>
+</div>
+<div class="pro-overlay" id="achScreen" role="dialog" aria-modal="true" aria-labelledby="achTitle">
+  <div class="pro-dialog">
+    <div class="dialog-header"><h2 class="dialog-title" id="achTitle">Perfil & Conquistas</h2><button class="ghost-btn" data-close="achScreen">Fechar</button></div>
+    <div class="profile-stats" id="profileStats"></div>
+    <div class="ach-grid" id="achGrid"></div>
+  </div>
+</div>
+<div class="pro-overlay" id="shopScreen" role="dialog" aria-modal="true" aria-labelledby="shopTitle">
+  <div class="pro-dialog">
+    <div class="dialog-header"><h2 class="dialog-title" id="shopTitle">Loja Real</h2><button class="ghost-btn" data-close="shopScreen">Fechar</button></div>
+    <div class="shop-coins" id="shopCoins">🪙 0</div>
+    <div class="shop-list" id="shopList"></div>
+  </div>
+</div>
+<div class="pro-overlay" id="optionsScreen" role="dialog" aria-modal="true" aria-labelledby="optionsTitle">
+  <div class="pro-dialog small">
+    <div class="dialog-header"><h2 class="dialog-title" id="optionsTitle">Opções</h2><button class="ghost-btn" data-close="optionsScreen">Fechar</button></div>
+    <label class="option-row"><span>Volume geral</span><input id="volumeRange" type="range" min="0" max="100" value="70"></label>
+    <div class="option-row"><span>Dificuldade</span><div class="diff-group" id="diffGroup"><button class="battle-tool" data-diff="facil" type="button">Fácil</button><button class="battle-tool" data-diff="normal" type="button">Normal</button><button class="battle-tool" data-diff="pesadelo" type="button">Pesadelo</button></div></div>
+    <div class="option-row"><span>Idioma / Language</span><div class="diff-group" id="langGroup"><button class="battle-tool" data-lang="pt" type="button">Português</button><button class="battle-tool" data-lang="en" type="button">English</button></div></div>
+    <div class="option-row"><span>Progresso</span><div class="diff-group"><button class="battle-tool" id="exportSaveBtn" type="button">Exportar</button><button class="battle-tool" id="importSaveBtn" type="button">Importar</button></div></div>
+    <textarea id="saveCode" class="save-code" rows="3" placeholder="Exportar: gera e copia o código aqui. Importar: cole o código e toque em Importar."></textarea>
+    <label class="option-row"><span>Reduzir animações</span><input class="switch" id="reduceMotionToggle" type="checkbox"></label>
+    <label class="option-row"><span>Partículas de batalha</span><input class="switch" id="particlesToggle" type="checkbox" checked></label>
+    <label class="option-row"><span>Vibração em dispositivos móveis</span><input class="switch" id="hapticsToggle" type="checkbox" checked></label>
+    <button class="ghost-btn" id="resetProgressBtn" style="width:100%;margin-top:14px;">Apagar progresso local</button>
+  </div>
+</div>
+<div class="pro-overlay" id="helpScreen" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+  <div class="pro-dialog">
+    <div class="dialog-header"><h2 class="dialog-title" id="helpTitle">Como jogar</h2><button class="ghost-btn" data-close="helpScreen">Entendi</button></div>
+    <div class="tutorial-steps">
+      <div class="tutorial-step"><b>1. Forme o grupo</b><p>Escolha quatro cartas. A esfera colorida de cada carta passa a fazer parte do tabuleiro.</p></div>
+      <div class="tutorial-step"><b>2. Combine esferas</b><p>Arraste ou toque em duas esferas vizinhas. Uma linha com três ou mais gera ataque e energia.</p></div>
+      <div class="tutorial-step"><b>3. Escolha o alvo</b><p>Quando houver vários inimigos, toque no oponente que deve receber o próximo ataque.</p></div>
+      <div class="tutorial-step"><b>4. Farmando Aura</b><p>Com 25%, 50% e 75% de energia, o herói libera habilidades passivas automaticamente.</p></div>
+      <div class="tutorial-step"><b>5. Ataque supremo</b><p>Ao chegar a 100%, toque no herói iluminado para lançar sua habilidade especial.</p></div>
+      <div class="tutorial-step"><b>6. Conquiste o Trono</b><p>Vença as cinco fases, gerencie cura e escudo e derrote o Dragão Carmesim.</p></div>
+      <div class="tutorial-step"><b>7. Crie power-ups</b><p>Combine 4 para criar uma pedra listrada, 5 para um Prisma Real e forme T ou L para uma pedra encapsulada.</p></div>
+      <div class="tutorial-step"><b>8. Combine especiais</b><p>Troque dois power-ups vizinhos para lançar efeitos conjuntos ainda mais poderosos.</p></div>
+    </div>
+  </div>
+</div>
+<div class="pro-overlay" id="pauseScreen" role="dialog" aria-modal="true" aria-labelledby="pauseTitle">
+  <div class="pro-dialog small" style="text-align:center;">
+    <h2 class="dialog-title" id="pauseTitle" style="margin-bottom:16px;">Jogo pausado</h2>
+    <div class="menu-actions">
+      <button class="menu-btn primary" id="resumeBtn"><span class="menu-icon">▶</span><span class="menu-label">Continuar batalha</span></button>
+      <button class="menu-btn" id="pauseOptionsBtn"><span class="menu-icon">⚙</span><span class="menu-label">Opções</span></button>
+      <button class="menu-btn" id="restartStageBtn"><span class="menu-icon">↻</span><span class="menu-label">Reiniciar fase</span></button>
+      <button class="menu-btn" id="returnMenuBtn"><span class="menu-icon">⌂</span><span class="menu-label">Menu principal</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="pro-overlay" id="battleHistoryScreen" role="dialog" aria-modal="true" aria-labelledby="battleHistoryTitle">
+  <div class="pro-dialog battle-history-dialog">
+    <div class="dialog-header">
+      <div>
+        <div class="screen-eyebrow">Registro tático</div>
+        <h2 class="dialog-title" id="battleHistoryTitle">Histórico da batalha</h2>
+      </div>
+      <button class="ghost-btn" data-close="battleHistoryScreen">Fechar</button>
+    </div>
+    <div class="battle-history-actions">
+      <button class="ghost-btn" id="copyHistoryBtn" type="button">Copiar histórico</button>
+      <button class="ghost-btn" id="clearHistoryBtn" type="button">Limpar</button>
+    </div>
+    <div class="battle-history-list" id="battleHistoryList" aria-live="polite"></div>
+  </div>
+</div>
+
+<div class="card-modal" id="cardModal" role="dialog" aria-modal="true" aria-label="Carta em alta resolução" aria-hidden="true">
+  <div class="card-modal-inner">
+    <button class="card-modal-close" id="closeCardModal">✕</button>
+    <img id="cardModalImg" src="" alt="">
+    <div class="card-detail-copy">
+      <div class="card-modal-name" id="cardModalName"></div>
+      <div class="card-modal-classe" id="cardModalClasse"></div>
+      <div id="cardModalAbilities"></div>
+    </div>
+  </div>
+</div>
+
+<div class="story-layer" id="storyLayer" aria-hidden="false">
+  <div class="story-box">
+    <img class="story-portrait" id="storyPortrait" src="assets/icon.svg" alt="">
+    <div class="story-copy">
+      <b id="storyName">Narrador</b>
+      <p id="storyText"></p>
+      <small class="story-hint">toque para continuar</small>
+    </div>
+    <button class="ghost-btn story-skip" id="storySkip" type="button">Pular</button>
+  </div>
+</div>
+<div class="coach-layer" id="coachLayer" aria-hidden="false">
+  <div class="coach-tip">
+    <div class="coach-mascot">🧙</div>
+    <div class="coach-text" id="coachText"></div>
+    <button class="overlay-btn" id="coachNext" type="button">Entendi</button>
+  </div>
+</div>
+<script src="game-v9.1.js" defer></script>
+
+</body>
+</html>

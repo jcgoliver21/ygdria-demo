@@ -1,0 +1,19 @@
+{
+  "name": "12 Reinos — Crônicas de Ygdria",
+  "short_name": "12 Reinos",
+  "description": "RPG match-3 dos 12 Reinos. Demo oficial.",
+  "start_url": "./play.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0714",
+  "theme_color": "#d4af5a",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

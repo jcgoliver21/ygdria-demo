@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ygdria</title>
+<style>
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(ellipse at 50% 0%,#2c2140 0%,transparent 55%),linear-gradient(180deg,#150f22 0%,#0b0714 55%,#060409 100%);
+    font-family:Georgia,serif;color:#f2e8d0;}
+  .gate{width:min(90vw,360px);text-align:center;padding:34px 26px;border-radius:20px;
+    background:linear-gradient(160deg,#1c1428,#0d0a14);border:2px solid #d4af5a;
+    box-shadow:0 0 40px rgba(0,0,0,.65),0 0 26px rgba(212,175,90,.2);}
+  h1{font-size:22px;letter-spacing:3px;margin:0 0 4px;
+    background:linear-gradient(90deg,#f6e6b4,#c9a24b,#f6e6b4);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  p{font-size:12px;opacity:.75;margin:0 0 20px;}
+  input{width:100%;box-sizing:border-box;padding:12px;border-radius:10px;border:1px solid #6b5a30;
+    background:#0c0812;color:#f2e8d0;font-size:15px;text-align:center;letter-spacing:2px;outline:none;}
+  input:focus{border-color:#d4af5a;}
+  button{margin-top:14px;width:100%;padding:12px;border:none;border-radius:12px;cursor:pointer;
+    background:linear-gradient(160deg,#d4af5a,#8a6a1f);color:#1a1226;font-weight:bold;font-size:13px;letter-spacing:2px;text-transform:uppercase;}
+  .err{color:#ff8a8a;font-size:11px;min-height:16px;margin-top:10px;}
+</style>
+</head>
+<body>
+<form class="gate" id="f">
+  <h1>⚔ YGDRIA</h1>
+  <p>Digite a palavra-passe para entrar nos 12 Reinos.</p>
+  <input id="p" type="password" autocomplete="off" placeholder="palavra-passe" autofocus>
+  <button type="submit">Entrar</button>
+  <div class="err" id="e"></div>
+</form>
+<script>
+const HASH='8ec027f9e7c12bc654ea62bf62a20bcd4a43800b2e7819c75976563ef6fe625a';
+document.getElementById('f').addEventListener('submit',async(ev)=>{
+  ev.preventDefault();
+  const v=document.getElementById('p').value;
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));
+  const hex=[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+  if(hex===HASH){ sessionStorage.setItem('ygdria_gate','ok'); location.href='./play.html'; }
+  else{ document.getElementById('e').textContent='Palavra-passe incorreta.'; }
+});
+</script>
+</body>
+</html>
