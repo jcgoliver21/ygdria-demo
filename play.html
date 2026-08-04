@@ -3,7 +3,7 @@
 <head>
 <script data-gate>if(sessionStorage.getItem('ygdria_gate')!=='ok')location.replace('./index.html');</script>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>12 Reinos · Crônicas de Ygdria</title>
 <meta name="theme-color" content="#d4af5a">
 <link rel="manifest" href="manifest.webmanifest">
@@ -167,14 +167,14 @@
     <div class="dialog-header"><h2 class="dialog-title" id="worldTitle">Mundos</h2><button class="ghost-btn" data-close="worldScreen">Fechar</button></div>
     <div class="world-head" id="worldHead"></div>
     <div class="world-map" id="worldMap"></div>
-    <p class="account-note" id="worldNote">Cada fase tem 5 níveis — o 5º guarda o CHEFE. Vença o chefe para desbloquear a próxima fase. Os demais reinos serão revelados em breve...</p>
+    <p class="account-note" id="worldNote">Cada fase tem 5 níveis — o 5º guarda o CHEFE. Vença o chefe para desbloquear a próxima fase. Os demais reinos serão revelados em breve.</p>
   </div>
 </div>
 <div class="pro-overlay" id="accountScreen" role="dialog" aria-modal="true" aria-labelledby="accountTitle">
   <div class="pro-dialog">
     <div class="dialog-header"><h2 class="dialog-title" id="accountTitle">Minha Conta</h2><button class="ghost-btn" data-close="accountScreen">Fechar</button></div>
     <div class="profile-stats" id="accountInfo"></div>
-    <p class="account-note" id="rankNote">🏆 Ranking Global: será ativado junto com o servidor (Firebase). Seu nome de usuário já está reservado localmente.</p>
+    <p class="account-note" id="rankNote">🏆 Ranking Global: será ativado junto com o servidor. Seu nome de usuário já está reservado localmente.</p>
     <div class="account-actions">
       <button class="overlay-btn" id="accountLoginBtn" type="button">Entrar / Criar conta</button>
       <button class="ghost-btn" id="logoutBtn" type="button">Sair da conta</button>
@@ -216,10 +216,10 @@
       <div class="tutorial-step"><b>1. Forme o grupo</b><p>Escolha quatro cartas. A esfera colorida de cada carta passa a fazer parte do tabuleiro.</p></div>
       <div class="tutorial-step"><b>2. Combine esferas</b><p>Arraste ou toque em duas esferas vizinhas. Uma linha com três ou mais gera ataque e energia.</p></div>
       <div class="tutorial-step"><b>3. Escolha o alvo</b><p>Quando houver vários inimigos, toque no oponente que deve receber o próximo ataque.</p></div>
-      <div class="tutorial-step"><b>4. Farmando Aura</b><p>Com 25%, 50% e 75% de energia, o herói libera habilidades passivas automaticamente.</p></div>
+      <div class="tutorial-step"><b>4. Acumule Aura</b><p>Com 25%, 50% e 75% de energia, o herói libera habilidades passivas automaticamente.</p></div>
       <div class="tutorial-step"><b>5. Ataque supremo</b><p>Ao chegar a 100%, toque no herói iluminado para lançar sua habilidade especial.</p></div>
       <div class="tutorial-step"><b>6. Conquiste o Trono</b><p>Vença as cinco fases, gerencie cura e escudo e derrote o Dragão Carmesim.</p></div>
-      <div class="tutorial-step"><b>7. Crie power-ups</b><p>Combine 4 para criar uma pedra listrada, 5 para um Prisma Real e forme T ou L para uma pedra encapsulada.</p></div>
+      <div class="tutorial-step"><b>7. Crie power-ups</b><p>Combine 4 para criar uma esfera listrada, 5 para um Prisma Real e forme T ou L para uma esfera encapsulada.</p></div>
       <div class="tutorial-step"><b>8. Combine especiais</b><p>Troque dois power-ups vizinhos para lançar efeitos conjuntos ainda mais poderosos.</p></div>
     </div>
   </div>
@@ -256,7 +256,7 @@
 <div class="card-modal" id="cardModal" role="dialog" aria-modal="true" aria-label="Carta em alta resolução" aria-hidden="true">
   <div class="card-modal-inner">
     <button class="card-modal-close" id="closeCardModal">✕</button>
-    <img id="cardModalImg" src="" alt="">
+    <img id="cardModalImg" alt="">
     <div class="card-detail-copy">
       <div class="card-modal-name" id="cardModalName"></div>
       <div class="card-modal-classe" id="cardModalClasse"></div>

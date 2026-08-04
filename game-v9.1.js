@@ -1585,12 +1585,24 @@ function applyBattleFormation(){
 
 function applyFormationSlot(unit,slot,width){
   if(!unit||!slot) return;
-  unit.style.setProperty('--slot-x',slot.x+'%');
-  unit.style.setProperty('--slot-y',slot.y+'%');
-  unit.style.setProperty('--slot-scale',String(slot.s));
+  /* Ajuste fino mobile: comprime a formação para nenhuma unidade/nome sair da tela */
+  const estreito=window.innerWidth<=600;
+  const x=estreito?Math.max(15,Math.min(85, 50+(slot.x-50)*0.72)):slot.x;
+  const y=estreito?50+(slot.y-50)*0.9:slot.y;
+  const s=estreito?slot.s*0.8:slot.s;
+  const w=estreito?Math.round(width*0.84):width;
+  unit.style.setProperty('--slot-x',x+'%');
+  unit.style.setProperty('--slot-y',y+'%');
+  unit.style.setProperty('--slot-scale',String(s));
   unit.style.setProperty('--slot-z',String(slot.z));
-  unit.style.setProperty('--slot-w',width+'px');
+  unit.style.setProperty('--slot-w',w+'px');
 }
+/* Reaplica a formação ao girar/redimensionar a tela durante a batalha */
+let formResizeTimer=null;
+window.addEventListener('resize',()=>{
+  clearTimeout(formResizeTimer);
+  formResizeTimer=setTimeout(()=>{ if(partyArenaEl&&partyArenaEl.children.length) applyBattleFormation(); },220);
+});
 
 function toggleBattleTools(force){
   const shouldOpen=typeof force==='boolean'?force:!battleToolsPanelEl.classList.contains('open');
@@ -2028,6 +2040,14 @@ function execStageAbility(e, sa){
     if(!hasValidMoves()) shuffleBoard(false);
   }
 }
+
+/* Escudo anti tap-through: após trocas de tela, ignora cliques por 350ms para o
+   toque que iniciou a transição não "vazar" no botão que aparece por baixo. */
+let tapGuardUntil=0;
+function armTapGuard(){ tapGuardUntil=performance.now()+350; }
+document.addEventListener('click',e=>{
+  if(performance.now()<tapGuardUntil){ e.stopPropagation(); e.preventDefault(); }
+},true);
 
 function loadStage(idx){
   combatEpoch++;
@@ -3556,7 +3576,7 @@ function showAbilityBanner(k, a, isTierMessage){
   document.getElementById('abHero').textContent = k.nome+' · '+k.classe;
   const banner = document.getElementById('abilityBanner');
   if(isTierMessage){
-    document.getElementById('abName').textContent = '✨ Farmando Aura';
+    document.getElementById('abName').textContent = '✨ Acumulando Aura';
     document.getElementById('abDesc').textContent = `${a.name}: ${a.desc}`;
     banner.classList.remove('aura-ready');
   } else {
@@ -4023,7 +4043,7 @@ function renderSelectGrid(){
   selectGridEl.innerHTML = '';
   /* v9.1 · Roster agrupado em DECKS por reino (Reino Rosa primeiro) */
   const ordem=['humanos','luz','agua','fogo','natureza','terra','areia','sombras','raio','vento','chuvas','gelo'];
-  const nomesDeck={humanos:T('Deck Reino Rosa · Humanos','Rose Realm Deck · Humans','Deck Reino Rosa · Humanos')};
+  const nomesDeck={humanos:T('Reino Rosa · Humanos','Rose Realm · Humans','Reino Rosa · Humanos')};
   ordem.forEach(deckId=>{
     const membros=KINGDOMS.filter(k=>(k.deck||k.id)===deckId);
     if(!membros.length) return;
@@ -4037,7 +4057,7 @@ function renderSelectGrid(){
     header.setAttribute('tabindex','0');
     header.setAttribute('aria-expanded', selectDeckOpen[deckId]?'true':'false');
     header.style.setProperty('--realm',lider?.color||'#d4af5a');
-    header.innerHTML=`<span class="deck-icon"><svg viewBox="0 0 24 24">${KINGDOM_ICON[deckId]||''}</svg></span><b>${nomesDeck[deckId]||(T('Deck ','Deck ','Deck ')+(lider?.reino||deckId))}</b>${escolhidasNoDeck?`<span class="deck-picked">${escolhidasNoDeck} ${T('na equipe','in team','en el equipo')}</span>`:''}<small>${membros.length} ${membros.length>1?T('cartas','cards','cartas'):T('carta','card','carta')}</small><span class="deck-caret" aria-hidden="true">▸</span>`;
+    header.innerHTML=`<span class="deck-icon"><svg viewBox="0 0 24 24">${KINGDOM_ICON[deckId]||''}</svg></span><b>${nomesDeck[deckId]||(lider?.reino||deckId)}</b>${escolhidasNoDeck?`<span class="deck-picked">${escolhidasNoDeck} ${T('na equipe','in team','en el equipo')}</span>`:''}<small>${membros.length} ${membros.length>1?T('cartas','cards','cartas'):T('carta','card','carta')}</small><span class="deck-caret" aria-hidden="true">▸</span>`;
     const alternar=()=>{ selectDeckOpen[deckId]=!selectDeckOpen[deckId]; section.classList.toggle('open',!!selectDeckOpen[deckId]); header.setAttribute('aria-expanded', selectDeckOpen[deckId]?'true':'false'); };
     header.addEventListener('click',alternar);
     header.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); alternar(); } });
@@ -4186,6 +4206,7 @@ function closeAllPanels(){
   document.getElementById('cardModal').classList.remove('show');
 }
 function showMainMenu(){
+  armTapGuard();
   closeAllPanels(); stopMusic(); busy=false;
   document.getElementById('mainMenu').style.display='flex';
   document.getElementById('selectScreen').style.display='none';
@@ -4202,6 +4223,7 @@ function showSelection(){
   sceneBgEl.dataset.screen='selection'; renderSelectGrid();
 }
 function beginGame(startAt=0,restoredHP=null){
+  armTapGuard();
   resetRunStats();
   if(chosenIds.length!==4) return;
   ensureAudio();
@@ -4237,7 +4259,7 @@ function renderGallery(){
      as cartas jogáveis do deck (campo deck:'<reino>') e as cartas por vir.
      Novas cartas de qualquer reino entram automaticamente no seu deck. */
   const ordem=['humanos','luz','agua','fogo','natureza','terra','areia','sombras','raio','vento','chuvas','gelo'];
-  const nomesDeck={humanos:T('Deck Reino Rosa · Humanos','Rose Realm Deck · Humans','Deck Reino Rosa · Humanos')};
+  const nomesDeck={humanos:T('Reino Rosa · Humanos','Rose Realm · Humans','Reino Rosa · Humanos')};
   ordem.forEach(deckId=>{
     const membros=KINGDOMS.filter(k=>(k.deck||k.id)===deckId);
     if(!membros.length) return;
@@ -4247,7 +4269,7 @@ function renderGallery(){
     section.className='deck-section'+(galleryDeckOpen[deckId]?' open':'');
     section.innerHTML=`<div class="deck-header" role="button" tabindex="0" aria-expanded="${galleryDeckOpen[deckId]?'true':'false'}" style="--realm:${lider?.color||'#d4af5a'}">
       <span class="deck-icon"><svg viewBox="0 0 24 24">${KINGDOM_ICON[deckId]||''}</svg></span>
-      <b>${nomesDeck[deckId]||(T('Deck ','Deck ','Deck ')+(lider?.reino||deckId))}</b>
+      <b>${nomesDeck[deckId]||(lider?.reino||deckId)}</b>
       <small>${membros.length+emBreve.length} ${(membros.length+emBreve.length)>1?T('cartas','cards','cartas'):T('carta','card','carta')}</small><span class="deck-caret" aria-hidden="true">▸</span></div>`;
     const gHeader=section.querySelector('.deck-header');
     const gAlternar=()=>{ galleryDeckOpen[deckId]=!galleryDeckOpen[deckId]; section.classList.toggle('open',!!galleryDeckOpen[deckId]); gHeader.setAttribute('aria-expanded', galleryDeckOpen[deckId]?'true':'false'); };
@@ -4500,6 +4522,7 @@ const REALMS_MAP=[
   {id:'luz',      x:36.5, y:83.5}
 ];
 function openMapScreen(){
+  armTapGuard();
   renderMapScreen();
   document.getElementById('mapScreen')?.classList.add('show');
 }
@@ -4514,8 +4537,8 @@ function renderMapScreen(){
     const pin=document.createElement('button');
     pin.type='button';
     pin.className='realm-pin'+(r.unlocked?' unlocked':' locked');
-    pin.style.left=r.x+'%';
-    pin.style.top=r.y+'%';
+    pin.style.left=Math.max(7,Math.min(93,r.x))+'%';
+    pin.style.top=Math.max(6,Math.min(94,r.y))+'%';
     pin.style.setProperty('--realm-c',k.color);
     pin.setAttribute('aria-label',k.reino+(r.unlocked?'':' — '+T('em breve','coming soon','próximamente')));
     pin.innerHTML=`
@@ -4593,6 +4616,7 @@ function buildWorldLevel(){
   };
 }
 function startWorldFase(faseIdx){
+  armTapGuard();
   const prog=worldProg('humanos');
   if(faseIdx>prog.unlocked){ sfxInvalid(); return; }
   worldRun={active:true,fase:faseIdx,nivel:1};
