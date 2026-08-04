@@ -2398,3 +2398,21 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
 .enemy-gallery-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:12px; }
 .enemy-gallery-card img{ width:100%; border-radius:10px; border:1px solid rgba(255,157,196,.4); }
 .enemy-gallery-card b{ font-size:11px; }
+/* v9.1 · Inimigos espelhados (confrontando os heróis à esquerda) */
+.enemy-sprite-image.flip{ animation-name:enemySwayFlip; transform:scaleX(-1); }
+@keyframes enemySwayFlip{ 0%,100%{ transform:scaleX(-1) rotate(1.2deg) translateY(0); } 50%{ transform:scaleX(-1) rotate(-1.2deg) translateY(-2.5px); } }
+/* v9.1 · Galeria em decks por reino */
+#galleryGrid{ display:block!important; }
+.deck-section{ margin-bottom:22px; }
+.deck-header{ display:flex; align-items:center; gap:10px; margin-bottom:10px; padding:8px 12px; border-radius:12px;
+  background:linear-gradient(90deg, color-mix(in srgb,var(--realm,#d4af5a) 22%,transparent), transparent 70%);
+  border-left:3px solid var(--realm,#d4af5a); }
+.deck-icon{ width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:radial-gradient(circle at 32% 28%, color-mix(in srgb,var(--realm,#d4af5a) 65%,#fff), var(--realm,#d4af5a) 60%, #0a0712 130%);
+  border:1px solid rgba(255,240,200,.6); }
+.deck-icon svg{ width:15px; height:15px; }
+.deck-header b{ font-size:14px; letter-spacing:1.5px; color:#f1d98d; font-family:Georgia,serif; flex:1; }
+.deck-header small{ font-size:10px; opacity:.7; letter-spacing:1px; }
+.deck-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:12px; }
+.deck-coming{ opacity:.55; filter:grayscale(.5); }
+.deck-coming img{ border:1px dashed rgba(212,175,90,.5); border-radius:10px; }

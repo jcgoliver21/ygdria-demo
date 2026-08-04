@@ -180,6 +180,63 @@ const KINGDOMS = [
       {kind:'active',gems:75, name:'Geada Branca', tipo:'freezeBlast', valor:100, porGema:20, turnos:1, desc:'Dá 100 de dano em cada inimigo + 20 por cada peça cinza clara no tabuleiro e congela eles por 1 turno.'},
       {kind:'active',gems:100, name:'Morte Congelada', tipo:'freezeExecute', turnos:5, desc:'Congela totalmente o inimigo por 5 turnos e reduz a vida dele pela metade da atual.'}
     ]
+  },
+  /* ---- Cartas jogáveis do Reino Rosa (deck dos Humanos) — 1-2★ ---- */
+  {
+    id:'gareth', iconId:'humanos', deck:'humanos', nome:'Gareth', reino:'Reino Rosa', classe:'Guarda da Capital · Cavaleiro',
+    color:'#e08aa0', colorLight:'#ffd7e2', colorDark:'#6e2438', gem:'gemRose', atk:12,
+    img:'assets/cards/enemies/gareth-card.png', cardThumb:'assets/cards/enemies/gareth-card.png',
+    sprite:'assets/enemies/humanos/gareth.png', fxTheme:'rose', rarity:'COMUM', stars:1,
+    abilities:[
+      {kind:'passive',gems:15, name:'Postura de Guarda', tipo:'escudo', valor:150, desc:'Ergue um escudo de 150 diante do grupo.'},
+      {kind:'passive',gems:25, name:'Golpe de Lança', tipo:'dano', valor:120, desc:'Atinge o inimigo com 120 de dano.'},
+      {kind:'passive',gems:45, name:'Primeiros Socorros', tipo:'healFixed', valor:200, desc:'Recupera 200 de vida.'},
+      {kind:'active',gems:60, name:'Investida da Capital', tipo:'dano', valor:300, desc:'Avança com 300 de dano no alvo.'},
+      {kind:'active',gems:75, name:'Muro de Escudos', tipo:'shieldTurns', valor:300, turnos:1, desc:'Escudo de 300 por uma rodada.'},
+      {kind:'active',gems:100, name:'Juramento das Cerejeiras', tipo:'critBase', mult:8, desc:'Golpe supremo de oito vezes o ataque base.'}
+    ]
+  },
+  {
+    id:'cedric', iconId:'humanos', deck:'humanos', nome:'Cedric', reino:'Reino Rosa', classe:'Lâmina dos Reguladores · Espadachim',
+    color:'#8fa6c9', colorLight:'#dbe8fa', colorDark:'#26364e', gem:'gemSteel', atk:14,
+    img:'assets/cards/enemies/cedric-card.png', cardThumb:'assets/cards/enemies/cedric-card.png',
+    sprite:'assets/enemies/humanos/cedric.png', fxTheme:'steel', rarity:'RARA', stars:2,
+    abilities:[
+      {kind:'passive',gems:15, name:'Corte Rápido', tipo:'dano', valor:150, desc:'Corta o inimigo com 150 de dano.'},
+      {kind:'passive',gems:25, name:'Fio Afiado', tipo:'buff', valor:.3, turnos:2, desc:'Amplia o dano do grupo em 30% por 2 turnos.'},
+      {kind:'passive',gems:45, name:'Lâmina Dupla', tipo:'damageFromLast', mult:1, desc:'Repete o último dano causado.'},
+      {kind:'active',gems:60, name:'Estocada Perfeita', tipo:'dano', valor:400, desc:'Perfura o alvo com 400 de dano.'},
+      {kind:'active',gems:75, name:'Golpe Atordoante', tipo:'atordoa', valor:1, desc:'Atordoa os inimigos por 1 turno.'},
+      {kind:'active',gems:100, name:'Dança das Lâminas', tipo:'damageAllFixed', valor:250, desc:'Atinge todos os inimigos com 250 de dano.'}
+    ]
+  },
+  {
+    id:'elizier', iconId:'humanos', deck:'humanos', nome:'Elizier', reino:'Reino Rosa', classe:'Chama do Palácio · Maga',
+    color:'#d98a5c', colorLight:'#ffe0c4', colorDark:'#5e2a10', gem:'gemEmber', atk:14,
+    img:'assets/cards/enemies/elizier-card.png', cardThumb:'assets/cards/enemies/elizier-card.png',
+    sprite:'assets/enemies/humanos/elizier.png', fxTheme:'ember', rarity:'RARA', stars:2,
+    abilities:[
+      {kind:'passive',gems:15, name:'Fagulha', tipo:'dano', valor:140, desc:'Lança uma fagulha de 140 de dano.'},
+      {kind:'passive',gems:25, name:'Onda de Calor', tipo:'damageAllFixed', valor:80, desc:'Aquece o campo: 80 de dano em todos.'},
+      {kind:'passive',gems:45, name:'Conforto da Chama', tipo:'healFixed', valor:250, desc:'Recupera 250 de vida.'},
+      {kind:'active',gems:60, name:'Labareda do Palácio', tipo:'damageAllFixed', valor:200, desc:'Labaredas atingem todos com 200 de dano.'},
+      {kind:'active',gems:75, name:'Chama Concentrada', tipo:'dano', valor:450, desc:'Concentra 450 de dano no alvo.'},
+      {kind:'active',gems:100, name:'Incêndio Real', tipo:'damageAllFixed', valor:350, desc:'O salão inteiro arde: 350 de dano em todos.'}
+    ]
+  },
+  {
+    id:'roland', iconId:'humanos', deck:'humanos', nome:'Roland', reino:'Reino Rosa', classe:'Escudo da Academia · Protetor',
+    color:'#7ec9a1', colorLight:'#d8f5e6', colorDark:'#1e4a34', gem:'gemJade', atk:15,
+    img:'assets/cards/enemies/roland-card.png', cardThumb:'assets/cards/enemies/roland-card.png',
+    sprite:'assets/enemies/humanos/roland.png', fxTheme:'jade', rarity:'RARA', stars:2,
+    abilities:[
+      {kind:'passive',gems:15, name:'Guarda Alta', tipo:'shieldTurns', valor:250, turnos:1, desc:'Escudo de 250 por uma rodada.'},
+      {kind:'passive',gems:25, name:'Pancada do Escudo', tipo:'dano', valor:130, desc:'Golpeia com o escudo: 130 de dano.'},
+      {kind:'passive',gems:45, name:'Bastião', tipo:'invulnerableTurns', turnos:1, desc:'Impede todo dano por 1 turno.'},
+      {kind:'active',gems:60, name:'Voto do Protetor', tipo:'healFixed', valor:400, desc:'Recupera 400 de vida.'},
+      {kind:'active',gems:75, name:'Quebra-Muralhas', tipo:'dano', valor:400, desc:'Investida de 400 de dano.'},
+      {kind:'active',gems:100, name:'Fortaleza da Academia', tipo:'shieldTurns', valor:600, turnos:2, desc:'Escudo colossal de 600 por dois turnos.'}
+    ]
   }
 ];
 
@@ -1736,7 +1793,7 @@ function renderEnemies(){
         <div class="target-arrow"></div>
         <div class="unit-ground-shadow"></div>
         <div class="avatar-circle" id="enemyPortrait-${idx}">
-          <img class="enemy-sprite-image" src="${e.sprite}" alt="${e.name}"${e.tint?` style="filter:${e.tint}"`:''}>
+          <img class="enemy-sprite-image${e.flip?' flip':''}" src="${e.sprite}" alt="${e.name}"${e.tint?` style="filter:${e.tint}"`:''}>
           <span class="enemy-intent" aria-label="Próximo ataque: aproximadamente ${e.atk} de dano">⚔ ${e.atk}</span>
         </div>
       </div>
@@ -2000,10 +2057,11 @@ function applyLanguage(){
     towerLabel.innerHTML=T('Torre Infinita ','Infinite Tower ','Torre Infinita ')+hint;
   }
   const sub=document.querySelector('.select-sub');
+  const totalCartas=KINGDOMS.length;
   if(sub) sub.textContent=T(
-    'Escolha 4 entre 12 personagens oficiais. Toque na carta para escalar e use apenas a lupa para abrir a arte e ler todas as habilidades.',
-    'Pick 4 of 12 official heroes. Tap a card to enlist; use the magnifier to open the art and read every ability.',
-    'Elige 4 de 12 héroes oficiales. Toca la carta para alistar; usa la lupa para abrir el arte y leer todas las habilidades.');
+    `Escolha 4 entre ${totalCartas} cartas. Toque na carta para escalar e use apenas a lupa para abrir a arte e ler todas as habilidades.`,
+    `Pick 4 of ${totalCartas} cards. Tap a card to enlist; use the magnifier to open the art and read every ability.`,
+    `Elige 4 de ${totalCartas} cartas. Toca la carta para alistar; usa la lupa para abrir el arte y leer todas las habilidades.`);
   document.querySelectorAll('#langGroup [data-lang], #langScreen [data-lang]').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
 }
 
@@ -2247,7 +2305,7 @@ function renderBoard(){
         wrapper.setAttribute('aria-label',`Esfera do ${k.reino}${powerLabel}, linha ${r+1}, coluna ${c+1}`);
         const powerClass=power?.type==='striped' ? ` power-striped ${power.orientation}` : power?.type==='wrapped' ? ' power-wrapped' : '';
         wrapper.innerHTML = `<div class="orb orb-${k.id}${powerClass}" data-realm="${k.id}" style="--orb-light:${k.orbColorLight||k.colorLight};--orb:${k.orbColor||k.color};--orb-dark:${k.orbColorDark||k.colorDark};">
-          <svg class="orb-icon" viewBox="0 0 24 24">${KINGDOM_ICON[k.id]||''}</svg>
+          <svg class="orb-icon" viewBox="0 0 24 24">${KINGDOM_ICON[k.iconId||k.id]||''}</svg>
         </div>`;
       }
       if(colorIdx===-4){
@@ -3797,29 +3855,45 @@ function beginGame(startAt=0,restoredHP=null){
 }
 
 function renderGallery(){
-  const grid=document.getElementById('galleryGrid'); grid.innerHTML='';
+  const grid=document.getElementById('galleryGrid');
+  grid.innerHTML='';
   document.getElementById('enemyGallerySection')?.remove();
-  KINGDOMS.forEach((k,idx)=>{
-    const card=document.createElement('div');
-    card.className='gallery-card';
-    card.style.setProperty('--realm',k.color); card.style.setProperty('--realm-dark',k.colorDark);
-    card.innerHTML=`<div class="gallery-thumb-wrap"><img src="${k.cardThumb||k.img}" alt="${k.nome}"><button class="gallery-zoom" type="button" aria-label="Ampliar carta de ${k.nome}">🔍</button></div><b><span class="realm-dot" style="--realm:${k.color};--realm-light:${k.colorLight};--realm-dark:${k.colorDark};margin-right:3px;"></span>${k.nome}</b><small>${k.rarity||'DIVINA'} · ${'★'.repeat(k.stars||7)}</small>`;
-    card.querySelector('.gallery-zoom').addEventListener('click',()=>openCardModal(idx)); grid.appendChild(card);
+  /* v9.1 · Galeria em DECKS por reino: cada reino agrupa seu herói divino,
+     as cartas jogáveis do deck (campo deck:'<reino>') e as cartas por vir.
+     Novas cartas de qualquer reino entram automaticamente no seu deck. */
+  const ordem=['humanos','luz','agua','fogo','natureza','terra','areia','sombras','raio','vento','chuvas','gelo'];
+  const nomesDeck={humanos:T('Deck Reino Rosa · Humanos','Rose Realm Deck · Humans','Deck Reino Rosa · Humanos')};
+  ordem.forEach(deckId=>{
+    const membros=KINGDOMS.filter(k=>(k.deck||k.id)===deckId);
+    if(!membros.length) return;
+    const lider=KINGDOMS.find(k=>k.id===deckId);
+    const emBreve=deckId==='humanos'?Object.values(HUMANOS_CARDS).filter(c=>c.isCard):[];
+    const section=document.createElement('div');
+    section.className='deck-section';
+    section.innerHTML=`<div class="deck-header" style="--realm:${lider?.color||'#d4af5a'}">
+      <span class="deck-icon"><svg viewBox="0 0 24 24">${KINGDOM_ICON[deckId]||''}</svg></span>
+      <b>${nomesDeck[deckId]||(T('Deck ','Deck ','Deck ')+(lider?.reino||deckId))}</b>
+      <small>${membros.length+emBreve.length} ${T('cartas','cards','cartas')}</small></div>`;
+    const dgrid=document.createElement('div');
+    dgrid.className='deck-grid';
+    membros.forEach(k=>{
+      const idx=KINGDOMS.indexOf(k);
+      const card=document.createElement('div');
+      card.className='gallery-card';
+      card.style.setProperty('--realm',k.color); card.style.setProperty('--realm-dark',k.colorDark);
+      card.innerHTML=`<div class="gallery-thumb-wrap"><img src="${k.cardThumb||k.img}" alt="${k.nome}" loading="lazy"><button class="gallery-zoom" type="button" aria-label="Ampliar carta de ${k.nome}">🔍</button></div><b><span class="realm-dot" style="--realm:${k.color};--realm-light:${k.colorLight};--realm-dark:${k.colorDark};margin-right:3px;"></span>${k.nome}</b><small>${k.rarity||'DIVINA'} · ${'★'.repeat(k.stars||7)}</small>`;
+      card.querySelector('.gallery-zoom').addEventListener('click',()=>openCardModal(idx));
+      dgrid.appendChild(card);
+    });
+    emBreve.forEach(c=>{
+      const card=document.createElement('div');
+      card.className='gallery-card deck-coming';
+      card.innerHTML=`<div class="gallery-thumb-wrap"><img src="${c.card}" alt="${c.nome}" loading="lazy"></div><b>${c.nome}</b><small>${T('em breve','coming soon','próximamente')}</small>`;
+      dgrid.appendChild(card);
+    });
+    section.appendChild(dgrid);
+    grid.appendChild(section);
   });
-  // v9.1 · Cartas Inimigas do Reino Rosa (chefes do Reino dos Humanos)
-  const section=document.createElement('div');
-  section.id='enemyGallerySection';
-  section.innerHTML=`<h3 class="enemy-gallery-title">🌸 ${T('Cartas do Reino Rosa','Cards of the Rose Realm','Cartas del Reino Rosa')} <small>${T('chefes do Reino dos Humanos','Human Realm bosses','jefes del Reino Humano')}</small></h3>`;
-  const egrid=document.createElement('div');
-  egrid.className='enemy-gallery-grid';
-  Object.values(HUMANOS_CARDS).forEach(c=>{
-    const el=document.createElement('div');
-    el.className='gallery-card enemy-gallery-card';
-    el.innerHTML=`<div class="gallery-thumb-wrap"><img src="${c.card}" alt="${c.nome}" loading="lazy"></div><b>${c.nome}</b><small>${T('Carta Inimiga','Enemy Card','Carta Enemiga')}${c.isCard?' · '+T('em breve','coming soon','próximamente'):''}</small>`;
-    egrid.appendChild(el);
-  });
-  section.appendChild(egrid);
-  grid.parentElement.appendChild(section);
 }
 const STAGE_ART=["assets/bg/bg-08.png","assets/bg/bg-09.png","assets/bg/bg-10.png","assets/bg/bg-11.png"];
 function renderJourneyMap(){
@@ -3978,11 +4052,11 @@ const ESPR={
 const HUMANOS_ETYPES={
   /* Fases 1-5 · chibis oficiais (Reino Rosa). Base pensada para o pool
      Normal = 25×80 = 2000 HP: inimigos iniciais tiram ~1.5-3% por golpe. */
-  slimeCereja:{n:'Slime de Cerejeira', sprite:'assets/enemies/humanos/slime-cerejeira.png', hp:240, atk:30},
-  loboRaivoso:{n:'Lobo Raivoso', sprite:'assets/enemies/humanos/lobo-raivoso.png', hp:320, atk:38},
-  soldado1:{n:'Soldado 1', sprite:'assets/enemies/humanos/soldado-1.png', hp:380, atk:42},
-  soldado2:{n:'Soldado 2', sprite:'assets/enemies/humanos/soldado-2.png', hp:420, atk:46},
-  capitao:{n:'Capitão dos Soldados', sprite:'assets/enemies/humanos/capitao.png', hp:650, atk:58},
+  slimeCereja:{n:'Slime de Cerejeira', sprite:'assets/enemies/humanos/slime-cerejeira.png', hp:240, atk:30, flip:true},
+  loboRaivoso:{n:'Lobo Raivoso', sprite:'assets/enemies/humanos/lobo-raivoso.png', hp:320, atk:38, flip:true},
+  soldado1:{n:'Soldado 1', sprite:'assets/enemies/humanos/soldado-1.png', hp:380, atk:42, flip:true},
+  soldado2:{n:'Soldado 2', sprite:'assets/enemies/humanos/soldado-2.png', hp:420, atk:46, flip:true},
+  capitao:{n:'Capitão dos Soldados', sprite:'assets/enemies/humanos/capitao.png', hp:650, atk:58, flip:true},
   /* Fases 6-10 · genéricos (sprites reutilizados até os chibis chegarem) */
   vulto:{n:'Vulto Sombrio', s:'wraith', t:'brightness(.5) saturate(.6)', hp:480, atk:54},
   espectro:{n:'Espectro Sombrio', s:'wraith', t:'brightness(1.35) hue-rotate(240deg)', hp:580, atk:60},
@@ -3997,10 +4071,10 @@ const HUMANOS_ETYPES={
    (a carta vai para a galeria do Reino Rosa); sem chibi ainda, aparecem
    como carta no campo (isCard). Chefes recebem +30% HP e +15% ATK. */
 const HUMANOS_CARDS={
-  gareth:{nome:'Gareth', hp:1350, atk:80, sprite:'assets/enemies/humanos/gareth.png', card:'assets/cards/enemies/gareth-card.png'},
-  cedric:{nome:'Cedric', hp:1450, atk:88, sprite:'assets/enemies/humanos/cedric.png', card:'assets/cards/enemies/cedric-card.png'},
-  elizier:{nome:'Elizier', hp:1400, atk:92, sprite:'assets/enemies/humanos/elizier.png', card:'assets/cards/enemies/elizier-card.png'},
-  roland:{nome:'Roland', hp:1550, atk:86, sprite:'assets/enemies/humanos/roland.png', card:'assets/cards/enemies/roland-card.png'},
+  gareth:{nome:'Gareth', hp:1350, atk:80, sprite:'assets/enemies/humanos/gareth.png', card:'assets/cards/enemies/gareth-card.png', flip:true},
+  cedric:{nome:'Cedric', hp:1450, atk:88, sprite:'assets/enemies/humanos/cedric.png', card:'assets/cards/enemies/cedric-card.png', flip:true},
+  elizier:{nome:'Elizier', hp:1400, atk:92, sprite:'assets/enemies/humanos/elizier.png', card:'assets/cards/enemies/elizier-card.png', flip:true},
+  roland:{nome:'Roland', hp:1550, atk:86, sprite:'assets/enemies/humanos/roland.png', card:'assets/cards/enemies/roland-card.png', flip:true},
   jules:{nome:'Jules, The Joker', hp:1900, atk:100, isCard:true, card:'assets/cards/enemies/jules.svg'},
   bernyce:{nome:'Bernyce', hp:2000, atk:98, isCard:true, card:'assets/cards/enemies/bernyce.svg'},
   kalander:{nome:'Kalander', hp:2300, atk:104, isCard:true, card:'assets/cards/enemies/kalander.svg'},
@@ -4123,12 +4197,12 @@ function buildWorldLevel(){
     if(c){
       const e={name:c.nome, hp:Math.round(c.hp*mult), atk:Math.round(c.atk*mult)};
       if(c.isCard){ e.sprite=c.card; e.isCard=true; }
-      else e.sprite=c.sprite;
+      else{ e.sprite=c.sprite; if(c.flip) e.flip=true; }
       return e;
     }
     const tpl=HUMANOS_ETYPES[key]||HUMANOS_ETYPES.soldado1;
     const e={name:tpl.n, hp:Math.round(tpl.hp*mult), atk:Math.round(tpl.atk*mult)};
-    if(tpl.sprite) e.sprite=tpl.sprite;
+    if(tpl.sprite){ e.sprite=tpl.sprite; if(tpl.flip) e.flip=true; }
     else{ e.sprite=ESPR[tpl.s]; e.tint=tpl.t; }
     return e;
   });
@@ -4453,7 +4527,7 @@ async function runSmokeTest(){
   const wait=(ms)=>new Promise(r=>setTimeout(r,ms));
   try{
     localStorage.setItem('12r_tutorial','1');
-    ok('elenco de 12 heróis', KINGDOMS.length===12);
+    ok('12 heróis divinos + cartas jogáveis', KINGDOMS.filter(k=>k.rarity==='DIVINA').length===12 && KINGDOMS.length>=16);
     ok('contrato 3 passivas + 3 ativas', KINGDOMS.every(k=>k.abilities.filter(a=>a.kind==='passive').length===3&&k.abilities.filter(a=>a.kind==='active').length===3));
     ok('8 fases na masmorra', DUNGEON.length===8);
     chosenIds=[0,3,7,11]; pendingStage=0; towerMode=false;
