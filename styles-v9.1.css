@@ -25,7 +25,7 @@
   }
   .scene-bg::before{ left:2%; } .scene-bg::after{ right:2%; }
 
-  .shake{ animation: screenShake .4s ease; }
+  .shake{ animation: screenShake .4s ease; will-change:transform; }
   @keyframes screenShake{
     0%,100%{ transform:translate(0,0); } 20%{ transform:translate(-6px,3px); }
     40%{ transform:translate(5px,-3px); } 60%{ transform:translate(-4px,2px); } 80%{ transform:translate(3px,-1px); }
@@ -753,7 +753,7 @@
     transform:translate(var(--tx),var(--ty)) scale(.2); opacity:0; animation:impactRing .62s .55s ease-out forwards;
     box-shadow:0 0 20px currentColor,inset 0 0 14px currentColor;
   }
-  .fx-flash{ animation:arenaFlash .75s ease; }
+  .fx-flash{ animation:arenaFlash .45s ease; }
   @keyframes fxTravel{
     0%{ transform:translate(var(--sx),var(--sy)) scale(.2) rotate(0); opacity:0; }
     12%{ opacity:1; } 75%{ opacity:1; }
@@ -764,7 +764,7 @@
     0%{ transform:translate(var(--tx),var(--ty)) scale(.2); opacity:1; }
     100%{ transform:translate(var(--tx),var(--ty)) scale(5.8); opacity:0; }
   }
-  @keyframes arenaFlash{ 0%,100%{ filter:none; } 32%{ filter:brightness(1.7) saturate(1.4); } }
+  @keyframes arenaFlash{ 0%,100%{ filter:none; } 32%{ filter:brightness(1.16) saturate(1.1); } }
 
   /* ---------- COMBAT DIRECTOR / ASSET-READY ANIMATION ---------- */
   .avatar-circle[data-action="cast"]{ filter:brightness(1.18) saturate(1.2) drop-shadow(0 0 12px var(--realm,#fff)); }
@@ -1010,7 +1010,7 @@
   }
   .orb-icon{ width:44%; height:44%; transform:rotate(-45deg); }
   .gem.selected .orb{ transform:rotate(45deg) scale(1.12); }
-  .player-critical .arena-playerhp{ animation:criticalPulse 1s ease-in-out infinite; border-color:#ff6573!important; }
+  .player-critical .arena-playerhp{ animation:criticalPulse 2.4s ease-in-out infinite; border-color:#ff6573!important; }
   @keyframes criticalPulse{ 50%{ box-shadow:0 0 16px rgba(255,55,80,.8); } }
   .enemy-intent{
     position:absolute; top:-8px; right:-3px; z-index:8; min-width:23px; padding:2px 4px;
@@ -1674,14 +1674,14 @@ body.game-active .status-tray{
 .vertical-hp.hp-invulnerable{border-color:#fff4ba;box-shadow:0 0 20px rgba(255,240,164,.8)}
 .vertical-hp.hp-reflect{border-color:#76e8ff;box-shadow:0 0 20px rgba(76,211,255,.75)}
 .vertical-hp.hp-critical .hp-inner{background:linear-gradient(0deg,#7d0c1c,#ef344c,#ff9d9d)}
-.vertical-hp.hp-critical{animation:hpCritical 1s ease-in-out infinite}
+.vertical-hp.hp-critical{animation:hpCritical 2.4s ease-in-out infinite}
 .vertical-hp.hp-shield-pulse{animation:hpShieldPulse .8s ease-out}
 .vertical-hp.hp-heal-pulse{animation:hpHealPulse 1s ease-out}
 .vertical-hp.hp-damage-pulse{animation:hpDamagePulse .7s ease-out}
-@keyframes hpCritical{50%{filter:brightness(1.35);box-shadow:0 0 20px rgba(255,54,79,.78)}}
+@keyframes hpCritical{50%{box-shadow:0 0 14px rgba(255,54,79,.55)}}
 @keyframes hpShieldPulse{50%{transform:scale(1.06);box-shadow:0 0 28px rgba(83,242,146,1)}}
 @keyframes hpHealPulse{50%{transform:scale(1.06);filter:brightness(1.45);box-shadow:0 0 28px rgba(115,255,165,.9)}}
-@keyframes hpDamagePulse{35%{transform:translateX(-3px);filter:saturate(2);box-shadow:0 0 25px rgba(255,66,78,.9)}70%{transform:translateX(3px)}}
+@keyframes hpDamagePulse{35%{transform:translateX(-3px);box-shadow:0 0 16px rgba(255,66,78,.6)}70%{transform:translateX(3px)}}
 .combat-console .card-strip{
   grid-column:3;
   grid-row:1;
@@ -2435,3 +2435,17 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
   background:radial-gradient(circle at 32% 28%, var(--ug-l,#fff), var(--ug,#d4af5a) 55%, var(--ug-d,#5a4210) 120%);
   border:1px solid rgba(255,255,255,.55); box-shadow:0 0 4px var(--ug,#d4af5a); }
 .mini-rarity .unit-gem{ width:8px; height:8px; margin-right:3px; }
+
+/* v9.1 · Símbolo na cor do reino quando a gema usa cor aliada (escada de repetição) */
+.orb-icon path{ fill:var(--orb-icon-c,#fff); }
+
+/* v9.1 · Habilidades de Fase: obstáculos novos, Véu do Eclipse, modal */
+.obstacle-block.ob-sand{ background:radial-gradient(circle at 34% 30%, #f2d9a0, #c9a25c 58%, #6e4e1e 125%); border-color:#8a6a30; }
+.obstacle-block.ob-vine{ background:radial-gradient(circle at 34% 30%, #9fd8a4, #4f8f57 58%, #1d3d22 125%); border-color:#2f5c36; }
+.orb-hidden{ display:flex; align-items:center; justify-content:center;
+  background:radial-gradient(circle at 34% 30%, var(--orb-light), var(--orb) 58%, var(--orb-dark) 125%);
+  border:1px solid #494060; box-shadow:inset 0 2px 4px rgba(255,255,255,.14), inset 0 -3px 5px rgba(0,0,0,.55); }
+.orb-hidden .orb-q{ font-size:15px; font-weight:900; color:#b9aed6; text-shadow:0 0 6px #6f5fa8; animation:veilPulse 2.2s ease-in-out infinite; }
+@keyframes veilPulse{ 0%,100%{ opacity:.55; } 50%{ opacity:1; } }
+.stage-ability-entry{ border-left:3px solid #c25a78; background:linear-gradient(90deg, rgba(194,90,120,.12), transparent 70%); }
+.card-modal-frase{ margin-top:10px; padding:8px 12px; font-style:italic; font-size:11.5px; color:#d8c8a8; opacity:.85; border-top:1px solid rgba(212,175,90,.25); }

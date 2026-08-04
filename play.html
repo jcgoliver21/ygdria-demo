@@ -4,7 +4,7 @@
 <script data-gate>if(sessionStorage.getItem('ygdria_gate')!=='ok')location.replace('./index.html');</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>12 Reinos - Masmorra 1</title>
+<title>12 Reinos · Crônicas de Ygdria</title>
 <meta name="theme-color" content="#d4af5a">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
@@ -19,7 +19,7 @@
   <div class="menu-card">
     <div class="menu-kicker">Crônicas de Ygdria</div>
     <div class="menu-title">12<br>Reinos</div>
-    <div class="menu-subtitle">A Masmorra do Trono</div>
+    <div class="menu-subtitle">Doze Reinos, Um Trono</div>
     <div class="menu-actions">
       <button class="menu-btn primary" id="playBtn"><span class="menu-icon">⚔</span><span class="menu-label">Jogar</span><span>›</span></button>
       <button class="menu-btn" id="continueBtn" disabled><span class="menu-icon">✦</span><span class="menu-label">Continuar <small class="menu-hint" id="continueHint">Sem progresso salvo</small></span><span>›</span></button>
@@ -42,7 +42,7 @@
     <button class="ghost-btn" id="selectBackBtn">← Voltar</button>
     <div class="screen-title-wrap">
       <div class="screen-eyebrow">Formação do grupo</div>
-      <div class="screen-title">Elenco oficial da demo</div>
+      <div class="screen-title">Formação da Equipe</div>
     </div>
     <button class="ghost-btn" id="selectGalleryBtn">Galeria</button>
   </div>
@@ -51,7 +51,7 @@
   <div class="select-grid" id="selectGrid"></div>
   <div class="selection-footer">
     <button class="ghost-btn" id="autoTeamBtn">Equipe sugerida</button>
-    <button class="start-btn" id="startBtn" disabled>Entrar na Masmorra</button>
+    <button class="start-btn" id="startBtn" disabled>Iniciar a Aventura!</button>
   </div>
 </div>
 
@@ -125,7 +125,7 @@
   </div>
 </div>
 
-<button class="reset-btn" id="resetBtn">Reiniciar masmorra</button>
+<button class="reset-btn" id="resetBtn">Reiniciar fase</button>
 <button class="swap-btn" id="swapBtn2">Trocar heróis</button>
 
 </div>
@@ -133,8 +133,8 @@
 <div class="overlay" id="stageClearOverlay"><h2>Fase Concluída!</h2><div class="stage-stars" id="stageStars" aria-hidden="true"></div><p id="stageClearText"></p></div>
 <div class="overlay" id="dungeonClearOverlay">
   <div class="confetti-layer" id="victoryConfetti" aria-hidden="true"></div>
-  <h2>Masmorra Concluída!</h2>
-  <p>Você superou todas as fases da demo e libertou o Trono dos 12 Reinos.</p>
+  <h2 id="grandClearTitle">Reino Conquistado!</h2>
+  <p id="grandClearText">A vitória ecoa por Ygdria.</p>
   <div class="battle-report" id="victoryReport"></div>
   <button class="overlay-btn" id="shareDailyBtn" style="display:none" type="button">📋 Compartilhar resultado</button>
   <button class="overlay-btn" id="playAgainBtn">Jogar novamente</button>
@@ -160,13 +160,6 @@
     </div>
     <div class="ability-picker-summary" id="abilityPickerSummary"></div>
     <div class="ability-picker-list" id="abilityPickerList"></div>
-  </div>
-</div>
-<div class="pro-overlay" id="journeyScreen" role="dialog" aria-modal="true" aria-labelledby="journeyTitle">
-  <div class="pro-dialog">
-    <div class="dialog-header"><h2 class="dialog-title" id="journeyTitle">Jornada da Masmorra</h2><button class="ghost-btn" data-close="journeyScreen">Fechar</button></div>
-    <div class="journey-map" id="journeyMap"></div>
-    <p style="font-size:10px;opacity:.65;margin:12px 0 0;">Supere uma fase para desbloquear a seguinte. Fases concluídas ficam disponíveis para treino.</p>
   </div>
 </div>
 <div class="pro-overlay" id="worldScreen" role="dialog" aria-modal="true" aria-labelledby="worldTitle">

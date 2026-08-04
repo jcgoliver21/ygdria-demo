@@ -13,6 +13,7 @@ const KINGDOMS = [
     color:'#eef2f8', colorLight:'#ffffff', colorDark:'#78869b', gem:'gemDiamond', atk:20,
     img:'assets/cards/galateia-card.png', cardThumb:'assets/thumbs/galateia-card.webp',
     sprite:'assets/characters/runtime-v3/galateia/single-1.png', fxTheme:'radiant', rarity:'DIVINA', stars:7,
+    stageAbility:{nome:'Fulgor Ofuscante', cd:4, tipo:'embaralharTudo', desc:'A cada 4 turnos, a luz ofusca e embaralha todo o tabuleiro.'},
     abilities:[
       {kind:'passive',gems:15, name:'Corte de Luz', tipo:'nextAttackMult', valor:2, desc:'Dobra o dano do próximo ataque de Galatéia.'},
       {kind:'passive',gems:25, name:'Luz da Proteção', tipo:'blind', turnos:1, desc:'Cega todos os inimigos por uma rodada; o próximo ataque erra.'},
@@ -27,6 +28,7 @@ const KINGDOMS = [
     color:'#ff6fa5', colorLight:'#ffd7e8', colorDark:'#7c1f4b', gem:'gemPink', atk:20,
     img:'assets/cards/berenice-card.png', cardThumb:'assets/thumbs/berenice-card.webp',
     sprite:'assets/characters/runtime-v3/berenice/single-1.png', fxTheme:'chronal', rarity:'DIVINA', stars:7,
+    stageAbility:{nome:'Decreto da Coroa', cd:4, tipo:'drenarTodosECurar', valor:6, curaMult:5, desc:'A cada 4 turnos, todos os heróis perdem 6 de energia e ela recupera 5× o total drenado.'},
     abilities:[
       {kind:'passive',gems:15, name:'Coração Piedoso', tipo:'shieldTurns', valor:360, turnos:2, desc:'Ergue um escudo de vida por dois turnos.'},
       {kind:'passive',gems:25, name:'Coração Puro', tipo:'echoAll', desc:'O dano do último ataque ecoa em todos os inimigos.'},
@@ -41,6 +43,7 @@ const KINGDOMS = [
     color:'#174ea6', colorLight:'#91d5ff', colorDark:'#071b4d', gem:'gemSapphire', atk:20,
     img:'assets/cards/maril-card.png', cardThumb:'assets/thumbs/maril-card.webp',
     sprite:'assets/characters/runtime-v3/maril/single-1.png', fxTheme:'tidal', rarity:'DIVINA', stars:7,
+    stageAbility:{nome:'Maré Vazante', cd:4, tipo:'lavarColuna', desc:'A cada 4 turnos, uma coluna inteira é lavada e re-preenchida sem conceder energia.'},
     abilities:[
       {kind:'passive',gems:15, name:'Corais Explosivos', tipo:'damageFromLast', mult:2, desc:'Atinge um oponente com duas vezes o último ataque.'},
       {kind:'passive',gems:25, name:'Armadura de Corais', tipo:'reflectTurns', turnos:1, desc:'Protege o grupo e devolve o dano ao inimigo por um turno.'},
@@ -55,6 +58,7 @@ const KINGDOMS = [
     color:'#d52232', colorLight:'#ff9d72', colorDark:'#4d0710', gem:'gemRuby', atk:20,
     img:'assets/cards/lucius-card.png', cardThumb:'assets/thumbs/lucius-card.webp',
     sprite:'assets/characters/runtime-v3/lucius/single-1.png', fxTheme:'dragonfire', rarity:'DIVINA', stars:7,
+    stageAbility:{nome:'Sopro de Brasas', cd:4, tipo:'queimarCruz', desc:'A cada 4 turnos, queima uma cruz de 5 células; power-ups atingidos são destruídos.'},
     abilities:[
       {kind:'passive',gems:15, name:'Garras do Dragão', tipo:'damageFromHeroLast', mult:2, desc:'Inflige duas vezes o dano do último ataque de Lucius.'},
       {kind:'passive',gems:25, name:'Renascido das Chamas', tipo:'healPercent', valor:.10, desc:'Recupera 10% da vida máxima do grupo.'},
@@ -69,6 +73,7 @@ const KINGDOMS = [
     color:'#2f9f45', colorLight:'#c9ff9e', colorDark:'#0e451e', gem:'gemEmerald', atk:20,
     img:'assets/cards/ninfa-queen-card.png', cardThumb:'assets/thumbs/ninfa-queen-card.webp',
     sprite:'assets/characters/runtime-v4/ninfa-queen/single-1.png', fxTheme:'verdant', rarity:'DIVINA', stars:7,
+    stageAbility:{nome:'Raízes Famintas', cd:4, tipo:'criarObstaculos', obst:'vine', qtd:2, hits:1, desc:'A cada 4 turnos, raízes prendem 2 esferas do tabuleiro.'},
     abilities:[
       {kind:'passive',gems:15, name:'Benção', tipo:'energyAll', valor:10, desc:'Adiciona 10 pontos ao contador de energia de todos os aliados.'},
       {kind:'passive',gems:25, name:'Escudo de Folhas', tipo:'shieldTurns', valor:450, turnos:1, desc:'Protege o grupo contra o próximo ataque.'},
@@ -83,6 +88,7 @@ const KINGDOMS = [
     color:'#8b5a2b', colorLight:'#f0bd78', colorDark:'#3c210d', gem:'gemTopaz', atk:20,
     img:'assets/cards/kallendra-card.png', cardThumb:'assets/cards/kallendra-card.png',
     sprite:'assets/characters/runtime-v4/barbara/single-1.png', fxTheme:'seismic', rarity:'DIVINA', stars:7,
+    stageAbility:{nome:'Abalo Sísmico', cd:4, tipo:'embaralharLinhas', qtd:2, desc:'A cada 4 turnos, duas linhas do tabuleiro são sacudidas e embaralhadas.'},
     abilities:[
       {kind:'passive',gems:15, name:'Golpe da Clava', tipo:'stunAndDamageFromLast', turnos:2, mult:2, desc:'Atinge o inimigo com duas vezes o último ataque e o atordoa por dois turnos.'},
       {kind:'passive',gems:25, name:'Armadura de Pedra', tipo:'stoneArmor', turnos:2, reducao:.5, reflexao:.5, desc:'Reduz o dano recebido e devolve parte dele durante dois turnos.'},
@@ -98,6 +104,7 @@ const KINGDOMS = [
     orbColor:'#ffd900', orbColorLight:'#fff8bd', orbColorDark:'#8a6d00',
     img:'assets/cards/rashid-card.png', cardThumb:'assets/thumbs/rashid-card.webp',
     sprite:'assets/characters/runtime-v5/rashid/single-1.png', fxTheme:'desert', rarity:'DIVINA', stars:7,
+    stageAbility:{nome:'Miragem de Meriady', cd:4, tipo:'criarObstaculos', obst:'sand', qtd:3, hits:1, desc:'A cada 4 turnos, a areia cobre 3 esferas do tabuleiro.'},
     abilities:[
       {kind:'passive',gems:15, name:'Tempestade de Areia', tipo:'blind', turnos:1, desc:'Anula a visão dos inimigos, fazendo os ataques errarem neste turno.'},
       {kind:'passive',gems:25, name:'Lâmina Dançante', tipo:'dano', valor:300, desc:'Atinge um inimigo com 300 de dano.'},
@@ -113,6 +120,7 @@ const KINGDOMS = [
     orbColor:'#18141f', orbColorLight:'#7b7387', orbColorDark:'#010102',
     img:'assets/cards/berenice-sombras-card.png', cardThumb:'assets/thumbs/berenice-sombras-card.webp',
     sprite:'assets/characters/runtime-v5/berenice-sombras/single-1.png', fxTheme:'void', rarity:'DIVINA', stars:7,
+    stageAbility:{nome:'Véu do Eclipse', cd:4, tipo:'ocultarCores', qtd:5, turnos:3, desc:'A cada 4 turnos, 5 esferas têm a cor oculta por 3 turnos.'},
     abilities:[
       {kind:'passive',gems:15, name:'Coração Impiedoso', tipo:'vulnerableTurns', turnos:1, mult:2, desc:'Cria um campo que dobra o dano recebido pelo inimigo por um turno.'},
       {kind:'passive',gems:25, name:'Coração Impuro', tipo:'reflectTurns', turnos:2, desc:'Todo o dano recebido volta ao inimigo durante dois turnos.'},
@@ -127,6 +135,7 @@ const KINGDOMS = [
     color:'#8b2fc9', colorLight:'#d9a6ff', colorDark:'#2e0a4d', gem:'gemAmethyst', atk:20,
     img:'assets/cards/mardogear-card.png', cardThumb:'assets/cards/mardogear-card.png',
     sprite:'assets/characters/runtime-v6/mardogear/single-1.png', fxTheme:'storm', rarity:'DIVINA', stars:7,
+    stageAbility:{nome:'Curto-Circuito', cd:4, tipo:'sobrecarga', limite:50, desc:'A cada 4 turnos, o herói mais carregado perde toda energia acima de 50.'},
     abilities:[
       {kind:'passive',gems:15, name:'Ataque de Raios', tipo:'dano', valor:100, desc:'Um raio cai no inimigo infligindo 100 de dano.'},
       {kind:'passive',gems:25, name:'Estrondo', tipo:'atordoa', valor:1, desc:'Atordoa todos os inimigos por 1 turno.'},
@@ -142,6 +151,7 @@ const KINGDOMS = [
     orbColor:'#5cc3f7', orbColorLight:'#eaf9ff', orbColorDark:'#155a85',
     img:'assets/cards/sophitia-card.png', cardThumb:'assets/cards/sophitia-card.png',
     sprite:'assets/characters/runtime-v6/sophitia/single-1.png', fxTheme:'gale', rarity:'DIVINA', stars:7,
+    stageAbility:{nome:'Rajada de Lafesia', cd:4, tipo:'deslizarLinha', desc:'A cada 4 turnos, uma linha desliza em círculo e power-ups na linha são levados pelo vento.'},
     abilities:[
       {kind:'passive',gems:15, name:'Furacão', tipo:'damageAllFixed', valor:100, desc:'Atinge todos os inimigos com 100 de dano.'},
       {kind:'passive',gems:25, name:'Barreira de Vento', tipo:'invulnerableTurns', turnos:2, desc:'Impede os danos por 2 turnos.'},
@@ -157,6 +167,7 @@ const KINGDOMS = [
     orbColor:'#6e7a88', orbColorLight:'#c4cfdb', orbColorDark:'#2a313b',
     img:'assets/cards/regnar-card.png', cardThumb:'assets/cards/regnar-card.png',
     sprite:'assets/characters/runtime-v6/regnar/single-1.png', fxTheme:'deluge', rarity:'DIVINA', stars:7,
+    stageAbility:{nome:'Manto de Chuva', cd:4, tipo:'encharcar', mult:0.5, desc:'A cada 4 turnos, encharca as armas: o próximo ataque de cada herói causa metade do dano.'},
     abilities:[
       {kind:'passive',gems:15, name:'Chuva Leve', tipo:'dotAll', valor:30, turnos:999, desc:'Atinge todos os inimigos com 30 de dano em todos os turnos. Dura até eles morrerem.'},
       {kind:'passive',gems:25, name:'Aprendendo Conceitos Volume I', tipo:'spawnPowerUps', quantidade:3, desc:'Usa o seu livro para criar 3 power-ups seus.'},
@@ -172,6 +183,7 @@ const KINGDOMS = [
     orbColor:'#9cc0dc', orbColorLight:'#d6ebf9', orbColorDark:'#4c6a82',
     img:'assets/cards/blizzardo-card.png', cardThumb:'assets/cards/blizzardo-card.png',
     sprite:'assets/characters/runtime-v6/blizzardo/single-1.png', fxTheme:'frost', rarity:'DIVINA', stars:7,
+    stageAbility:{nome:'Nevasca de Artyka', cd:4, tipo:'criarObstaculos', obst:'ice', qtd:3, hits:1, reforcado:1, desc:'A cada 4 turnos, congela 3 esferas — uma delas com gelo reforçado.'},
     abilities:[
       {kind:'passive',gems:15, name:'Machado de Gelo', tipo:'danoArea', valor:300, area:150, desc:'Inflige 300 de dano no inimigo e 150 em área.'},
       {kind:'passive',gems:25, name:'Bola de Neve', tipo:'stunPerRealmGem', divisor:4, desc:'Atordoa o inimigo pela quantidade de turnos equivalente a 1/4 das pedras cinza claras no tabuleiro.'},
@@ -182,60 +194,49 @@ const KINGDOMS = [
     ]
   },
   /* ---- Cartas jogáveis do Reino Rosa (deck dos Humanos) — 1-2★ ---- */
+  /* Habilidades transcritas das ARTES OFICIAIS das cartas — não inventar.
+     Regra de estrelas: 1★=0P/0A · 2★=1P/0A · 3★=2P · 4★=3P · 5★=3P/1A · 6★=3P/2A · 7★=3P/3A.
+     Passivas de carta usam every:true = disparam a cada `gems`% de energia (25/50/75/100). */
   {
-    id:'gareth', iconId:'humanos', deck:'humanos', nome:'Gareth', reino:'Reino Rosa', classe:'Guarda da Capital · Cavaleiro',
-    color:'#e08aa0', colorLight:'#ffd7e2', colorDark:'#6e2438', gem:'gemRose', atk:12,
+    id:'gareth', iconId:'humanos', deck:'humanos', nome:'Gareth', reino:'Reino dos Humanos', classe:'Sentinela da Capital · Soldado',
+    color:'#e08aa0', colorLight:'#ffd7e2', colorDark:'#6e2438', gem:'gemRose', atk:2,
     img:'assets/cards/enemies/gareth-card.png', cardThumb:'assets/cards/enemies/gareth-card.png',
-    sprite:'assets/enemies/humanos/gareth.png', fxTheme:'rose', rarity:'COMUM', stars:1,
-    abilities:[
-      {kind:'passive',gems:15, name:'Postura de Guarda', tipo:'escudo', valor:150, desc:'Ergue um escudo de 150 diante do grupo.'},
-      {kind:'passive',gems:25, name:'Golpe de Lança', tipo:'dano', valor:120, desc:'Atinge o inimigo com 120 de dano.'},
-      {kind:'passive',gems:45, name:'Primeiros Socorros', tipo:'healFixed', valor:200, desc:'Recupera 200 de vida.'},
-      {kind:'active',gems:60, name:'Investida da Capital', tipo:'dano', valor:300, desc:'Avança com 300 de dano no alvo.'},
-      {kind:'active',gems:75, name:'Muro de Escudos', tipo:'shieldTurns', valor:300, turnos:1, desc:'Escudo de 300 por uma rodada.'},
-      {kind:'active',gems:100, name:'Juramento das Cerejeiras', tipo:'critBase', mult:8, desc:'Golpe supremo de oito vezes o ataque base.'}
-    ]
+    sprite:'assets/enemies/humanos/gareth.png', fxTheme:'rose', rarity:'NORMAL', stars:1,
+    frase:'Toda grande vitória começa com um simples soldado.',
+    stageAbility:{nome:'Troca de Guarda', cd:6, tipo:'trocarCores', qtd:3, desc:'A cada 6 turnos, 3 esferas aleatórias trocam de cor.'},
+    abilities:[]
   },
   {
-    id:'cedric', iconId:'humanos', deck:'humanos', nome:'Cedric', reino:'Reino Rosa', classe:'Lâmina dos Reguladores · Espadachim',
-    color:'#8fa6c9', colorLight:'#dbe8fa', colorDark:'#26364e', gem:'gemSteel', atk:14,
+    id:'cedric', iconId:'humanos', deck:'humanos', nome:'Cedric', reino:'Reino dos Humanos', classe:'O Mago Nobre · Mago',
+    color:'#8fa6c9', colorLight:'#dbe8fa', colorDark:'#26364e', gem:'gemSteel', atk:4,
     img:'assets/cards/enemies/cedric-card.png', cardThumb:'assets/cards/enemies/cedric-card.png',
-    sprite:'assets/enemies/humanos/cedric.png', fxTheme:'steel', rarity:'RARA', stars:2,
+    sprite:'assets/enemies/humanos/cedric.png', fxTheme:'steel', rarity:'RARO', stars:2,
+    frase:'Cada feitiço escrito hoje será uma lenda amanhã.',
+    stageAbility:{nome:'Selo Arcano', cd:5, tipo:'selarPowerUp', cura:60, desc:'A cada 5 turnos, sela 1 power-up do tabuleiro; sem power-up, recupera 60 de vida.'},
     abilities:[
-      {kind:'passive',gems:15, name:'Corte Rápido', tipo:'dano', valor:150, desc:'Corta o inimigo com 150 de dano.'},
-      {kind:'passive',gems:25, name:'Fio Afiado', tipo:'buff', valor:.3, turnos:2, desc:'Amplia o dano do grupo em 30% por 2 turnos.'},
-      {kind:'passive',gems:45, name:'Lâmina Dupla', tipo:'damageFromLast', mult:1, desc:'Repete o último dano causado.'},
-      {kind:'active',gems:60, name:'Estocada Perfeita', tipo:'dano', valor:400, desc:'Perfura o alvo com 400 de dano.'},
-      {kind:'active',gems:75, name:'Golpe Atordoante', tipo:'atordoa', valor:1, desc:'Atordoa os inimigos por 1 turno.'},
-      {kind:'active',gems:100, name:'Dança das Lâminas', tipo:'damageAllFixed', valor:250, desc:'Atinge todos os inimigos com 250 de dano.'}
+      {kind:'passive',gems:25, every:true, name:'Benção das Flores de Cerejeira', tipo:'healFixed', valor:100, desc:'Recupera 100 de vida todas as vezes que for acionada (25%, 50%, 75%, 100%).'}
     ]
   },
   {
-    id:'elizier', iconId:'humanos', deck:'humanos', nome:'Elizier', reino:'Reino Rosa', classe:'Chama do Palácio · Maga',
-    color:'#d98a5c', colorLight:'#ffe0c4', colorDark:'#5e2a10', gem:'gemEmber', atk:14,
+    id:'elizier', iconId:'humanos', deck:'humanos', nome:'Elizier', reino:'Reino dos Humanos', classe:'Olhos da Coroa · Arqueira',
+    color:'#d98a5c', colorLight:'#ffe0c4', colorDark:'#5e2a10', gem:'gemEmber', atk:4,
     img:'assets/cards/enemies/elizier-card.png', cardThumb:'assets/cards/enemies/elizier-card.png',
-    sprite:'assets/enemies/humanos/elizier.png', fxTheme:'ember', rarity:'RARA', stars:2,
+    sprite:'assets/enemies/humanos/elizier.png', fxTheme:'ember', rarity:'RARO', stars:2,
+    frase:'Nenhum inimigo escapa do olhar da Coroa.',
+    stageAbility:{nome:'Flecha Certeira', cd:5, tipo:'drenarMaisCarregado', valor:12, desc:'A cada 5 turnos, o herói mais carregado perde 12 de energia.'},
     abilities:[
-      {kind:'passive',gems:15, name:'Fagulha', tipo:'dano', valor:140, desc:'Lança uma fagulha de 140 de dano.'},
-      {kind:'passive',gems:25, name:'Onda de Calor', tipo:'damageAllFixed', valor:80, desc:'Aquece o campo: 80 de dano em todos.'},
-      {kind:'passive',gems:45, name:'Conforto da Chama', tipo:'healFixed', valor:250, desc:'Recupera 250 de vida.'},
-      {kind:'active',gems:60, name:'Labareda do Palácio', tipo:'damageAllFixed', valor:200, desc:'Labaredas atingem todos com 200 de dano.'},
-      {kind:'active',gems:75, name:'Chama Concentrada', tipo:'dano', valor:450, desc:'Concentra 450 de dano no alvo.'},
-      {kind:'active',gems:100, name:'Incêndio Real', tipo:'damageAllFixed', valor:350, desc:'O salão inteiro arde: 350 de dano em todos.'}
+      {kind:'passive',gems:25, every:true, name:'Flechas das Flores de Cerejeira', tipo:'danoTodos', desc:'Atinge todos os inimigos infligindo o dano do último ataque (25%, 50%, 75%, 100%).'}
     ]
   },
   {
-    id:'roland', iconId:'humanos', deck:'humanos', nome:'Roland', reino:'Reino Rosa', classe:'Escudo da Academia · Protetor',
-    color:'#7ec9a1', colorLight:'#d8f5e6', colorDark:'#1e4a34', gem:'gemJade', atk:15,
+    id:'roland', iconId:'humanos', deck:'humanos', nome:'Roland', reino:'Reino dos Humanos', classe:'Escudo Real de Bernyce · Cavaleiro',
+    color:'#7ec9a1', colorLight:'#d8f5e6', colorDark:'#1e4a34', gem:'gemJade', atk:4,
     img:'assets/cards/enemies/roland-card.png', cardThumb:'assets/cards/enemies/roland-card.png',
-    sprite:'assets/enemies/humanos/roland.png', fxTheme:'jade', rarity:'RARA', stars:2,
+    sprite:'assets/enemies/humanos/roland.png', fxTheme:'jade', rarity:'RARO', stars:2,
+    frase:'Minha Lança protege o reino antes da minha própria vida.',
+    stageAbility:{nome:'Bastião de Lanças', cd:5, tipo:'criarObstaculos', obst:'stone', qtd:1, hits:2, desc:'A cada 5 turnos, finca um bloqueio de pedra no tabuleiro.'},
     abilities:[
-      {kind:'passive',gems:15, name:'Guarda Alta', tipo:'shieldTurns', valor:250, turnos:1, desc:'Escudo de 250 por uma rodada.'},
-      {kind:'passive',gems:25, name:'Pancada do Escudo', tipo:'dano', valor:130, desc:'Golpeia com o escudo: 130 de dano.'},
-      {kind:'passive',gems:45, name:'Bastião', tipo:'invulnerableTurns', turnos:1, desc:'Impede todo dano por 1 turno.'},
-      {kind:'active',gems:60, name:'Voto do Protetor', tipo:'healFixed', valor:400, desc:'Recupera 400 de vida.'},
-      {kind:'active',gems:75, name:'Quebra-Muralhas', tipo:'dano', valor:400, desc:'Investida de 400 de dano.'},
-      {kind:'active',gems:100, name:'Fortaleza da Academia', tipo:'shieldTurns', valor:600, turnos:2, desc:'Escudo colossal de 600 por dois turnos.'}
+      {kind:'passive',gems:25, every:true, name:'Lança das Flores de Cerejeira', tipo:'damageFromLast', mult:3, desc:'Atinge o inimigo infligindo 3× o dano do último ataque (25%, 50%, 75%, 100%).'}
     ]
   }
 ];
@@ -925,7 +926,8 @@ const DIFFICULTY_MULTS={
 };
 function computePlayerMaxHP(){
   const soma=ACTIVE.reduce((acc,i)=>acc+heroAtkFor(i),0)||80;
-  return Math.max(400,(DIFFICULTY_MULTS[difficulty]?.hpFactor||25)*soma);
+  /* Fórmula OFICIAL sem piso artificial: Fácil 50× · Normal 25× · Pesadelo 10× a soma de ATK */
+  return Math.max(60,(DIFFICULTY_MULTS[difficulty]?.hpFactor||25)*soma);
 }
 let difficulty=localStorage.getItem('12r_difficulty')||'normal';
 if(!DIFFICULTY_MULTS[difficulty]) difficulty='normal';
@@ -978,7 +980,7 @@ const ACHIEVEMENTS=[
   {id:'no-damage', nome:'Intocável', desc:'Vença uma fase sem sofrer dano.', icon:'🛡️', en:{nome:'Untouchable', desc:'Win a stage without taking damage.'}},
   {id:'combo8', nome:'Mestre do Combo', desc:'Alcance um combo ×8.', icon:'🔥', en:{nome:'Combo Master', desc:'Reach an x8 combo.'}},
   {id:'powerup10', nome:'Artífice', desc:'Crie 10 power-ups em uma run.', icon:'💠', en:{nome:'Artificer', desc:'Craft 10 power-ups in one run.'}},
-  {id:'dungeon', nome:'Senhor do Trono', desc:'Conclua a masmorra inteira.', icon:'👑', en:{nome:'Lord of the Throne', desc:'Clear the whole dungeon.'}},
+  {id:'dungeon', nome:'Regulador de Ygdria', desc:'Conquiste as 10 fases do Reino dos Humanos.', icon:'👑', en:{nome:'Regulator of Ygdria', desc:'Conquer all 10 stages of the Human Realm.'}},
   {id:'stars-all', nome:'Perfeccionista', desc:'Conquiste 3 estrelas em 5 fases.', icon:'⭐', en:{nome:'Perfectionist', desc:'Earn 3 stars on 5 stages.'}},
   {id:'tower5', nome:'Escalador', desc:'Supere o andar 5 da Torre Infinita.', icon:'🗼', en:{nome:'Climber', desc:'Clear floor 5 of the Infinite Tower.'}},
   {id:'tower10', nome:'Lenda da Torre', desc:'Supere o andar 10 da Torre Infinita.', icon:'🌌', en:{nome:'Tower Legend', desc:'Clear floor 10 of the Infinite Tower.'}},
@@ -1010,11 +1012,12 @@ function checkAchievements(ctx){
     if(runStats.powerUps>=10) unlockAch('powerup10');
     const ids=ACTIVE.map(i=>KINGDOMS[i].id);
     if(ids.includes('sombras')&&ids.includes('raio')) unlockAch('dark-court');
-    const stars=getStars();
-    if(Object.values(stars).filter(s=>s===3).length>=5) unlockAch('stars-all');
+    const wstars=worldProg('humanos').stars||{};
+    if(Object.values(wstars).filter(s=>s===3).length>=5) unlockAch('stars-all');
     if(profileLevel()>=5) unlockAch('lv5');
   }
-  if(ctx==='dungeon'){ unlockAch('dungeon'); if(IS_DAILY_RUN) unlockAch('daily'); }
+  if(ctx==='world-complete') unlockAch('dungeon');
+  if(ctx==='daily') unlockAch('daily');
   if(ctx==='tower'){ if(towerFloor>=5) unlockAch('tower5'); if(towerFloor>=10) unlockAch('tower10'); }
   if(coins>=500) unlockAch('rich');
 }
@@ -1068,17 +1071,20 @@ function consumeInventoryOnBattleStart(){
 /* v9.1 · Torre Infinita: andares gerados, inimigos escalando */
 let towerMode=false, towerFloor=1;
 function buildTowerStage(floor){
-  const flat=DUNGEON.flatMap(s=>s.enemies);
+  /* v9.1: pool oficial do Reino dos Humanos (as fases demo saíram do jogo).
+     Chefes de andar múltiplo de 5 = um chefe-Carta aleatório (com Habilidade de Fase). */
+  const flat=Object.values(HUMANOS_ETYPES).map(t=>({name:t.n, hp:t.hp, atk:t.atk, sprite:t.sprite||ESPR[t.s], tint:t.t, flip:!!t.flip}));
+  const bosses=Object.entries(HUMANOS_CARDS).map(([key,c])=>({name:c.nome, hp:c.hp, atk:c.atk, sprite:c.isCard?c.card:c.sprite, isCard:!!c.isCard, flip:!!c.flip, cardId:key}));
   const scale=1+0.22*(floor-1);
   const count=Math.min(3,1+Math.floor((floor-1)/3));
   const isBossFloor=floor%5===0;
   const picks=[];
   for(let i=0;i<count;i++) picks.push(flat[Math.floor(gameRandom()*flat.length)]);
-  if(isBossFloor) picks[picks.length-1]=flat[flat.length-1];
+  if(isBossFloor) picks[picks.length-1]=bosses[Math.floor(gameRandom()*bosses.length)];
   return {
     title:`Torre · Andar ${floor}`,
     scene:(floor-1)%5,
-    enemies:picks.map(p=>({...p, hp:Math.round(p.hp*scale*(isBossFloor?1.3:1)), atk:Math.round(p.atk*scale)}))
+    enemies:picks.map(p=>({...p, hp:Math.round(p.hp*scale*(isBossFloor?1.3:1)), atk:Math.round(p.atk*scale), isBoss:isBossFloor&&p.cardId?true:p.isBoss}))
   };
 }
 const GOLEM_SPRITE = 'assets/enemies/stone-sentinel/single-1.png';
@@ -1843,9 +1849,184 @@ function computeBattleGemColors(){
     const lead=KINGDOMS.find(k=>k.id===fam)||KINGDOMS[idxs[0]];
     idxs.forEach((i,ord)=>{
       const step=ladder[ord%ladder.length];
-      battleGemColors[i]=step?{...step}:{c:lead.orbColor||lead.color,l:lead.orbColorLight||lead.colorLight,d:lead.orbColorDark||lead.colorDark};
+      /* Gema que trocou de cor pela escada leva o SÍMBOLO na cor do reino (identifica a família) */
+      battleGemColors[i]=step?{...step, icon:(lead.color||'#ff6fa5')}:{c:lead.orbColor||lead.color,l:lead.orbColorLight||lead.colorLight,d:lead.orbColorDark||lead.colorDark};
     });
   });
+}
+
+/* == HABILIDADES DE FASE: cada carta tem UM truque que usa apenas quando aparece
+   como INIMIGA numa fase (nunca quando é usada como herói). Descritas no modal da
+   carta; executadas em enemyCounterAttack a cada `cd` turnos, salvo stun/cegueira. */
+let hiddenGems={};   // Véu do Eclipse: células com cor oculta {r_c: turnos restantes}
+const OB_TYPES={ ice:{icon:'❄',nome:'gelo'}, stone:{icon:'⛰',nome:'pedra'}, sand:{icon:'⏳',nome:'areia'}, vine:{icon:'🌿',nome:'vinhas'} };
+
+function stageAbilityFor(cardId){
+  if(!cardId) return null;
+  const k=KINGDOMS.find(x=>x.id===cardId);
+  return (k&&k.stageAbility)?k.stageAbility:null;
+}
+function saPickCells(qtd){
+  const cand=[];
+  for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){
+    const key=cellKey(r,c);
+    if(board[r][c]>=0 && !powerUps[key] && !obstaclesMeta[key] && !hiddenGems[key]) cand.push({r,c,key});
+  }
+  for(let i=cand.length-1;i>0;i--){ const j=Math.floor(gameRandom()*(i+1)); [cand[i],cand[j]]=[cand[j],cand[i]]; }
+  return cand.slice(0,qtd);
+}
+function saChangeColorSafe(r,c){
+  const atual=board[r][c];
+  const opcoes=ACTIVE.filter(i=>i!==atual);
+  for(let t=0;t<opcoes.length+2;t++){
+    board[r][c]=opcoes[Math.floor(gameRandom()*opcoes.length)];
+    if(!findMatches().length) return true;
+  }
+  board[r][c]=atual;
+  return false;
+}
+function saDrainHero(idx, amount){
+  heroProgress[idx]=Math.max(0,(heroProgress[idx]||0)-amount);
+  firedTiers[idx]=new Set(KINGDOMS[idx].abilities.filter(a=>a.kind==='passive'&&a.gems<=heroProgress[idx]).map(a=>a.gems));
+  updateHeroProgressUI(idx);
+}
+function saMostChargedHero(){
+  let best=-1,bestV=-1;
+  ACTIVE.forEach(i=>{ const v=heroProgress[i]||0; if(v>bestV){bestV=v;best=i;} });
+  return best;
+}
+function saHealEnemy(e, amount){
+  if(!amount) return;
+  e.hp=Math.min(e.maxHp,e.hp+Math.round(amount));
+  const i=enemies.indexOf(e);
+  const bar=document.getElementById('enemyHpBar-'+i);
+  const txt=document.getElementById('enemyHpText-'+i);
+  if(bar) bar.style.width=Math.max(0,(e.hp/e.maxHp)*100)+'%';
+  if(txt) txt.textContent=`${e.hp} / ${e.maxHp}`;
+}
+function saAnnounce(e, sa){
+  const i=enemies.indexOf(e);
+  setBattleStatus(`⚔ ${e.name} usou ${sa.nome}!`, 'damage');
+  showFloatDamage(0,'enemy-'+i,false);
+  const anchor=document.getElementById('enemy-'+i);
+  const el=anchor?.querySelector('.dmg-float:last-child');
+  if(el){ el.textContent=sa.nome+'!'; el.style.color='#ffb3c8'; el.style.fontSize='11px'; }
+}
+function runStageAbilities(){
+  if(busy) return; /* nunca mutar o tabuleiro com uma resolução de combos em voo */
+  enemies.forEach(e=>{
+    if(e.hp<=0) return;
+    const sa=stageAbilityFor(e.cardId);
+    if(!sa) return;
+    e.saCounter=(e.saCounter||0)+1;
+    if(e.saCounter<sa.cd) return;
+    e.saCounter=0;
+    try{ execStageAbility(e,sa); saAnnounce(e,sa); }catch(err){ console.warn('stageAbility', err); }
+  });
+}
+function execStageAbility(e, sa){
+  let mexeuBoard=false;
+  switch(sa.tipo){
+    case 'trocarCores':
+      saPickCells(sa.qtd||3).forEach(cell=>{ if(saChangeColorSafe(cell.r,cell.c)) mexeuBoard=true; });
+      break;
+    case 'selarPowerUp':{
+      const keys=Object.keys(powerUps);
+      if(keys.length){
+        const key=keys[Math.floor(gameRandom()*keys.length)];
+        const [r,c]=key.split('_').map(Number);
+        delete powerUps[key];
+        if(board[r][c]===-2){ board[r][c]=ACTIVE[Math.floor(gameRandom()*ACTIVE.length)]; saChangeColorSafe(r,c); }
+        mexeuBoard=true;
+      } else saHealEnemy(e, sa.cura||60);
+      break;
+    }
+    case 'drenarMaisCarregado':{
+      const h=saMostChargedHero(); if(h>=0) saDrainHero(h, sa.valor||12);
+      break;
+    }
+    case 'criarObstaculos':{
+      const livre=Math.max(0, 8-Object.keys(obstaclesMeta).length);
+      saPickCells(Math.min(sa.qtd||1, livre)).forEach((cell,i2)=>{
+        board[cell.r][cell.c]=-4;
+        delete powerUps[cell.key];
+        obstaclesMeta[cell.key]={type:sa.obst||'stone', hits:(sa.hits||1)+((sa.reforcado&&i2<sa.reforcado)?1:0)};
+        mexeuBoard=true;
+      });
+      break;
+    }
+    case 'embaralharTudo': shuffleBoard(false); break;
+    case 'drenarTodosECurar':{
+      let total=0;
+      ACTIVE.forEach(i2=>{ const tira=Math.min(heroProgress[i2]||0, sa.valor||6); if(tira>0){ saDrainHero(i2,tira); total+=tira; } });
+      if(total>0) saHealEnemy(e, total*(sa.curaMult||5));
+      break;
+    }
+    case 'lavarColuna':{
+      const c=Math.floor(gameRandom()*SIZE);
+      for(let r=0;r<SIZE;r++){ const key=cellKey(r,c); if(board[r][c]>=0&&!obstaclesMeta[key]){ board[r][c]=-1; delete powerUps[key]; delete hiddenGems[key]; } }
+      collapseAndRefill(); mexeuBoard=true;
+      break;
+    }
+    case 'queimarCruz':{
+      const r=1+Math.floor(gameRandom()*(SIZE-2)), c=1+Math.floor(gameRandom()*(SIZE-2));
+      [[r,c],[r-1,c],[r+1,c],[r,c-1],[r,c+1]].forEach(([rr,cc])=>{
+        const key=cellKey(rr,cc);
+        if(obstaclesMeta[key]) return;
+        delete powerUps[key]; delete hiddenGems[key];
+        if(board[rr][cc]>=0||board[rr][cc]===-2) board[rr][cc]=-1;
+      });
+      collapseAndRefill(); mexeuBoard=true;
+      break;
+    }
+    case 'embaralharLinhas':{
+      const linhas=[];
+      while(linhas.length<(sa.qtd||2)){ const r=Math.floor(gameRandom()*SIZE); if(!linhas.includes(r)) linhas.push(r); }
+      const celulas=[];
+      linhas.forEach(r=>{ for(let c=0;c<SIZE;c++){ if(board[r][c]>=0&&!obstaclesMeta[cellKey(r,c)]) celulas.push({r,c}); } });
+      for(let tent=0;tent<10;tent++){
+        const vals=celulas.map(p=>board[p.r][p.c]);
+        for(let i2=vals.length-1;i2>0;i2--){ const j=Math.floor(gameRandom()*(i2+1)); [vals[i2],vals[j]]=[vals[j],vals[i2]]; }
+        celulas.forEach((p,i2)=>{ board[p.r][p.c]=vals[i2]; });
+        if(!findMatches().length) break;
+      }
+      mexeuBoard=true;
+      break;
+    }
+    case 'ocultarCores':
+      saPickCells(sa.qtd||5).forEach(cell=>{ hiddenGems[cell.key]=sa.turnos||3; });
+      mexeuBoard=true;
+      break;
+    case 'sobrecarga':{
+      const h=saMostChargedHero();
+      if(h>=0&&(heroProgress[h]||0)>(sa.limite||50)){ heroProgress[h]=sa.limite||50; saDrainHero(h,0); }
+      break;
+    }
+    case 'deslizarLinha':{
+      const r=Math.floor(gameRandom()*SIZE);
+      const cols=[];
+      for(let c=0;c<SIZE;c++){ if(board[r][c]>=0&&!obstaclesMeta[cellKey(r,c)]) cols.push(c); }
+      if(cols.length>1){
+        for(let tent=0;tent<4;tent++){
+          const vals=cols.map(c=>board[r][c]);
+          vals.unshift(vals.pop());
+          cols.forEach((c,i2)=>{ board[r][c]=vals[i2]; });
+          if(!findMatches().length) break;
+        }
+        cols.forEach(c=>{ delete powerUps[cellKey(r,c)]; });
+        mexeuBoard=true;
+      }
+      break;
+    }
+    case 'encharcar':
+      ACTIVE.forEach(i2=>{ nextAttackMult[i2]=Math.min(nextAttackMult[i2]||1, sa.mult||0.5); });
+      renderStatusTray();
+      break;
+  }
+  if(mexeuBoard){
+    renderBoard();
+    if(!hasValidMoves()) shuffleBoard(false);
+  }
 }
 
 function loadStage(idx){
@@ -1855,6 +2036,8 @@ function loadStage(idx){
   selected = null;
   stageIndex = idx;
   computeBattleGemColors();
+  hiddenGems={};
+  boardRenderCache=null; /* nova fase = render completo do tabuleiro */
   const stageData = worldRun.active ? buildWorldLevel() : towerMode ? buildTowerStage(towerFloor) : DUNGEON[idx];
   activeStageData = stageData;
   const diffM=DIFFICULTY_MULTS[difficulty]||DIFFICULTY_MULTS.normal;
@@ -2314,54 +2497,95 @@ function createBoard(){
   if(!hasValidMoves()) shuffleBoard(false);
 }
 
+/* v9.1 anti-flicker: renderBoard DIFERENCIAL — só reconstrói células cujo conteúdo
+   mudou (assinatura valor|power|obstáculo|véu|corAliada). Elimina o "piscar" causado
+   pelo rebuild total a cada passo de cascata (que reiniciava todas as animações). */
+let boardRenderCache=null;
+function gemSignature(r,c){
+  const key=cellKey(r,c);
+  const v=board[r][c];
+  const pw=powerUps[key];
+  const ob=obstaclesMeta[key];
+  const ag=v>=0?battleGemColors[v]:null;
+  return v+'|'+(pw?pw.type+(pw.orientation||''):'')+'|'+(ob?ob.type+ob.hits:'')+'|'+(hiddenGems[key]?1:0)+'|'+(ag?ag.c:'');
+}
+function renderCellContent(cell,r,c){
+  cell.innerHTML='';
+  const colorIdx = board[r][c];
+  const wrapper = document.createElement('div');
+  wrapper.className = 'gem';
+  wrapper.dataset.r=r; wrapper.dataset.c=c;
+  const power = powerUps[cellKey(r,c)];
+  if(colorIdx===-2 && power?.type==='colorBomb'){
+    wrapper.dataset.power='colorBomb';
+    wrapper.setAttribute('role','button');
+    wrapper.setAttribute('tabindex','0');
+    wrapper.setAttribute('aria-label',`Bomba de cor, linha ${r+1}, coluna ${c+1}`);
+    wrapper.innerHTML='<div class="orb power-colorbomb" aria-hidden="true"></div>';
+  } else if(colorIdx>=0 && hiddenGems[cellKey(r,c)]){
+    const k = KINGDOMS[colorIdx];
+    wrapper.dataset.realm = k.id;
+    wrapper.setAttribute('role','button');
+    wrapper.setAttribute('tabindex','0');
+    wrapper.setAttribute('aria-label',`Esfera oculta pelo Véu, linha ${r+1}, coluna ${c+1}`);
+    wrapper.innerHTML = '<div class="orb orb-hidden" style="--orb-light:#6b6383;--orb:#241f33;--orb-dark:#0a0812;"><span class="orb-q" aria-hidden="true">?</span></div>';
+  } else if(colorIdx>=0){
+    const k = KINGDOMS[colorIdx];
+    wrapper.dataset.realm = k.id;
+    if(power) wrapper.dataset.power=power.type;
+    wrapper.setAttribute('role','button');
+    wrapper.setAttribute('tabindex','0');
+    const powerLabel=power?.type==='striped' ? `, power-up listrado ${power.orientation==='horizontal'?'horizontal':'vertical'}` : power?.type==='wrapped' ? ', power-up embrulhado' : '';
+    wrapper.setAttribute('aria-label',`Esfera do ${k.reino}${powerLabel}, linha ${r+1}, coluna ${c+1}`);
+    const powerClass=power?.type==='striped' ? ` power-striped ${power.orientation}` : power?.type==='wrapped' ? ' power-wrapped' : '';
+    const ag=battleGemColors[colorIdx];
+    wrapper.innerHTML = `<div class="orb orb-${k.id}${powerClass}" data-realm="${k.id}" style="--orb-light:${ag?ag.l:(k.orbColorLight||k.colorLight)};--orb:${ag?ag.c:(k.orbColor||k.color)};--orb-dark:${ag?ag.d:(k.orbColorDark||k.colorDark)};${ag&&ag.icon?`--orb-icon-c:${ag.icon};`:''}">
+      <svg class="orb-icon" viewBox="0 0 24 24">${KINGDOM_ICON[k.iconId||k.id]||''}</svg>
+    </div>`;
+  }
+  if(colorIdx===-4){
+    const meta=obstaclesMeta[cellKey(r,c)]||{type:'ice',hits:1};
+    wrapper.dataset.obstacle=meta.type;
+    const obt=OB_TYPES[meta.type]||OB_TYPES.stone;
+    wrapper.innerHTML=`<div class="orb obstacle-block ob-${meta.type}${meta.hits>1?' ob-strong':''}" aria-hidden="true"><span class="ob-icon">${obt.icon}</span></div>`;
+    wrapper.setAttribute('aria-label',`Bloco de ${obt.nome}, linha ${r+1}, coluna ${c+1}`);
+  }
+  const fall=lastFallInfo?.[cellKey(r,c)];
+  if(fall){
+    wrapper.classList.add('falling');
+    if(fall.fresh) wrapper.classList.add('fresh');
+    wrapper.style.setProperty('--fall-from',(-(fall.rows*106))+'%');
+    wrapper.style.setProperty('--fall-dur',(300+fall.rows*45)+'ms');
+  }
+  if(colorIdx!==-4) attachGemHandlers(wrapper);
+  cell.appendChild(wrapper);
+}
 function renderBoard(){
-  boardEl.innerHTML = '';
-  for(let r=0;r<SIZE;r++){
-    for(let c=0;c<SIZE;c++){
-      const cell = document.createElement('div');
-      cell.className='cell'; cell.dataset.r=r; cell.dataset.c=c;
-      const colorIdx = board[r][c];
-      const wrapper = document.createElement('div');
-      wrapper.className = 'gem';
-      wrapper.dataset.r=r; wrapper.dataset.c=c;
-      const power = powerUps[cellKey(r,c)];
-      if(colorIdx===-2 && power?.type==='colorBomb'){
-        wrapper.dataset.power='colorBomb';
-        wrapper.setAttribute('role','button');
-        wrapper.setAttribute('tabindex','0');
-        wrapper.setAttribute('aria-label',`Bomba de cor, linha ${r+1}, coluna ${c+1}`);
-        wrapper.innerHTML='<div class="orb power-colorbomb" aria-hidden="true"></div>';
-      } else if(colorIdx>=0){
-        const k = KINGDOMS[colorIdx];
-        wrapper.dataset.realm = k.id;
-        if(power) wrapper.dataset.power=power.type;
-        wrapper.setAttribute('role','button');
-        wrapper.setAttribute('tabindex','0');
-        const powerLabel=power?.type==='striped' ? `, power-up listrado ${power.orientation==='horizontal'?'horizontal':'vertical'}` : power?.type==='wrapped' ? ', power-up embrulhado' : '';
-        wrapper.setAttribute('aria-label',`Esfera do ${k.reino}${powerLabel}, linha ${r+1}, coluna ${c+1}`);
-        const powerClass=power?.type==='striped' ? ` power-striped ${power.orientation}` : power?.type==='wrapped' ? ' power-wrapped' : '';
-        const ag=battleGemColors[colorIdx];
-        wrapper.innerHTML = `<div class="orb orb-${k.id}${powerClass}" data-realm="${k.id}" style="--orb-light:${ag?ag.l:(k.orbColorLight||k.colorLight)};--orb:${ag?ag.c:(k.orbColor||k.color)};--orb-dark:${ag?ag.d:(k.orbColorDark||k.colorDark)};">
-          <svg class="orb-icon" viewBox="0 0 24 24">${KINGDOM_ICON[k.iconId||k.id]||''}</svg>
-        </div>`;
+  const full = !boardRenderCache || boardEl.childElementCount!==SIZE*SIZE;
+  if(full){
+    boardEl.innerHTML = '';
+    boardRenderCache={};
+    for(let r=0;r<SIZE;r++){
+      for(let c=0;c<SIZE;c++){
+        const cell = document.createElement('div');
+        cell.className='cell'; cell.dataset.r=r; cell.dataset.c=c;
+        renderCellContent(cell,r,c);
+        boardRenderCache[cellKey(r,c)]=gemSignature(r,c);
+        boardEl.appendChild(cell);
       }
-      if(colorIdx===-4){
-        const meta=obstaclesMeta[cellKey(r,c)]||{type:'ice',hits:1};
-        wrapper.dataset.obstacle=meta.type;
-        wrapper.innerHTML=`<div class="orb obstacle-block ob-${meta.type}${meta.hits>1?' ob-strong':''}" aria-hidden="true"><span class="ob-icon">${meta.type==='ice'?'❄':'⛰'}</span></div>`;
-        wrapper.setAttribute('aria-label',`Bloco de ${meta.type==='ice'?'gelo':'pedra'}, linha ${r+1}, coluna ${c+1}`);
-      }
-      const fall=lastFallInfo?.[cellKey(r,c)];
-      if(fall){
-        wrapper.classList.add('falling');
-        if(fall.fresh) wrapper.classList.add('fresh');
-        wrapper.style.setProperty('--fall-from',(-(fall.rows*106))+'%');
-        wrapper.style.setProperty('--fall-dur',(300+fall.rows*45)+'ms');
-      }
-      if(colorIdx!==-4) attachGemHandlers(wrapper);
-      cell.appendChild(wrapper);
-      boardEl.appendChild(cell);
     }
+  } else {
+    const cells=boardEl.children;
+    for(let r=0;r<SIZE;r++){
+      for(let c=0;c<SIZE;c++){
+        const key=cellKey(r,c);
+        const sig=gemSignature(r,c);
+        if(boardRenderCache[key]===sig && !(lastFallInfo&&lastFallInfo[key])) continue;
+        renderCellContent(cells[r*SIZE+c],r,c);
+        boardRenderCache[key]=sig;
+      }
+    }
+    if(!selected) boardEl.querySelectorAll('.gem.selected').forEach(g=>g.classList.remove('selected'));
   }
   lastFallInfo=null;
 }
@@ -2965,7 +3189,11 @@ function launchSpecialFx(idx,a){
     layer.append(castEl,ring);
   }
   trimCombatFx();
-  arenaEl.classList.remove('fx-flash'); void arenaEl.offsetWidth; arenaEl.classList.add('fx-flash');
+  /* anti-flicker: flash de arena só em ATIVAS e sem re-trigger empilhado */
+  if(a.kind==='active' && !arenaEl.classList.contains('fx-flash')){
+    arenaEl.classList.add('fx-flash');
+    window.setTimeout(()=>arenaEl.classList.remove('fx-flash'), 500);
+  }
   window.setTimeout(()=>{
     spawnCombatFx('hit',target,k.colorLight,520);
     spawnRealmParticles(k.id,target,a.kind==='active'?22:12);
@@ -2984,8 +3212,17 @@ function registerHeroProgress(idx, count){
   const toFire = [];
   let becameReady = false;
   const cycles=Math.floor(rawTotal/100);
-  for(let cycle=0;cycle<=cycles;cycle++){
-    k.abilities.forEach(a=>{
+  k.abilities.forEach(a=>{
+    /* every:true (cartas oficiais): dispara a cada `gems`% cruzado — 25/50/75/100... */
+    if(a.every){
+      const fires=Math.floor(rawTotal/a.gems)-Math.floor(prev/a.gems);
+      for(let i=0;i<fires;i++){
+        if(a.kind==='active'){ heroActiveQueue[idx].push(a); becameReady=true; }
+        else toFire.push(a);
+      }
+      return;
+    }
+    for(let cycle=0;cycle<=cycles;cycle++){
       const threshold=a.gems+(cycle*100);
       if(threshold>prev&&threshold<=rawTotal){
         if(a.kind==='active'){
@@ -2995,8 +3232,8 @@ function registerHeroProgress(idx, count){
           toFire.push(a);
         }
       }
-    });
-  }
+    }
+  });
   if(heroActiveQueue[idx].length){
     heroReady[idx]=true;
   }else{
@@ -3019,10 +3256,15 @@ function grantActiveSetToAll(){
 }
 
 function grantTeamEnergy(amount){
+  /* anti-flicker: passivas de vários heróis disparam escalonadas, não no mesmo frame */
+  let atraso=0;
   ACTIVE.forEach(heroIdx=>{
     const result=registerHeroProgress(heroIdx,amount);
     if(allEnemiesDefeated()) queuePassivesForNextRoom(heroIdx,result.toFire);
-    else result.toFire.forEach(passive=>triggerAbility(heroIdx,passive,{deferRoomCheck:true}));
+    else result.toFire.forEach(passive=>{
+      window.setTimeout(()=>{ if(playerHP>0) triggerAbility(heroIdx,passive,{deferRoomCheck:true}); }, atraso);
+      atraso+=450;
+    });
   });
 }
 
@@ -3322,7 +3564,12 @@ function showAbilityBanner(k, a, isTierMessage){
     document.getElementById('abDesc').textContent = a.desc;
     banner.classList.remove('aura-ready');
   }
-  banner.classList.remove('show'); void banner.offsetWidth; banner.classList.add('show');
+  /* anti-flicker: banners em sequência atualizam o texto sem reiniciar a animação */
+  const agoraB=performance.now();
+  if(!(banner._lastShow && agoraB-banner._lastShow<900 && banner.classList.contains('show'))){
+    banner.classList.remove('show'); void banner.offsetWidth; banner.classList.add('show');
+  }
+  banner._lastShow=agoraB;
 }
 
 function showAuraReadyBanner(k){
@@ -3331,7 +3578,12 @@ function showAuraReadyBanner(k){
   document.getElementById('abDesc').textContent = `Toque em ${k.nome} no campo de batalha para escolher uma habilidade acumulada.`;
   const banner = document.getElementById('abilityBanner');
   banner.classList.add('aura-ready');
-  banner.classList.remove('show'); void banner.offsetWidth; banner.classList.add('show');
+  /* anti-flicker: banners em sequência atualizam o texto sem reiniciar a animação */
+  const agoraB=performance.now();
+  if(!(banner._lastShow && agoraB-banner._lastShow<900 && banner.classList.contains('show'))){
+    banner.classList.remove('show'); void banner.offsetWidth; banner.classList.add('show');
+  }
+  banner._lastShow=agoraB;
   sfxUltimate();
 }
 
@@ -3452,6 +3704,10 @@ function showFloatDamage(dmg, anchorId, isPlayer){
 function afterPlayerTurn(){
   if(finishRoomIfCleared()) return;
   stageTurns++;
+  /* Véu do Eclipse expira com o tempo */
+  let veuMudou=false;
+  Object.keys(hiddenGems).forEach(hk=>{ if(--hiddenGems[hk]<=0){ delete hiddenGems[hk]; veuMudou=true; } });
+  if(veuMudou) renderBoard();
   showStageObjective();
   if(checkStageObjective()) return;
   if(atkBuffTurns>0) atkBuffTurns--;
@@ -3511,6 +3767,7 @@ function enemyCounterAttack(){
     busy=false;
     return;
   }
+  runStageAbilities(); /* Habilidades de Fase dos inimigos-carta (suprimidas por stun/cegueira) */
   const enemyUnit = document.getElementById('enemy-'+idx);
   if(enemyUnit){ enemyUnit.classList.remove('attacking'); void enemyUnit.offsetWidth; enemyUnit.classList.add('attacking'); }
   const variance = 0.85 + gameRandom()*0.3;
@@ -3545,7 +3802,10 @@ function enemyCounterAttack(){
   sfxPlayerHit();
   haptic([25,20,25]);
   if(dmg>0) setBattleStatus(`${enemy.name} contra-atacou e causou ${dmg} de dano.`);
-  document.body.classList.remove('shake'); void document.body.offsetWidth; document.body.classList.add('shake');
+  /* anti-flicker: o tremor fica no palco da batalha, não no body inteiro */
+  const shakeEl=document.querySelector('.arena')||document.body;
+  shakeEl.classList.remove('shake'); void shakeEl.offsetWidth; shakeEl.classList.add('shake');
+  window.setTimeout(()=>shakeEl.classList.remove('shake'), 450);
   showFloatDamage(dmg, 'playerHpAnchor', true);
   advanceTimedDefense();
   saveProgress();
@@ -3635,6 +3895,19 @@ function onStageCleared(){
     flushRunToProfile(true);
     const starsEl=document.getElementById('stageStars');
     if(starsEl) starsEl.innerHTML=[1,2,3].map(x=>`<span class="star${x<=stars?' on':''}" style="--i:${x}">★</span>`).join('');
+    if(worldRun.fase===world.fases.length-1){
+      /* Fase 10 vencida — Reino dos Humanos conquistado */
+      grantCoins(200); grantXp(100);
+      checkAchievements('world-complete');
+      const gt=document.getElementById('grandClearTitle'), gx=document.getElementById('grandClearText');
+      if(gt) gt.textContent=T('Reino dos Humanos Conquistado!','Human Realm Conquered!','¡Reino de los Humanos Conquistado!');
+      if(gx) gx.textContent=T('A Terra dos Reguladores de Ygdria está livre. Os próximos reinos aguardam...','The Land of the Regulators of Ygdria is free. The next realms await...','La Tierra de los Reguladores está libre. Los próximos reinos esperan...');
+      renderBattleReport('victoryReport');
+      launchVictoryConfetti();
+      worldRun.active=false;
+      showOverlay('dungeonClearOverlay');
+      return;
+    }
     document.getElementById('stageClearText').textContent=`${fase.chefe} ${T('derrotado(a)!','defeated!','¡derrotado(a)!')} ${fase.nome} ${T('conquistada!','conquered!','conquistada!')}${ups.length?' '+ups.join(' '):''}`;
     showOverlay('stageClearOverlay');
     setTimeout(()=>{
@@ -3656,6 +3929,21 @@ function onStageCleared(){
     checkAchievements('tower');
     flushRunToProfile(true);
     towerFloor++;
+    if(IS_DAILY_RUN && towerFloor>5){
+      /* Desafio Diário concluído: 5 andares vencidos */
+      grantCoins(240); grantXp(60);
+      localStorage.setItem('12r_daily',JSON.stringify({date:todayKey(),combo:runStats.maxCombo}));
+      checkAchievements('daily');
+      const shareBtn=document.getElementById('shareDailyBtn');
+      if(shareBtn) shareBtn.style.display='inline-block';
+      const gt=document.getElementById('grandClearTitle'), gx=document.getElementById('grandClearText');
+      if(gt) gt.textContent=T('Desafio Diário Concluído!','Daily Challenge Complete!','¡Desafío Diario Completado!');
+      if(gx) gx.textContent=T('Você venceu os 5 andares de hoje. Volte amanhã para um novo desafio!','You beat all 5 floors today. Come back tomorrow!','¡Venciste los 5 pisos de hoy. Vuelve mañana!');
+      renderBattleReport('victoryReport');
+      launchVictoryConfetti();
+      showOverlay('dungeonClearOverlay');
+      return;
+    }
     const starsEl=document.getElementById('stageStars');
     if(starsEl) starsEl.innerHTML='';
     document.getElementById('stageClearText').textContent = `Andar ${towerFloor-1} superado! Prepare-se para o andar ${towerFloor}.`;
@@ -3702,6 +3990,8 @@ function resetGame(){
   selected=null; busy=false; comboStep=0;
   heroProgress = {}; firedTiers = {}; heroReady = {}; heroActiveQueue = {};
   pendingRoomPassives=[]; roomClearScheduled=false; golemAllies=0; harpyAllies=0; heroEmpower={};
+  if(worldRun.active) worldRun.nivel=1;          // reinicia a fase atual do mundo
+  if(towerMode && IS_DAILY_RUN) towerFloor=1;    // diário recomeça do andar 1
   loadStage(0);
 }
 
@@ -3793,11 +4083,22 @@ function openCardModal(idx){
   const actives=k.abilities.filter(a=>a.kind==='active');
   const renderAbility=a=>`
       <div class="card-modal-ability">
-        <div class="tier-tag">${a.gems}% de energia · ${a.kind==='active'?'habilidade ativa':'passiva'}</div>
+        <div class="tier-tag">${a.every?T('a cada ','every ','cada ')+a.gems+'%':a.gems+'% de energia'} · ${a.kind==='active'?'habilidade ativa':'passiva'}</div>
         <b>${a.name}</b> — ${a.desc}
       </div>`;
-  abilitiesEl.innerHTML='<div class="card-modal-ability-section">3 Passivas</div>'+passives.map(renderAbility).join('')+
-    '<div class="card-modal-ability-section">3 Ativas</div>'+actives.map(renderAbility).join('');
+  let mhtml=`<div class="card-modal-ability-section">${k.rarity||'DIVINA'} · ${'★'.repeat(k.stars||7)} · ATQ ${k.atk||12}</div>`;
+  if(passives.length) mhtml+=`<div class="card-modal-ability-section">${passives.length} ${passives.length>1?'Passivas':'Passiva'}</div>`+passives.map(renderAbility).join('');
+  if(actives.length) mhtml+=`<div class="card-modal-ability-section">${actives.length} ${actives.length>1?'Ativas':'Ativa'}</div>`+actives.map(renderAbility).join('');
+  if(!k.abilities.length) mhtml+=`<div class="card-modal-ability"><b>${T('Sem habilidades especiais','No special abilities','Sin habilidades especiales')}</b> — ${T('vence pela coragem e pelo aço.','wins through courage and steel.','vence con coraje y acero.')}</div>`;
+  if(k.stageAbility){
+    mhtml+=`<div class="card-modal-ability-section">${T('Habilidade de Fase','Stage Ability','Habilidad de Fase')}</div>
+      <div class="card-modal-ability stage-ability-entry">
+        <div class="tier-tag">${T('apenas quando aparece como INIMIGA','only when it appears as an ENEMY','solo cuando aparece como ENEMIGA')} · ${T('a cada','every','cada')} ${k.stageAbility.cd} ${T('turnos','turns','turnos')}</div>
+        <b>${k.stageAbility.nome}</b> — ${k.stageAbility.desc}
+      </div>`;
+  }
+  if(k.frase) mhtml+=`<div class="card-modal-frase">“${k.frase}”</div>`;
+  abilitiesEl.innerHTML=mhtml;
   document.getElementById('cardModal').classList.add('show');
   document.getElementById('cardModal').setAttribute('aria-hidden','false');
   document.getElementById('closeCardModal').focus();
@@ -3857,11 +4158,16 @@ function saveProgress(forcedStage){
 }
 
 function refreshContinueButton(){
-  const saved = getSavedProgress();
+  /* v9.1: sem fases demo — Continuar aponta para o progresso do Reino dos Humanos */
   const btn = document.getElementById('continueBtn');
   const hint = document.getElementById('continueHint');
-  btn.disabled = !saved;
-  hint.textContent = saved ? `Fase ${saved.stage+1} · ${DUNGEON[saved.stage].title}` : 'Sem progresso salvo';
+  let fases;
+  try{ fases = WORLDS[0].fases; }
+  catch(err){ btn.disabled = true; return; } /* chamada anterior à declaração de WORLDS (boot) */
+  const prog = worldProg('humanos');
+  const faseIdx = Math.min(prog.unlocked, fases.length-1);
+  btn.disabled = false;
+  hint.textContent = `${T('Reino dos Humanos','Human Realm','Reino de los Humanos')} · ${T('Fase','Stage','Fase')} ${faseIdx+1} · ${fases[faseIdx].nome}`;
 }
 
 function closeAllPanels(){
@@ -3953,23 +4259,9 @@ function renderGallery(){
   });
 }
 const STAGE_ART=["assets/bg/bg-08.png","assets/bg/bg-09.png","assets/bg/bg-10.png","assets/bg/bg-11.png"];
-function renderJourneyMap(){
-  const map=document.getElementById('journeyMap');
-  const unlocked=Math.max(0,Number(localStorage.getItem('12r_unlocked')||0)); map.innerHTML='';
-  const starsAll=getStars();
-  DUNGEON.forEach((stage,idx)=>{
-    const btn=document.createElement('button'); const locked=idx>unlocked;
-    btn.className='stage-node'+(locked?' locked':''); btn.disabled=locked;
-    btn.style.backgroundImage=`linear-gradient(transparent,rgba(4,2,8,.94)),url('${STAGE_ART[idx%STAGE_ART.length]}')`;
-    const stars=starsAll[idx]||0;
-    btn.innerHTML=`<span>Fase ${idx+1}<br><b>${stage.title}</b>${stars?`<br><span class="node-stars">${'★'.repeat(stars)}${'☆'.repeat(3-stars)}</span>`:''}${locked?'<br>🔒 Bloqueada':''}</span>`;
-    btn.addEventListener('click',()=>{ towerMode=false; worldRun.active=false; pendingStage=idx; closeAllPanels(); if(chosenIds.length===4) beginGame(idx); else showSelection(); });
-    map.appendChild(btn);
-  });
-}
+/* v9.1: jornada da masmorra removida (fases demo sairam do jogo) */
 function openPanel(id){
   if(id==='galleryScreen') renderGallery();
-  if(id==='journeyScreen') renderJourneyMap();
   if(id==='achScreen') renderAchievements();
   if(id==='shopScreen') renderShop();
   if(id==='worldScreen') renderWorldMap();
@@ -3987,7 +4279,7 @@ function applySettings(){
 
 startBtnEl.addEventListener('click',()=>beginGame(pendingStage));
 document.getElementById('playBtn').addEventListener('click',()=>{ towerMode=false; worldRun.active=false; pendingStage=0; openMapScreen(); });
-document.getElementById('continueBtn').addEventListener('click',()=>{ const saved=getSavedProgress(); if(!saved)return; towerMode=false; worldRun.active=false; chosenIds=[...saved.team]; beginGame(saved.stage,saved.hp); });
+document.getElementById('continueBtn').addEventListener('click',()=>{ const prog=worldProg('humanos'); startWorldFase(Math.min(prog.unlocked, WORLDS[0].fases.length-1)); });
 document.getElementById('galleryBtn').addEventListener('click',()=>openPanel('galleryScreen'));
 document.getElementById('selectGalleryBtn').addEventListener('click',()=>openPanel('galleryScreen'));
 // v9.1: botões Jornada/Mundos removidos — o fluxo agora é Jogar → Mapa de Ygdria
@@ -4039,8 +4331,9 @@ document.getElementById('reduceMotionToggle').addEventListener('change',e=>{ red
 document.getElementById('particlesToggle').addEventListener('change',e=>{ particlesEnabled=e.target.checked; localStorage.setItem('12r_particles',String(particlesEnabled)); });
 document.getElementById('hapticsToggle').addEventListener('change',e=>{ hapticsEnabled=e.target.checked; localStorage.setItem('12r_haptics',String(hapticsEnabled)); });
 document.getElementById('resetProgressBtn').addEventListener('click',()=>{
-  if(!confirm('Apagar o progresso salvo desta masmorra?'))return;
-  localStorage.removeItem('12r_save'); localStorage.removeItem('12r_unlocked'); refreshContinueButton(); renderJourneyMap();
+  if(!confirm(T('Apagar o progresso do Reino dos Humanos?','Erase Human Realm progress?','¿Borrar el progreso del Reino de los Humanos?')))return;
+  localStorage.removeItem('12r_world_humanos'); localStorage.removeItem('12r_save'); localStorage.removeItem('12r_unlocked');
+  refreshContinueButton();
 });
 document.addEventListener('keydown',e=>{
   if(e.key!=='Escape')return;
@@ -4107,35 +4400,35 @@ const ESPR={
   dragon:'assets/enemies/crimson-dragon/single-1.png'
 };
 const HUMANOS_ETYPES={
-  /* Fases 1-5 · chibis oficiais (Reino Rosa). Base pensada para o pool
-     Normal = 25×80 = 2000 HP: inimigos iniciais tiram ~1.5-3% por golpe. */
-  slimeCereja:{n:'Slime de Cerejeira', sprite:'assets/enemies/humanos/slime-cerejeira.png', hp:240, atk:30, flip:true},
-  loboRaivoso:{n:'Lobo Raivoso', sprite:'assets/enemies/humanos/lobo-raivoso.png', hp:320, atk:38, flip:true},
-  soldado1:{n:'Soldado 1', sprite:'assets/enemies/humanos/soldado-1.png', hp:380, atk:42, flip:true},
-  soldado2:{n:'Soldado 2', sprite:'assets/enemies/humanos/soldado-2.png', hp:420, atk:46, flip:true},
-  capitao:{n:'Capitão dos Soldados', sprite:'assets/enemies/humanos/capitao.png', hp:650, atk:58, flip:true},
+  /* Fases 1-5 · chibis oficiais (Reino Rosa). Bases calibradas para o ATK oficial
+     das cartas (2-4): time recomendado da fase 1 tem ~200-350 HP no Normal. */
+  slimeCereja:{n:'Slime de Cerejeira', sprite:'assets/enemies/humanos/slime-cerejeira.png', hp:45, atk:7, flip:true},
+  loboRaivoso:{n:'Lobo Raivoso', sprite:'assets/enemies/humanos/lobo-raivoso.png', hp:60, atk:9, flip:true},
+  soldado1:{n:'Soldado 1', sprite:'assets/enemies/humanos/soldado-1.png', hp:70, atk:10, flip:true},
+  soldado2:{n:'Soldado 2', sprite:'assets/enemies/humanos/soldado-2.png', hp:78, atk:11, flip:true},
+  capitao:{n:'Capitão dos Soldados', sprite:'assets/enemies/humanos/capitao.png', hp:105, atk:13, flip:true},
   /* Fases 6-10 · genéricos (sprites reutilizados até os chibis chegarem) */
-  vulto:{n:'Vulto Sombrio', s:'wraith', t:'brightness(.5) saturate(.6)', hp:480, atk:54},
-  espectro:{n:'Espectro Sombrio', s:'wraith', t:'brightness(1.35) hue-rotate(240deg)', hp:580, atk:60},
-  morto:{n:'Cavaleiro Morto-Vivo', s:'sentinel', t:'hue-rotate(90deg) brightness(.72) saturate(1.3)', hp:800, atk:68},
-  soldBib:{n:'Soldado da Biblioteca', s:'sentinel', t:'sepia(.85) brightness(1.05)', hp:560, atk:56},
-  infantaria:{n:'Soldado de Infantaria', s:'sentinel', t:'hue-rotate(205deg) saturate(.85)', hp:600, atk:58},
-  cavalaria:{n:'Soldado de Cavalaria', s:'wolf', t:'hue-rotate(205deg) brightness(1.15)', hp:640, atk:64},
-  comandante:{n:'Comandante dos Soldados', s:'sentinel', t:'contrast(1.35) saturate(1.6) brightness(1.08)', hp:980, atk:74},
-  trono:{n:'Soldado do Trono Real', s:'sentinel', t:'sepia(.7) saturate(2) brightness(1.18)', hp:880, atk:70}
+  vulto:{n:'Vulto Sombrio', s:'wraith', t:'brightness(.5) saturate(.6)', hp:85, atk:11},
+  espectro:{n:'Espectro Sombrio', s:'wraith', t:'brightness(1.35) hue-rotate(240deg)', hp:95, atk:12},
+  morto:{n:'Cavaleiro Morto-Vivo', s:'sentinel', t:'hue-rotate(90deg) brightness(.72) saturate(1.3)', hp:120, atk:14},
+  soldBib:{n:'Soldado da Biblioteca', s:'sentinel', t:'sepia(.85) brightness(1.05)', hp:92, atk:12},
+  infantaria:{n:'Soldado de Infantaria', s:'sentinel', t:'hue-rotate(205deg) saturate(.85)', hp:98, atk:12},
+  cavalaria:{n:'Soldado de Cavalaria', s:'wolf', t:'hue-rotate(205deg) brightness(1.15)', hp:104, atk:13},
+  comandante:{n:'Comandante dos Soldados', s:'sentinel', t:'contrast(1.35) saturate(1.6) brightness(1.08)', hp:150, atk:15},
+  trono:{n:'Soldado do Trono Real', s:'sentinel', t:'sepia(.7) saturate(2) brightness(1.18)', hp:135, atk:14}
 };
 /* Chefes de Carta: com chibi oficial lutam em campo como personagens
    (a carta vai para a galeria do Reino Rosa); sem chibi ainda, aparecem
    como carta no campo (isCard). Chefes recebem +30% HP e +15% ATK. */
 const HUMANOS_CARDS={
-  gareth:{nome:'Gareth', hp:1350, atk:80, sprite:'assets/enemies/humanos/gareth.png', card:'assets/cards/enemies/gareth-card.png', flip:true},
-  cedric:{nome:'Cedric', hp:1450, atk:88, sprite:'assets/enemies/humanos/cedric.png', card:'assets/cards/enemies/cedric-card.png', flip:true},
-  elizier:{nome:'Elizier', hp:1400, atk:92, sprite:'assets/enemies/humanos/elizier.png', card:'assets/cards/enemies/elizier-card.png', flip:true},
-  roland:{nome:'Roland', hp:1550, atk:86, sprite:'assets/enemies/humanos/roland.png', card:'assets/cards/enemies/roland-card.png', flip:true},
-  jules:{nome:'Jules, The Joker', hp:1900, atk:100, isCard:true, card:'assets/cards/enemies/jules.svg'},
-  bernyce:{nome:'Bernyce', hp:2000, atk:98, isCard:true, card:'assets/cards/enemies/bernyce.svg'},
-  kalander:{nome:'Kalander', hp:2300, atk:104, isCard:true, card:'assets/cards/enemies/kalander.svg'},
-  julius:{nome:'Julius', hp:2700, atk:118, isCard:true, card:'assets/cards/enemies/julius.svg'}
+  gareth:{nome:'Gareth', hp:130, atk:16, sprite:'assets/enemies/humanos/gareth.png', card:'assets/cards/enemies/gareth-card.png', flip:true},
+  cedric:{nome:'Cedric', hp:150, atk:18, sprite:'assets/enemies/humanos/cedric.png', card:'assets/cards/enemies/cedric-card.png', flip:true},
+  elizier:{nome:'Elizier', hp:160, atk:19, sprite:'assets/enemies/humanos/elizier.png', card:'assets/cards/enemies/elizier-card.png', flip:true},
+  roland:{nome:'Roland', hp:175, atk:20, sprite:'assets/enemies/humanos/roland.png', card:'assets/cards/enemies/roland-card.png', flip:true},
+  jules:{nome:'Jules, The Joker', hp:200, atk:22, isCard:true, card:'assets/cards/enemies/jules.svg'},
+  bernyce:{nome:'Bernyce', hp:220, atk:23, isCard:true, card:'assets/cards/enemies/bernyce.svg'},
+  kalander:{nome:'Kalander', hp:240, atk:24, isCard:true, card:'assets/cards/enemies/kalander.svg'},
+  julius:{nome:'Julius', hp:280, atk:26, isCard:true, card:'assets/cards/enemies/julius.svg'}
 };
 const WORLDS=[{
   id:'humanos', nome:'Reino dos Humanos', titulo:'Terra dos Reguladores de Ygdria',
@@ -4247,18 +4540,22 @@ function buildWorldLevel(){
   const world=WORLDS[0];
   const fase=world.fases[worldRun.fase];
   const f=worldRun.fase, n=worldRun.nivel;
-  const mult=(1+f*0.32)*(1+(n-1)*0.08);
+  /* Curva oficial: o jogador NÃO fica mais forte por fase (mesmas cartas), então
+     HP inimigo cresce devagar (+18%/fase) e ATK mais devagar ainda (+8%/fase);
+     dentro da fase: +10% HP e +5% ATK por missão. Início fácil, chefe desafiador. */
+  const hpMult=(1+f*0.18)*(1+(n-1)*0.10);
+  const atkMult=(1+f*0.08)*(1+(n-1)*0.05);
   const keys=fase.missoes[n-1]||['soldado1'];
   const enemies=keys.map((key)=>{
     const c=HUMANOS_CARDS[key];
     if(c){
-      const e={name:c.nome, hp:Math.round(c.hp*mult), atk:Math.round(c.atk*mult)};
+      const e={name:c.nome, hp:Math.round(c.hp*hpMult), atk:Math.round(c.atk*atkMult), cardId:key};
       if(c.isCard){ e.sprite=c.card; e.isCard=true; }
       else{ e.sprite=c.sprite; if(c.flip) e.flip=true; }
       return e;
     }
     const tpl=HUMANOS_ETYPES[key]||HUMANOS_ETYPES.soldado1;
-    const e={name:tpl.n, hp:Math.round(tpl.hp*mult), atk:Math.round(tpl.atk*mult)};
+    const e={name:tpl.n, hp:Math.round(tpl.hp*hpMult), atk:Math.round(tpl.atk*atkMult)};
     if(tpl.sprite){ e.sprite=tpl.sprite; if(tpl.flip) e.flip=true; }
     else{ e.sprite=ESPR[tpl.s]; e.tint=tpl.t; }
     return e;
@@ -4266,8 +4563,8 @@ function buildWorldLevel(){
   if(n===5&&enemies.length){
     const chefe=enemies[enemies.length-1];
     chefe.isBoss=true;
-    chefe.hp=Math.round(chefe.hp*1.3);   // chefes de fase são mais fortes
-    chefe.atk=Math.round(chefe.atk*1.15);
+    chefe.hp=Math.round(chefe.hp*1.35);   // chefes de fase são mais fortes
+    chefe.atk=Math.round(chefe.atk*1.2);
   }
   return {
     title:`${fase.nome} · ${T('Missão','Mission','Misión')} ${n}/5${n===5?' · CHEFE':''}`,
@@ -4355,7 +4652,7 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
     renderCoach();
   }));
   applyLanguage();
-  if(IS_DAILY_RUN){ towerMode=false; worldRun.active=false; pendingStage=0; showSelection(); }
+  if(IS_DAILY_RUN){ towerMode=true; towerFloor=1; worldRun.active=false; pendingStage=0; showSelection(); } /* Diário = torre seeded de 5 andares */
   updateCoinBadge();
 
   // v9.1 · Fluxo de abertura: Introdução da história -> Idioma (1ª vez) -> Menu
@@ -4585,9 +4882,16 @@ async function runSmokeTest(){
   try{
     localStorage.setItem('12r_tutorial','1');
     ok('12 heróis divinos + cartas jogáveis', KINGDOMS.filter(k=>k.rarity==='DIVINA').length===12 && KINGDOMS.length>=16);
-    ok('contrato 3 passivas + 3 ativas', KINGDOMS.every(k=>k.abilities.filter(a=>a.kind==='passive').length===3&&k.abilities.filter(a=>a.kind==='active').length===3));
-    ok('8 fases na masmorra', DUNGEON.length===8);
+    /* Tabela oficial de estrelas: 1★=0P/0A 2★=1P/0A 3★=2P/0A 4★=3P/0A 5★=3P/1A 6★=3P/2A 7★=3P/3A */
+    const STAR_KIT={1:[0,0],2:[1,0],3:[2,0],4:[3,0],5:[3,1],6:[3,2],7:[3,3]};
+    ok('contrato de habilidades por estrelas', KINGDOMS.every(k=>{
+      const [p,a]=STAR_KIT[k.stars||7]||[3,3];
+      return k.abilities.filter(x=>x.kind==='passive').length===p&&k.abilities.filter(x=>x.kind==='active').length===a;
+    }));
+    ok('10 fases no Reino dos Humanos', WORLDS[0].fases.length===10);
+    ok('50 missões oficiais', WORLDS[0].fases.every(f=>f.missoes.length===5));
     chosenIds=[0,3,7,11]; pendingStage=0; towerMode=false;
+    worldRun={active:true,fase:0,nivel:1};
     beginGame(0);
     await wait(600);
     ok('tabuleiro completo', document.querySelectorAll('#board .cell').length===SIZE*SIZE);
@@ -4599,13 +4903,17 @@ async function runSmokeTest(){
     enemies.forEach((e,i)=>{ if(e.hp>0) applyDamageToEnemy(e.hp,3,i); });
     finishRoomIfCleared();
     await wait(900);
-    ok('fase concluída', document.getElementById('stageClearOverlay').classList.contains('show')||stageIndex>0);
-    await wait(1500);
-    loadStage(5); busy=false;
-    await wait(350);
-    ok('obstáculos nas Dunas', Object.keys(obstaclesMeta).length===3);
-    ok('objetivo de coleta ativo', /Colete|esferas/.test(stageObjectiveEl.textContent));
+    ok('missão concluída', document.getElementById('stageClearOverlay').classList.contains('show')||worldRun.nivel>1);
+    await wait(1200);
+    /* Habilidade de Fase: motor executa efeito de inimigo-carta sem quebrar o tabuleiro */
+    placeObstacles({stone:2,ice:1});
+    ok('obstáculos operantes', Object.keys(obstaclesMeta).length===3);
+    const fakeSA={nome:'QA',cd:1,tipo:'trocarCores',qtd:2};
+    execStageAbility(enemies[0]||{}, fakeSA);
+    ok('habilidade de fase executa', document.querySelectorAll('#board .cell').length===SIZE*SIZE);
+    ok('16 habilidades de fase definidas', KINGDOMS.filter(k=>k.stageAbility&&k.stageAbility.nome).length>=16);
     ok('moedas e XP de perfil operantes', typeof coins==='number'&&typeof profileLevel()==='number');
+    worldRun.active=false;
   }catch(e){
     results.push({name:'exceção: '+e.message, pass:false});
   }
@@ -4623,6 +4931,7 @@ async function runSmokeTest(){
   localStorage.setItem('12r_smoke',JSON.stringify({t:Date.now(),results}));
   return results;
 }
+refreshContinueButton(); /* WORLDS já inicializado neste ponto do arquivo */
 if(new URLSearchParams(location.search).get('qa')==='smoke'){
   window.addEventListener('load',()=>setTimeout(runSmokeTest,400));
 }
