@@ -1583,6 +1583,17 @@ function applyBattleFormation(){
   });
 }
 
+/* == CHÃO DOS CENÁRIOS: onde o piso REAL de cada arte começa (fração do TOPO da imagem)
+   e onde termina (moldura decorativa na base, se houver). Medido arte por arte. */
+const SCENE_GROUND={
+  humanos:[ [0.60,1],[0.63,1],[0.64,1],[0.64,1],[0.65,1],
+            [0.60,1],[0.62,1],[0.63,0.86],[0.75,1],[0.66,1] ]
+};
+function groundBand(){
+  let top=0.55, bot=1;
+  if(worldRun.active){ const g=SCENE_GROUND.humanos[worldRun.fase]; if(g){ top=g[0]; bot=g[1]; } }
+  return {top,bot};
+}
 function applyFormationSlot(unit,slot,width){
   if(!unit||!slot) return;
   /* Ajuste fino mobile: comprime a formação para nenhuma unidade/nome sair da tela */
@@ -1591,8 +1602,24 @@ function applyFormationSlot(unit,slot,width){
   const y=estreito?50+(slot.y-50)*0.9:slot.y;
   const s=estreito?slot.s*0.8:slot.s;
   const w=estreito?Math.round(width*0.84):width;
+  /* ATERRISSAGEM: re-mapeia a profundidade (y 0..46) para a banda de chão da arte da
+     fase — todos os pés (heróis, inimigos, golens, harpias) pisam no piso pintado.
+     bottom% = ((1-F)·alturaArena − gap − UI sob os pés) / alturaRow  (cover = 100% da
+     altura da arte visível, então fração do topo da arte ≡ fração do topo da arena). */
+  let yFin=y;
+  const arenaBox=document.querySelector('.arena');
+  const rowEl=unit.parentElement;
+  if(arenaBox&&rowEl&&rowEl.clientHeight>40&&document.body.classList.contains('game-active')){
+    const {top,bot}=groundBand();
+    const aH=arenaBox.clientHeight, rH=rowEl.clientHeight;
+    const gap=27, uiFeet=28*s;
+    const yMax=Math.max(4,(((1-top)*aH-gap-uiFeet)/rH)*100);
+    const yMin=Math.max(0,(((1-bot)*aH-gap)/rH)*100);
+    const prof=Math.max(0,Math.min(1,y/46));
+    yFin=yMin+prof*Math.max(0,yMax-yMin);
+  }
   unit.style.setProperty('--slot-x',x+'%');
-  unit.style.setProperty('--slot-y',y+'%');
+  unit.style.setProperty('--slot-y',yFin+'%');
   unit.style.setProperty('--slot-scale',String(s));
   unit.style.setProperty('--slot-z',String(slot.z));
   unit.style.setProperty('--slot-w',w+'px');

@@ -1460,7 +1460,7 @@ body.game-active .arena::before{
 body.game-active .arena-row{z-index:5!important}
 body.game-active .unit{
   width:var(--slot-w,112px)!important;
-  transform:translate(-50%,-50%) scale(var(--slot-scale,1))!important;
+  transform:translateX(-50%) scale(var(--slot-scale,1))!important; /* pés ancorados — nunca subir meia altura */
   filter:drop-shadow(0 10px 8px rgba(0,0,0,.62));
 }
 body.game-active .party-row .unit{--slot-w:122px}
