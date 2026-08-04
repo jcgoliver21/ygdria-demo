@@ -4010,18 +4010,18 @@ const WORLDS=[{
 }];
 /* v9.1 · Mapa de Ygdria: 12 reinos traçados; só o Reino dos Humanos liberado */
 const REALMS_MAP=[
-  {id:'terra',    x:19, y:12},
-  {id:'fogo',     x:48, y:15},
-  {id:'vento',    x:82, y:14},
-  {id:'raio',     x:12, y:34},
-  {id:'chuvas',   x:85, y:36},
-  {id:'humanos',  x:49, y:48, unlocked:true},
-  {id:'sombras',  x:12, y:58},
-  {id:'agua',     x:49, y:62},
-  {id:'natureza', x:79, y:66},
-  {id:'areia',    x:49, y:77},
-  {id:'gelo',     x:21, y:80},
-  {id:'luz',      x:32, y:88}
+  {id:'raio',     x:28, y:21.5},
+  {id:'sombras',  x:50, y:20.5},
+  {id:'gelo',     x:76, y:21.5},
+  {id:'vento',    x:15, y:40.5},
+  {id:'chuvas',   x:83, y:40.5},
+  {id:'humanos',  x:50, y:48, unlocked:true},
+  {id:'fogo',     x:14, y:63.5},
+  {id:'natureza', x:85, y:64.5},
+  {id:'agua',     x:48, y:72},
+  {id:'terra',    x:13, y:80.5},
+  {id:'areia',    x:79, y:88},
+  {id:'luz',      x:49, y:87.5}
 ];
 function openMapScreen(){
   renderMapScreen();
@@ -4044,7 +4044,7 @@ function renderMapScreen(){
     pin.setAttribute('aria-label',k.reino+(r.unlocked?'':' — '+T('em breve','coming soon','próximamente')));
     pin.innerHTML=`
       <span class="pin-gem"><svg viewBox="0 0 24 24">${KINGDOM_ICON[r.id]||''}</svg>${r.unlocked?'':'<i class="pin-lock">🔒</i>'}</span>
-      <span class="pin-label">${k.reino.replace('Reino ','')}</span>`;
+      ${r.unlocked?`<span class="pin-label">${T('ENTRAR','ENTER','ENTRAR')}</span>`:''}`;
     pin.addEventListener('click',()=>{
       if(!r.unlocked){
         sfxInvalid();

@@ -2361,11 +2361,14 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
   background:linear-gradient(90deg,#f6e6b4,#c9a24b,#f6e6b4); -webkit-background-clip:text; background-clip:text; color:transparent; }
 .map-title small{ font-size:10px; opacity:.7; letter-spacing:1.5px; }
 .map-viewport{ flex:1; overflow:auto; display:flex; align-items:center; justify-content:center; padding:8px; }
-.map-canvas{ position:relative; width:min(96vw, calc((100vh - 90px) * 0.94), 900px); aspect-ratio:942/1002;
+.map-canvas{ position:relative; width:min(96vw, calc(100vh - 90px), 900px); aspect-ratio:1/1;
   border-radius:14px; overflow:hidden; border:2px solid rgba(212,175,90,.5);
   box-shadow:0 0 50px rgba(0,0,0,.7), 0 0 30px rgba(212,175,90,.15);
   background-image:url('assets/map/ygdria.png');
-  background-size:135.4% auto; background-position:48.5% 100%; background-repeat:no-repeat; }
+  background-size:cover; background-position:center; background-repeat:no-repeat; }
+.realm-pin.locked::before{ content:''; position:absolute; left:50%; top:calc(50% - 34px);
+  transform:translate(-50%,-50%); width:200px; height:150px; border-radius:50%;
+  background:radial-gradient(ellipse, rgba(4,6,14,.5), transparent 68%); z-index:-1; pointer-events:none; }
 .realm-pin{ position:absolute; transform:translate(-50%,-50%); display:flex; flex-direction:column; align-items:center; gap:3px;
   background:transparent; border:none; cursor:pointer; padding:6px; z-index:5; }
 .pin-gem{ position:relative; width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center;
