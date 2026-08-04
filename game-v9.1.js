@@ -736,7 +736,7 @@ function showUltimateCutin(k,a){
   }
   layer.innerHTML=`
     <div class="cutin-bg"></div>
-    <div class="cutin-card"><img src="${k.cardThumb||k.img}" alt=""></div>
+    <div class="cutin-card"><img src="${IMGL(k.cardThumb||k.img)}"${IMGF(k.cardThumb||k.img)} alt=""></div>
     <div class="cutin-name"><span>${L(k.reino)}</span><b>${L(a.name)}</b></div>`;
   layer.style.setProperty('--cut',k.color);
   layer.classList.remove('show'); void layer.offsetWidth; layer.classList.add('show');
@@ -2269,6 +2269,19 @@ const I18N_DICT={"Reino da Luz":["Realm of Light","Reino de la Luz"],"Reino dos 
 /* L(): traduz strings de DADOS (habilidades, fases, inimigos, loja...) na renderização.
    Chave = string PT canônica dos objetos; valor = [EN, ES]. Fora do dicionário: retorna como veio. */
 function L(str){ if(lang==='pt'||!str) return str; const e=I18N_DICT[str]; return e ? (lang==='en'?e[0]:(e[1]||e[0])) : str; }
+/* == ARTE LOCALIZADA: se existir assets/i18n/<idioma>/<mesmo caminho> (ex.:
+   assets/i18n/en/assets/cards/enemies/gareth-card.png), o jogo usa a versão
+   traduzida; senão cai na original automaticamente (onerror / camada dupla). */
+function IMGL(src){ return (lang==='pt'||!src) ? src : 'assets/i18n/'+lang+'/'+src; }
+function IMGF(src){ return (lang==='pt'||!src) ? '' : ` onerror="this.onerror=null;this.src='${src}'"`; }
+function applyI18nArtCss(){
+  let st=document.getElementById('i18nArtCss');
+  if(!st){ st=document.createElement('style'); st.id='i18nArtCss'; document.head.appendChild(st); }
+  if(lang==='pt'){ st.textContent=''; return; }
+  const mapa='assets/map/ygdria.png', mapaL='assets/i18n/'+lang+'/'+mapa;
+  st.textContent=`.map-canvas{background-image:url('${mapaL}'),url('${mapa}');}
+.scene-bg[data-screen="menu"]{background-image:linear-gradient(180deg,rgba(5,4,12,.22) 0%,rgba(5,4,12,.38) 55%,rgba(4,3,10,.66) 100%),url('${mapaL}'),url('${mapa}');}`;
+}
 
 const STATIC_I18N=[
   ['#playBtn .menu-label','Jogar','Play','Jugar'],
@@ -2380,6 +2393,7 @@ const STATIC_I18N=[
   ["#storySkip","Pular","Skip","Saltar"]
 ];
 function applyLanguage(){
+  applyI18nArtCss();
   const li=lang==='en'?2:lang==='es'?3:1;
   STATIC_I18N.forEach(entry=>{
     const el=document.querySelector(entry[0]);
@@ -4173,7 +4187,7 @@ function renderSelectGrid(){
       card.style.setProperty('--realm-dark',k.colorDark);
       const pickOrder = chosenIds.indexOf(idx);
       card.innerHTML = `
-        <div class="thumb-wrap"><img src="${k.cardThumb||k.img}" alt="${k.nome}" loading="lazy">${pickOrder>=0?`<div class="pick-badge" aria-hidden="true">${pickOrder+1}</div>`:''}<button class="zoom-btn" type="button" data-idx="${idx}" aria-label="${T(`Abrir carta de ${L(k.nome)} em alta resolução`,`Open ${L(k.nome)}'s card in high resolution`,`Abrir la carta de ${L(k.nome)} en alta resolución`)}">🔍</button></div>
+        <div class="thumb-wrap"><img src="${IMGL(k.cardThumb||k.img)}"${IMGF(k.cardThumb||k.img)} alt="${k.nome}" loading="lazy">${pickOrder>=0?`<div class="pick-badge" aria-hidden="true">${pickOrder+1}</div>`:''}<button class="zoom-btn" type="button" data-idx="${idx}" aria-label="${T(`Abrir carta de ${L(k.nome)} em alta resolução`,`Open ${L(k.nome)}'s card in high resolution`,`Abrir la carta de ${L(k.nome)} en alta resolución`)}">🔍</button></div>
       `;
       card.setAttribute('role','button');
       card.setAttribute('tabindex','0');
@@ -4205,7 +4219,7 @@ function toggleHero(idx){
 
 function openCardModal(idx){
   const k = KINGDOMS[idx];
-  document.getElementById('cardModalImg').src = k.img;
+  { const mi=document.getElementById('cardModalImg'); mi.onerror=()=>{ mi.onerror=null; mi.src=k.img; }; mi.src=IMGL(k.img); }
   document.getElementById('cardModalImg').alt = L(k.nome);
   document.getElementById('cardModalName').textContent = L(k.nome);
   document.getElementById('cardModalClasse').textContent = L(k.reino) + ' · ' + L(k.classe);
@@ -4258,7 +4272,7 @@ function renderCardStrip(){
     mini.setAttribute('tabindex','0');
     mini.setAttribute('aria-label',T(`Abrir carta de ${L(k.nome)}`,`Open ${L(k.nome)}'s card`,`Abrir la carta de ${L(k.nome)}`));
     mini.innerHTML = `
-      <div class="mini-thumb"><img src="${k.cardThumb||k.img}" alt="${L(k.nome)}"></div>
+      <div class="mini-thumb"><img src="${IMGL(k.cardThumb||k.img)}"${IMGF(k.cardThumb||k.img)} alt="${L(k.nome)}"></div>
       <div class="mini-card-copy">
         <div class="mini-name">${L(k.nome)}</div>
         <div class="mini-rarity"><span class="unit-gem" style="--ug:${gemC};--ug-l:${gemL};--ug-d:${gemD}" aria-hidden="true"></span>${L(k.rarity||'DIVINA')}</div>
@@ -4382,7 +4396,7 @@ function renderGallery(){
       const card=document.createElement('div');
       card.className='gallery-card';
       card.style.setProperty('--realm',k.color); card.style.setProperty('--realm-dark',k.colorDark);
-      card.innerHTML=`<div class="gallery-thumb-wrap"><img src="${k.cardThumb||k.img}" alt="${k.nome}" loading="lazy"><button class="gallery-zoom" type="button" aria-label="${T('Ampliar carta de','Enlarge card of','Ampliar la carta de')} ${k.nome}">🔍</button></div><b><span class="realm-dot" style="--realm:${k.color};--realm-light:${k.colorLight};--realm-dark:${k.colorDark};margin-right:3px;"></span>${k.nome}</b><small>${L(k.rarity||'DIVINA')} · ${'★'.repeat(k.stars||7)}</small>`;
+      card.innerHTML=`<div class="gallery-thumb-wrap"><img src="${IMGL(k.cardThumb||k.img)}"${IMGF(k.cardThumb||k.img)} alt="${k.nome}" loading="lazy"><button class="gallery-zoom" type="button" aria-label="${T('Ampliar carta de','Enlarge card of','Ampliar la carta de')} ${k.nome}">🔍</button></div><b><span class="realm-dot" style="--realm:${k.color};--realm-light:${k.colorLight};--realm-dark:${k.colorDark};margin-right:3px;"></span>${k.nome}</b><small>${L(k.rarity||'DIVINA')} · ${'★'.repeat(k.stars||7)}</small>`;
       card.querySelector('.gallery-zoom').addEventListener('click',()=>openCardModal(idx));
       dgrid.appendChild(card);
     });
