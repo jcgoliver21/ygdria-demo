@@ -4509,7 +4509,7 @@ const WORLDS=[{
 /* Pins à ESQUERDA do nome pintado de cada reino, centrados na altura do título */
 const REALMS_MAP=[
   {id:'raio',     x:17.5, y:13.5},
-  {id:'sombras',  x:36.5, y:13.5},
+  {id:'sombras',  x:39,   y:13.5},
   {id:'gelo',     x:64.5, y:14},
   {id:'vento',    x:5.5,  y:34},
   {id:'chuvas',   x:71.5, y:33},
@@ -4518,7 +4518,7 @@ const REALMS_MAP=[
   {id:'natureza', x:72,   y:57},
   {id:'agua',     x:36.5, y:65.5},
   {id:'terra',    x:4.8,  y:73.5},
-  {id:'areia',    x:66.5, y:82.5},
+  {id:'areia',    x:68.5, y:81.5},
   {id:'luz',      x:36.5, y:83.5}
 ];
 function openMapScreen(){
@@ -4537,8 +4537,8 @@ function renderMapScreen(){
     const pin=document.createElement('button');
     pin.type='button';
     pin.className='realm-pin'+(r.unlocked?' unlocked':' locked');
-    pin.style.left=Math.max(7,Math.min(93,r.x))+'%';
-    pin.style.top=Math.max(6,Math.min(94,r.y))+'%';
+    pin.style.left=Math.max(4.5,Math.min(94,r.x))+'%';
+    pin.style.top=Math.max(5,Math.min(95,r.y))+'%';
     pin.style.setProperty('--realm-c',k.color);
     pin.setAttribute('aria-label',k.reino+(r.unlocked?'':' — '+T('em breve','coming soon','próximamente')));
     pin.innerHTML=`
@@ -4639,6 +4639,7 @@ function renderWorldMap(){
     const stars=prog.stars[idx]||0;
     const node=document.createElement('button');
     node.className='fase-node'+(locked?' locked':'');
+    node.style.setProperty('--fase-c', (KINGDOMS.find(k=>k.id===world.id)||{}).color||'#d4af5a');
     node.disabled=locked;
     node.style.backgroundImage=`linear-gradient(rgba(4,2,8,.25),rgba(4,2,8,.9)),url('${fase.bg}')`;
     node.innerHTML=`<span class="fase-num">${idx+1}</span>
@@ -4661,7 +4662,7 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
   applyDifficultyUI();
   const dailyHint=document.getElementById('dailyHint');
   let rec={}; try{ rec=JSON.parse(localStorage.getItem('12r_daily')||'{}'); }catch(e){}
-  if(dailyHint) dailyHint.textContent = rec.date===todayKey() ? `Concluído hoje ✓ · combo ×${rec.combo||0}` : `Seed de ${todayKey()}`;
+  if(dailyHint) dailyHint.textContent = rec.date===todayKey() ? `Concluído hoje ✓ · combo ×${rec.combo||0}` : `${T('Tabuleiro do dia','Daily board','Tablero del día')} ${todayKey().slice(8,10)}/${todayKey().slice(5,7)}`;
   document.getElementById('dailyBtn')?.addEventListener('click',()=>{
     const url=new URL(location.href);
     url.searchParams.set('seed','12R-'+todayKey());
