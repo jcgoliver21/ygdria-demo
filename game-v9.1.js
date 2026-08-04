@@ -806,7 +806,7 @@ function cycleMusicMood(){
 
 const SIZE = 6;
 const BASE_ATK = 12;
-const PLAYER_MAX_HP = 4000;
+let PLAYER_MAX_HP = 4000; // v9.1: recalculado a cada batalha = fator da dificuldade × soma do ataque das 4 cartas
 
 let board = [];
 let powerUps = {};
@@ -859,7 +859,17 @@ let harpyAllies = 0;   // v9: harpias da Sophitia (máx. 5, ecoam 20% do dano de
 let heroEmpower = {};  // v9: cargas de Full Power por herói {idx:{left,mult}}
 
 /* v9.1 · Dificuldade selecionável */
-const DIFFICULTY_MULTS={facil:{hp:.7,atk:.7},normal:{hp:1,atk:1},pesadelo:{hp:1.5,atk:1.4}};
+/* HP do jogador por dificuldade (regra oficial):
+   Fácil = 50×(soma do ataque das 4 cartas) · Normal = 25× · Pesadelo = 10× */
+const DIFFICULTY_MULTS={
+  facil:{hp:.85,atk:.85,hpFactor:50},
+  normal:{hp:1,atk:1,hpFactor:25},
+  pesadelo:{hp:1.15,atk:1.15,hpFactor:10}
+};
+function computePlayerMaxHP(){
+  const soma=ACTIVE.reduce((acc,i)=>acc+heroAtkFor(i),0)||80;
+  return Math.max(400,(DIFFICULTY_MULTS[difficulty]?.hpFactor||25)*soma);
+}
 let difficulty=localStorage.getItem('12r_difficulty')||'normal';
 if(!DIFFICULTY_MULTS[difficulty]) difficulty='normal';
 function applyDifficultyUI(){
@@ -3759,11 +3769,12 @@ function showSelection(){
   document.body.classList.remove('game-active');
   sceneBgEl.dataset.screen='selection'; renderSelectGrid();
 }
-function beginGame(startAt=0,restoredHP=PLAYER_MAX_HP){
+function beginGame(startAt=0,restoredHP=null){
   resetRunStats();
   if(chosenIds.length!==4) return;
   ensureAudio();
   ACTIVE = [...chosenIds];
+  PLAYER_MAX_HP = computePlayerMaxHP();
   playerHP = Math.max(1,Math.min(PLAYER_MAX_HP,restoredHP||PLAYER_MAX_HP));
   heroProgress = {}; firedTiers = {}; heroReady = {}; heroActiveQueue = {};
   pendingRoomPassives=[]; roomClearScheduled=false; golemAllies=0; harpyAllies=0; heroEmpower={};
@@ -3787,6 +3798,7 @@ function beginGame(startAt=0,restoredHP=PLAYER_MAX_HP){
 
 function renderGallery(){
   const grid=document.getElementById('galleryGrid'); grid.innerHTML='';
+  document.getElementById('enemyGallerySection')?.remove();
   KINGDOMS.forEach((k,idx)=>{
     const card=document.createElement('div');
     card.className='gallery-card';
@@ -3794,6 +3806,20 @@ function renderGallery(){
     card.innerHTML=`<div class="gallery-thumb-wrap"><img src="${k.cardThumb||k.img}" alt="${k.nome}"><button class="gallery-zoom" type="button" aria-label="Ampliar carta de ${k.nome}">🔍</button></div><b><span class="realm-dot" style="--realm:${k.color};--realm-light:${k.colorLight};--realm-dark:${k.colorDark};margin-right:3px;"></span>${k.nome}</b><small>${k.rarity||'DIVINA'} · ${'★'.repeat(k.stars||7)}</small>`;
     card.querySelector('.gallery-zoom').addEventListener('click',()=>openCardModal(idx)); grid.appendChild(card);
   });
+  // v9.1 · Cartas Inimigas do Reino Rosa (chefes do Reino dos Humanos)
+  const section=document.createElement('div');
+  section.id='enemyGallerySection';
+  section.innerHTML=`<h3 class="enemy-gallery-title">🌸 ${T('Cartas do Reino Rosa','Cards of the Rose Realm','Cartas del Reino Rosa')} <small>${T('chefes do Reino dos Humanos','Human Realm bosses','jefes del Reino Humano')}</small></h3>`;
+  const egrid=document.createElement('div');
+  egrid.className='enemy-gallery-grid';
+  Object.values(HUMANOS_CARDS).forEach(c=>{
+    const el=document.createElement('div');
+    el.className='gallery-card enemy-gallery-card';
+    el.innerHTML=`<div class="gallery-thumb-wrap"><img src="${c.card}" alt="${c.nome}" loading="lazy"></div><b>${c.nome}</b><small>${T('Carta Inimiga','Enemy Card','Carta Enemiga')}${c.isCard?' · '+T('em breve','coming soon','próximamente'):''}</small>`;
+    egrid.appendChild(el);
+  });
+  section.appendChild(egrid);
+  grid.parentElement.appendChild(section);
 }
 const STAGE_ART=["assets/bg/bg-08.png","assets/bg/bg-09.png","assets/bg/bg-10.png","assets/bg/bg-11.png"];
 function renderJourneyMap(){
@@ -3950,62 +3976,69 @@ const ESPR={
   dragon:'assets/enemies/crimson-dragon/single-1.png'
 };
 const HUMANOS_ETYPES={
-  slimeCereja:{n:'Slime de Cerejeira', s:'slime', t:'hue-rotate(300deg) saturate(1.6) brightness(1.2)', hp:280, atk:38},
-  loboRaivoso:{n:'Lobo Raivoso', s:'wolf', t:'saturate(1.9) hue-rotate(330deg) brightness(1.05)', hp:340, atk:46},
-  soldado:{n:'Soldado', s:'sentinel', t:'saturate(.65) brightness(1.05)', hp:400, atk:48},
-  capitao:{n:'Capitão dos Soldados', s:'sentinel', t:'sepia(.45) saturate(1.5) contrast(1.1)', hp:680, atk:60},
-  vulto:{n:'Vulto Sombrio', s:'wraith', t:'brightness(.5) saturate(.6)', hp:440, atk:52},
-  espectro:{n:'Espectro Sombrio', s:'wraith', t:'brightness(1.35) hue-rotate(240deg)', hp:540, atk:58},
-  morto:{n:'Cavaleiro Morto-Vivo', s:'sentinel', t:'hue-rotate(90deg) brightness(.72) saturate(1.3)', hp:760, atk:64},
-  soldBib:{n:'Soldado da Biblioteca', s:'sentinel', t:'sepia(.85) brightness(1.05)', hp:540, atk:56},
-  infantaria:{n:'Soldado de Infantaria', s:'sentinel', t:'hue-rotate(205deg) saturate(.85)', hp:580, atk:58},
-  cavalaria:{n:'Soldado de Cavalaria', s:'wolf', t:'hue-rotate(205deg) brightness(1.15)', hp:620, atk:62},
-  comandante:{n:'Comandante dos Soldados', s:'sentinel', t:'contrast(1.35) saturate(1.6) brightness(1.08)', hp:940, atk:72},
-  trono:{n:'Soldado do Trono Real', s:'sentinel', t:'sepia(.7) saturate(2) brightness(1.18)', hp:840, atk:68}
+  /* Fases 1-5 · chibis oficiais (Reino Rosa). Base pensada para o pool
+     Normal = 25×80 = 2000 HP: inimigos iniciais tiram ~1.5-3% por golpe. */
+  slimeCereja:{n:'Slime de Cerejeira', sprite:'assets/enemies/humanos/slime-cerejeira.png', hp:240, atk:30},
+  loboRaivoso:{n:'Lobo Raivoso', sprite:'assets/enemies/humanos/lobo-raivoso.png', hp:320, atk:38},
+  soldado1:{n:'Soldado 1', sprite:'assets/enemies/humanos/soldado-1.png', hp:380, atk:42},
+  soldado2:{n:'Soldado 2', sprite:'assets/enemies/humanos/soldado-2.png', hp:420, atk:46},
+  capitao:{n:'Capitão dos Soldados', sprite:'assets/enemies/humanos/capitao.png', hp:650, atk:58},
+  /* Fases 6-10 · genéricos (sprites reutilizados até os chibis chegarem) */
+  vulto:{n:'Vulto Sombrio', s:'wraith', t:'brightness(.5) saturate(.6)', hp:480, atk:54},
+  espectro:{n:'Espectro Sombrio', s:'wraith', t:'brightness(1.35) hue-rotate(240deg)', hp:580, atk:60},
+  morto:{n:'Cavaleiro Morto-Vivo', s:'sentinel', t:'hue-rotate(90deg) brightness(.72) saturate(1.3)', hp:800, atk:68},
+  soldBib:{n:'Soldado da Biblioteca', s:'sentinel', t:'sepia(.85) brightness(1.05)', hp:560, atk:56},
+  infantaria:{n:'Soldado de Infantaria', s:'sentinel', t:'hue-rotate(205deg) saturate(.85)', hp:600, atk:58},
+  cavalaria:{n:'Soldado de Cavalaria', s:'wolf', t:'hue-rotate(205deg) brightness(1.15)', hp:640, atk:64},
+  comandante:{n:'Comandante dos Soldados', s:'sentinel', t:'contrast(1.35) saturate(1.6) brightness(1.08)', hp:980, atk:74},
+  trono:{n:'Soldado do Trono Real', s:'sentinel', t:'sepia(.7) saturate(2) brightness(1.18)', hp:880, atk:70}
 };
+/* Chefes de Carta: com chibi oficial lutam em campo como personagens
+   (a carta vai para a galeria do Reino Rosa); sem chibi ainda, aparecem
+   como carta no campo (isCard). Chefes recebem +30% HP e +15% ATK. */
 const HUMANOS_CARDS={
-  gareth:{nome:'Gareth', hp:1500, atk:78, img:'assets/cards/enemies/gareth.svg'},
-  cedric:{nome:'Cedric', hp:1600, atk:82, img:'assets/cards/enemies/cedric.svg'},
-  eliza:{nome:'Eliza', hp:1550, atk:86, img:'assets/cards/enemies/eliza.svg'},
-  roland:{nome:'Roland', hp:1750, atk:80, img:'assets/cards/enemies/roland.svg'},
-  jules:{nome:'Jules, The Joker', hp:2000, atk:95, img:'assets/cards/enemies/jules.svg'},
-  bernyce:{nome:'Bernyce', hp:2100, atk:92, img:'assets/cards/enemies/bernyce.svg'},
-  kalander:{nome:'Kalander', hp:2400, atk:98, img:'assets/cards/enemies/kalander.svg'},
-  julius:{nome:'Julius', hp:2800, atk:112, img:'assets/cards/enemies/julius.svg'}
+  gareth:{nome:'Gareth', hp:1350, atk:80, sprite:'assets/enemies/humanos/gareth.png', card:'assets/cards/enemies/gareth-card.png'},
+  cedric:{nome:'Cedric', hp:1450, atk:88, sprite:'assets/enemies/humanos/cedric.png', card:'assets/cards/enemies/cedric-card.png'},
+  elizier:{nome:'Elizier', hp:1400, atk:92, sprite:'assets/enemies/humanos/elizier.png', card:'assets/cards/enemies/elizier-card.png'},
+  roland:{nome:'Roland', hp:1550, atk:86, sprite:'assets/enemies/humanos/roland.png', card:'assets/cards/enemies/roland-card.png'},
+  jules:{nome:'Jules, The Joker', hp:1900, atk:100, isCard:true, card:'assets/cards/enemies/jules.svg'},
+  bernyce:{nome:'Bernyce', hp:2000, atk:98, isCard:true, card:'assets/cards/enemies/bernyce.svg'},
+  kalander:{nome:'Kalander', hp:2300, atk:104, isCard:true, card:'assets/cards/enemies/kalander.svg'},
+  julius:{nome:'Julius', hp:2700, atk:118, isCard:true, card:'assets/cards/enemies/julius.svg'}
 };
 const WORLDS=[{
   id:'humanos', nome:'Reino dos Humanos', titulo:'Terra dos Reguladores de Ygdria',
   fases:[
-    { nome:'Cidade das Cerejeiras', sub:'Capital de Ygdria', bg:'assets/bg/humanos/fase-01.svg', chefe:'Gareth',
+    { nome:'Cidade das Cerejeiras', sub:'Capital de Ygdria', bg:'assets/bg/humanos/fase-01.svg', chefe:'Gareth', rec:'4× carta 1★',
       dial:[{h:'humanos',t:'Minha capital... as cerejeiras choram pétalas. Algo corrompeu a guarda da cidade.'}],
-      missoes:[['slimeCereja'],['slimeCereja','loboRaivoso'],['loboRaivoso','loboRaivoso'],['soldado','soldado'],['soldado','soldado','gareth']] },
-    { nome:'Catedral de Ygdria', sub:'Onde a fé encontrou a magia', bg:'assets/bg/humanos/fase-02.svg', chefe:'Cedric',
+      missoes:[['slimeCereja'],['slimeCereja','loboRaivoso'],['loboRaivoso','loboRaivoso'],['soldado1','soldado2'],['soldado1','soldado2','gareth']] },
+    { nome:'Catedral de Ygdria', sub:'Onde a fé encontrou a magia', bg:'assets/bg/humanos/fase-02.svg', chefe:'Cedric', rec:'4× carta 1★',
       dial:[{h:'luz',t:'Este lugar já foi sagrado. Os vitrais ainda cantam... mas há aço entre os bancos.'}],
-      missoes:[['soldado','soldado'],['capitao'],['soldado','capitao'],['soldado','soldado','capitao'],['soldado','capitao','cedric']] },
-    { nome:'Palácio dos Reguladores', sub:'A ordem acima de tudo', bg:'assets/bg/humanos/fase-03.svg', chefe:'Eliza',
+      missoes:[['soldado1','soldado2'],['capitao'],['soldado2','capitao'],['soldado1','soldado2','capitao'],['soldado1','capitao','cedric']] },
+    { nome:'Palácio dos Reguladores', sub:'A ordem acima de tudo', bg:'assets/bg/humanos/fase-03.svg', chefe:'Elizier', rec:'1× 2★ + 3× 1★',
       dial:[{h:'humanos',t:'Os Reguladores mantinham o equilíbrio entre os reinos. Quem os dobrou?'}],
-      missoes:[['soldado','soldado'],['capitao'],['soldado','capitao'],['soldado','soldado','capitao'],['soldado','capitao','eliza']] },
-    { nome:'Academia Real de Magia e Combate', sub:'Onde nascem os magos-cavaleiros', bg:'assets/bg/humanos/fase-05.svg', chefe:'Roland',
+      missoes:[['soldado1','soldado2'],['capitao'],['soldado1','capitao'],['soldado1','soldado2','capitao'],['soldado1','soldado2','capitao','elizier']] },
+    { nome:'Academia Real de Magia e Combate', sub:'Onde nascem os magos-cavaleiros', bg:'assets/bg/humanos/fase-05.svg', chefe:'Roland', rec:'1× 2★ + 3× 1★',
       dial:[{h:'raio',t:'Ha! Estudei aqui... e fui expulso. Hora de mostrar aos instrutores o que aprendi sozinho.'}],
-      missoes:[['soldado','soldado'],['capitao'],['soldado','capitao'],['soldado','soldado','capitao'],['soldado','capitao','roland']] },
-    { nome:'Mercado Central dos Reinos', sub:'Tudo tem um preço', bg:'assets/bg/humanos/fase-06.svg', chefe:'Cedric, Eliza e Roland',
+      missoes:[['soldado1','soldado2'],['capitao'],['soldado1','capitao'],['soldado1','soldado2','capitao'],['soldado2','capitao','roland']] },
+    { nome:'Mercado Central dos Reinos', sub:'Tudo tem um preço', bg:'assets/bg/humanos/fase-06.svg', chefe:'Cedric, Elizier e Roland', rec:'2× 2★ + 2× 1★',
       dial:[{h:'areia',t:'Conheço mercados assim — e emboscadas também. Três lâminas nos esperam no fim desta rua.'}],
-      missoes:[['soldado','soldado'],['capitao'],['soldado','capitao'],['soldado','soldado','capitao'],['cedric','eliza','roland']] },
-    { nome:'Praça das Doze Essências', sub:'Doze pilares, doze reinos', bg:'assets/bg/humanos/fase-04.svg', chefe:'Jules, The Joker',
+      missoes:[['soldado1','soldado2'],['capitao'],['soldado2','capitao'],['soldado1','soldado2','capitao'],['cedric','elizier','roland']] },
+    { nome:'Praça das Doze Essências', rec:'2× 2★ + 2× 1★', sub:'Doze pilares, doze reinos', bg:'assets/bg/humanos/fase-04.svg', chefe:'Jules, The Joker',
       dial:[{h:'sombras',t:'Vultos entre os pilares... e um riso que não é humano. Ele acha que sombras são um jogo.'}],
       missoes:[['vulto'],['espectro'],['vulto','espectro'],['morto'],['jules']] },
-    { nome:'Biblioteca da Eternidade', sub:'Todo saber, um só silêncio', bg:'assets/bg/humanos/fase-07.svg', chefe:'Bernyce',
+    { nome:'Biblioteca da Eternidade', rec:'2× 2★ + 2× 1★', sub:'Todo saber, um só silêncio', bg:'assets/bg/humanos/fase-07.svg', chefe:'Bernyce',
       dial:[{h:'chuvas',t:'Séculos de conhecimento vigiados por soldados... e por ela. Bernyce não empresta livros.'}],
-      missoes:[['soldBib'],['soldBib','soldBib'],['soldBib','soldBib','soldBib'],['cedric','eliza','roland'],['bernyce']] },
-    { nome:'Muralha dos Heróis', sub:'Eles ainda vigiam', bg:'assets/bg/humanos/fase-08.svg', chefe:'Kalander',
+      missoes:[['soldBib'],['soldBib','soldBib'],['soldBib','soldBib','soldBib'],['cedric','elizier','roland'],['bernyce']] },
+    { nome:'Muralha dos Heróis', rec:'3× 2★ + 1× 1★', sub:'Eles ainda vigiam', bg:'assets/bg/humanos/fase-08.svg', chefe:'Kalander',
       dial:[{h:'terra',t:'Infantaria, cavalaria, comando... e no topo da muralha, Kalander. Esta pedra vai tremer.'}],
       missoes:[['infantaria'],['cavalaria'],['comandante'],['infantaria','cavalaria','comandante'],['kalander']] },
-    { nome:'Lendária Torre de Acesso à Eternidade', sub:'O céu é a porta', bg:'assets/bg/humanos/fase-09.svg', chefe:'Julius',
+    { nome:'Lendária Torre de Acesso à Eternidade', rec:'3× 2★ + 1× 1★', sub:'O céu é a porta', bg:'assets/bg/humanos/fase-09.svg', chefe:'Julius',
       dial:[{h:'sombras',t:'Esta torre toca a Eternidade... e Julius desceu dela. Sinto o véu se rasgar.'}],
       missoes:[['vulto','espectro'],['morto'],['vulto','espectro','morto'],['jules'],['julius']] },
-    { nome:'Castelo da Coroa Humana', sub:'O trono espera seu verdadeiro rei', bg:'assets/bg/humanos/fase-10.svg', chefe:'Julius',
+    { nome:'Castelo da Coroa Humana', rec:'4× carta 2★', sub:'O trono espera seu verdadeiro rei', bg:'assets/bg/humanos/fase-10.svg', chefe:'Julius',
       dial:[{h:'humanos',t:'O castelo da minha linhagem. Todos os campeões dele nos aguardam... e Julius por trás de tudo.'},{h:'fogo',t:'Cinco cartas contra nós? Ótimo. Sempre quis um baralho em chamas.'}],
-      missoes:[['trono'],['cedric','eliza','roland'],['kalander','cedric','eliza','roland'],['kalander','bernyce'],['julius']] }
+      missoes:[['trono'],['cedric','elizier','roland'],['kalander','cedric','elizier','roland'],['kalander','bernyce'],['julius']] }
   ]
 }];
 /* v9.1 · Mapa de Ygdria: 12 reinos traçados; só o Reino dos Humanos liberado */
@@ -4084,14 +4117,27 @@ function buildWorldLevel(){
   const fase=world.fases[worldRun.fase];
   const f=worldRun.fase, n=worldRun.nivel;
   const mult=(1+f*0.32)*(1+(n-1)*0.08);
-  const keys=fase.missoes[n-1]||['soldado'];
+  const keys=fase.missoes[n-1]||['soldado1'];
   const enemies=keys.map((key)=>{
     const c=HUMANOS_CARDS[key];
-    if(c) return {name:c.nome, hp:Math.round(c.hp*mult), atk:Math.round(c.atk*mult), sprite:c.img, isCard:true};
-    const tpl=HUMANOS_ETYPES[key]||HUMANOS_ETYPES.soldado;
-    return {name:tpl.n, hp:Math.round(tpl.hp*mult), atk:Math.round(tpl.atk*mult), sprite:ESPR[tpl.s], tint:tpl.t};
+    if(c){
+      const e={name:c.nome, hp:Math.round(c.hp*mult), atk:Math.round(c.atk*mult)};
+      if(c.isCard){ e.sprite=c.card; e.isCard=true; }
+      else e.sprite=c.sprite;
+      return e;
+    }
+    const tpl=HUMANOS_ETYPES[key]||HUMANOS_ETYPES.soldado1;
+    const e={name:tpl.n, hp:Math.round(tpl.hp*mult), atk:Math.round(tpl.atk*mult)};
+    if(tpl.sprite) e.sprite=tpl.sprite;
+    else{ e.sprite=ESPR[tpl.s]; e.tint=tpl.t; }
+    return e;
   });
-  if(n===5&&enemies.length) enemies[enemies.length-1].isBoss=true;
+  if(n===5&&enemies.length){
+    const chefe=enemies[enemies.length-1];
+    chefe.isBoss=true;
+    chefe.hp=Math.round(chefe.hp*1.3);   // chefes de fase são mais fortes
+    chefe.atk=Math.round(chefe.atk*1.15);
+  }
   return {
     title:`${fase.nome} · ${T('Missão','Mission','Misión')} ${n}/5${n===5?' · CHEFE':''}`,
     scene:n===5?4:(f%4),
@@ -4127,7 +4173,8 @@ function renderWorldMap(){
     node.style.backgroundImage=`linear-gradient(rgba(4,2,8,.25),rgba(4,2,8,.9)),url('${fase.bg}')`;
     node.innerHTML=`<span class="fase-num">${idx+1}</span>
       <span class="fase-copy"><b>${fase.nome}</b><small>${fase.sub}</small>
-      <em>${locked?'🔒 '+T('Bloqueada','Locked','Bloqueada'):(stars?'★'.repeat(stars)+'☆'.repeat(3-stars):T('5 níveis · chefe no final','5 levels · boss at the end','5 niveles · jefe al final'))}</em></span>`;
+      ${fase.rec?`<small class="fase-rec">🎴 ${T('Recomendado','Recommended','Recomendado')}: ${fase.rec}</small>`:''}
+      <em>${locked?'🔒 '+T('Bloqueada','Locked','Bloqueada'):(stars?'★'.repeat(stars)+'☆'.repeat(3-stars):T('5 missões · chefe no final','5 missions · boss at the end','5 misiones · jefe al final'))}</em></span>`;
     node.addEventListener('click',()=>startWorldFase(idx));
     map.appendChild(node);
   });
