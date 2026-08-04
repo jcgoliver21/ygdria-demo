@@ -1448,13 +1448,24 @@ function useQueuedActive(idx,a){
 
 function renderStageProgress(){
   stageProgressEl.innerHTML = '';
-  for(let i=0;i<DUNGEON.length;i++){
+  const total=worldRun.active?5:towerMode?5:DUNGEON.length;
+  const atual=worldRun.active?worldRun.nivel-1:towerMode?((towerFloor-1)%5):stageIndex;
+  for(let i=0;i<total;i++){
     const seg = document.createElement('div');
-    seg.className = 'arena-seg' + (i<stageIndex ? ' done' : (i===stageIndex ? ' current' : ''));
+    seg.className = 'arena-seg' + (i<atual ? ' done' : (i===atual ? ' current' : ''));
     stageProgressEl.appendChild(seg);
   }
-  stageLabelEl.textContent = `Fase ${stageIndex+1}/${DUNGEON.length}`;
-  dungeonTitleEl.textContent = DUNGEON[stageIndex].title;
+  if(worldRun.active){
+    const fase=WORLDS[0].fases[worldRun.fase];
+    stageLabelEl.textContent = `${T('Missão','Mission','Misión')} ${worldRun.nivel}/5`;
+    dungeonTitleEl.textContent = fase.nome;
+  }else if(towerMode){
+    stageLabelEl.textContent = `${T('Andar','Floor','Piso')} ${towerFloor}`;
+    dungeonTitleEl.textContent = T('Torre Infinita','Infinite Tower','Torre Infinita');
+  }else{
+    stageLabelEl.textContent = `Fase ${stageIndex+1}/${DUNGEON.length}`;
+    dungeonTitleEl.textContent = DUNGEON[stageIndex].title;
+  }
   arenaEl.className = 'arena scene-'+((activeStageData&&Number.isFinite(activeStageData.scene))?activeStageData.scene:DUNGEON[stageIndex].scene);
   if(activeStageData?.bgUrl){
     arenaEl.style.setProperty('background-image',`linear-gradient(rgba(6,3,13,.22),rgba(6,3,13,.5)),url('${activeStageData.bgUrl}')`,'important');
@@ -1772,7 +1783,7 @@ function loadStage(idx){
   if(stageIndex===0&&!towerMode) startCoach();
   maybeShowStory(idx);
   playStageMusic(stageData.scene);
-  setBattleStatus(`Fase ${idx+1}: combine esferas para enfrentar ${stageData.enemies.map(e=>e.name).join(' e ')}.`);
+  setBattleStatus(`${worldRun.active?stageData.title.split(' · ')[1]||stageData.title:towerMode?stageData.title:`Fase ${idx+1}`}: combine esferas para enfrentar ${stageData.enemies.map(e=>e.name).join(' e ')}.`);
   const qaMode=new URLSearchParams(location.search).get('qa');
   if(qaMode==='luciusritual'&&!qaRitualTriggered){
     qaRitualTriggered=true;
@@ -1949,7 +1960,6 @@ function T(pt,en,es){ return lang==='en'?en:lang==='es'?(es||en):pt; }
 const STATIC_I18N=[
   ['#playBtn .menu-label','Jogar','Play','Jugar'],
   ['#galleryBtn .menu-label','Galeria <small class="menu-hint">Cartas e habilidades</small>','Gallery <small class="menu-hint">Cards & abilities</small>','Galería <small class="menu-hint">Cartas y habilidades</small>'],
-  ['#journeyBtn .menu-label','Jornada <small class="menu-hint">Mapa da masmorra</small>','Journey <small class="menu-hint">Dungeon map</small>','Travesía <small class="menu-hint">Mapa de la mazmorra</small>'],
   ['#shopBtn .menu-label','Loja <small class="menu-hint">Consumíveis de batalha</small>','Shop <small class="menu-hint">Battle consumables</small>','Tienda <small class="menu-hint">Consumibles de batalla</small>'],
   ['#achBtn .menu-label','Conquistas','Achievements','Logros'],
   ['#optionsBtn .menu-label','Opções','Options','Opciones'],
@@ -1960,7 +1970,7 @@ const STATIC_I18N=[
   ['#galleryTitle','Galeria dos Reinos','Gallery of the Realms','Galería de los Reinos'],
   ['#playAgainBtn','Jogar novamente','Play again','Jugar de nuevo'],
   ['#retryBtn','Tentar novamente','Try again','Intentar de nuevo'],
-  ['#startBtn','Entrar na Masmorra','Enter the Dungeon','Entrar a la Mazmorra'],
+  ['#startBtn','Iniciar a Aventura!','Begin the Adventure!','¡Iniciar la Aventura!'],
   ['#autoTeamBtn','Equipe sugerida','Suggested team','Equipo sugerido']
 ];
 function applyLanguage(){
@@ -3520,12 +3530,13 @@ function onStageCleared(){
     flushRunToProfile(true);
     const starsEl=document.getElementById('stageStars');
     if(starsEl) starsEl.innerHTML=[1,2,3].map(x=>`<span class="star${x<=stars?' on':''}" style="--i:${x}">★</span>`).join('');
-    document.getElementById('stageClearText').textContent=`${fase.boss.n} ${T('derrotado!','defeated!','derrotado!')} ${fase.nome} ${T('conquistada!','conquered!','conquistada!')}${ups.length?' '+ups.join(' '):''}`;
+    document.getElementById('stageClearText').textContent=`${fase.chefe} ${T('derrotado(a)!','defeated!','¡derrotado(a)!')} ${fase.nome} ${T('conquistada!','conquered!','conquistada!')}${ups.length?' '+ups.join(' '):''}`;
     showOverlay('stageClearOverlay');
     setTimeout(()=>{
       hideOverlay('stageClearOverlay');
       worldRun.active=false;
       showMainMenu();
+      openMapScreen();
       renderWorldMap();
       openPanel('worldScreen');
       busy=false;
@@ -3818,11 +3829,11 @@ function applySettings(){
 }
 
 startBtnEl.addEventListener('click',()=>beginGame(pendingStage));
-document.getElementById('playBtn').addEventListener('click',()=>{ towerMode=false; worldRun.active=false; pendingStage=0; showSelection(); });
+document.getElementById('playBtn').addEventListener('click',()=>{ towerMode=false; worldRun.active=false; pendingStage=0; openMapScreen(); });
 document.getElementById('continueBtn').addEventListener('click',()=>{ const saved=getSavedProgress(); if(!saved)return; towerMode=false; worldRun.active=false; chosenIds=[...saved.team]; beginGame(saved.stage,saved.hp); });
 document.getElementById('galleryBtn').addEventListener('click',()=>openPanel('galleryScreen'));
 document.getElementById('selectGalleryBtn').addEventListener('click',()=>openPanel('galleryScreen'));
-document.getElementById('journeyBtn').addEventListener('click',()=>openPanel('journeyScreen'));
+// v9.1: botões Jornada/Mundos removidos — o fluxo agora é Jogar → Mapa de Ygdria
 document.getElementById('optionsBtn').addEventListener('click',()=>openPanel('optionsScreen'));
 document.getElementById('helpBtn').addEventListener('click',()=>openPanel('helpScreen'));
 document.getElementById('battleToolsToggle').addEventListener('click',()=>toggleBattleTools());
@@ -3838,7 +3849,17 @@ document.getElementById('fullscreenTool').addEventListener('click',toggleGameFul
 document.getElementById('historyBtn').addEventListener('click',openBattleHistory);
 document.getElementById('copyHistoryBtn').addEventListener('click',copyBattleHistory);
 document.getElementById('clearHistoryBtn').addEventListener('click',clearBattleHistory);
-document.getElementById('selectBackBtn').addEventListener('click',showMainMenu);
+document.getElementById('selectBackBtn').addEventListener('click',()=>{
+  if(worldRun.active){ // desistiu da fase: volta ao mapa com a lista de fases aberta
+    worldRun.active=false;
+    showMainMenu();
+    openMapScreen();
+    renderWorldMap();
+    openPanel('worldScreen');
+    return;
+  }
+  showMainMenu();
+});
 document.getElementById('autoTeamBtn').addEventListener('click',()=>{ chosenIds=[0,1,2,3]; renderSelectGrid(); sfxSelect(); });
 
 swapBtnEl.addEventListener('click', ()=>{
@@ -3916,7 +3937,7 @@ showMainMenu();
 /* ============================================================
    v9.1 · MUNDOS — Reino dos Humanos (Terra dos Reguladores de Ygdria)
    10 fases × 5 níveis; o nível 5 de cada fase é o CHEFE.
-   Cenários: assets/bg/humanos/fase-XX.svg (troque pelo mesmo nome
+   Cenários: pasta assets/bg/humanos (troque o arquivo pelo mesmo nome
    quando a arte pintada chegar — nada mais precisa mudar).
    ============================================================ */
 var activeStageData=null;
@@ -3928,55 +3949,130 @@ const ESPR={
   wraith:'assets/enemies/cursed-wraith/single-1.png',
   dragon:'assets/enemies/crimson-dragon/single-1.png'
 };
+const HUMANOS_ETYPES={
+  slimeCereja:{n:'Slime de Cerejeira', s:'slime', t:'hue-rotate(300deg) saturate(1.6) brightness(1.2)', hp:280, atk:38},
+  loboRaivoso:{n:'Lobo Raivoso', s:'wolf', t:'saturate(1.9) hue-rotate(330deg) brightness(1.05)', hp:340, atk:46},
+  soldado:{n:'Soldado', s:'sentinel', t:'saturate(.65) brightness(1.05)', hp:400, atk:48},
+  capitao:{n:'Capitão dos Soldados', s:'sentinel', t:'sepia(.45) saturate(1.5) contrast(1.1)', hp:680, atk:60},
+  vulto:{n:'Vulto Sombrio', s:'wraith', t:'brightness(.5) saturate(.6)', hp:440, atk:52},
+  espectro:{n:'Espectro Sombrio', s:'wraith', t:'brightness(1.35) hue-rotate(240deg)', hp:540, atk:58},
+  morto:{n:'Cavaleiro Morto-Vivo', s:'sentinel', t:'hue-rotate(90deg) brightness(.72) saturate(1.3)', hp:760, atk:64},
+  soldBib:{n:'Soldado da Biblioteca', s:'sentinel', t:'sepia(.85) brightness(1.05)', hp:540, atk:56},
+  infantaria:{n:'Soldado de Infantaria', s:'sentinel', t:'hue-rotate(205deg) saturate(.85)', hp:580, atk:58},
+  cavalaria:{n:'Soldado de Cavalaria', s:'wolf', t:'hue-rotate(205deg) brightness(1.15)', hp:620, atk:62},
+  comandante:{n:'Comandante dos Soldados', s:'sentinel', t:'contrast(1.35) saturate(1.6) brightness(1.08)', hp:940, atk:72},
+  trono:{n:'Soldado do Trono Real', s:'sentinel', t:'sepia(.7) saturate(2) brightness(1.18)', hp:840, atk:68}
+};
+const HUMANOS_CARDS={
+  gareth:{nome:'Gareth', hp:1500, atk:78, img:'assets/cards/enemies/gareth.svg'},
+  cedric:{nome:'Cedric', hp:1600, atk:82, img:'assets/cards/enemies/cedric.svg'},
+  eliza:{nome:'Eliza', hp:1550, atk:86, img:'assets/cards/enemies/eliza.svg'},
+  roland:{nome:'Roland', hp:1750, atk:80, img:'assets/cards/enemies/roland.svg'},
+  jules:{nome:'Jules, The Joker', hp:2000, atk:95, img:'assets/cards/enemies/jules.svg'},
+  bernyce:{nome:'Bernyce', hp:2100, atk:92, img:'assets/cards/enemies/bernyce.svg'},
+  kalander:{nome:'Kalander', hp:2400, atk:98, img:'assets/cards/enemies/kalander.svg'},
+  julius:{nome:'Julius', hp:2800, atk:112, img:'assets/cards/enemies/julius.svg'}
+};
 const WORLDS=[{
   id:'humanos', nome:'Reino dos Humanos', titulo:'Terra dos Reguladores de Ygdria',
   fases:[
-    { nome:'Cidade das Cerejeiras', sub:'Capital de Ygdria', bg:'assets/bg/humanos/fase-01.svg',
+    { nome:'Cidade das Cerejeiras', sub:'Capital de Ygdria', bg:'assets/bg/humanos/fase-01.svg', chefe:'Gareth',
       dial:[{h:'humanos',t:'Minha capital... as cerejeiras choram pétalas. Algo corrompeu a guarda da cidade.'}],
-      pool:[{n:'Gosma de Cereja',s:'slime',t:'hue-rotate(300deg) saturate(1.6) brightness(1.2)'},{n:'Cão de Guarda Real',s:'wolf',t:'sepia(.5) saturate(1.5) brightness(1.15)'}],
-      boss:{n:'Capitão das Cerejeiras',s:'sentinel',t:'hue-rotate(300deg) saturate(1.3) brightness(1.1)'} },
-    { nome:'Catedral de Ygdria', sub:'Onde a fé encontrou a magia', bg:'assets/bg/humanos/fase-02.svg',
-      dial:[{h:'luz',t:'Este lugar já foi sagrado. Os vitrais ainda cantam... mas há sombras entre os bancos.'}],
-      pool:[{n:'Devoto Corrompido',s:'wraith',t:'brightness(1.3) hue-rotate(200deg)'},{n:'Gárgula do Vitral',s:'sentinel',t:'hue-rotate(230deg) brightness(.9)'}],
-      boss:{n:'Bispo Corrompido',s:'wraith',t:'brightness(1.5) hue-rotate(230deg) drop-shadow(0 0 12px rgba(180,150,255,.8))'} },
-    { nome:'Palácio dos Reguladores', sub:'A ordem acima de tudo', bg:'assets/bg/humanos/fase-03.svg',
+      missoes:[['slimeCereja'],['slimeCereja','loboRaivoso'],['loboRaivoso','loboRaivoso'],['soldado','soldado'],['soldado','soldado','gareth']] },
+    { nome:'Catedral de Ygdria', sub:'Onde a fé encontrou a magia', bg:'assets/bg/humanos/fase-02.svg', chefe:'Cedric',
+      dial:[{h:'luz',t:'Este lugar já foi sagrado. Os vitrais ainda cantam... mas há aço entre os bancos.'}],
+      missoes:[['soldado','soldado'],['capitao'],['soldado','capitao'],['soldado','soldado','capitao'],['soldado','capitao','cedric']] },
+    { nome:'Palácio dos Reguladores', sub:'A ordem acima de tudo', bg:'assets/bg/humanos/fase-03.svg', chefe:'Eliza',
       dial:[{h:'humanos',t:'Os Reguladores mantinham o equilíbrio entre os reinos. Quem os dobrou?'}],
-      pool:[{n:'Guarda-Regulador',s:'sentinel',t:'sepia(.4) hue-rotate(280deg)'},{n:'Executor do Decreto',s:'wolf',t:'hue-rotate(260deg) brightness(.9)'}],
-      boss:{n:'Regulador Renegado',s:'sentinel',t:'hue-rotate(270deg) saturate(1.5) brightness(1.05)'} },
-    { nome:'Praça das Doze Essências', sub:'Doze pilares, doze reinos', bg:'assets/bg/humanos/fase-04.svg',
-      objective:{type:'collect',count:45},
-      dial:[{h:'luz',t:'Os pilares das Doze Essências... estão drenando as esferas! Colete-as antes que apaguem.'}],
-      pool:[{n:'Ladrão de Essências',s:'wraith',t:'hue-rotate(160deg) brightness(1.2)'},{n:'Golem de Mana',s:'sentinel',t:'hue-rotate(180deg) saturate(1.6)'}],
-      boss:{n:'Guardião das Essências',s:'sentinel',t:'hue-rotate(160deg) saturate(2) brightness(1.2)'} },
-    { nome:'Academia Real de Magia e Combate', sub:'Onde nascem os magos-cavaleiros', bg:'assets/bg/humanos/fase-05.svg',
+      missoes:[['soldado','soldado'],['capitao'],['soldado','capitao'],['soldado','soldado','capitao'],['soldado','capitao','eliza']] },
+    { nome:'Academia Real de Magia e Combate', sub:'Onde nascem os magos-cavaleiros', bg:'assets/bg/humanos/fase-05.svg', chefe:'Roland',
       dial:[{h:'raio',t:'Ha! Estudei aqui... e fui expulso. Hora de mostrar aos instrutores o que aprendi sozinho.'}],
-      pool:[{n:'Aprendiz Possuído',s:'wraith',t:'hue-rotate(120deg) brightness(1.2)'},{n:'Armadura de Treino',s:'sentinel',t:'brightness(1.1) saturate(.6)'}],
-      boss:{n:'Arquimago Instrutor',s:'wraith',t:'hue-rotate(150deg) brightness(1.4) drop-shadow(0 0 10px rgba(120,255,220,.7))'} },
-    { nome:'Mercado Central dos Reinos', sub:'Tudo tem um preço', bg:'assets/bg/humanos/fase-06.svg',
-      objective:{type:'moves',limit:22},
-      dial:[{h:'areia',t:'Conheço mercados assim — e conheço contrabandistas. Sejamos rápidos: eles não gostam de testemunhas.'}],
-      pool:[{n:'Contrabandista',s:'wolf',t:'sepia(.6) saturate(1.8)'},{n:'Capanga do Barão',s:'sentinel',t:'sepia(.5) brightness(.95)'}],
-      boss:{n:'Barão do Contrabando',s:'wolf',t:'sepia(.8) saturate(2.2) brightness(1.15)'} },
-    { nome:'Biblioteca da Eternidade', sub:'Todo saber, um só silêncio', bg:'assets/bg/humanos/fase-07.svg',
-      obstacles:{stone:2},
-      dial:[{h:'chuvas',t:'Séculos de conhecimento... e páginas que viraram criaturas. Cuidado com o que vocês leem.'}],
-      pool:[{n:'Tomo Vivo',s:'slime',t:'sepia(.9) saturate(1.4)'},{n:'Bibliotecário Espectral',s:'wraith',t:'sepia(.7) brightness(1.25)'}],
-      boss:{n:'Guardião da Biblioteca',s:'wraith',t:'sepia(.9) brightness(1.35) drop-shadow(0 0 10px rgba(255,220,140,.7))'} },
-    { nome:'Muralha dos Heróis', sub:'Eles ainda vigiam', bg:'assets/bg/humanos/fase-08.svg',
-      objective:{type:'survive',turns:9}, obstacles:{stone:3},
-      dial:[{h:'terra',t:'As estátuas dos heróis antigos... elas se movem! Aguentem firme — a muralha testa os dignos.'}],
-      pool:[{n:'Estátua Desperta',s:'sentinel',t:'brightness(.85) saturate(.5)'},{n:'Sentinela da Muralha',s:'sentinel',t:'hue-rotate(200deg) brightness(.9)'}],
-      boss:{n:'Colosso da Muralha',s:'sentinel',t:'brightness(.8) saturate(.4) contrast(1.2)'} },
-    { nome:'Lendária Torre de Acesso à Eternidade', sub:'O céu é a porta', bg:'assets/bg/humanos/fase-09.svg',
-      dial:[{h:'sombras',t:'Esta torre toca a Eternidade... sinto o véu fino aqui. O que desce dela não é humano.'}],
-      pool:[{n:'Eco da Eternidade',s:'wraith',t:'brightness(1.6) saturate(.4)'},{n:'Vulto Ascendente',s:'wraith',t:'brightness(1.3) hue-rotate(260deg)'}],
-      boss:{n:'Vigia da Eternidade',s:'wraith',t:'brightness(1.8) saturate(.3) drop-shadow(0 0 16px rgba(230,220,255,.9))'} },
-    { nome:'Castelo da Coroa Humana', sub:'O trono espera seu verdadeiro rei', bg:'assets/bg/humanos/fase-10.svg',
-      dial:[{h:'humanos',t:'O castelo da minha linhagem. Quem quer que vista a coroa falsa... hoje ela cai.'},{h:'fogo',t:'Então é um usurpador com um dragão? Perfeito. Dragões são comigo.'}],
-      pool:[{n:'Cavaleiro da Coroa Falsa',s:'sentinel',t:'sepia(.6) hue-rotate(320deg)'},{n:'Mago da Corte Sombria',s:'wraith',t:'hue-rotate(300deg) brightness(1.1)'}],
-      boss:{n:'Rei Usurpador',s:'dragon',t:'sepia(.5) saturate(1.6) hue-rotate(20deg) brightness(1.05)'} }
+      missoes:[['soldado','soldado'],['capitao'],['soldado','capitao'],['soldado','soldado','capitao'],['soldado','capitao','roland']] },
+    { nome:'Mercado Central dos Reinos', sub:'Tudo tem um preço', bg:'assets/bg/humanos/fase-06.svg', chefe:'Cedric, Eliza e Roland',
+      dial:[{h:'areia',t:'Conheço mercados assim — e emboscadas também. Três lâminas nos esperam no fim desta rua.'}],
+      missoes:[['soldado','soldado'],['capitao'],['soldado','capitao'],['soldado','soldado','capitao'],['cedric','eliza','roland']] },
+    { nome:'Praça das Doze Essências', sub:'Doze pilares, doze reinos', bg:'assets/bg/humanos/fase-04.svg', chefe:'Jules, The Joker',
+      dial:[{h:'sombras',t:'Vultos entre os pilares... e um riso que não é humano. Ele acha que sombras são um jogo.'}],
+      missoes:[['vulto'],['espectro'],['vulto','espectro'],['morto'],['jules']] },
+    { nome:'Biblioteca da Eternidade', sub:'Todo saber, um só silêncio', bg:'assets/bg/humanos/fase-07.svg', chefe:'Bernyce',
+      dial:[{h:'chuvas',t:'Séculos de conhecimento vigiados por soldados... e por ela. Bernyce não empresta livros.'}],
+      missoes:[['soldBib'],['soldBib','soldBib'],['soldBib','soldBib','soldBib'],['cedric','eliza','roland'],['bernyce']] },
+    { nome:'Muralha dos Heróis', sub:'Eles ainda vigiam', bg:'assets/bg/humanos/fase-08.svg', chefe:'Kalander',
+      dial:[{h:'terra',t:'Infantaria, cavalaria, comando... e no topo da muralha, Kalander. Esta pedra vai tremer.'}],
+      missoes:[['infantaria'],['cavalaria'],['comandante'],['infantaria','cavalaria','comandante'],['kalander']] },
+    { nome:'Lendária Torre de Acesso à Eternidade', sub:'O céu é a porta', bg:'assets/bg/humanos/fase-09.svg', chefe:'Julius',
+      dial:[{h:'sombras',t:'Esta torre toca a Eternidade... e Julius desceu dela. Sinto o véu se rasgar.'}],
+      missoes:[['vulto','espectro'],['morto'],['vulto','espectro','morto'],['jules'],['julius']] },
+    { nome:'Castelo da Coroa Humana', sub:'O trono espera seu verdadeiro rei', bg:'assets/bg/humanos/fase-10.svg', chefe:'Julius',
+      dial:[{h:'humanos',t:'O castelo da minha linhagem. Todos os campeões dele nos aguardam... e Julius por trás de tudo.'},{h:'fogo',t:'Cinco cartas contra nós? Ótimo. Sempre quis um baralho em chamas.'}],
+      missoes:[['trono'],['cedric','eliza','roland'],['kalander','cedric','eliza','roland'],['kalander','bernyce'],['julius']] }
   ]
 }];
+/* v9.1 · Mapa de Ygdria: 12 reinos traçados; só o Reino dos Humanos liberado */
+const REALMS_MAP=[
+  {id:'terra',    x:19, y:12},
+  {id:'fogo',     x:48, y:15},
+  {id:'vento',    x:82, y:14},
+  {id:'raio',     x:12, y:34},
+  {id:'chuvas',   x:85, y:36},
+  {id:'humanos',  x:49, y:48, unlocked:true},
+  {id:'sombras',  x:12, y:58},
+  {id:'agua',     x:49, y:62},
+  {id:'natureza', x:79, y:66},
+  {id:'areia',    x:49, y:77},
+  {id:'gelo',     x:21, y:80},
+  {id:'luz',      x:32, y:88}
+];
+function openMapScreen(){
+  renderMapScreen();
+  document.getElementById('mapScreen')?.classList.add('show');
+}
+function closeMapScreen(){ document.getElementById('mapScreen')?.classList.remove('show'); }
+function renderMapScreen(){
+  const canvas=document.getElementById('mapCanvas');
+  if(!canvas) return;
+  canvas.innerHTML='';
+  REALMS_MAP.forEach(r=>{
+    const k=KINGDOMS.find(kk=>kk.id===r.id);
+    if(!k) return;
+    const pin=document.createElement('button');
+    pin.type='button';
+    pin.className='realm-pin'+(r.unlocked?' unlocked':' locked');
+    pin.style.left=r.x+'%';
+    pin.style.top=r.y+'%';
+    pin.style.setProperty('--realm-c',k.color);
+    pin.setAttribute('aria-label',k.reino+(r.unlocked?'':' — '+T('em breve','coming soon','próximamente')));
+    pin.innerHTML=`
+      <span class="pin-gem"><svg viewBox="0 0 24 24">${KINGDOM_ICON[r.id]||''}</svg>${r.unlocked?'':'<i class="pin-lock">🔒</i>'}</span>
+      <span class="pin-label">${k.reino.replace('Reino ','')}</span>`;
+    pin.addEventListener('click',()=>{
+      if(!r.unlocked){
+        sfxInvalid();
+        pin.classList.remove('deny'); void pin.offsetWidth; pin.classList.add('deny');
+        showMapTip(T('Em breve: ','Coming soon: ','Próximamente: ')+k.reino);
+        return;
+      }
+      sfxSelect();
+      renderWorldMap();
+      openPanel('worldScreen');
+    });
+    canvas.appendChild(pin);
+  });
+}
+function showMapTip(text){
+  let tip=document.getElementById('mapTip');
+  if(!tip){
+    tip=document.createElement('div');
+    tip.id='mapTip';
+    tip.className='map-tip';
+    document.getElementById('mapScreen')?.appendChild(tip);
+  }
+  tip.textContent=text;
+  tip.classList.remove('show'); void tip.offsetWidth; tip.classList.add('show');
+  clearTimeout(tip._t);
+  tip._t=setTimeout(()=>tip.classList.remove('show'),2200);
+}
+
 function worldProg(worldId){
   try{ return JSON.parse(localStorage.getItem('12r_world_'+worldId)||'{"unlocked":0,"stars":{}}'); }
   catch(e){ return {unlocked:0,stars:{}}; }
@@ -3986,24 +4082,20 @@ function buildWorldLevel(){
   const world=WORLDS[0];
   const fase=world.fases[worldRun.fase];
   const f=worldRun.fase, n=worldRun.nivel;
-  const mult=(1+f*0.45)*(1+(n-1)*0.16);
-  const mk=(tpl,hp,atk)=>({name:tpl.n, hp:Math.round(hp*mult), atk:Math.round(atk*mult), sprite:ESPR[tpl.s], tint:tpl.t});
-  let enemies;
-  if(n===5){
-    enemies=[{...mk(fase.boss,900,60), isBoss:true}];
-    enemies[0].hp=Math.round(enemies[0].hp*2.2);
-    if(f>=4) enemies.unshift(mk(fase.pool[0],320,42));
-  }else{
-    const count=n<=1?1:n<=3?2:3;
-    enemies=Array.from({length:count},(_,i)=>mk(fase.pool[i%fase.pool.length],320+i*60,42+i*6));
-  }
+  const mult=(1+f*0.32)*(1+(n-1)*0.08);
+  const keys=fase.missoes[n-1]||['soldado'];
+  const enemies=keys.map((key)=>{
+    const c=HUMANOS_CARDS[key];
+    if(c) return {name:c.nome, hp:Math.round(c.hp*mult), atk:Math.round(c.atk*mult), sprite:c.img, isCard:true};
+    const tpl=HUMANOS_ETYPES[key]||HUMANOS_ETYPES.soldado;
+    return {name:tpl.n, hp:Math.round(tpl.hp*mult), atk:Math.round(tpl.atk*mult), sprite:ESPR[tpl.s], tint:tpl.t};
+  });
+  if(n===5&&enemies.length) enemies[enemies.length-1].isBoss=true;
   return {
-    title:`${fase.nome} · Nível ${n}/5${n===5?' · CHEFE':''}`,
+    title:`${fase.nome} · ${T('Missão','Mission','Misión')} ${n}/5${n===5?' · CHEFE':''}`,
     scene:n===5?4:(f%4),
     bgUrl:fase.bg,
     enemies,
-    objective:(n===3&&fase.objective)?fase.objective:null,
-    obstacles:(n===4&&fase.obstacles)?fase.obstacles:null,
     dial:n===1?fase.dial:null
   };
 }
@@ -4013,9 +4105,9 @@ function startWorldFase(faseIdx){
   worldRun={active:true,fase:faseIdx,nivel:1};
   towerMode=false;
   closeAllPanels();
+  closeMapScreen();
   pendingStage=0;
-  if(chosenIds.length===4) beginGame(0);
-  else showSelection();
+  showSelection(); // o jogador escolhe a equipe e toca em "Iniciar a Aventura!"
 }
 function renderWorldMap(){
   const world=WORLDS[0];
@@ -4062,7 +4154,7 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
   const bestT=Number(localStorage.getItem('12r_tower_best')||0);
   if(towerHint&&bestT>0) towerHint.textContent=`Recorde: andar ${bestT}`;
   document.getElementById('towerBtn')?.addEventListener('click',()=>{ towerMode=true; worldRun.active=false; towerFloor=1; pendingStage=0; showSelection(); });
-  document.getElementById('worldsBtn')?.addEventListener('click',()=>openPanel('worldScreen'));
+  document.getElementById('mapBackBtn')?.addEventListener('click',()=>{ closeMapScreen(); sfxSelect(); });
   document.getElementById('shopBtn')?.addEventListener('click',()=>openPanel('shopScreen'));
   document.getElementById('achBtn')?.addEventListener('click',()=>openPanel('achScreen'));
   document.getElementById('coachNext')?.addEventListener('click',()=>{ coachStep++; renderCoach(); sfxSelect(); });

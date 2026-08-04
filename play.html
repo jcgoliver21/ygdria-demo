@@ -24,8 +24,6 @@
       <button class="menu-btn primary" id="playBtn"><span class="menu-icon">⚔</span><span class="menu-label">Jogar</span><span>›</span></button>
       <button class="menu-btn" id="continueBtn" disabled><span class="menu-icon">✦</span><span class="menu-label">Continuar <small class="menu-hint" id="continueHint">Sem progresso salvo</small></span><span>›</span></button>
       <button class="menu-btn" id="galleryBtn"><span class="menu-icon">▦</span><span class="menu-label">Galeria <small class="menu-hint">Cartas e habilidades</small></span><span>›</span></button>
-      <button class="menu-btn" id="worldsBtn"><span class="menu-icon">🌍</span><span class="menu-label">Mundos <small class="menu-hint">Reino dos Humanos</small></span><span>›</span></button>
-      <button class="menu-btn" id="journeyBtn"><span class="menu-icon">⌁</span><span class="menu-label">Jornada <small class="menu-hint">Mapa da masmorra</small></span><span>›</span></button>
       <button class="menu-btn" id="dailyBtn"><span class="menu-icon">📅</span><span class="menu-label">Desafio Diário <small class="menu-hint" id="dailyHint">Seed do dia</small></span><span>›</span></button>
       <button class="menu-btn" id="towerBtn"><span class="menu-icon">🗼</span><span class="menu-label">Torre Infinita <small class="menu-hint" id="towerHint">Inimigos sem fim</small></span><span>›</span></button>
       <button class="menu-btn" id="shopBtn"><span class="menu-icon">🪙</span><span class="menu-label">Loja <small class="menu-hint">Consumíveis de batalha</small></span><span>›</span></button>
@@ -291,6 +289,14 @@
       <button class="lang-flag" data-lang="es" type="button"><span>🇪🇸</span><b>Español</b><small>España</small></button>
     </div>
   </div>
+</div>
+<div class="map-screen" id="mapScreen">
+  <div class="map-topbar">
+    <button class="ghost-btn" id="mapBackBtn">← Menu</button>
+    <div class="map-title"><b>YGDRIA</b><small id="mapSubtitle">Escolha um reino para explorar</small></div>
+    <span class="map-topbar-spacer"></span>
+  </div>
+  <div class="map-viewport"><div class="map-canvas" id="mapCanvas"></div></div>
 </div>
 <div class="boot-screen" id="loginScreen">
   <div class="boot-card">

@@ -2349,3 +2349,42 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
 .fase-copy b{ display:block; font-size:13px; color:#fff3d6; text-shadow:0 1px 3px #000; }
 .fase-copy small{ display:block; font-size:9px; opacity:.8; letter-spacing:.5px; }
 .fase-copy em{ display:block; font-style:normal; font-size:10px; color:#ffd75e; margin-top:4px; letter-spacing:1px; }
+/* v9.1 · Mapa de Ygdria */
+.map-screen{ position:fixed; inset:0; z-index:120; display:none; flex-direction:column;
+  background:radial-gradient(ellipse at 50% 0%,#152238 0%,transparent 60%),linear-gradient(180deg,#0a1020 0%,#060912 100%); }
+.map-screen.show{ display:flex; }
+.map-topbar{ display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:calc(8px + env(safe-area-inset-top)) 14px 8px; }
+.map-topbar-spacer{ width:74px; }
+.map-title{ text-align:center; }
+.map-title b{ display:block; font-size:20px; letter-spacing:5px; font-family:Georgia,serif;
+  background:linear-gradient(90deg,#f6e6b4,#c9a24b,#f6e6b4); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.map-title small{ font-size:10px; opacity:.7; letter-spacing:1.5px; }
+.map-viewport{ flex:1; overflow:auto; display:flex; align-items:center; justify-content:center; padding:8px; }
+.map-canvas{ position:relative; width:min(96vw, calc((100vh - 90px) * 0.94), 900px); aspect-ratio:942/1002;
+  border-radius:14px; overflow:hidden; border:2px solid rgba(212,175,90,.5);
+  box-shadow:0 0 50px rgba(0,0,0,.7), 0 0 30px rgba(212,175,90,.15);
+  background-image:url('assets/map/ygdria.png');
+  background-size:135.4% auto; background-position:48.5% 100%; background-repeat:no-repeat; }
+.realm-pin{ position:absolute; transform:translate(-50%,-50%); display:flex; flex-direction:column; align-items:center; gap:3px;
+  background:transparent; border:none; cursor:pointer; padding:6px; z-index:5; }
+.pin-gem{ position:relative; width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:radial-gradient(circle at 32% 28%, color-mix(in srgb,var(--realm-c,#d4af5a) 60%,#fff) 0%, var(--realm-c,#d4af5a) 50%, #0a0712 130%);
+  border:2px solid rgba(255,240,200,.85); box-shadow:0 3px 10px rgba(0,0,0,.7), 0 0 14px var(--realm-c,#d4af5a); }
+.pin-gem svg{ width:22px; height:22px; filter:drop-shadow(0 1px 2px rgba(0,0,0,.8)); }
+.pin-label{ font-size:9px; font-weight:bold; letter-spacing:.5px; color:#fff3d6; text-shadow:0 1px 3px #000,0 0 8px #000;
+  background:rgba(6,4,10,.65); padding:2px 7px; border-radius:8px; border:1px solid rgba(212,175,90,.4); white-space:nowrap; }
+.realm-pin.locked .pin-gem{ filter:grayscale(.95) brightness(.55); border-color:rgba(160,160,160,.5); box-shadow:0 3px 8px rgba(0,0,0,.7); }
+.realm-pin.locked .pin-label{ opacity:.6; }
+.pin-lock{ position:absolute; bottom:-4px; right:-6px; font-size:14px; font-style:normal; filter:none; }
+.realm-pin.unlocked .pin-gem{ animation:pinPulse 2.2s ease-in-out infinite; }
+@keyframes pinPulse{ 0%,100%{ box-shadow:0 3px 10px rgba(0,0,0,.7), 0 0 14px var(--realm-c); transform:scale(1); }
+  50%{ box-shadow:0 3px 10px rgba(0,0,0,.7), 0 0 30px var(--realm-c), 0 0 46px rgba(255,225,150,.5); transform:scale(1.08); } }
+.realm-pin.unlocked .pin-label{ border-color:#ffe198; color:#ffe9b0; }
+.realm-pin.deny{ animation:pinDeny .4s ease; }
+@keyframes pinDeny{ 0%,100%{ transform:translate(-50%,-50%); } 25%{ transform:translate(calc(-50% - 5px),-50%); } 75%{ transform:translate(calc(-50% + 5px),-50%); } }
+.map-tip{ position:absolute; left:50%; bottom:calc(18px + env(safe-area-inset-bottom)); transform:translateX(-50%) translateY(8px);
+  padding:9px 16px; border-radius:12px; background:linear-gradient(160deg,#241a38,#0d0912); border:1px solid var(--gold);
+  color:#f2e8d0; font-size:12px; opacity:0; transition:.25s ease; pointer-events:none; z-index:10; box-shadow:0 6px 20px rgba(0,0,0,.6); }
+.map-tip.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+@media (prefers-reduced-motion:reduce){ .realm-pin.unlocked .pin-gem{ animation:none; } }
