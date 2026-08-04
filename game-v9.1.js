@@ -4009,19 +4009,20 @@ const WORLDS=[{
   ]
 }];
 /* v9.1 · Mapa de Ygdria: 12 reinos traçados; só o Reino dos Humanos liberado */
+/* Pins à ESQUERDA do nome pintado de cada reino, centrados na altura do título */
 const REALMS_MAP=[
-  {id:'raio',     x:28,   y:23},
-  {id:'sombras',  x:50,   y:22.5},
-  {id:'gelo',     x:76,   y:22.5},
-  {id:'vento',    x:15,   y:42},
-  {id:'chuvas',   x:83,   y:41.5},
-  {id:'humanos',  x:50,   y:50.5, unlocked:true},
-  {id:'fogo',     x:14,   y:65},
-  {id:'natureza', x:85,   y:65.5},
-  {id:'agua',     x:48,   y:73.5},
-  {id:'terra',    x:13,   y:82},
-  {id:'areia',    x:79,   y:90},
-  {id:'luz',      x:33.5, y:85.5}
+  {id:'raio',     x:17.5, y:13.5},
+  {id:'sombras',  x:36.5, y:13.5},
+  {id:'gelo',     x:64.5, y:14},
+  {id:'vento',    x:5.5,  y:34},
+  {id:'chuvas',   x:71.5, y:33},
+  {id:'humanos',  x:36,   y:41.5, unlocked:true},
+  {id:'fogo',     x:5,    y:57},
+  {id:'natureza', x:72,   y:57},
+  {id:'agua',     x:36.5, y:65.5},
+  {id:'terra',    x:4.8,  y:73.5},
+  {id:'areia',    x:66.5, y:82.5},
+  {id:'luz',      x:36.5, y:83.5}
 ];
 function openMapScreen(){
   renderMapScreen();
