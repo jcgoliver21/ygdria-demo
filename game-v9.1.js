@@ -1341,8 +1341,11 @@ function spawnRealmParticles(realmId, targetEl, countOverride){
 
 function renderPartyArena(){
   partyArenaEl.innerHTML = '';
+  computeBattleGemColors();
   ACTIVE.forEach(idx=>{
     const k = KINGDOMS[idx];
+    const ag = battleGemColors[idx];
+    const gemC=ag?ag.c:(k.orbColor||k.color), gemL=ag?ag.l:(k.orbColorLight||k.colorLight), gemD=ag?ag.d:(k.orbColorDark||k.colorDark);
     const unit = document.createElement('div');
     unit.className = 'unit hero-unit rarity-'+(k.stars||0);
     unit.id = 'party-'+k.id;
@@ -1357,7 +1360,7 @@ function renderPartyArena(){
         <div class="unit-ground-shadow"></div>
         <div class="avatar-circle" id="party-${k.id}-avatar" data-hero-id="${k.id}" data-action="idle">${avatarContent}</div>
       </div>
-      <div class="unit-name">${k.nome.split(',')[0]}</div>
+      <div class="unit-name"><span class="unit-gem" style="--ug:${gemC};--ug-l:${gemL};--ug-d:${gemD}" aria-hidden="true"></span>${k.nome.split(',')[0]}</div>
       <div class="charge-outer"><div class="charge-inner" id="charge-${k.id}" style="width:0%"></div></div>
       <div class="charge-text" id="chargeText-${k.id}">0/100</div>
     `;
@@ -1813,12 +1816,45 @@ function renderEnemies(){
   applyBattleFormation();
 }
 
+/* == Cores aliadas de gemas: cartas do mesmo reino usam sempre o MESMO símbolo;
+   quando há 2+ cartas do reino na equipe, as gemas seguem a escada de cores de
+   reinos aliados para se distinguirem no tabuleiro.
+   Reino Rosa: Rosa → Branco → Azul Escuro → Marrom. (Demais reinos: a definir.) */
+const ALLIED_GEM_LADDERS={
+  humanos:[
+    null,                                    /* 1ª carta: rosa oficial do reino */
+    {c:'#f2f5fa', l:'#ffffff', d:'#8c99ad'}, /* Reino Branco */
+    {c:'#1e3f9c', l:'#84a7ff', d:'#0a1c4d'}, /* Reino Azul Escuro */
+    {c:'#8a5a2a', l:'#dca768', d:'#40250c'}  /* Reino Marrom */
+  ]
+};
+let battleGemColors={};
+function computeBattleGemColors(){
+  battleGemColors={};
+  const fams={};
+  ACTIVE.forEach(i=>{
+    const fam=KINGDOMS[i].iconId||KINGDOMS[i].id;
+    (fams[fam]=fams[fam]||[]).push(i);
+  });
+  Object.entries(fams).forEach(([fam,idxs])=>{
+    if(idxs.length<2) return;
+    const ladder=ALLIED_GEM_LADDERS[fam];
+    if(!ladder) return;
+    const lead=KINGDOMS.find(k=>k.id===fam)||KINGDOMS[idxs[0]];
+    idxs.forEach((i,ord)=>{
+      const step=ladder[ord%ladder.length];
+      battleGemColors[i]=step?{...step}:{c:lead.orbColor||lead.color,l:lead.orbColorLight||lead.colorLight,d:lead.orbColorDark||lead.colorDark};
+    });
+  });
+}
+
 function loadStage(idx){
   combatEpoch++;
   stageTransitioning = false;
   roomClearScheduled = false;
   selected = null;
   stageIndex = idx;
+  computeBattleGemColors();
   const stageData = worldRun.active ? buildWorldLevel() : towerMode ? buildTowerStage(towerFloor) : DUNGEON[idx];
   activeStageData = stageData;
   const diffM=DIFFICULTY_MULTS[difficulty]||DIFFICULTY_MULTS.normal;
@@ -2304,7 +2340,8 @@ function renderBoard(){
         const powerLabel=power?.type==='striped' ? `, power-up listrado ${power.orientation==='horizontal'?'horizontal':'vertical'}` : power?.type==='wrapped' ? ', power-up embrulhado' : '';
         wrapper.setAttribute('aria-label',`Esfera do ${k.reino}${powerLabel}, linha ${r+1}, coluna ${c+1}`);
         const powerClass=power?.type==='striped' ? ` power-striped ${power.orientation}` : power?.type==='wrapped' ? ' power-wrapped' : '';
-        wrapper.innerHTML = `<div class="orb orb-${k.id}${powerClass}" data-realm="${k.id}" style="--orb-light:${k.orbColorLight||k.colorLight};--orb:${k.orbColor||k.color};--orb-dark:${k.orbColorDark||k.colorDark};">
+        const ag=battleGemColors[colorIdx];
+        wrapper.innerHTML = `<div class="orb orb-${k.id}${powerClass}" data-realm="${k.id}" style="--orb-light:${ag?ag.l:(k.orbColorLight||k.colorLight)};--orb:${ag?ag.c:(k.orbColor||k.color)};--orb-dark:${ag?ag.d:(k.orbColorDark||k.colorDark)};">
           <svg class="orb-icon" viewBox="0 0 24 24">${KINGDOM_ICON[k.iconId||k.id]||''}</svg>
         </div>`;
       }
@@ -3553,7 +3590,7 @@ function launchVictoryConfetti(){
   const layer=document.getElementById('victoryConfetti');
   if(!layer||reducedMotion||!particlesEnabled) return;
   layer.innerHTML='';
-  const colors=ACTIVE.map(i=>KINGDOMS[i].orbColor||KINGDOMS[i].color);
+  const colors=ACTIVE.map(i=>battleGemColors[i]?.c||KINGDOMS[i].orbColor||KINGDOMS[i].color);
   for(let i=0;i<46;i++){
     const p=document.createElement('i');
     p.style.left=(Math.random()*100)+'%';
@@ -3693,23 +3730,40 @@ const swapBtnEl = document.getElementById('swapBtn2');
 
 function renderSelectGrid(){
   selectGridEl.innerHTML = '';
-  KINGDOMS.forEach((k, idx)=>{
-    const card = document.createElement('div');
-    card.className = 'select-card' + (chosenIds.includes(idx) ? ' chosen' : '');
-    card.style.setProperty('--realm',k.color);
-    card.style.setProperty('--realm-light',k.colorLight);
-    card.style.setProperty('--realm-dark',k.colorDark);
-    const pickOrder = chosenIds.indexOf(idx);
-    card.innerHTML = `
-      <div class="thumb-wrap"><img src="${k.cardThumb||k.img}" alt="${k.nome}">${pickOrder>=0?`<div class="pick-badge" aria-hidden="true">${pickOrder+1}</div>`:''}<button class="zoom-btn" type="button" data-idx="${idx}" aria-label="Abrir carta de ${k.nome} em alta resolução">🔍</button></div>
-    `;
-    card.setAttribute('role','button');
-    card.setAttribute('tabindex','0');
-    card.setAttribute('aria-label',`${chosenIds.includes(idx)?'Remover':'Adicionar'} ${k.nome} da equipe`);
-    card.addEventListener('click',()=>toggleHero(idx));
-    card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleHero(idx);}});
-    card.querySelector('.zoom-btn').addEventListener('click', e=>{ e.stopPropagation(); openCardModal(idx); });
-    selectGridEl.appendChild(card);
+  /* v9.1 · Roster agrupado em DECKS por reino (Reino Rosa primeiro) */
+  const ordem=['humanos','luz','agua','fogo','natureza','terra','areia','sombras','raio','vento','chuvas','gelo'];
+  const nomesDeck={humanos:T('Deck Reino Rosa · Humanos','Rose Realm Deck · Humans','Deck Reino Rosa · Humanos')};
+  ordem.forEach(deckId=>{
+    const membros=KINGDOMS.filter(k=>(k.deck||k.id)===deckId);
+    if(!membros.length) return;
+    const lider=KINGDOMS.find(k=>k.id===deckId);
+    const header=document.createElement('div');
+    header.className='select-deck-header';
+    header.style.setProperty('--realm',lider?.color||'#d4af5a');
+    header.innerHTML=`<span class="deck-icon"><svg viewBox="0 0 24 24">${KINGDOM_ICON[deckId]||''}</svg></span><b>${nomesDeck[deckId]||(T('Deck ','Deck ','Deck ')+(lider?.reino||deckId))}</b><small>${membros.length}</small>`;
+    selectGridEl.appendChild(header);
+    const dgrid=document.createElement('div');
+    dgrid.className='select-deck-grid';
+    membros.forEach(k=>{
+      const idx=KINGDOMS.indexOf(k);
+      const card = document.createElement('div');
+      card.className = 'select-card' + (chosenIds.includes(idx) ? ' chosen' : '');
+      card.style.setProperty('--realm',k.color);
+      card.style.setProperty('--realm-light',k.colorLight);
+      card.style.setProperty('--realm-dark',k.colorDark);
+      const pickOrder = chosenIds.indexOf(idx);
+      card.innerHTML = `
+        <div class="thumb-wrap"><img src="${k.cardThumb||k.img}" alt="${k.nome}" loading="lazy">${pickOrder>=0?`<div class="pick-badge" aria-hidden="true">${pickOrder+1}</div>`:''}<button class="zoom-btn" type="button" data-idx="${idx}" aria-label="Abrir carta de ${k.nome} em alta resolução">🔍</button></div>
+      `;
+      card.setAttribute('role','button');
+      card.setAttribute('tabindex','0');
+      card.setAttribute('aria-label',`${chosenIds.includes(idx)?'Remover':'Adicionar'} ${k.nome} da equipe`);
+      card.addEventListener('click',()=>toggleHero(idx));
+      card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleHero(idx);}});
+      card.querySelector('.zoom-btn').addEventListener('click', e=>{ e.stopPropagation(); openCardModal(idx); });
+      dgrid.appendChild(card);
+    });
+    selectGridEl.appendChild(dgrid);
   });
   selectCountEl.textContent = chosenIds.length;
   startBtnEl.disabled = chosenIds.length!==4;
@@ -3761,8 +3815,11 @@ document.getElementById('cardModal').addEventListener('click', (e)=>{
 function renderCardStrip(){
   const stripEl = document.getElementById('cardStrip');
   stripEl.innerHTML = '';
+  computeBattleGemColors();
   ACTIVE.forEach(idx=>{
     const k = KINGDOMS[idx];
+    const ag = battleGemColors[idx];
+    const gemC=ag?ag.c:(k.orbColor||k.color), gemL=ag?ag.l:(k.orbColorLight||k.colorLight), gemD=ag?ag.d:(k.orbColorDark||k.colorDark);
     const mini = document.createElement('div');
     mini.className = 'mini-card';
     mini.setAttribute('role','button');
@@ -3772,7 +3829,7 @@ function renderCardStrip(){
       <div class="mini-thumb"><img src="${k.cardThumb||k.img}" alt="${k.nome}"></div>
       <div class="mini-card-copy">
         <div class="mini-name">${k.nome}</div>
-        <div class="mini-rarity">${k.rarity||'DIVINA'}</div>
+        <div class="mini-rarity"><span class="unit-gem" style="--ug:${gemC};--ug-l:${gemL};--ug-d:${gemD}" aria-hidden="true"></span>${k.rarity||'DIVINA'}</div>
         <div class="mini-stars" aria-label="${k.stars||7} estrelas">${'★'.repeat(k.stars||7)}</div>
       </div>
     `;

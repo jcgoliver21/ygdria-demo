@@ -2416,3 +2416,22 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
 .deck-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:12px; }
 .deck-coming{ opacity:.55; filter:grayscale(.5); }
 .deck-coming img{ border:1px dashed rgba(212,175,90,.5); border-radius:10px; }
+
+/* v9.1 · Seleção de equipe em DECKS por reino (mesma linguagem da galeria) */
+.select-grid{ display:block!important; }
+.select-deck-header{ display:flex; align-items:center; gap:8px; margin:8px 2px 6px; padding:6px 10px; border-radius:10px;
+  background:linear-gradient(90deg, color-mix(in srgb,var(--realm,#d4af5a) 22%,transparent), transparent 70%);
+  border-left:3px solid var(--realm,#d4af5a); }
+.select-deck-header .deck-icon{ width:22px; height:22px; }
+.select-deck-header .deck-icon svg{ width:12px; height:12px; }
+.select-deck-header b{ font-size:12px; letter-spacing:1.2px; color:#f1d98d; font-family:Georgia,serif; flex:1; }
+.select-deck-header small{ font-size:9px; opacity:.7; color:#f1d98d; letter-spacing:1px; }
+.select-deck-grid{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; align-content:start; padding:0 0 8px; }
+.select-grid > .select-deck-header:first-child{ margin-top:0; }
+@media (max-width:560px){ .select-deck-grid{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:4px; } }
+
+/* v9.1 · Indicador da cor de gema de cada carta em batalha (cores aliadas) */
+.unit-gem{ display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:4px; vertical-align:-1px;
+  background:radial-gradient(circle at 32% 28%, var(--ug-l,#fff), var(--ug,#d4af5a) 55%, var(--ug-d,#5a4210) 120%);
+  border:1px solid rgba(255,255,255,.55); box-shadow:0 0 4px var(--ug,#d4af5a); }
+.mini-rarity .unit-gem{ width:8px; height:8px; margin-right:3px; }
