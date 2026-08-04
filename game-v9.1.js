@@ -4018,6 +4018,7 @@ const selectCountEl = document.getElementById('selectCount');
 const startBtnEl = document.getElementById('startBtn');
 const swapBtnEl = document.getElementById('swapBtn2');
 
+var selectDeckOpen={}; /* decks abertos na tela de seleção (persistem entre re-renders) */
 function renderSelectGrid(){
   selectGridEl.innerHTML = '';
   /* v9.1 · Roster agrupado em DECKS por reino (Reino Rosa primeiro) */
@@ -4027,11 +4028,20 @@ function renderSelectGrid(){
     const membros=KINGDOMS.filter(k=>(k.deck||k.id)===deckId);
     if(!membros.length) return;
     const lider=KINGDOMS.find(k=>k.id===deckId);
+    const section=document.createElement('div');
+    section.className='select-deck-section'+(selectDeckOpen[deckId]?' open':'');
+    const escolhidasNoDeck=membros.filter(k=>chosenIds.includes(KINGDOMS.indexOf(k))).length;
     const header=document.createElement('div');
     header.className='select-deck-header';
+    header.setAttribute('role','button');
+    header.setAttribute('tabindex','0');
+    header.setAttribute('aria-expanded', selectDeckOpen[deckId]?'true':'false');
     header.style.setProperty('--realm',lider?.color||'#d4af5a');
-    header.innerHTML=`<span class="deck-icon"><svg viewBox="0 0 24 24">${KINGDOM_ICON[deckId]||''}</svg></span><b>${nomesDeck[deckId]||(T('Deck ','Deck ','Deck ')+(lider?.reino||deckId))}</b><small>${membros.length}</small>`;
-    selectGridEl.appendChild(header);
+    header.innerHTML=`<span class="deck-icon"><svg viewBox="0 0 24 24">${KINGDOM_ICON[deckId]||''}</svg></span><b>${nomesDeck[deckId]||(T('Deck ','Deck ','Deck ')+(lider?.reino||deckId))}</b>${escolhidasNoDeck?`<span class="deck-picked">${escolhidasNoDeck} ${T('na equipe','in team','en el equipo')}</span>`:''}<small>${membros.length} ${membros.length>1?T('cartas','cards','cartas'):T('carta','card','carta')}</small><span class="deck-caret" aria-hidden="true">▸</span>`;
+    const alternar=()=>{ selectDeckOpen[deckId]=!selectDeckOpen[deckId]; section.classList.toggle('open',!!selectDeckOpen[deckId]); header.setAttribute('aria-expanded', selectDeckOpen[deckId]?'true':'false'); };
+    header.addEventListener('click',alternar);
+    header.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); alternar(); } });
+    section.appendChild(header);
     const dgrid=document.createElement('div');
     dgrid.className='select-deck-grid';
     membros.forEach(k=>{
@@ -4053,7 +4063,8 @@ function renderSelectGrid(){
       card.querySelector('.zoom-btn').addEventListener('click', e=>{ e.stopPropagation(); openCardModal(idx); });
       dgrid.appendChild(card);
     });
-    selectGridEl.appendChild(dgrid);
+    section.appendChild(dgrid);
+    selectGridEl.appendChild(section);
   });
   selectCountEl.textContent = chosenIds.length;
   startBtnEl.disabled = chosenIds.length!==4;
@@ -4217,6 +4228,7 @@ function beginGame(startAt=0,restoredHP=null){
   }
 }
 
+var galleryDeckOpen={}; /* decks abertos na galeria */
 function renderGallery(){
   const grid=document.getElementById('galleryGrid');
   grid.innerHTML='';
@@ -4232,11 +4244,15 @@ function renderGallery(){
     const lider=KINGDOMS.find(k=>k.id===deckId);
     const emBreve=deckId==='humanos'?Object.values(HUMANOS_CARDS).filter(c=>c.isCard):[];
     const section=document.createElement('div');
-    section.className='deck-section';
-    section.innerHTML=`<div class="deck-header" style="--realm:${lider?.color||'#d4af5a'}">
+    section.className='deck-section'+(galleryDeckOpen[deckId]?' open':'');
+    section.innerHTML=`<div class="deck-header" role="button" tabindex="0" aria-expanded="${galleryDeckOpen[deckId]?'true':'false'}" style="--realm:${lider?.color||'#d4af5a'}">
       <span class="deck-icon"><svg viewBox="0 0 24 24">${KINGDOM_ICON[deckId]||''}</svg></span>
       <b>${nomesDeck[deckId]||(T('Deck ','Deck ','Deck ')+(lider?.reino||deckId))}</b>
-      <small>${membros.length+emBreve.length} ${T('cartas','cards','cartas')}</small></div>`;
+      <small>${membros.length+emBreve.length} ${(membros.length+emBreve.length)>1?T('cartas','cards','cartas'):T('carta','card','carta')}</small><span class="deck-caret" aria-hidden="true">▸</span></div>`;
+    const gHeader=section.querySelector('.deck-header');
+    const gAlternar=()=>{ galleryDeckOpen[deckId]=!galleryDeckOpen[deckId]; section.classList.toggle('open',!!galleryDeckOpen[deckId]); gHeader.setAttribute('aria-expanded', galleryDeckOpen[deckId]?'true':'false'); };
+    gHeader.addEventListener('click',gAlternar);
+    gHeader.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); gAlternar(); } });
     const dgrid=document.createElement('div');
     dgrid.className='deck-grid';
     membros.forEach(k=>{
@@ -4408,14 +4424,16 @@ const HUMANOS_ETYPES={
   soldado2:{n:'Soldado 2', sprite:'assets/enemies/humanos/soldado-2.png', hp:78, atk:11, flip:true},
   capitao:{n:'Capitão dos Soldados', sprite:'assets/enemies/humanos/capitao.png', hp:105, atk:13, flip:true},
   /* Fases 6-10 · genéricos (sprites reutilizados até os chibis chegarem) */
-  vulto:{n:'Vulto Sombrio', s:'wraith', t:'brightness(.5) saturate(.6)', hp:85, atk:11},
-  espectro:{n:'Espectro Sombrio', s:'wraith', t:'brightness(1.35) hue-rotate(240deg)', hp:95, atk:12},
-  morto:{n:'Cavaleiro Morto-Vivo', s:'sentinel', t:'hue-rotate(90deg) brightness(.72) saturate(1.3)', hp:120, atk:14},
-  soldBib:{n:'Soldado da Biblioteca', s:'sentinel', t:'sepia(.85) brightness(1.05)', hp:92, atk:12},
-  infantaria:{n:'Soldado de Infantaria', s:'sentinel', t:'hue-rotate(205deg) saturate(.85)', hp:98, atk:12},
-  cavalaria:{n:'Soldado de Cavalaria', s:'wolf', t:'hue-rotate(205deg) brightness(1.15)', hp:104, atk:13},
-  comandante:{n:'Comandante dos Soldados', s:'sentinel', t:'contrast(1.35) saturate(1.6) brightness(1.08)', hp:150, atk:15},
-  trono:{n:'Soldado do Trono Real', s:'sentinel', t:'sepia(.7) saturate(2) brightness(1.18)', hp:135, atk:14}
+  vulto:{n:'Vulto Sombrio', sprite:'assets/enemies/humanos/vulto-sombrio.png', hp:85, atk:11},
+  espectro:{n:'Espectro Sombrio', sprite:'assets/enemies/humanos/espectro-sombrio.png', hp:95, atk:12},
+  morto:{n:'Cavaleiro Morto-Vivo', sprite:'assets/enemies/humanos/cavaleiro-morto-vivo.png', hp:120, atk:14},
+  soldBib1:{n:'Soldado da Biblioteca 1', sprite:'assets/enemies/humanos/soldado-biblioteca-1.png', hp:88, atk:11},
+  soldBib2:{n:'Soldado da Biblioteca 2', sprite:'assets/enemies/humanos/soldado-biblioteca-2.png', hp:96, atk:12},
+  soldBib3:{n:'Soldado da Biblioteca 3', sprite:'assets/enemies/humanos/soldado-biblioteca-3.png', hp:104, atk:13},
+  infantaria:{n:'Soldado de Infantaria', sprite:'assets/enemies/humanos/soldado-infantaria.png', hp:98, atk:12},
+  cavalaria:{n:'Soldado de Cavalaria', sprite:'assets/enemies/humanos/soldado-cavalaria.png', hp:104, atk:13},
+  comandante:{n:'Comandante dos Soldados', sprite:'assets/enemies/humanos/comandante.png', hp:150, atk:15},
+  trono:{n:'Soldado do Trono Real', sprite:'assets/enemies/humanos/soldado-trono.png', hp:135, atk:14}
 };
 /* Chefes de Carta: com chibi oficial lutam em campo como personagens
    (a carta vai para a galeria do Reino Rosa); sem chibi ainda, aparecem
@@ -4433,34 +4451,34 @@ const HUMANOS_CARDS={
 const WORLDS=[{
   id:'humanos', nome:'Reino dos Humanos', titulo:'Terra dos Reguladores de Ygdria',
   fases:[
-    { nome:'Cidade das Cerejeiras', sub:'Capital de Ygdria', bg:'assets/bg/humanos/fase-01.svg', chefe:'Gareth', rec:'4× carta 1★',
+    { nome:'Cidade das Cerejeiras', sub:'Capital de Ygdria', bg:'assets/bg/humanos/fase-01.jpg', chefe:'Gareth', rec:'4× carta 1★',
       dial:[{h:'humanos',t:'Minha capital... as cerejeiras choram pétalas. Algo corrompeu a guarda da cidade.'}],
       missoes:[['slimeCereja'],['slimeCereja','loboRaivoso'],['loboRaivoso','loboRaivoso'],['soldado1','soldado2'],['soldado1','soldado2','gareth']] },
-    { nome:'Catedral de Ygdria', sub:'Onde a fé encontrou a magia', bg:'assets/bg/humanos/fase-02.svg', chefe:'Cedric', rec:'4× carta 1★',
+    { nome:'Catedral de Ygdria', sub:'Onde a fé encontrou a magia', bg:'assets/bg/humanos/fase-02.jpg', chefe:'Cedric', rec:'4× carta 1★',
       dial:[{h:'luz',t:'Este lugar já foi sagrado. Os vitrais ainda cantam... mas há aço entre os bancos.'}],
       missoes:[['soldado1','soldado2'],['capitao'],['soldado2','capitao'],['soldado1','soldado2','capitao'],['soldado1','capitao','cedric']] },
-    { nome:'Palácio dos Reguladores', sub:'A ordem acima de tudo', bg:'assets/bg/humanos/fase-03.svg', chefe:'Elizier', rec:'1× 2★ + 3× 1★',
+    { nome:'Palácio dos Reguladores', sub:'A ordem acima de tudo', bg:'assets/bg/humanos/fase-03.jpg', chefe:'Elizier', rec:'1× 2★ + 3× 1★',
       dial:[{h:'humanos',t:'Os Reguladores mantinham o equilíbrio entre os reinos. Quem os dobrou?'}],
       missoes:[['soldado1','soldado2'],['capitao'],['soldado1','capitao'],['soldado1','soldado2','capitao'],['soldado1','soldado2','capitao','elizier']] },
-    { nome:'Academia Real de Magia e Combate', sub:'Onde nascem os magos-cavaleiros', bg:'assets/bg/humanos/fase-05.svg', chefe:'Roland', rec:'1× 2★ + 3× 1★',
+    { nome:'Academia Real de Magia e Combate', sub:'Onde nascem os magos-cavaleiros', bg:'assets/bg/humanos/fase-04.jpg', chefe:'Roland', rec:'1× 2★ + 3× 1★',
       dial:[{h:'raio',t:'Ha! Estudei aqui... e fui expulso. Hora de mostrar aos instrutores o que aprendi sozinho.'}],
       missoes:[['soldado1','soldado2'],['capitao'],['soldado1','capitao'],['soldado1','soldado2','capitao'],['soldado2','capitao','roland']] },
-    { nome:'Mercado Central dos Reinos', sub:'Tudo tem um preço', bg:'assets/bg/humanos/fase-06.svg', chefe:'Cedric, Elizier e Roland', rec:'2× 2★ + 2× 1★',
+    { nome:'Mercado Central dos Reinos', sub:'Tudo tem um preço', bg:'assets/bg/humanos/fase-05.jpg', chefe:'Cedric, Elizier e Roland', rec:'2× 2★ + 2× 1★',
       dial:[{h:'areia',t:'Conheço mercados assim — e emboscadas também. Três lâminas nos esperam no fim desta rua.'}],
       missoes:[['soldado1','soldado2'],['capitao'],['soldado2','capitao'],['soldado1','soldado2','capitao'],['cedric','elizier','roland']] },
-    { nome:'Praça das Doze Essências', rec:'2× 2★ + 2× 1★', sub:'Doze pilares, doze reinos', bg:'assets/bg/humanos/fase-04.svg', chefe:'Jules, The Joker',
+    { nome:'Praça das Doze Essências', rec:'2× 2★ + 2× 1★', sub:'Doze pilares, doze reinos', bg:'assets/bg/humanos/fase-06.jpg', chefe:'Jules, The Joker',
       dial:[{h:'sombras',t:'Vultos entre os pilares... e um riso que não é humano. Ele acha que sombras são um jogo.'}],
       missoes:[['vulto'],['espectro'],['vulto','espectro'],['morto'],['jules']] },
-    { nome:'Biblioteca da Eternidade', rec:'2× 2★ + 2× 1★', sub:'Todo saber, um só silêncio', bg:'assets/bg/humanos/fase-07.svg', chefe:'Bernyce',
+    { nome:'Biblioteca da Eternidade', rec:'2× 2★ + 2× 1★', sub:'Todo saber, um só silêncio', bg:'assets/bg/humanos/fase-07.jpg', chefe:'Bernyce',
       dial:[{h:'chuvas',t:'Séculos de conhecimento vigiados por soldados... e por ela. Bernyce não empresta livros.'}],
-      missoes:[['soldBib'],['soldBib','soldBib'],['soldBib','soldBib','soldBib'],['cedric','elizier','roland'],['bernyce']] },
-    { nome:'Muralha dos Heróis', rec:'3× 2★ + 1× 1★', sub:'Eles ainda vigiam', bg:'assets/bg/humanos/fase-08.svg', chefe:'Kalander',
+      missoes:[['soldBib1'],['soldBib1','soldBib2'],['soldBib1','soldBib2','soldBib3'],['cedric','elizier','roland'],['bernyce']] },
+    { nome:'Muralha dos Heróis', rec:'3× 2★ + 1× 1★', sub:'Eles ainda vigiam', bg:'assets/bg/humanos/fase-08.jpg', chefe:'Kalander',
       dial:[{h:'terra',t:'Infantaria, cavalaria, comando... e no topo da muralha, Kalander. Esta pedra vai tremer.'}],
       missoes:[['infantaria'],['cavalaria'],['comandante'],['infantaria','cavalaria','comandante'],['kalander']] },
-    { nome:'Lendária Torre de Acesso à Eternidade', rec:'3× 2★ + 1× 1★', sub:'O céu é a porta', bg:'assets/bg/humanos/fase-09.svg', chefe:'Julius',
+    { nome:'Lendária Torre de Acesso à Eternidade', rec:'3× 2★ + 1× 1★', sub:'O céu é a porta', bg:'assets/bg/humanos/fase-09.jpg', chefe:'Julius',
       dial:[{h:'sombras',t:'Esta torre toca a Eternidade... e Julius desceu dela. Sinto o véu se rasgar.'}],
       missoes:[['vulto','espectro'],['morto'],['vulto','espectro','morto'],['jules'],['julius']] },
-    { nome:'Castelo da Coroa Humana', rec:'4× carta 2★', sub:'O trono espera seu verdadeiro rei', bg:'assets/bg/humanos/fase-10.svg', chefe:'Julius',
+    { nome:'Castelo da Coroa Humana', rec:'4× carta 2★', sub:'O trono espera seu verdadeiro rei', bg:'assets/bg/humanos/fase-10.jpg', chefe:'Julius',
       dial:[{h:'humanos',t:'O castelo da minha linhagem. Todos os campeões dele nos aguardam... e Julius por trás de tudo.'},{h:'fogo',t:'Cinco cartas contra nós? Ótimo. Sempre quis um baralho em chamas.'}],
       missoes:[['trono'],['cedric','elizier','roland'],['kalander','cedric','elizier','roland'],['kalander','bernyce'],['julius']] }
   ]
