@@ -87,7 +87,7 @@ const KINGDOMS = [
     id:'terra', nome:'Kallendra', reino:'Reino da Terra', classe:'A Maga Mais Forte · Rainha Maga',
     color:'#8b5a2b', colorLight:'#f0bd78', colorDark:'#3c210d', gem:'gemTopaz', atk:20,
     img:'assets/cards/kallendra-card.png', cardThumb:'assets/cards/kallendra-card.png',
-    sprite:'assets/characters/runtime-v4/barbara/single-1.png', fxTheme:'seismic', rarity:'DIVINA', stars:7,
+    sprite:'assets/characters/runtime-v4/barbara/single-1.png', heroFlip:true, fxTheme:'seismic', rarity:'DIVINA', stars:7,
     stageAbility:{nome:'Abalo Sísmico', cd:4, tipo:'embaralharLinhas', qtd:2, desc:'A cada 4 turnos, duas linhas do tabuleiro são sacudidas e embaralhadas.'},
     abilities:[
       {kind:'passive',gems:15, name:'Golpe da Clava', tipo:'stunAndDamageFromLast', turnos:2, mult:2, desc:'Atinge o inimigo com duas vezes o último ataque e o atordoa por dois turnos.'},
@@ -134,7 +134,7 @@ const KINGDOMS = [
     id:'raio', nome:'Mardogear', reino:'Reino do Raio', classe:'Senhor dos Trovões e da Destruição · Rei Mago',
     color:'#8b2fc9', colorLight:'#d9a6ff', colorDark:'#2e0a4d', gem:'gemAmethyst', atk:20,
     img:'assets/cards/mardogear-card.png', cardThumb:'assets/cards/mardogear-card.png',
-    sprite:'assets/characters/runtime-v6/mardogear/single-1.png', fxTheme:'storm', rarity:'DIVINA', stars:7,
+    sprite:'assets/characters/runtime-v6/mardogear/single-1.png', heroFlip:true, fxTheme:'storm', rarity:'DIVINA', stars:7,
     stageAbility:{nome:'Curto-Circuito', cd:4, tipo:'sobrecarga', limite:50, desc:'A cada 4 turnos, o herói mais carregado perde toda energia acima de 50.'},
     abilities:[
       {kind:'passive',gems:15, name:'Ataque de Raios', tipo:'dano', valor:100, desc:'Um raio cai no inimigo infligindo 100 de dano.'},
@@ -166,7 +166,7 @@ const KINGDOMS = [
     color:'#5a6472', colorLight:'#b8c4d4', colorDark:'#14181f', gem:'gemStormstone', atk:20,
     orbColor:'#6e7a88', orbColorLight:'#c4cfdb', orbColorDark:'#2a313b',
     img:'assets/cards/regnar-card.png', cardThumb:'assets/cards/regnar-card.png',
-    sprite:'assets/characters/runtime-v6/regnar/single-1.png', fxTheme:'deluge', rarity:'DIVINA', stars:7,
+    sprite:'assets/characters/runtime-v6/regnar/single-1.png', heroFlip:true, fxTheme:'deluge', rarity:'DIVINA', stars:7,
     stageAbility:{nome:'Manto de Chuva', cd:4, tipo:'encharcar', mult:0.5, desc:'A cada 4 turnos, encharca as armas: o próximo ataque de cada herói causa metade do dano.'},
     abilities:[
       {kind:'passive',gems:15, name:'Chuva Leve', tipo:'dotAll', valor:30, turnos:999, desc:'Atinge todos os inimigos com 30 de dano em todos os turnos. Dura até eles morrerem.'},
@@ -201,7 +201,7 @@ const KINGDOMS = [
     id:'gareth', iconId:'humanos', deck:'humanos', nome:'Gareth', reino:'Reino dos Humanos', classe:'Sentinela da Capital · Soldado',
     color:'#e08aa0', colorLight:'#ffd7e2', colorDark:'#6e2438', gem:'gemRose', atk:2,
     img:'assets/cards/enemies/gareth-card.png', cardThumb:'assets/cards/enemies/gareth-card.png',
-    sprite:'assets/enemies/humanos/gareth.png', fxTheme:'rose', rarity:'NORMAL', stars:1,
+    sprite:'assets/enemies/humanos/gareth.png', heroFlip:true, fxTheme:'rose', rarity:'NORMAL', stars:1,
     frase:'Toda grande vitória começa com um simples soldado.',
     stageAbility:{nome:'Troca de Guarda', cd:6, tipo:'trocarCores', qtd:3, desc:'A cada 6 turnos, 3 esferas aleatórias trocam de cor.'},
     abilities:[]
@@ -210,7 +210,7 @@ const KINGDOMS = [
     id:'cedric', iconId:'humanos', deck:'humanos', nome:'Cedric', reino:'Reino dos Humanos', classe:'O Mago Nobre · Mago',
     color:'#8fa6c9', colorLight:'#dbe8fa', colorDark:'#26364e', gem:'gemSteel', atk:4,
     img:'assets/cards/enemies/cedric-card.png', cardThumb:'assets/cards/enemies/cedric-card.png',
-    sprite:'assets/enemies/humanos/cedric.png', fxTheme:'steel', rarity:'RARO', stars:2,
+    sprite:'assets/enemies/humanos/cedric.png', heroFlip:true, fxTheme:'steel', rarity:'RARO', stars:2,
     frase:'Cada feitiço escrito hoje será uma lenda amanhã.',
     stageAbility:{nome:'Selo Arcano', cd:5, tipo:'selarPowerUp', cura:60, desc:'A cada 5 turnos, sela 1 power-up do tabuleiro; sem power-up, recupera 60 de vida.'},
     abilities:[
@@ -221,7 +221,7 @@ const KINGDOMS = [
     id:'elizier', iconId:'humanos', deck:'humanos', nome:'Elizier', reino:'Reino dos Humanos', classe:'Olhos da Coroa · Arqueira',
     color:'#d98a5c', colorLight:'#ffe0c4', colorDark:'#5e2a10', gem:'gemEmber', atk:4,
     img:'assets/cards/enemies/elizier-card.png', cardThumb:'assets/cards/enemies/elizier-card.png',
-    sprite:'assets/enemies/humanos/elizier.png', fxTheme:'ember', rarity:'RARO', stars:2,
+    sprite:'assets/enemies/humanos/elizier.png', heroFlip:true, fxTheme:'ember', rarity:'RARO', stars:2,
     frase:'Nenhum inimigo escapa do olhar da Coroa.',
     stageAbility:{nome:'Flecha Certeira', cd:5, tipo:'drenarMaisCarregado', valor:12, desc:'A cada 5 turnos, o herói mais carregado perde 12 de energia.'},
     abilities:[
@@ -232,7 +232,7 @@ const KINGDOMS = [
     id:'roland', iconId:'humanos', deck:'humanos', nome:'Roland', reino:'Reino dos Humanos', classe:'Escudo Real de Bernyce · Cavaleiro',
     color:'#7ec9a1', colorLight:'#d8f5e6', colorDark:'#1e4a34', gem:'gemJade', atk:4,
     img:'assets/cards/enemies/roland-card.png', cardThumb:'assets/cards/enemies/roland-card.png',
-    sprite:'assets/enemies/humanos/roland.png', fxTheme:'jade', rarity:'RARO', stars:2,
+    sprite:'assets/enemies/humanos/roland.png', heroFlip:true, fxTheme:'jade', rarity:'RARO', stars:2,
     frase:'Minha Lança protege o reino antes da minha própria vida.',
     stageAbility:{nome:'Bastião de Lanças', cd:5, tipo:'criarObstaculos', obst:'stone', qtd:1, hits:2, desc:'A cada 5 turnos, finca um bloqueio de pedra no tabuleiro.'},
     abilities:[
@@ -244,7 +244,7 @@ const KINGDOMS = [
     id:'jules', iconId:'humanos', deck:'humanos', nome:'Jules', reino:'Reino dos Humanos', classe:'The Joker · Bobo da Corte',
     color:'#e8557f', colorLight:'#ffc9dc', colorDark:'#7c1638', gem:'gemJoker', atk:6,
     img:'assets/cards/enemies/jules-card.png', cardThumb:'assets/cards/enemies/jules-card.png',
-    sprite:'assets/enemies/humanos/jules.png', fxTheme:'rose', rarity:'SUPER RARO', stars:3,
+    sprite:'assets/enemies/humanos/jules.png', heroFlip:true, fxTheme:'rose', rarity:'SUPER RARO', stars:3,
     frase:'O maior truque não é enganar o inimigo... é conquistar sua confiança.',
     stageAbility:{nome:'Ás de Copas', cd:5, tipo:'asDeCopas', desc:'A cada 5 turnos, cria 1 gema rosa de coração vermelho; se você estourá-la, recebe 5% da sua vida atual de dano.'},
     abilities:[
@@ -256,7 +256,7 @@ const KINGDOMS = [
     id:'kalander', iconId:'humanos', deck:'humanos', nome:'Kalander', reino:'Reino dos Humanos', classe:'O Herói da Nação · Cavaleiro Mago',
     color:'#d97fa6', colorLight:'#ffd9e9', colorDark:'#6e2447', gem:'gemHero', atk:6,
     img:'assets/cards/enemies/kalander-card.png', cardThumb:'assets/cards/enemies/kalander-card.png',
-    sprite:'assets/enemies/humanos/kalander.png', fxTheme:'rose', rarity:'SUPER RARO', stars:3,
+    sprite:'assets/enemies/humanos/kalander.png', heroFlip:true, fxTheme:'rose', rarity:'SUPER RARO', stars:3,
     frase:'Uma rainha governa um reino... uma mãe protege uma geração.',
     stageAbility:{nome:'Golpe Cruzado', cd:4, tipo:'cortarX', desc:'A cada 4 turnos, suas lâminas gêmeas cortam um X no tabuleiro: as esferas das diagonais são removidas sem conceder energia.'},
     abilities:[
@@ -268,7 +268,7 @@ const KINGDOMS = [
     id:'bernyce', iconId:'humanos', deck:'humanos', nome:'Bernyce', reino:'Reino dos Humanos', classe:'Rainha dos Reguladores · Rainha Maga',
     color:'#e77fb2', colorLight:'#ffd4ec', colorDark:'#77175a', gem:'gemQueen', atk:6,
     img:'assets/cards/enemies/bernyce-card.png', cardThumb:'assets/cards/enemies/bernyce-card.png',
-    sprite:'assets/enemies/humanos/bernyce.png', fxTheme:'rose', rarity:'SUPER RARO', stars:3,
+    sprite:'assets/enemies/humanos/bernyce.png', heroFlip:true, fxTheme:'rose', rarity:'SUPER RARO', stars:3,
     frase:'Uma rainha governa um reino... uma mãe protege uma geração.',
     stageAbility:{nome:'Regulação Real', cd:4, tipo:'regulacaoReal', cura:80, desc:'A cada 4 turnos, remove TODOS os power-ups do tabuleiro e recupera 80 de vida por cada um removido.'},
     abilities:[
@@ -281,7 +281,7 @@ const KINGDOMS = [
     color:'#6b5a8c', colorLight:'#cbb8ff', colorDark:'#241b38', gem:'gemBeyond', atk:8,
     orbColor:'#1b1426', orbColorLight:'#8a7a9e', orbColorDark:'#050308',
     img:'assets/cards/enemies/julius-card.png', cardThumb:'assets/cards/enemies/julius-card.png',
-    sprite:'assets/enemies/humanos/julius.png', fxTheme:'shadow', rarity:'ULTRA RARO', stars:4, artKit:true,
+    sprite:'assets/enemies/humanos/julius.png', heroFlip:true, fxTheme:'shadow', rarity:'ULTRA RARO', stars:4, artKit:true,
     frase:'Minhas sombras devoram o passado... e reescrevem a história!',
     stageAbility:{nome:'Tempo Sombrio', cd:0, tempoReal:30, tipo:'tempoSombrio', desc:'A cada 30 segundos no relógio, corrompe uma gema com uma sombra: ela não pode ser movida nem removida. Se todas forem corrompidas, você perde!'},
     abilities:[
@@ -718,8 +718,16 @@ function sfxSelect(){ beep(660,0.08,'triangle',0.11); }
 function sfxGemTap(){ beep(880,0.05,'sine',0.08); }
 function sfxInvalid(){ beep(180,0.12,'sawtooth',0.08); }
 function sfxMatch(step){ const base=520+Math.min(step,6)*70; beep(base,0.10,'triangle',0.13); beep(base*1.5,0.09,'sine',0.08,0.05); }
-function sfxHit(){ beep(140,0.09,'square',0.15); beep(90,0.14,'sawtooth',0.11,0.02); }
-function sfxPlayerHit(){ beep(110,0.16,'sawtooth',0.14); }
+/* v9.2 · Impactos redesenhados: "thump" de ruído filtrado + corpo grave em seno —
+   sem as ondas quadradas/serra cruas que soavam ásperas e metálicas. */
+function sfxHit(){
+  noiseBurst({dur:.16,vol:.2,filter:'lowpass',freq:1100,freqEnd:180,attack:.004});
+  beep(180,0.08,'sine',0.12); beep(120,0.11,'triangle',0.08,0.02);
+}
+function sfxPlayerHit(){
+  noiseBurst({dur:.22,vol:.18,filter:'lowpass',freq:700,freqEnd:120,attack:.006});
+  beep(140,0.13,'sine',0.11); beep(95,0.16,'triangle',0.07,0.03);
+}
 function sfxPassive(){ chord([523,659,784],0.18,'triangle',0.10); }
 function sfxUltimate(){ chord([392,523,659,784,988],0.28,'triangle',0.11); beep(1568,0.22,'sine',0.09,0.14); }
 function sfxHeroSignature(id,isUltimate=false){
@@ -974,12 +982,26 @@ let heroEmpower = {};  // v9: cargas de Full Power por herói {idx:{left,mult}}
 const DIFFICULTY_MULTS={
   facil:{hp:.85,atk:.85,hpFactor:50},
   normal:{hp:1,atk:1,hpFactor:30},
+  dificil:{hp:1,atk:1,hpFactor:30},
   pesadelo:{hp:1.15,atk:1.15,hpFactor:15}
 };
+/* Regras extras por dificuldade (oficiais):
+   FÁCIL — blocos e power-ups do tabuleiro continuam de uma missão para a outra até o
+   final da fase (o tabuleiro não é reiniciado entre missões vencidas).
+   NORMAL — sem mudanças.
+   DIFÍCIL — tudo do Normal + TODOS os inimigos da missão atacam, um de cada vez,
+   após a sua jogada.
+   PESADELO — idem Difícil; além disso obstáculos criados pela fase/inimigos são
+   permanentes e debuffs do tabuleiro não expiram durante a missão. */
+function allEnemiesAttackMode(){ return difficulty==='dificil'||difficulty==='pesadelo'; }
+function persistentObstaclesMode(){ return difficulty==='pesadelo'; }
+let carryBoardNext=false; /* Fácil: próxima loadStage mantém o tabuleiro atual */
 function computePlayerMaxHP(){
   const soma=ACTIVE.reduce((acc,i)=>acc+heroAtkFor(i),0)||80;
-  /* Fórmula OFICIAL sem piso artificial: Fácil 50× · Normal 30× · Pesadelo 15× a soma de ATK */
-  return Math.max(60,(DIFFICULTY_MULTS[difficulty]?.hpFactor||25)*soma);
+  allianceBonus=computeAllianceBonus(ACTIVE);
+  /* Fórmula OFICIAL sem piso artificial: Fácil 50× · Normal 30× · Pesadelo 15× a soma de ATK
+     (+ bônus de HP quando a equipe inteira é da mesma aliança) */
+  return Math.max(60,Math.round((DIFFICULTY_MULTS[difficulty]?.hpFactor||25)*soma*(allianceBonus.hp||1)));
 }
 let difficulty=localStorage.getItem('12r_difficulty')||'normal';
 if(!DIFFICULTY_MULTS[difficulty]) difficulty='normal';
@@ -1092,6 +1114,7 @@ function renderQuestsPanel(){
     html+='<div class="quest-row'+(done?' done':'')+'"><span>'+d.ico+' '+d.nome()+'</span><span>'+(done?'✅':progAtual+'/'+d.n)+' · '+d.premio+'🪙</span></div>';
   });
   html+='</div>';
+  html+=renderLoginCalendar();
   let box=document.getElementById('questsPanel');
   if(!box){ box=document.createElement('div'); box.id='questsPanel'; el.parentElement.insertBefore(box,el); }
   box.innerHTML=html;
@@ -1108,11 +1131,29 @@ function renderAchievements(){
     </div>`).join('');
 }
 
-/* v9.1 · Loja de consumíveis (aplicados no início da próxima batalha) */
+/* v9.2 · Loja de consumíveis: 20 itens (uso 'auto' = disparam sozinhos ao entrar na
+   batalha; uso 'batalha' = ficam na MOCHILA 🎒 e o jogador decide a hora de usar). */
 const SHOP_ITEMS=[
-  {id:'shuffle', nome:'Embaralhamento Extra', desc:'+1 embaralhamento real na próxima batalha.', preco:40, icon:'⟳', en:{nome:'Extra Shuffle', desc:'+1 royal shuffle in your next battle.'}, es:{nome:'Barajado Extra', desc:'+1 barajado real en tu próxima batalla.'}},
-  {id:'potion', nome:'Poção Vital', desc:'Recupera 600 de HP no início da próxima batalha.', preco:60, icon:'🧪', en:{nome:'Vital Potion', desc:'Restores 600 HP at the start of your next battle.'}, es:{nome:'Poción Vital', desc:'Restaura 600 de vida al inicio de tu próxima batalla.'}},
-  {id:'blessing', nome:'Bênção dos Reinos', desc:'Comece a próxima batalha com 2 power-ups no tabuleiro.', preco:80, icon:'💠', en:{nome:'Realm Blessing', desc:'Start your next battle with 2 power-ups on the board.'}, es:{nome:'Bendición de los Reinos', desc:'Comienza tu próxima batalla con 2 potenciadores en el tablero.'}}
+  {id:'shuffle', uso:'auto', nome:'Embaralhamento Extra', desc:'+1 embaralhamento real na próxima batalha.', preco:60, icon:'⟳', en:{nome:'Extra Shuffle', desc:'+1 royal shuffle in your next battle.'}, es:{nome:'Barajado Extra', desc:'+1 barajado real en tu próxima batalla.'}},
+  {id:'blessing', uso:'auto', nome:'Bênção dos Reinos', desc:'Comece a próxima batalha com 2 power-ups no tabuleiro.', preco:110, icon:'💠', en:{nome:'Realm Blessing', desc:'Start your next battle with 2 power-ups on the board.'}, es:{nome:'Bendición de los Reinos', desc:'Comienza tu próxima batalla con 2 potenciadores en el tablero.'}},
+  {id:'banquete', uso:'auto', nome:'Banquete Real', desc:'+20% de HP máximo do grupo durante toda a próxima batalha.', preco:150, icon:'🍗', en:{nome:'Royal Feast', desc:'+20% max party HP for the whole next battle.'}, es:{nome:'Banquete Real', desc:'+20% de vida máxima del grupo durante toda la próxima batalla.'}},
+  {id:'lagrima', uso:'auto', nome:'Lágrima da Eternidade', desc:'Se o grupo cair na próxima batalha, renasce UMA vez com 50% da vida.', preco:250, icon:'💧', en:{nome:'Tear of Eternity', desc:'If your party falls next battle, revive ONCE with 50% HP.'}, es:{nome:'Lágrima de la Eternidad', desc:'Si el grupo cae en la próxima batalla, revive UNA vez con 50% de vida.'}},
+  {id:'amuleto', uso:'auto', nome:'Amuleto da Fortuna', desc:'Dobra as moedas ganhas nas vitórias da próxima batalha.', preco:90, icon:'🪙', en:{nome:'Fortune Amulet', desc:'Doubles coins earned from wins in your next battle.'}, es:{nome:'Amuleto de la Fortuna', desc:'Duplica las monedas ganadas en tu próxima batalla.'}},
+  {id:'pergaminho', uso:'auto', nome:'Pergaminho do Sábio', desc:'Dobra o XP ganho na próxima batalha.', preco:90, icon:'📜', en:{nome:'Sage Scroll', desc:'Doubles XP earned in your next battle.'}, es:{nome:'Pergamino del Sabio', desc:'Duplica el XP ganado en tu próxima batalla.'}},
+  {id:'estandarte', uso:'auto', nome:'Estandarte da Coroa', desc:'+10% de ataque do grupo durante toda a próxima batalha.', preco:140, icon:'👑', en:{nome:'Crown Banner', desc:'+10% party attack for the whole next battle.'}, es:{nome:'Estandarte de la Corona', desc:'+10% de ataque del grupo durante toda la próxima batalla.'}},
+  {id:'potion', uso:'batalha', nome:'Poção Vital', desc:'Recupera 600 de vida na hora que você usar.', preco:90, icon:'🧪', en:{nome:'Vital Potion', desc:'Restores 600 HP when you use it.'}, es:{nome:'Poción Vital', desc:'Restaura 600 de vida cuando la usas.'}},
+  {id:'vela', uso:'batalha', nome:'Vela da Alma', desc:'Recupera 300 de vida. A cura básica de Ygdria.', preco:60, icon:'🕯', en:{nome:'Soul Candle', desc:'Restores 300 HP. Ygdria\'s basic heal.'}, es:{nome:'Vela del Alma', desc:'Restaura 300 de vida. La cura básica de Ygdria.'}},
+  {id:'oleo', uso:'batalha', nome:'Óleo de Lâminas', desc:'+25% de ataque do grupo por 5 turnos.', preco:120, icon:'🗡', en:{nome:'Blade Oil', desc:'+25% party attack for 5 turns.'}, es:{nome:'Aceite de Hojas', desc:'+25% de ataque del grupo por 5 turnos.'}},
+  {id:'barreira', uso:'batalha', nome:'Barreira Rúnica', desc:'Ergue um escudo de 500 pontos na hora.', preco:100, icon:'🛡', en:{nome:'Runic Barrier', desc:'Raises a 500-point shield instantly.'}, es:{nome:'Barrera Rúnica', desc:'Levanta un escudo de 500 puntos al instante.'}},
+  {id:'ampulheta', uso:'batalha', nome:'Ampulheta de Ygdria', desc:'Congela o tempo: os inimigos perdem o próximo ataque.', preco:130, icon:'⏳', en:{nome:'Hourglass of Ygdria', desc:'Freezes time: enemies skip their next attack.'}, es:{nome:'Reloj de Arena de Ygdria', desc:'Congela el tiempo: los enemigos pierden su próximo ataque.'}},
+  {id:'martelo', uso:'batalha', nome:'Martelo do Titã', desc:'Esmaga TODOS os obstáculos do tabuleiro (menos corrupções).', preco:140, icon:'🔨', en:{nome:'Titan Hammer', desc:'Smashes ALL board obstacles (except corruptions).'}, es:{nome:'Martillo del Titán', desc:'Aplasta TODOS los obstáculos del tablero (menos corrupciones).'}},
+  {id:'prisma', uso:'batalha', nome:'Prisma Selvagem', desc:'Cria 1 Prisma Real (bomba de cor) no tabuleiro.', preco:160, icon:'🌈', en:{nome:'Wild Prism', desc:'Creates 1 Royal Prism (color bomb) on the board.'}, es:{nome:'Prisma Salvaje', desc:'Crea 1 Prisma Real (bomba de color) en el tablero.'}},
+  {id:'marca', uso:'batalha', nome:'Marca do Caçador', desc:'O alvo recebe +30% de dano por 3 turnos.', preco:120, icon:'🎯', en:{nome:'Hunter\'s Mark', desc:'Target takes +30% damage for 3 turns.'}, es:{nome:'Marca del Cazador', desc:'El objetivo recibe +30% de daño por 3 turnos.'}},
+  {id:'elixir', uso:'batalha', nome:'Elixir de Aura', desc:'+25 de energia para todos os heróis imediatamente.', preco:130, icon:'💫', en:{nome:'Aura Elixir', desc:'+25 energy for all heroes instantly.'}, es:{nome:'Elixir de Aura', desc:'+25 de energía para todos los héroes al instante.'}},
+  {id:'vassoura', uso:'batalha', nome:'Vassoura Arcana', desc:'Varre os debuffs do tabuleiro: véus e Ás de Copas somem.', preco:110, icon:'🧹', en:{nome:'Arcane Broom', desc:'Sweeps board debuffs: veils and Ace of Hearts vanish.'}, es:{nome:'Escoba Arcana', desc:'Barre los debuffs del tablero: velos y As de Copas desaparecen.'}},
+  {id:'bomba', uso:'batalha', nome:'Bomba Elemental', desc:'Explode 300 de dano em TODOS os inimigos.', preco:170, icon:'💥', en:{nome:'Elemental Bomb', desc:'Blasts 300 damage on ALL enemies.'}, es:{nome:'Bomba Elemental', desc:'Explota 300 de daño en TODOS los enemigos.'}},
+  {id:'dado', uso:'batalha', nome:'Dado do Destino', desc:'Re-embaralha o tabuleiro e garante 1 power-up novo.', preco:80, icon:'🎲', en:{nome:'Die of Fate', desc:'Reshuffles the board and grants 1 new power-up.'}, es:{nome:'Dado del Destino', desc:'Rebaraja el tablero y garantiza 1 power-up nuevo.'}},
+  {id:'olho', uso:'batalha', nome:'Olho de Barion', desc:'Revela as gemas ocultas e aponta a melhor jogada.', preco:70, icon:'🧿', en:{nome:'Eye of Barion', desc:'Reveals hidden gems and points out the best move.'}, es:{nome:'Ojo de Barion', desc:'Revela las gemas ocultas y señala la mejor jugada.'}}
 ];
 let inventory={}; try{ inventory=JSON.parse(localStorage.getItem('12r_inv')||'{}'); }catch(e){}
 function saveInventory(){ localStorage.setItem('12r_inv',JSON.stringify(inventory)); }
@@ -1123,6 +1164,7 @@ function buyItem(id){
   inventory[id]=(inventory[id]||0)+1;
   saveInventory();
   renderShop();
+  renderMochila();
   sfxSelect();
 }
 function renderShop(){
@@ -1131,17 +1173,91 @@ function renderShop(){
   list.innerHTML=SHOP_ITEMS.map(i=>`
     <div class="shop-item">
       <span class="shop-icon">${i.icon}</span>
-      <div class="shop-copy"><b>${L(i.nome)}</b><small>${L(i.desc)}</small><small class="shop-owned">${T('Na mochila','In bag','En la mochila')}: ${inventory[i.id]||0}</small></div>
+      <div class="shop-copy"><b>${L(i.nome)}</b> <small class="shop-uso">${i.uso==='auto'?T('automático','automatic','automático'):T('usar na batalha','use in battle','usar en batalla')}</small><small>${L(i.desc)}</small><small class="shop-owned">${T('Na mochila','In bag','En la mochila')}: ${inventory[i.id]||0}</small></div>
       <button class="overlay-btn shop-buy" data-item="${i.id}" ${coins<i.preco?'disabled':''}>🪙 ${i.preco}</button>
     </div>`).join('');
   list.querySelectorAll('.shop-buy').forEach(b=>b.addEventListener('click',()=>buyItem(b.dataset.item)));
 }
+/* Estados dos itens 'auto' da batalha atual */
+let eternalReviveCharges=0, coinDoubleRun=false, xpDoubleRun=false, bannerAtkRun=1;
+let battleConsumablesDone=false; /* itens auto só na 1ª missão da batalha */
+function coinsVitoria(n){ return coinDoubleRun ? n*2 : n; }
 function consumeInventoryOnBattleStart(){
+  if(battleConsumablesDone) return;
+  battleConsumablesDone=true;
   const used=[];
   if(inventory.shuffle>0){ inventory.shuffle--; royalShuffles++; used.push(T('Embaralhamento Extra','Extra Shuffle','Barajado Extra')); }
-  if(inventory.potion>0){ inventory.potion--; playerHP=Math.min(PLAYER_MAX_HP,playerHP+600); updatePlayerHP(); used.push(T('Poção Vital (+600 HP)','Vital Potion (+600 HP)','Poción Vital (+600 HP)')); }
   if(inventory.blessing>0){ inventory.blessing--; spawnRandomPowerUps(2); used.push(T('Bênção dos Reinos','Realm Blessing','Bendición de los Reinos')); }
+  if(inventory.banquete>0){ inventory.banquete--; const extra=Math.round(PLAYER_MAX_HP*0.2); PLAYER_MAX_HP+=extra; playerHP+=extra; updatePlayerHP(); used.push(T('Banquete Real (+20% HP)','Royal Feast (+20% HP)','Banquete Real (+20% HP)')); }
+  if(inventory.lagrima>0){ inventory.lagrima--; eternalReviveCharges=1; used.push(T('Lágrima da Eternidade','Tear of Eternity','Lágrima de la Eternidad')); }
+  if(inventory.amuleto>0){ inventory.amuleto--; coinDoubleRun=true; used.push(T('Amuleto da Fortuna','Fortune Amulet','Amuleto de la Fortuna')); }
+  if(inventory.pergaminho>0){ inventory.pergaminho--; xpDoubleRun=true; used.push(T('Pergaminho do Sábio','Sage Scroll','Pergamino del Sabio')); }
+  if(inventory.estandarte>0){ inventory.estandarte--; bannerAtkRun=1.10; used.push(T('Estandarte da Coroa','Crown Banner','Estandarte de la Corona')); }
   if(used.length){ saveInventory(); setBattleStatus(T(`Itens usados: ${used.join(' · ')}.`,`Items used: ${used.join(' · ')}.`,`Objetos usados: ${used.join(' · ')}.`),'support'); }
+}
+/* 🎒 MOCHILA: itens de batalha usáveis na hora + acesso à loja */
+function renderMochila(){
+  const list=document.getElementById('mochilaList'); if(!list) return;
+  const emBatalha=document.body.classList.contains('game-active');
+  const mc=document.getElementById('mochilaCoins'); if(mc) mc.textContent=`🪙 ${coins}`;
+  const itens=SHOP_ITEMS.filter(i=>(inventory[i.id]||0)>0);
+  if(!itens.length){
+    list.innerHTML=`<p class="account-note">${T('Mochila vazia. Visite a loja e prepare-se para as batalhas!','Empty bag. Visit the shop and gear up for battle!','Mochila vacía. ¡Visita la tienda y prepárate!')}</p>`;
+    return;
+  }
+  list.innerHTML=itens.map(i=>`
+    <div class="shop-item">
+      <span class="shop-icon">${i.icon}</span>
+      <div class="shop-copy"><b>${L(i.nome)} ×${inventory[i.id]}</b><small>${L(i.desc)}</small></div>
+      ${i.uso==='batalha'
+        ? `<button class="overlay-btn shop-buy" data-usar="${i.id}" ${emBatalha?'':'disabled'}>${T('Usar','Use','Usar')}</button>`
+        : `<small class="shop-uso">${T('automático','automatic','automático')}</small>`}
+    </div>`).join('');
+  list.querySelectorAll('[data-usar]').forEach(b=>b.addEventListener('click',()=>usarItemBatalha(b.dataset.usar)));
+}
+function usarItemBatalha(id){
+  if(!document.body.classList.contains('game-active')||(inventory[id]||0)<=0){ sfxInvalid(); return; }
+  if(playerHP<=0){ sfxInvalid(); return; }
+  const nomeItem=L(SHOP_ITEMS.find(i=>i.id===id)?.nome||id);
+  switch(id){
+    case 'potion': healPlayer(600); break;
+    case 'vela': healPlayer(300); break;
+    case 'oleo': addBuff(1.25,5); break;
+    case 'barreira': addShield(500); break;
+    case 'ampulheta': addStun(1); break;
+    case 'martelo': {
+      let quebrou=false;
+      Object.keys(obstaclesMeta).forEach(key=>{
+        if(obstaclesMeta[key].type==='sombra') return;
+        const [r,c]=key.split('_').map(Number);
+        delete obstaclesMeta[key]; board[r][c]=-1; quebrou=true;
+      });
+      if(quebrou){ boardRenderCache=null; collapseAndRefill(); renderBoard(); }
+      break;
+    }
+    case 'prisma': spawnRandomColorBombs(1); break;
+    case 'marca': enemyVulnerableTurns=Math.max(enemyVulnerableTurns,3); enemyVulnerableMult=Math.max(enemyVulnerableMult,1.3); renderStatusTray(); break;
+    case 'elixir': grantTeamEnergy(25); break;
+    case 'vassoura': {
+      hiddenGems={};
+      Object.keys(obstaclesMeta).forEach(key=>{
+        if(obstaclesMeta[key].type!=='copas') return;
+        const [r,c]=key.split('_').map(Number);
+        delete obstaclesMeta[key]; board[r][c]=-1;
+      });
+      boardRenderCache=null; collapseAndRefill(); renderBoard();
+      break;
+    }
+    case 'bomba': applyDamageToAllEnemies(300,null); break;
+    case 'dado': shuffleBoard(false); spawnRandomPowerUps(1); break;
+    case 'olho': hiddenGems={}; boardRenderCache=null; renderBoard(); showBestMoveHint(); break;
+    default: return;
+  }
+  inventory[id]--; saveInventory();
+  sfxPassive();
+  setBattleStatus('🎒 '+nomeItem+' '+T('usado!','used!','¡usado!'),'support');
+  renderMochila();
+  if(finishRoomIfCleared(T('O item derrotou o último inimigo!','The item defeated the last enemy!','¡El objeto derrotó al último enemigo!'))) return;
 }
 
 /* F2-1 · Desafio dos Chefes: os 8 chefes-Carta em sequência, escalando */
@@ -1157,23 +1273,41 @@ function buildBossRushStage(n){
     enemies:[{name:c.nome, hp:Math.round(c.hp*1.6*escala), atk:Math.round(c.atk*1.1*escala), sprite:c.sprite, flip:!!c.flip, cardId:key, isBoss:true, maxHp:Math.round(c.hp*1.6*escala)}]
   };
 }
-/* v9.1 · Torre Infinita: andares gerados, inimigos escalando */
+/* v9.2 · TORRE DE ACESSO À ETERNIDADE (Torre Infinita) — modo SURVIVOR sem fim:
+   TODOS os personagens do jogo, na ordem de aparição (a própria ordem de KINGDOMS —
+   personagens novos entram na torre automaticamente), 1 por missão. Ao derrotar o
+   último, o ciclo recomeça MAIS FORTE (mesmo os de nível fraco). Regras: só no
+   Pesadelo; a vida NÃO renova entre missões; consumíveis liberados; ranking MENSAL. */
 let towerMode=false, towerFloor=1;
+let towerPrevDifficulty=null; /* restaura a dificuldade do jogador ao sair da torre */
+function towerMonthKey(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
+function towerMonthly(){ try{ return JSON.parse(localStorage.getItem('12r_tower_month')||'{}'); }catch(e){ return {}; } }
+function towerRecordMonthly(andaresVencidos){
+  const tm=towerMonthly(); const mk=towerMonthKey();
+  if((tm[mk]||0)<andaresVencidos){ tm[mk]=andaresVencidos; localStorage.setItem('12r_tower_month',JSON.stringify(tm)); }
+}
+const TOWER_RANK_REWARDS=[
+  ['🥇 Top 1','2000 🪙 + '+'Lenda da Eternidade'],
+  ['🥈 Top 2','1500 🪙'],
+  ['🥉 Top 3','1200 🪙'],
+  ['🏅 Top 10','800 🪙'],
+  ['🎖 Top 100','300 🪙']
+];
 function buildTowerStage(floor){
-  /* v9.1: pool oficial do Reino dos Humanos (as fases demo saíram do jogo).
-     Chefes de andar múltiplo de 5 = um chefe-Carta aleatório (com Habilidade de Fase). */
-  const flat=Object.values(HUMANOS_ETYPES).map(t=>({name:t.n, hp:t.hp, atk:t.atk, sprite:t.sprite||ESPR[t.s], tint:t.t, flip:!!t.flip}));
-  const bosses=Object.entries(HUMANOS_CARDS).map(([key,c])=>({name:c.nome, hp:c.hp, atk:c.atk, sprite:c.isCard?c.card:c.sprite, isCard:!!c.isCard, flip:!!c.flip, cardId:key}));
-  const scale=1+0.22*(floor-1);
-  const count=Math.min(3,1+Math.floor((floor-1)/3));
-  const isBossFloor=floor%5===0;
-  const picks=[];
-  for(let i=0;i<count;i++) picks.push(flat[Math.floor(gameRandom()*flat.length)]);
-  if(isBossFloor) picks[picks.length-1]=bosses[Math.floor(gameRandom()*bosses.length)];
+  const ordem=KINGDOMS; /* ordem de aparição no jogo */
+  const n=ordem.length;
+  const ciclo=Math.floor((floor-1)/n);
+  const k=ordem[(floor-1)%n];
+  const base=HUMANOS_CARDS[k.id]||null;
+  const hpBase=base?Math.round(base.hp*1.4):((k.atk||12)*16+120);
+  const atkBase=base?base.atk:Math.max(6,Math.round((k.atk||12)*0.9));
+  const escala=Math.pow(1.35,ciclo)*(1+((floor-1)%n)*0.03);
+  const hp=Math.round(hpBase*escala), atk=Math.round(atkBase*escala);
   return {
-    title:T(`Torre · Andar ${floor} · 🎁 em ${5-((floor-1)%5)}`,`Tower · Floor ${floor} · 🎁 in ${5-((floor-1)%5)}`,`Torre · Piso ${floor} · 🎁 en ${5-((floor-1)%5)}`),
-    scene:(floor-1)%5,
-    enemies:picks.map(p=>({...p, hp:Math.round(p.hp*scale*(isBossFloor?1.3:1)), atk:Math.round(p.atk*scale), isBoss:isBossFloor&&p.cardId?true:p.isBoss}))
+    title:`${T('Torre de Acesso à Eternidade','Tower of Access to Eternity','Torre de Acceso a la Eternidad')} · ${T('Andar','Floor','Piso')} ${floor}${ciclo>0?` · ${T('Ciclo','Cycle','Ciclo')} ${ciclo+1}`:''}`,
+    scene:4,
+    bgUrl:'assets/bg/humanos/fase-09.jpg', /* cenário: Lendária Torre de Acesso à Eternidade */
+    enemies:[{name:k.nome, hp, atk, maxHp:hp, sprite:k.sprite, cardId:k.id, isBoss:((floor-1)%n)===n-1}]
   };
 }
 const GOLEM_SPRITE = 'assets/enemies/stone-sentinel/single-1.png';
@@ -1346,7 +1480,7 @@ function spriteMarkup(k, action='idle'){
     const steps = Math.max(1, Number(meta.frames||1)-1);
     return `<div class="hero-sprite-sheet" aria-hidden="true" style="--sprite-url:url('${meta.src}');--sprite-frames:${Math.max(1,Number(meta.frames||1))};--sprite-steps:${steps};--sprite-duration:${Number(meta.duration||520)}ms"></div>`;
   }
-  if(k.sprite) return `<img class="hero-sprite-image" src="${k.sprite}" alt="${L(k.nome)}">`;
+  if(k.sprite) return `<img class="hero-sprite-image${k.heroFlip?' flip':''}" src="${k.sprite}" alt="${L(k.nome)}">`;
   return scopeSvg(CHIBI_SVG[k.id],k.id);
 }
 
@@ -1450,12 +1584,14 @@ function renderPartyArena(){
     unit.style.setProperty('--aura-outer',k.rarity==='DIVINA'?'#ffe58a':k.colorLight);
     unit.style.setProperty('--aura-outer-light',k.rarity==='DIVINA'?'#ffffff':k.color);
     const avatarContent = spriteMarkup(k,'idle');
-    unit.innerHTML = `
+    const stageHtml=`
       <div class="unit-stage">
         <div class="unit-ground-shadow"></div>
         <div class="avatar-circle" id="party-${k.id}-avatar" data-hero-id="${k.id}" data-action="idle">${avatarContent}</div>
-      </div>
-      <div class="unit-name"><span class="unit-gem" style="--ug:${gemC};--ug-l:${gemL};--ug-d:${gemD}" aria-hidden="true"></span>${k.nome.split(',')[0]}</div>
+      </div>`;
+    const nomeHtml=vizPrefs.heroNames==='off'?'':`
+      <div class="unit-name${vizPrefs.heroNames==='top'?' name-top':''}"><span class="unit-gem" style="--ug:${gemC};--ug-l:${gemL};--ug-d:${gemD}" aria-hidden="true"></span>${k.nome.split(',')[0]}</div>`;
+    unit.innerHTML = (vizPrefs.heroNames==='top'?nomeHtml+stageHtml:stageHtml+nomeHtml)+`
       <div class="charge-outer"><div class="charge-inner" id="charge-${k.id}" style="width:0%"></div></div>
       <div class="charge-text" id="chargeText-${k.id}">0/100</div>
     `;
@@ -1627,7 +1763,7 @@ function renderStageProgress(){
     dungeonTitleEl.textContent = L(fase.nome);
   }else if(towerMode){
     stageLabelEl.textContent = `${T('Andar','Floor','Piso')} ${towerFloor}`;
-    dungeonTitleEl.textContent = T('Torre Infinita','Infinite Tower','Torre Infinita');
+    dungeonTitleEl.textContent = T('Torre de Acesso à Eternidade','Tower of Access to Eternity','Torre de Acceso a la Eternidad');
   }else{
     /* modos extra (Desafio dos Chefes etc.): título vem SEMPRE do stage ativo — nunca da demo */
     stageLabelEl.textContent = bossRushMode ? `${T('Chefe','Boss','Jefe')} ${bossRushIdx+1}/8` : '';
@@ -1703,7 +1839,8 @@ function applyFormationSlot(unit,slot,width){
   if(arenaBox&&rowEl&&rowEl.clientHeight>40&&document.body.classList.contains('game-active')){
     const {top,bot}=groundBand();
     const aH=arenaBox.clientHeight, rH=rowEl.clientHeight;
-    const gap=27, uiFeet=28*s;
+    /* v9.2: personagens mais ASSENTADOS no piso (gap menor = todos descem) */
+    const gap=8, uiFeet=20*s;
     const yMax=Math.max(4,(((1-top)*aH-gap-uiFeet)/rH)*100);
     const yMin=Math.max(0,(((1-bot)*aH-gap)/rH)*100);
     const prof=Math.max(0,Math.min(1,y/46));
@@ -1930,7 +2067,7 @@ function renderEnemies(){
     unit.style.setProperty('--aura-inner-light',palette[1]);
     unit.style.setProperty('--aura-outer',palette[2]);
     unit.style.setProperty('--aura-outer-light',palette[3]);
-    unit.innerHTML = `
+    const stageHtml=`
       <div class="unit-stage">
         <div class="target-arrow"></div>
         <div class="unit-ground-shadow"></div>
@@ -1938,8 +2075,10 @@ function renderEnemies(){
           <img class="enemy-sprite-image${e.flip?' flip':''}" src="${e.sprite}" alt="${L(e.name)}"${e.tint?` style="filter:${e.tint}"`:''}>
           <span class="enemy-intent" aria-label="${T(`Próximo ataque: aproximadamente ${e.atk} de dano`,`Next attack: about ${e.atk} damage`,`Próximo ataque: aproximadamente ${e.atk} de daño`)}">⚔ ${e.atk}</span>
         </div>
-      </div>
-      <div class="unit-name${e.isBoss?' boss-name':''}">${e.isBoss?'👑 ':''}${L(e.name)}</div>
+      </div>`;
+    const nomeHtml=vizPrefs.enemyNames==='off'?'':`
+      <div class="unit-name${e.isBoss?' boss-name':''}${vizPrefs.enemyNames==='top'?' name-top':''}">${e.isBoss?'👑 ':''}${L(e.name)}</div>`;
+    unit.innerHTML = (vizPrefs.enemyNames==='top'?nomeHtml+stageHtml:stageHtml+nomeHtml)+`
       <div class="unit-hp-outer"><div class="unit-hp-inner" id="enemyHpBar-${idx}" style="width:${Math.max(0,e.hp/e.maxHp*100)}%"></div></div>
       <div class="unit-hp-text" id="enemyHpText-${idx}">${Math.max(0,e.hp)} / ${e.maxHp}</div>
     `;
@@ -1984,6 +2123,41 @@ function realmOrb(id){
   const k=KINGDOMS.find(x=>x.id===id);
   return k?{c:k.orbColor||k.color, l:k.orbColorLight||k.colorLight, d:k.orbColorDark||k.colorDark}:null;
 }
+/* == AS 3 GRANDES ALIANÇAS DE YGDRIA (nomes oficiais definidos pelo criador) == */
+const ALLIANCES=[
+  {id:'lago',   nome:'Aliança do Lago de Ygdria', membros:['humanos','luz','agua','terra'],   cor:'#6fb7ff', icon:'🌊'},
+  {id:'dragao', nome:'Aliança do Rei Dragão',     membros:['fogo','vento','natureza','areia'], cor:'#ff8a4d', icon:'🐉'},
+  {id:'barion', nome:'Aliança Barion',            membros:['sombras','raio','gelo','chuvas'],  cor:'#b48aff', icon:'🌩'}
+];
+function allianceOf(realmId){ return ALLIANCES.find(a=>a.membros.includes(realmId))||null; }
+/* Bônus de sinergia: repetir reino fortalece o ATQ do grupo; equipe 100% da mesma
+   aliança fortalece ATQ e HP. Calculado ao montar a equipe/batalha. */
+let allianceBonus={atk:1,hp:1,rotulos:[]};
+function computeAllianceBonus(ids){
+  const time=(ids&&ids.length?ids:ACTIVE)||[];
+  const bonus={atk:1,hp:1,rotulos:[]};
+  if(time.length===4){
+    const fams={};
+    time.forEach(i=>{ const f=KINGDOMS[i]?.iconId||KINGDOMS[i]?.id; if(f) fams[f]=(fams[f]||0)+1; });
+    const maxRepet=Math.max(1,...Object.values(fams));
+    if(maxRepet>=2){
+      const extra=maxRepet===2?0.10:maxRepet===3?0.15:0.20;
+      bonus.atk+=extra;
+      const famTop=Object.keys(fams).find(f=>fams[f]===maxRepet);
+      const lead=KINGDOMS.find(k=>k.id===famTop);
+      bonus.rotulos.push(`${maxRepet}× ${lead?L(lead.reino):famTop} · +${Math.round(extra*100)}% ${T('ATQ','ATK','ATQ')}`);
+    }
+    const als=new Set(time.map(i=>allianceOf(KINGDOMS[i]?.iconId||KINGDOMS[i]?.id)?.id||'x'));
+    if(als.size===1&&!als.has('x')){
+      const al=ALLIANCES.find(a=>a.id===[...als][0]);
+      bonus.atk+=0.05; bonus.hp+=0.10;
+      bonus.rotulos.push(`${al.icon} ${al.nome} · +5% ${T('ATQ','ATK','ATQ')} · +10% HP`);
+    }
+  }
+  return bonus;
+}
+/* ATQ efetivo em batalha (inclui bônus de aliança e Estandarte da Coroa) */
+function heroAtkBattle(idx){ return Math.round(heroAtkFor(idx)*(allianceBonus?.atk||1)*(typeof bannerAtkRun==='number'?bannerAtkRun:1)); }
 let battleGemColors={};
 /* Estados de combate das cartas SUPER/ULTRA RARAS (restaurados) */
 let damageReductionStacks=0;   /* Kalander · O Herói da Nação (cap 2) */
@@ -2265,7 +2439,17 @@ function registerBestiary(nomePt){
   const b=bestiary(); b[nomePt]=(b[nomePt]||0)+1;
   localStorage.setItem('12r_bestiary',JSON.stringify(b));
 }
-/* F3 · Recompensa diária de login */
+/* F3 · Recompensas de login diário: ciclo de 7 dias (moedas crescentes + itens).
+   A sequência quebra se faltar um dia; o ciclo reinicia após o dia 7. */
+const LOGIN_REWARDS=[
+  {c:15},
+  {c:20},
+  {c:25, item:'vela'},
+  {c:30},
+  {c:40, item:'potion'},
+  {c:50},
+  {c:80, item:'blessing'}
+];
 function checkLoginReward(){
   let st={date:'',streak:0};
   try{ st=JSON.parse(localStorage.getItem('12r_login')||'{"date":"","streak":0}'); }catch(e){}
@@ -2275,15 +2459,34 @@ function checkLoginReward(){
   st.streak=(st.date===ontem)?st.streak+1:1;
   st.date=hoje;
   localStorage.setItem('12r_login',JSON.stringify(st));
-  const bonus=Math.min(200,40*st.streak);
-  grantCoins(bonus);
+  const dia=(st.streak-1)%7;
+  const rec=LOGIN_REWARDS[dia];
+  grantCoins(rec.c);
+  let extra='';
+  if(rec.item){
+    inventory[rec.item]=(inventory[rec.item]||0)+1;
+    saveInventory();
+    const it=SHOP_ITEMS.find(i=>i.id===rec.item);
+    extra=' + '+(it?it.icon+' '+L(it.nome):rec.item);
+  }
   setTimeout(()=>{
     const t=document.createElement('div');
     t.className='ach-toast show';
-    t.innerHTML='<span class="ach-toast-icon">📅</span><div><b>'+T('Recompensa de login!','Login reward!','¡Recompensa de inicio!')+'</b><br>+'+bonus+' '+T('moedas','coins','monedas')+' · '+T('sequência','streak','racha')+' '+st.streak+'</div>';
+    t.innerHTML='<span class="ach-toast-icon">📅</span><div><b>'+T('Recompensa de login — dia ','Login reward — day ','Recompensa de inicio — día ')+(dia+1)+'/7</b><br>+'+rec.c+' '+T('moedas','coins','monedas')+extra+' · '+T('sequência','streak','racha')+' '+st.streak+'</div>';
     document.body.appendChild(t);
     setTimeout(()=>t.remove(),4200);
   },900);
+}
+function renderLoginCalendar(){
+  let st={date:'',streak:0};
+  try{ st=JSON.parse(localStorage.getItem('12r_login')||'{}'); }catch(e){}
+  const diaAtual=st.streak?(st.streak-1)%7:-1;
+  return '<div class="quests-box login-cal"><b>📅 '+T('Login diário — ciclo de 7 dias','Daily login — 7-day cycle','Inicio diario — ciclo de 7 días')+'</b><div class="login-days">'+
+    LOGIN_REWARDS.map((r,i)=>{
+      const it=r.item?SHOP_ITEMS.find(x=>x.id===r.item):null;
+      return '<span class="login-day'+(i<diaAtual?' done':i===diaAtual?' today':'')+'"><i>'+(i+1)+'</i>🪙'+r.c+(it?'<em>'+it.icon+'</em>':'')+'</span>';
+    }).join('')+
+    '</div><small>'+T('Sequência atual','Current streak','Racha actual')+': '+(st.streak||0)+' '+T('dia(s)','day(s)','día(s)')+'</small></div>';
 }
 /* F4 · Missões diárias */
 function questsState(){
@@ -2293,9 +2496,9 @@ function questsState(){
   return q;
 }
 const QUESTS_DEF=[
-  {id:'win2',   n:2, ico:'⚔', nome:()=>T('Vença 2 missões','Win 2 missions','Gana 2 misiones'), premio:60},
-  {id:'combo4', n:1, ico:'✦', nome:()=>T('Faça um combo ×4','Land a ×4 combo','Logra un combo ×4'), premio:60},
-  {id:'active2',n:2, ico:'✨', nome:()=>T('Use 2 habilidades ativas','Use 2 active abilities','Usa 2 habilidades activas'), premio:60}
+  {id:'win2',   n:2, ico:'⚔', nome:()=>T('Vença 2 missões','Win 2 missions','Gana 2 misiones'), premio:40},
+  {id:'combo4', n:1, ico:'✦', nome:()=>T('Faça um combo ×4','Land a ×4 combo','Logra un combo ×4'), premio:40},
+  {id:'active2',n:2, ico:'✨', nome:()=>T('Use 2 habilidades ativas','Use 2 active abilities','Usa 2 habilidades activas'), premio:40}
 ];
 function questEvent(tipo,valor){
   const q=questsState();
@@ -2322,11 +2525,12 @@ function renderTeamSlots(){
   const box=document.getElementById('teamSlots'); if(!box) return;
   let times; try{ times=JSON.parse(localStorage.getItem('12r_teams')||'[null,null,null]'); }catch(e){ times=[null,null,null]; }
   box.innerHTML='';
+  const brasao='<svg class="team-crest" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l7 2.6v6.2c0 4.8-3 8.4-7 10.6-4-2.2-7-5.8-7-10.6V4.6L12 2zm0 3.1L7.2 6.8v4.3c0 3.4 2 6.1 4.8 7.9 2.8-1.8 4.8-4.5 4.8-7.9V6.8L12 5.1z"/><path d="M12 7.4l1.2 2.4 2.6.4-1.9 1.9.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.9 2.6-.4L12 7.4z"/></svg>';
   times.forEach((t2,i)=>{
     const b=document.createElement('button');
     b.type='button'; b.className='team-slot'+(t2?' filled':'');
-    b.innerHTML=t2?('💾 '+t2.map(ii=>KINGDOMS[ii]?.nome?.[0]||'?').join(''))
-                  :('＋ '+T('Slot','Slot','Slot')+' '+(i+1));
+    b.innerHTML=t2?(brasao+' '+t2.map(ii=>KINGDOMS[ii]?.nome?.[0]||'?').join(''))
+                  :(brasao+' '+T('Equipe','Team','Equipo')+' '+(i+1));
     b.title=t2?T('Toque para usar esta equipe. Com 4 escolhidas, toque para sobrescrever.','Tap to use this team. With 4 chosen, tap to overwrite.','Toca para usar este equipo.'):T('Escolha 4 cartas e toque para salvar.','Pick 4 cards and tap to save.','Elige 4 cartas y toca para guardar.');
     b.addEventListener('click',()=>{
       if(chosenIds.length===4){ times[i]=[...chosenIds]; localStorage.setItem('12r_teams',JSON.stringify(times)); renderTeamSlots(); sfxSelect(); }
@@ -2353,6 +2557,38 @@ function renderTeamSlots(){
 }
 /* F7 · Recorde de turnos por fase */
 function faseBest(){ try{ return JSON.parse(localStorage.getItem('12r_fase_best')||'{}'); }catch(e){ return {}; } }
+function faseTime(){ try{ return JSON.parse(localStorage.getItem('12r_fase_time')||'{}'); }catch(e){ return {}; } }
+/* ⏱ Timer da missão: conta desde a entrada; é a base oficial para habilidades de
+   tempo real e para os rankings de missão/fase. */
+let missionStartMs=0, missionTimerInt=null;
+function missionElapsed(){ return missionStartMs?Math.floor((Date.now()-missionStartMs)/1000):0; }
+function fmtTempo(s){ return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+function startMissionTimer(){
+  missionStartMs=Date.now();
+  clearInterval(missionTimerInt);
+  const tick=()=>{ const el=document.getElementById('missionTimer'); if(el) el.textContent='⏱ '+fmtTempo(missionElapsed()); };
+  tick();
+  missionTimerInt=setInterval(tick,1000);
+}
+function stopMissionTimer(){ clearInterval(missionTimerInt); missionTimerInt=null; }
+/* 👁 Preferências de VISUALIZAÇÃO (menu Opções → Visualização) */
+let vizPrefs={heroNames:'bottom',enemyNames:'bottom',dmg:true,dps:true,timer:true};
+try{ vizPrefs={...vizPrefs,...JSON.parse(localStorage.getItem('12r_viz')||'{}')}; }catch(e){}
+function saveViz(){ localStorage.setItem('12r_viz',JSON.stringify(vizPrefs)); applyVizSettings(); }
+function applyVizSettings(){
+  document.body.classList.toggle('viz-dmg-off',!vizPrefs.dmg);
+  document.body.classList.toggle('viz-dps-off',!vizPrefs.dps);
+  document.body.classList.toggle('viz-timer-off',!vizPrefs.timer);
+}
+function vizNameLabel(v){ return v==='top'?T('Em cima','Top','Arriba'):v==='off'?T('Desabilitado','Disabled','Desactivado'):T('Embaixo','Bottom','Abajo'); }
+function vizOnOff(v){ return v?T('Mostrar','Show','Mostrar'):T('Ocultar','Hide','Ocultar'); }
+function refreshVizBattle(){
+  applyVizSettings();
+  if(document.body.classList.contains('game-active')){
+    renderPartyArena(); renderEnemies(); renderCardStrip();
+    ACTIVE.forEach(i=>updateHeroProgressUI(i));
+  }
+}
 /* F9 · Modo foto */
 function togglePhotoMode(on){
   document.body.classList.toggle('photo-mode',on);
@@ -2445,9 +2681,19 @@ function loadStage(idx){
   updateBattleToolLabels();
   renderStatusTray();
   stageTurns=0; stageCollected=0;
-  createBoard();
-  placeObstacles(stageData.obstacles);
-  renderBoard();
+  startMissionTimer();
+  /* FÁCIL: o tabuleiro (power-ups e blocos) continua da missão anterior da fase */
+  const manterTabuleiro = carryBoardNext && difficulty==='facil' && worldRun.active &&
+    worldRun.nivel>1 && Array.isArray(board) && board.length===SIZE;
+  carryBoardNext=false;
+  if(manterTabuleiro){
+    if(!hasValidMoves()) shuffleBoard(false);
+    renderBoard();
+  }else{
+    createBoard();
+    placeObstacles(stageData.obstacles);
+    renderBoard();
+  }
   consumeInventoryOnBattleStart();
   if(stageIndex===0&&!towerMode) startCoach();
   maybeShowStory(idx);
@@ -2582,6 +2828,7 @@ function hitAdjacentObstacles(cells){
   hitKeys.forEach(key=>{
     const meta=obstaclesMeta[key]; if(!meta) return;
     if(meta.type==='sombra') return; /* Tempo Sombrio: a corrupção é indestrutível */
+    if(persistentObstaclesMode() && meta.type!=='copas') return; /* Pesadelo: obstáculos permanentes */
     meta.hits--;
     const [r,c]=key.split('_').map(Number);
     const gemEl=boardEl.querySelector(`.gem[data-r="${r}"][data-c="${c}"]`);
@@ -2715,12 +2962,25 @@ const STATIC_I18N=[
   ["#optionsScreen .option-row:nth-child(5) > span","Progresso","Progress","Progreso"],
   ["#diffGroup [data-diff=\"facil\"]","Fácil","Easy","Fácil"],
   ["#diffGroup [data-diff=\"normal\"]","Normal","Normal","Normal"],
+  ["#diffGroup [data-diff=\"dificil\"]","Difícil","Hard","Difícil"],
   ["#diffGroup [data-diff=\"pesadelo\"]","Pesadelo","Nightmare","Pesadilla"],
   ["#exportSaveBtn","Exportar","Export","Exportar"],
   ["#importSaveBtn","Importar","Import","Importar"],
-  ["#optionsScreen .option-row:nth-child(7) > span","Reduzir animações","Reduce animations","Reducir animaciones"],
-  ["#optionsScreen .option-row:nth-child(8) > span","Partículas de batalha","Battle particles","Partículas de batalla"],
-  ["#optionsScreen .option-row:nth-child(9) > span","Vibração em dispositivos móveis","Vibration on mobile devices","Vibración en dispositivos móviles"],
+  ["#optReduceLabel","Reduzir animações","Reduce animations","Reducir animaciones"],
+  ["#optParticlesLabel","Partículas de batalha","Battle particles","Partículas de batalla"],
+  ["#optHapticsLabel","Vibração em dispositivos móveis","Vibration on mobile devices","Vibración en dispositivos móviles"],
+  ["#vizSectionTitle","👁 Visualização","👁 Display","👁 Visualización"],
+  ["#vizHeroLabel","Nome dos heróis","Hero names","Nombre de los héroes"],
+  ["#vizEnemyLabel","Nome dos inimigos","Enemy names","Nombre de los enemigos"],
+  ["#vizDmgLabel","Números de dano","Damage numbers","Números de daño"],
+  ["#vizDpsLabel","DPS nas mini-cartas","DPS on mini-cards","DPS en las mini-cartas"],
+  ["#vizTimerLabel","Timer da missão","Mission timer","Temporizador de misión"],
+  ["#mochilaTitle","🎒 Mochila","🎒 Bag","🎒 Mochila"],
+  ["[data-close=\"mochilaScreen\"]","Fechar","Close","Cerrar"],
+  ["#mochilaShopBtn","🪙 Abrir Loja de Consumíveis","🪙 Open Consumables Shop","🪙 Abrir Tienda de Consumibles"],
+  ["#towerTitle","🗼 Torre de Acesso à Eternidade","🗼 Tower of Access to Eternity","🗼 Torre de Acceso a la Eternidad"],
+  ["[data-close=\"towerScreen\"]","Fechar","Close","Cerrar"],
+  ["#towerStartBtn","🗼 Escalar a Torre (Pesadelo)","🗼 Climb the Tower (Nightmare)","🗼 Escalar la Torre (Pesadilla)"],
   ["#resetProgressBtn","Apagar progresso local","Erase local progress","Borrar progreso local"],
   ["#helpTitle","Como jogar","How to play","Cómo jugar"],
   ["#helpScreen .tutorial-step:nth-child(1)","<b>1. Forme o grupo</b><p>Escolha quatro cartas. A esfera colorida de cada carta passa a fazer parte do tabuleiro.</p>","<b>1. Build your party</b><p>Pick four cards. Each card's colored orb becomes part of the board.</p>","<b>1. Forma tu grupo</b><p>Elige cuatro cartas. La esfera de color de cada carta pasa a formar parte del tablero.</p>"],
@@ -2780,7 +3040,7 @@ function applyLanguage(){
   const towerLabel=document.querySelector('#towerBtn .menu-label');
   if(towerLabel){
     const hint=document.getElementById('towerHint')?.outerHTML||'';
-    towerLabel.innerHTML=T('Torre Infinita ','Infinite Tower ','Torre Infinita ')+hint;
+    towerLabel.innerHTML=T('Torre de Acesso à Eternidade ','Tower of Access to Eternity ','Torre de Acceso a la Eternidad ')+hint;
   }
   const sub=document.querySelector('.select-sub');
   const totalCartas=KINGDOMS.length;
@@ -2806,11 +3066,67 @@ const STAGE_DIALOGS={
      {h:'gelo',t:'E quando o trovão passar... apenas o gelo permanecerá.'}]
 };
 let storyQueue=[];
+/* v9.2 · FALAS DE ENTRADA DOS INIMIGOS: todos os inimigos falam quando a missão
+   começa (mesmo vários por missão). Feras mágicas NÃO falam — emitem sons. */
+const ENEMY_LINES={
+  slimeCereja:[['*Blub... blub... squish!*','*Blub... blub... squish!*','*Blub... blub... squish!*']],
+  loboRaivoso:[['*GRRRRRRR... AUUUUUU!*','*GRRRRRRR... AWOOOO!*','*GRRRRRRR... AUUUUUU!*']],
+  soldado1:[['Alto! Ninguém passa pela guarda da capital.','Halt! No one passes the capital guard.','¡Alto! Nadie pasa la guardia de la capital.'],
+            ['Pela Coroa! Rendam-se agora.','For the Crown! Surrender now.','¡Por la Corona! Ríndanse ahora.']],
+  soldado2:[['Vocês não deviam ter vindo até aqui.','You should not have come here.','No deberían haber venido hasta aquí.'],
+            ['A ordem é prender os invasores!','Orders are to arrest the invaders!','¡La orden es arrestar a los invasores!']],
+  capitao:[['Eu treinei cada lâmina desta cidade. Mostrem o que sabem!','I trained every blade in this city. Show me what you know!','Entrené cada espada de esta ciudad. ¡Muestren lo que saben!']],
+  vulto:[['*Um sussurro gelado atravessa o ar...*','*An icy whisper crosses the air...*','*Un susurro helado cruza el aire...*']],
+  espectro:[['Vocês pertencem... às sombras...','You belong... to the shadows...','Ustedes pertenecen... a las sombras...']],
+  morto:[['A morte não me libertou do meu posto.','Death did not release me from my post.','La muerte no me liberó de mi puesto.']],
+  soldBib1:[['Silêncio na Biblioteca! O saber não é para todos.','Silence in the Library! Knowledge is not for everyone.','¡Silencio en la Biblioteca! El saber no es para todos.']],
+  soldBib2:[['Cada página aqui vale mais que suas vidas.','Every page here is worth more than your lives.','Cada página aquí vale más que sus vidas.']],
+  soldBib3:[['Saiam! Os arquivos da Eternidade são selados.','Leave! The archives of Eternity are sealed.','¡Fuera! Los archivos de la Eternidad están sellados.']],
+  infantaria:[['Formação de lanças! Avançar!','Spear formation! Advance!','¡Formación de lanzas! ¡Avancen!']],
+  cavalaria:[['Ao meu sinal, a cavalaria esmaga qualquer um.','At my signal, the cavalry crushes anyone.','A mi señal, la caballería aplasta a cualquiera.']],
+  comandante:[['Eu comando a Muralha. E a Muralha nunca caiu.','I command the Wall. And the Wall has never fallen.','Yo comando la Muralla. Y la Muralla nunca cayó.']],
+  trono:[['O Trono Real não recebe visitas. Apenas prisioneiros.','The Royal Throne receives no guests. Only prisoners.','El Trono Real no recibe visitas. Solo prisioneros.']],
+  gareth:[['Toda grande vitória começa com um simples soldado. Hoje, a minha!','Every great victory starts with a simple soldier. Today, mine!','¡Toda gran victoria empieza con un simple soldado. Hoy, la mía!']],
+  cedric:[['Cada feitiço escrito hoje será uma lenda amanhã. Testemunhem!','Every spell written today will be a legend tomorrow. Witness it!','Cada hechizo escrito hoy será una leyenda mañana. ¡Sean testigos!']],
+  elizier:[['Nenhum inimigo escapa do olhar da Coroa.','No enemy escapes the gaze of the Crown.','Ningún enemigo escapa a la mirada de la Corona.']],
+  roland:[['Minha lança protege o reino antes da minha própria vida!','My lance protects the realm before my own life!','¡Mi lanza protege el reino antes que mi propia vida!']],
+  jules:[['Hihihi... querem ver um truque? A carta da vez é... VOCÊS!','Heehee... want to see a trick? The next card is... YOU!','Jijiji... ¿quieren ver un truco? La carta de turno son... ¡USTEDES!']],
+  bernyce:[['Uma rainha governa um reino. Ajoelhem-se diante da Reguladora.','A queen rules a realm. Kneel before the Regulator.','Una reina gobierna un reino. Arrodíllense ante la Reguladora.']],
+  kalander:[['O Herói da Nação não recua. Nem diante de vocês.','The Hero of the Nation does not retreat. Not even before you.','El Héroe de la Nación no retrocede. Ni ante ustedes.']],
+  julius:[['Minhas sombras devoram o passado... e reescrevem a história!','My shadows devour the past... and rewrite history!','¡Mis sombras devoran el pasado... y reescriben la historia!']]
+};
+function enemyLineFor(e){
+  const key=e.cardId||e.etype;
+  const tpl=HUMANOS_ETYPES[e.etype];
+  const arr=ENEMY_LINES[key];
+  if(arr){
+    const tri=arr[Math.floor(gameRandom()*arr.length)];
+    return T(tri[0],tri[1],tri[2]);
+  }
+  if(tpl?.fera) return '*Grrrrrr...*';
+  const k=KINGDOMS.find(x=>x.id===key);
+  if(k?.frase) return L(k.frase);
+  return T('Vocês não deveriam ter vindo até aqui...','You should not have come here...','No deberían haber venido hasta aquí...');
+}
 function maybeShowStory(idx){
-  if(towerMode) return;
   if(coachStep>=0&&coachStep<COACH_STEPS_I18N.pt.length) return;
-  const seq=worldRun.active?(activeStageData?.dial||null):null; /* diálogos legados da demo aposentados */
-  if(!seq||!seq.length) return;
+  const seq=[];
+  /* Heróis: SÓ os personagens escalados na fase têm diálogo (1ª missão da fase) */
+  if(worldRun.active&&activeStageData?.dial){
+    activeStageData.dial.forEach(d=>{
+      const presente=ACTIVE.some(i=>(KINGDOMS[i].iconId||KINGDOMS[i].id)===d.h||KINGDOMS[i].id===d.h);
+      if(presente) seq.push(d);
+    });
+  }
+  /* Inimigos: TODOS se apresentam quando a missão começa; feras só grunhem */
+  const ditas=new Set();
+  (enemies||[]).forEach(e=>{
+    const fala=enemyLineFor(e);
+    if(ditas.has(e.name+fala)) return; /* dois iguais não repetem a mesma fala */
+    ditas.add(e.name+fala);
+    seq.push({name:e.name, sprite:e.sprite, t:fala});
+  });
+  if(!seq.length) return;
   storyQueue=[...seq];
   renderStoryStep();
 }
@@ -2819,10 +3135,16 @@ function renderStoryStep(){
   if(!layer) return;
   if(!storyQueue.length){ layer.classList.remove('show'); return; }
   const step=storyQueue[0];
-  const k=KINGDOMS.find(kk=>kk.id===step.h);
-  document.getElementById('storyPortrait').src=k?(k.sprite||k.cardThumb||k.img):'assets/icon.svg';
-  document.getElementById('storyName').textContent=k?L(k.nome):T('Narrador','Narrator','Narrador');
-  document.getElementById('storyText').textContent=L(step.t);
+  if(step.h){
+    const k=KINGDOMS.find(kk=>kk.id===step.h);
+    document.getElementById('storyPortrait').src=k?(k.sprite||k.cardThumb||k.img):'assets/icon.svg';
+    document.getElementById('storyName').textContent=k?L(k.nome):T('Narrador','Narrator','Narrador');
+    document.getElementById('storyText').textContent=L(step.t);
+  }else{
+    document.getElementById('storyPortrait').src=step.sprite||'assets/icon.svg';
+    document.getElementById('storyName').textContent=L(step.name||'???');
+    document.getElementById('storyText').textContent=step.t;
+  }
   layer.classList.add('show');
 }
 function advanceStory(){
@@ -2874,7 +3196,7 @@ function buildDailyShareText(){
   const fav=Object.entries(runStats.damage).sort((a,b)=>b[1]-a[1])[0];
   const mvp=fav?L(KINGDOMS[fav[0]]?.nome||'—'):'—';
   const d=new Date();
-  const diffLabel={facil:T('Fácil','Easy','Fácil'),normal:'Normal',pesadelo:T('Pesadelo','Nightmare','Pesadilla')}[difficulty]||'Normal';
+  const diffLabel={facil:T('Fácil','Easy','Fácil'),normal:'Normal',dificil:T('Difícil','Hard','Difícil'),pesadelo:T('Pesadelo','Nightmare','Pesadilla')}[difficulty]||'Normal';
   return `⚔ ${T('12 Reinos — Desafio Diário','12 Realms — Daily Challenge','12 Reinos — Desafío Diario')} ${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}\n`+
     `★${runStats.starsEarned||0} ${T('estrelas','stars','estrellas')} · Combo ×${runStats.maxCombo} · MVP: ${mvp} · ${diffLabel}\n`+
     `https://jcgoliver21.github.io/ygdria-demo/`;
@@ -3014,7 +3336,7 @@ function gemSignature(r,c){
   const pw=powerUps[key];
   const ob=obstaclesMeta[key];
   const ag=v>=0?battleGemColors[v]:null;
-  return v+'|'+(pw?pw.type+(pw.orientation||''):'')+'|'+(ob?ob.type+ob.hits:'')+'|'+(hiddenGems[key]?1:0)+'|'+(ag?ag.c:'');
+  return v+'|'+(pw?pw.type+(pw.orientation||''):'')+'|'+(ob?ob.type+ob.hits:'')+'|'+(hiddenGems[key]?1:0)+'|'+(ag?ag.c+(ag.icon||''):'');
 }
 function renderCellContent(cell,r,c){
   cell.innerHTML='';
@@ -3528,7 +3850,7 @@ async function resolveMatches(){
   for(const colorIdxStr of Object.keys(colorCounts)){
     const colorIdx = parseInt(colorIdxStr);
     const count = colorCounts[colorIdxStr];
-    const heroAtk = heroAtkFor(colorIdx);
+    const heroAtk = heroAtkBattle(colorIdx);
     const queuedMult = nextAttackMult[colorIdx] || 1;
     const emp=heroEmpower[colorIdx];
     const empMult=(emp&&emp.left>0)?emp.mult:1;
@@ -3650,6 +3972,8 @@ const SPECIAL_CAST_BUILDERS={
 function launchSpecialFx(idx,a){
   if(!particlesEnabled) return;
   const k = KINGDOMS[idx];
+  /* Cartas novas herdam AUTOMATICAMENTE a coreografia do seu reino (iconId) */
+  const realmFx = k.iconId||k.id;
   const layer = document.getElementById('specialFxLayer');
   const source = document.getElementById('party-'+k.id+'-avatar');
   const defensive = ['cura','escudo','escudoAtordoa','escudoCura','buff','curaBuff','healPercent','shieldTurns','reflectTurns','invulnerableTurns','lifestealCharges','activateAllUltimates','stoneArmor'].includes(a.tipo);
@@ -3675,14 +3999,14 @@ function launchSpecialFx(idx,a){
   const sx=sr.left-lr.left+sr.width/2-16, sy=sr.top-lr.top+sr.height/2-16;
   const tx=tr.left-lr.left+tr.width/2-16, ty=tr.top-lr.top+tr.height/2-16;
   const ring=document.createElement('div');
-  ring.className='impact-ring fx-'+k.id;
+  ring.className='impact-ring fx-'+realmFx;
   ring.dataset.fx='impact';
   ring.style.color=k.colorLight; ring.style.setProperty('--tx',tx+'px'); ring.style.setProperty('--ty',ty+'px');
-  const builder=SPECIAL_CAST_BUILDERS[k.id];
+  const builder=SPECIAL_CAST_BUILDERS[realmFx];
   let castEl;
   if(builder){
     castEl=document.createElement('div');
-    castEl.className='special-cast sc-'+k.id+(a.kind==='active'?' ultimate':'');
+    castEl.className='special-cast sc-'+realmFx+(a.kind==='active'?' ultimate':'');
     castEl.dataset.fx='cast';
     castEl.style.setProperty('--sx',sx+'px'); castEl.style.setProperty('--sy',sy+'px');
     castEl.style.setProperty('--tx',tx+'px'); castEl.style.setProperty('--ty',ty+'px');
@@ -3691,7 +4015,7 @@ function launchSpecialFx(idx,a){
     layer.append(castEl,ring);
   }else{
     castEl=document.createElement('div');
-    castEl.className=`special-projectile fx-${k.id}${a.kind==='active'?' ultimate':''}`;
+    castEl.className=`special-projectile fx-${realmFx}${a.kind==='active'?' ultimate':''}`;
     castEl.dataset.fx='projectile';
     castEl.style.setProperty('--sx',sx+'px'); castEl.style.setProperty('--sy',sy+'px');
     castEl.style.setProperty('--tx',tx+'px'); castEl.style.setProperty('--ty',ty+'px');
@@ -3705,7 +4029,7 @@ function launchSpecialFx(idx,a){
   }
   window.setTimeout(()=>{
     spawnCombatFx('hit',target,k.colorLight,520);
-    spawnRealmParticles(k.id,target,a.kind==='active'?22:12);
+    spawnRealmParticles(realmFx,target,a.kind==='active'?22:12);
     ring.remove();
   },560);
   window.setTimeout(()=>{ castEl.remove(); ring.remove(); },1600);
@@ -3881,8 +4205,8 @@ function triggerAbility(idx, a, options={}){
   if(isPassive) triggerHeroAttackAnim(idx); else triggerHeroCastAnim(idx);
   launchSpecialFx(idx,a);
   if(isPassive){ sfxPassive(); }
-  else{ sfxUltimate(); sfxElemental(k.id); showUltimateCutin(k,a); }
-  sfxHeroSignature(k.id,!isPassive);
+  else{ sfxUltimate(); sfxElemental(k.iconId||k.id); showUltimateCutin(k,a); }
+  sfxHeroSignature(k.iconId||k.id,!isPassive);
   setBattleStatus(T(`${L(k.nome).split(',')[0]} lançou ${L(a.name)}.`,`${L(k.nome).split(',')[0]} cast ${L(a.name)}.`,`${L(k.nome).split(',')[0]} lanzó ${L(a.name)}.`));
   haptic(isPassive ? 22 : [35,20,70]);
   switch(a.tipo){
@@ -3912,7 +4236,7 @@ function triggerAbility(idx, a, options={}){
     }
     case 'shieldTurns': addShield(a.valor||400,a.turnos||1); break;
     case 'echoAll': if(lastDamageDealt>0) applyDamageToAllEnemies(lastDamageDealt,idx); break;
-    case 'critBase': applyDamageToEnemy(Math.round(heroAtkFor(idx)*(a.mult||5)),idx); break;
+    case 'critBase': applyDamageToEnemy(Math.round(heroAtkBattle(idx)*(a.mult||5)),idx); break;
     case 'activateAllUltimates':
       grantActiveSetToAll();
       break;
@@ -4026,7 +4350,7 @@ function triggerAbility(idx, a, options={}){
       if(alvo>=0&&enemies[alvo]&&enemies[alvo].hp>0) applyDamageToEnemy(Math.max(1,Math.round(enemies[alvo].maxHp*(a.valor||.1))),idx,alvo);
       break;
     }
-    case 'critBaseAll': applyDamageToAllEnemies(Math.round(heroAtkFor(idx)*(a.mult||3)),idx); break;
+    case 'critBaseAll': applyDamageToAllEnemies(Math.round(heroAtkBattle(idx)*(a.mult||3)),idx); break;
     case 'nextAttackPerRealmGem': {
       const realmGems=Math.min(12,Math.max(1,countRealmGems(idx)));
       nextAttackMult[idx]=realmGems;
@@ -4212,7 +4536,7 @@ function applyDamageToEnemy(dmg, colorIdx, targetIdxOverride){
     enemyUnit.classList.remove('hit'); void enemyUnit.offsetWidth; enemyUnit.classList.add('hit');
     const hitColor = colorIdx!==null && colorIdx!==undefined && KINGDOMS[colorIdx] ? KINGDOMS[colorIdx].colorLight : '#fff';
     spawnCombatFx('hit',enemyUnit,hitColor,520);
-    if(colorIdx!==null && colorIdx!==undefined && KINGDOMS[colorIdx]) spawnRealmParticles(KINGDOMS[colorIdx].id,enemyUnit,8);
+    if(colorIdx!==null && colorIdx!==undefined && KINGDOMS[colorIdx]) spawnRealmParticles(KINGDOMS[colorIdx].iconId||KINGDOMS[colorIdx].id,enemyUnit,8);
   }
 
   if(enemy.hp<=0){
@@ -4244,7 +4568,7 @@ function afterPlayerTurn(){
   stageTurns++;
   /* Véu do Eclipse expira com o tempo */
   let veuMudou=false;
-  Object.keys(hiddenGems).forEach(hk=>{ if(--hiddenGems[hk]<=0){ delete hiddenGems[hk]; veuMudou=true; } });
+  if(!persistentObstaclesMode()) Object.keys(hiddenGems).forEach(hk=>{ if(--hiddenGems[hk]<=0){ delete hiddenGems[hk]; veuMudou=true; } }); /* Pesadelo: debuffs do tabuleiro não expiram */
   if(veuMudou) renderBoard();
   showStageObjective();
   if(checkStageObjective()) return;
@@ -4282,6 +4606,13 @@ function advanceTimedDefense(){
 }
 
 function handlePlayerDefeat(){
+  /* 💧 Lágrima da Eternidade: renasce UMA vez com 50% da vida */
+  if(eternalReviveCharges>0){
+    eternalReviveCharges--;
+    playerHP=Math.max(1,Math.round(PLAYER_MAX_HP*0.5)); updatePlayerHP();
+    setBattleStatus(T('💧 A Lágrima da Eternidade trouxe o grupo de volta com 50% da vida!','💧 The Tear of Eternity brought the party back with 50% HP!','💧 ¡La Lágrima de la Eternidad revivió al grupo con 50% de vida!'),'support');
+    return;
+  }
   /* Jules · Chamariz: escapa da derrota com 100 de HP */
   if(chamarizCharges>0){
     chamarizCharges--;
@@ -4297,95 +4628,113 @@ function handlePlayerDefeat(){
     setTimeout(()=>{ onStageCleared(); },1400);
     return;
   }
+  /* 🗼 Torre: registra o resultado no ranking mensal antes de encerrar a escalada */
+  if(towerMode){
+    towerRecordMonthly(towerFloor-1);
+    const best=Math.max(Number(localStorage.getItem('12r_tower_best')||0),towerFloor-1);
+    localStorage.setItem('12r_tower_best',String(best));
+  }
   sfxDefeat(); flushRunToProfile(false); renderBattleReport('defeatReport'); setTimeout(()=>showOverlay('defeatOverlay'), 400);
 }
 
 function enemyCounterAttack(){
-  const idx = currentTargetIndex();
-  if(idx===-1 || playerHP<=0){ busy=false; return; }
-  const enemy = enemies[idx];
+  if(playerHP<=0){ busy=false; return; }
+  /* Difícil/Pesadelo: TODOS os inimigos vivos atacam, um de cada vez, após a sua jogada */
+  const fila = allEnemiesAttackMode()
+    ? enemies.map((e,i)=>e.hp>0?i:-1).filter(i=>i>=0)
+    : [currentTargetIndex()].filter(i=>i>=0);
+  if(!fila.length){ busy=false; return; }
+  const encerrar=()=>{
+    advanceTimedDefense();
+    saveProgress();
+    busy = false;
+    if(finishRoomIfCleared(T('O contra-ataque defensivo derrotou o último inimigo.','The defensive counterattack defeated the last enemy.','El contraataque defensivo derrotó al último enemigo.'))) return;
+    if(playerHP<=0) handlePlayerDefeat();
+  };
   if(enemyStunTurns>0){
     enemyStunTurns--;
-    showFloatDamage(0, 'enemy-'+idx, false);
-    const anchor = document.getElementById('enemy-'+idx);
-    if(anchor){
-      const el = anchor.querySelector('.dmg-float:last-child');
-      if(el){ el.textContent = T('Atordoado!','Stunned!','¡Aturdido!'); el.style.color = '#cbb98a'; el.style.fontSize='11px'; }
-    }
-    advanceTimedDefense();
-    busy = false;
+    fila.forEach(fi=>{
+      showFloatDamage(0,'enemy-'+fi,false);
+      const anchor=document.getElementById('enemy-'+fi);
+      const el=anchor?.querySelector('.dmg-float:last-child');
+      if(el){ el.textContent=T('Atordoado!','Stunned!','¡Aturdido!'); el.style.color='#cbb98a'; el.style.fontSize='11px'; }
+    });
+    encerrar();
     return;
   }
   if(enemyBlindTurns>0){
     enemyBlindTurns--;
-    setBattleStatus(T(`${L(enemy.name)} errou o ataque sob a Luz da Proteção.`,`${L(enemy.name)} missed its attack under the Light of Protection.`,`${L(enemy.name)} falló su ataque bajo la Luz de la Protección.`));
-    showFloatDamage(0,'enemy-'+idx,false);
-    advanceTimedDefense();
-    busy=false;
+    setBattleStatus(T('Os inimigos erraram o ataque sob a Luz da Proteção.','The enemies missed their attacks under the Light of Protection.','Los enemigos fallaron sus ataques bajo la Luz de la Protección.'));
+    fila.forEach(fi=>showFloatDamage(0,'enemy-'+fi,false));
+    encerrar();
     return;
   }
-  if(enemy.timeStopped && enemy.hp>enemy.maxHp*0.25){
-    setBattleStatus(T(`${L(enemy.name)} está com o tempo paralisado e não pode atacar.`,`${L(enemy.name)} is frozen in time and cannot attack.`,`${L(enemy.name)} tiene el tiempo paralizado y no puede atacar.`));
-    showFloatDamage(0,'enemy-'+idx,false);
-    const anchorTS=document.getElementById('enemy-'+idx);
-    const elTS=anchorTS?.querySelector('.dmg-float:last-child');
-    if(elTS){ elTS.textContent='⏱'; elTS.style.fontSize='13px'; }
-    advanceTimedDefense();
-    busy=false;
-    return;
-  }
-  if(enemy.timeStopped && enemy.hp<=enemy.maxHp*0.25){ enemy.timeStopped=false; }
   runStageAbilities(); /* Habilidades de Fase dos inimigos-carta (suprimidas por stun/cegueira) */
-  const enemyUnit = document.getElementById('enemy-'+idx);
-  if(enemyUnit){ enemyUnit.classList.remove('attacking'); void enemyUnit.offsetWidth; enemyUnit.classList.add('attacking'); }
-  const variance = 0.85 + gameRandom()*0.3;
-  let dmg = Math.round(enemy.atk * variance * Math.pow(0.8, damageReductionStacks));
-  if(invulnerableTurns>0){
-    dmg=0;
-    setBattleStatus(T('O Cardume Invasor desviou completamente o ataque inimigo.','The Invading Shoal fully evaded the enemy attack.','El Cardumen Invasor esquivó por completo el ataque enemigo.'));
-  } else if(reflectTurns>0){
-    const reflected=dmg;
-    dmg=0;
-    applyDamageToEnemy(reflected,null,idx);
-    setBattleStatus(T(`A Armadura de Corais devolveu ${reflected} de dano.`,`The Coral Armor returned ${reflected} damage.`,`La Armadura de Corales devolvió ${reflected} de daño.`));
-  }
-  if(stoneArmorTurns>0&&dmg>0){
-    const original=dmg;
-    const reflected=Math.max(1,Math.round(original*stoneArmorReflect));
-    dmg=Math.max(0,Math.round(original*(1-stoneArmorReduction)));
-    applyDamageToEnemy(reflected,null,idx);
-    setBattleStatus(T(`A Armadura de Pedra reduziu o ataque para ${dmg} e devolveu ${reflected} de dano.`,`The Stone Armor reduced the attack to ${dmg} and returned ${reflected} damage.`,`La Armadura de Piedra redujo el ataque a ${dmg} y devolvió ${reflected} de daño.`),'support');
-  }
-  if(playerShield>0){
-    const absorbed = Math.min(playerShield, dmg);
-    playerShield -= absorbed;
-    dmg -= absorbed;
-    if(absorbed>0) pulseHpEffect('shield',900);
-  }
-  playerHP = Math.max(0, playerHP - dmg);
-  updatePlayerHP();
-  if(dmg>0) pulseHpEffect('damage',800);
-  if(dmg>0&&partyArenaEl){ partyArenaEl.classList.remove('party-hurt'); void partyArenaEl.offsetWidth; partyArenaEl.classList.add('party-hurt');
-    window.setTimeout(()=>partyArenaEl.classList.remove('party-hurt'),480); }
-  sfxPlayerHit();
-  haptic([25,20,25]);
-  if(dmg>0) setBattleStatus(T(`${L(enemy.name)} contra-atacou e causou ${dmg} de dano.`,`${L(enemy.name)} counterattacked for ${dmg} damage.`,`${L(enemy.name)} contraatacó y causó ${dmg} de daño.`));
-  /* anti-flicker: o tremor fica no palco da batalha, não no body inteiro */
-  if(localStorage.getItem('12r_shake')!=='0'){
-    const shakeEl=document.querySelector('.arena')||document.body;
-    shakeEl.classList.remove('shake'); void shakeEl.offsetWidth; shakeEl.classList.add('shake');
-    window.setTimeout(()=>shakeEl.classList.remove('shake'), 450);
-  }
-  showFloatDamage(dmg, 'playerHpAnchor', true);
-  if(sombrasDevoradorasOn){
-    enemies.forEach((sx,si)=>{ if(sx.hp>0) applyDamageToEnemy(Math.max(1,Math.round(sx.maxHp*0.05)),0,si); });
-    setBattleStatus(T('As Sombras Devoradoras cobram o preço do ataque!',"The Devouring Shadows collect the attack's price!",'¡Las Sombras Devoradoras cobran el precio del ataque!'));
-  }
-  advanceTimedDefense();
-  saveProgress();
-  busy = false;
-  if(finishRoomIfCleared(T('O contra-ataque defensivo derrotou o último inimigo.','The defensive counterattack defeated the last enemy.','El contraataque defensivo derrotó al último enemigo.'))) return;
-  if(playerHP<=0) handlePlayerDefeat();
+  const compasso=Math.max(180,Math.round(560/(BATTLE_SPEEDS[battleSpeedIndex]||1)));
+  let passo=0;
+  const proximo=()=>{
+    if(playerHP<=0 || passo>=fila.length){ encerrar(); return; }
+    const idx=fila[passo++];
+    const enemy=enemies[idx];
+    if(!enemy || enemy.hp<=0){ proximo(); return; }
+    if(enemy.timeStopped && enemy.hp>enemy.maxHp*0.25){
+      setBattleStatus(T(`${L(enemy.name)} está com o tempo paralisado e não pode atacar.`,`${L(enemy.name)} is frozen in time and cannot attack.`,`${L(enemy.name)} tiene el tiempo paralizado y no puede atacar.`));
+      showFloatDamage(0,'enemy-'+idx,false);
+      const anchorTS=document.getElementById('enemy-'+idx);
+      const elTS=anchorTS?.querySelector('.dmg-float:last-child');
+      if(elTS){ elTS.textContent='⏱'; elTS.style.fontSize='13px'; }
+      window.setTimeout(proximo, fila.length>1?Math.round(compasso*0.5):0);
+      return;
+    }
+    if(enemy.timeStopped && enemy.hp<=enemy.maxHp*0.25){ enemy.timeStopped=false; }
+    const enemyUnit = document.getElementById('enemy-'+idx);
+    if(enemyUnit){ enemyUnit.classList.remove('attacking'); void enemyUnit.offsetWidth; enemyUnit.classList.add('attacking'); }
+    const variance = 0.85 + gameRandom()*0.3;
+    let dmg = Math.round(enemy.atk * variance * Math.pow(0.8, damageReductionStacks));
+    if(invulnerableTurns>0){
+      dmg=0;
+      setBattleStatus(T('O Cardume Invasor desviou completamente o ataque inimigo.','The Invading Shoal fully evaded the enemy attack.','El Cardumen Invasor esquivó por completo el ataque enemigo.'));
+    } else if(reflectTurns>0){
+      const reflected=dmg;
+      dmg=0;
+      applyDamageToEnemy(reflected,null,idx);
+      setBattleStatus(T(`A Armadura de Corais devolveu ${reflected} de dano.`,`The Coral Armor returned ${reflected} damage.`,`La Armadura de Corales devolvió ${reflected} de daño.`));
+    }
+    if(stoneArmorTurns>0&&dmg>0){
+      const original=dmg;
+      const reflected=Math.max(1,Math.round(original*stoneArmorReflect));
+      dmg=Math.max(0,Math.round(original*(1-stoneArmorReduction)));
+      applyDamageToEnemy(reflected,null,idx);
+      setBattleStatus(T(`A Armadura de Pedra reduziu o ataque para ${dmg} e devolveu ${reflected} de dano.`,`The Stone Armor reduced the attack to ${dmg} and returned ${reflected} damage.`,`La Armadura de Piedra redujo el ataque a ${dmg} y devolvió ${reflected} de daño.`),'support');
+    }
+    if(playerShield>0){
+      const absorbed = Math.min(playerShield, dmg);
+      playerShield -= absorbed;
+      dmg -= absorbed;
+      if(absorbed>0) pulseHpEffect('shield',900);
+    }
+    playerHP = Math.max(0, playerHP - dmg);
+    updatePlayerHP();
+    if(dmg>0) pulseHpEffect('damage',800);
+    if(dmg>0&&partyArenaEl){ partyArenaEl.classList.remove('party-hurt'); void partyArenaEl.offsetWidth; partyArenaEl.classList.add('party-hurt');
+      window.setTimeout(()=>partyArenaEl.classList.remove('party-hurt'),480); }
+    sfxPlayerHit();
+    haptic([25,20,25]);
+    if(dmg>0) setBattleStatus(T(`${L(enemy.name)} contra-atacou e causou ${dmg} de dano.`,`${L(enemy.name)} counterattacked for ${dmg} damage.`,`${L(enemy.name)} contraatacó y causó ${dmg} de daño.`));
+    /* anti-flicker: o tremor fica no palco da batalha, não no body inteiro */
+    if(localStorage.getItem('12r_shake')!=='0'){
+      const shakeEl=document.querySelector('.arena')||document.body;
+      shakeEl.classList.remove('shake'); void shakeEl.offsetWidth; shakeEl.classList.add('shake');
+      window.setTimeout(()=>shakeEl.classList.remove('shake'), 450);
+    }
+    showFloatDamage(dmg, 'playerHpAnchor', true);
+    if(sombrasDevoradorasOn){
+      enemies.forEach((sx,si)=>{ if(sx.hp>0) applyDamageToEnemy(Math.max(1,Math.round(sx.maxHp*0.05)),0,si); });
+      setBattleStatus(T('As Sombras Devoradoras cobram o preço do ataque!',"The Devouring Shadows collect the attack's price!",'¡Las Sombras Devoradoras cobran el precio del ataque!'));
+    }
+    window.setTimeout(proximo, fila.length>1?compasso:0);
+  };
+  proximo();
 }
 
 function updatePlayerHP(){
@@ -4449,12 +4798,14 @@ function onStageCleared(){
     if(worldRun.nivel<5){
       questEvent('win');
       worldRun.turnosFase=(worldRun.turnosFase||0)+stageTurns;
+      worldRun.tempoFase=(worldRun.tempoFase||0)+missionElapsed();
       worldRun.nivel++;
-      grantCoins(6+worldRun.fase*2);
+      grantCoins(coinsVitoria(3+worldRun.fase)); /* v9.2: economia rebalanceada (metade) */
       const starsEl=document.getElementById('stageStars');
       if(starsEl) starsEl.innerHTML='';
       document.getElementById('stageClearText').textContent=`${L(fase.nome)}: ${T('nível','level','nivel')} ${worldRun.nivel-1}/5 ${T('superado! Avançando...','cleared! Advancing...','superado! Avanzando...')}`;
       showOverlay('stageClearOverlay');
+      carryBoardNext=true; /* Fácil mantém o tabuleiro na próxima missão */
       setTimeout(()=>{ hideOverlay('stageClearOverlay'); loadStage(0); busy=false; },1500);
       return;
     }
@@ -4462,15 +4813,20 @@ function onStageCleared(){
     { const hoje=todayKey();
       if(localStorage.getItem('12r_firstwin')!==hoje){
         localStorage.setItem('12r_firstwin',hoje);
-        grantCoins(40+worldRun.fase*10); /* dobra a recompensa base da primeira vitória do dia */
+        grantCoins(20+worldRun.fase*5); /* dobra a recompensa base da primeira vitória do dia */
         setBattleStatus('✨ '+T('Primeira vitória do dia: moedas em DOBRO!','First win of the day: DOUBLE coins!','¡Primera victoria del día: monedas DOBLES!'),'support');
       }
     }
     questEvent('win');
     worldRun.turnosFase=(worldRun.turnosFase||0)+stageTurns;
+    worldRun.tempoFase=(worldRun.tempoFase||0)+missionElapsed();
     { /* F7 · recorde de turnos da fase */
       const fb=faseBest();
       if(!fb[worldRun.fase]||worldRun.turnosFase<fb[worldRun.fase]){ fb[worldRun.fase]=worldRun.turnosFase; localStorage.setItem('12r_fase_best',JSON.stringify(fb)); }
+    }
+    { /* ⏱ recorde de TEMPO da fase (ranking oficial de missões) */
+      const ft=faseTime();
+      if(!ft[worldRun.fase]||worldRun.tempoFase<ft[worldRun.fase]){ ft[worldRun.fase]=worldRun.tempoFase; localStorage.setItem('12r_fase_time',JSON.stringify(ft)); }
     }
     /* M3 · última equipe vitoriosa vira a sugerida */
     localStorage.setItem('12r_lastteam',JSON.stringify([...ACTIVE]));
@@ -4482,15 +4838,15 @@ function onStageCleared(){
     if((prog.stars[worldRun.fase]||0)<stars) prog.stars[worldRun.fase]=stars;
     prog.unlocked=Math.max(prog.unlocked,Math.min(world.fases.length-1,worldRun.fase+1));
     saveWorldProg('humanos',prog);
-    grantCoins(40+worldRun.fase*10);
-    const ups=grantXp(30+worldRun.fase*10);
+    grantCoins(coinsVitoria(20+worldRun.fase*5));
+    const ups=grantXp((30+worldRun.fase*10)*(xpDoubleRun?2:1));
     checkAchievements('stage');
     flushRunToProfile(true);
     const starsEl=document.getElementById('stageStars');
     if(starsEl) starsEl.innerHTML=[1,2,3].map(x=>`<span class="star${x<=stars?' on':''}" style="--i:${x}">★</span>`).join('');
     if(worldRun.fase===world.fases.length-1){
       /* Fase 10 vencida — Reino dos Humanos conquistado */
-      grantCoins(200); grantXp(100);
+      grantCoins(coinsVitoria(150)); grantXp(100*(xpDoubleRun?2:1));
       checkAchievements('world-complete');
       const gt=document.getElementById('grandClearTitle'), gx=document.getElementById('grandClearText');
       if(gt) gt.textContent=T('Reino dos Humanos Conquistado!','Human Realm Conquered!','¡Reino de los Humanos Conquistado!');
@@ -4516,7 +4872,7 @@ function onStageCleared(){
   }
   if(bossRushMode){
     bossRushIdx++;
-    grantCoins(50+bossRushIdx*15);
+    grantCoins(coinsVitoria(25+bossRushIdx*8));
     const best=Math.max(Number(localStorage.getItem('12r_bossrush_best')||0),bossRushIdx);
     localStorage.setItem('12r_bossrush_best',String(best));
     if(bossRushIdx>=BOSS_RUSH_ORDER.length){
@@ -4539,18 +4895,18 @@ function onStageCleared(){
   if(towerMode){
     const best=Math.max(Number(localStorage.getItem('12r_tower_best')||0),towerFloor);
     localStorage.setItem('12r_tower_best',String(best));
-    grantCoins(10+Math.floor(towerFloor/2));
-    grantXp(12+towerFloor*3);
+    grantCoins(coinsVitoria(5+Math.floor(towerFloor/3)));
+    grantXp((12+towerFloor*3)*(xpDoubleRun?2:1));
     checkAchievements('tower');
     flushRunToProfile(true);
     towerFloor++;
     if((towerFloor-1)%5===0){
-      grantCoins(100);
-      setBattleStatus('🎁 '+T(`Baú da Torre! Andar ${towerFloor-1} rendeu +100 moedas.`,`Tower Chest! Floor ${towerFloor-1} granted +100 coins.`,`¡Cofre de la Torre! El piso ${towerFloor-1} otorgó +100 monedas.`),'support');
+      grantCoins(coinsVitoria(50));
+      setBattleStatus('🎁 '+T(`Baú da Torre! Andar ${towerFloor-1} rendeu +50 moedas.`,`Tower Chest! Floor ${towerFloor-1} granted +50 coins.`,`¡Cofre de la Torre! El piso ${towerFloor-1} otorgó +50 monedas.`),'support');
     }
     if(IS_DAILY_RUN && towerFloor>5){
       /* Desafio Diário concluído: 5 andares vencidos */
-      grantCoins(240); grantXp(60);
+      grantCoins(150); grantXp(60);
       localStorage.setItem('12r_daily',JSON.stringify({date:todayKey(),combo:runStats.maxCombo}));
       checkAchievements('daily');
       const shareBtn=document.getElementById('shareDailyBtn');
@@ -4563,9 +4919,11 @@ function onStageCleared(){
       showOverlay('dungeonClearOverlay');
       return;
     }
+    towerRecordMonthly(towerFloor-1); /* ranking mensal em tempo real */
     const starsEl=document.getElementById('stageStars');
     if(starsEl) starsEl.innerHTML='';
-    document.getElementById('stageClearText').textContent = T(`Andar ${towerFloor-1} superado! Prepare-se para o andar ${towerFloor}.`,`Floor ${towerFloor-1} cleared! Get ready for floor ${towerFloor}.`,`¡Piso ${towerFloor-1} superado! Prepárate para el piso ${towerFloor}.`);
+    const proxDesafiante=KINGDOMS[(towerFloor-1)%KINGDOMS.length];
+    document.getElementById('stageClearText').textContent = T(`Andar ${towerFloor-1} superado! Próximo desafiante: ${proxDesafiante?.nome||'???'}.`,`Floor ${towerFloor-1} cleared! Next challenger: ${proxDesafiante?.nome||'???'}.`,`¡Piso ${towerFloor-1} superado! Próximo desafiante: ${proxDesafiante?.nome||'???'}.`);
     showOverlay('stageClearOverlay');
     setTimeout(()=>{ hideOverlay('stageClearOverlay'); loadStage(0); busy=false; }, 1600);
     return;
@@ -4580,7 +4938,7 @@ function onStageCleared(){
   checkAchievements('stage');
   flushRunToProfile(true);
   if(stageIndex >= DUNGEON.length-1){
-    grantCoins(IS_DAILY_RUN?240:120);
+    grantCoins(IS_DAILY_RUN?150:80);
     grantXp(60);
     checkAchievements('dungeon');
     if(IS_DAILY_RUN) localStorage.setItem('12r_daily',JSON.stringify({date:todayKey(),combo:runStats.maxCombo}));
@@ -4649,6 +5007,7 @@ function renderSelectGrid(){
   ordem.forEach(deckId=>{
     const membros=KINGDOMS.filter(k=>(k.deck||k.id)===deckId);
     if(!membros.length) return;
+    membros.sort((a,b)=>(b.stars||0)-(a.stars||0)); /* maior raridade primeiro */
     const lider=KINGDOMS.find(k=>k.id===deckId);
     const section=document.createElement('div');
     section.className='select-deck-section'+(selectDeckOpen[deckId]?' open':'');
@@ -4688,8 +5047,22 @@ function renderSelectGrid(){
     section.appendChild(dgrid);
     selectGridEl.appendChild(section);
   });
-  selectCountEl.textContent = chosenIds.length;
+  /* lookup dinâmico: o i18n recria o nó #selectCount ao trocar de idioma */
+  { const sc=document.getElementById('selectCount'); if(sc) sc.textContent=chosenIds.length; }
   startBtnEl.disabled = chosenIds.length!==4;
+  /* ⚜ Prévia do Bônus de Aliança ao montar a equipe */
+  { const hint=document.getElementById('allianceHint');
+    if(hint){
+      if(chosenIds.length===4){
+        const b=computeAllianceBonus(chosenIds);
+        hint.innerHTML=b.rotulos.length?('⚜ '+b.rotulos.join(' · ')):T('Sem bônus de aliança — repita reinos ou feche uma aliança completa.','No alliance bonus — repeat realms or complete a full alliance.','Sin bono de alianza — repite reinos o completa una alianza.');
+        hint.classList.toggle('on',b.rotulos.length>0);
+      } else if(chosenIds.length){
+        const als=[...new Set(chosenIds.map(i=>allianceOf(KINGDOMS[i]?.iconId||KINGDOMS[i]?.id)).filter(Boolean).map(a=>a.icon+' '+a.nome))];
+        hint.innerHTML=als.join(' · ');
+        hint.classList.remove('on');
+      } else { hint.innerHTML=''; hint.classList.remove('on'); }
+    } }
   renderTeamSlots();
 }
 
@@ -4814,6 +5187,11 @@ function closeAllPanels(){
 function showMainMenu(){
   armTapGuard();
   clearInterval(tempoSombrioTimer); tempoSombrioTimer=null;
+  stopMissionTimer();
+  skipStory(); /* diálogos de missão nunca sobrevivem à volta ao menu */
+  /* Torre força Pesadelo: devolve a dificuldade escolhida pelo jogador ao sair */
+  if(towerPrevDifficulty){ difficulty=towerPrevDifficulty; towerPrevDifficulty=null; applyDifficultyUI(); }
+  towerMode=false;
   setAutoBattle(false);
   togglePhotoMode(false);
   closeAllPanels(); stopMusic(); busy=false;
@@ -4841,6 +5219,7 @@ function beginGame(startAt=0,restoredHP=null){
   playerHP = Math.max(1,Math.min(PLAYER_MAX_HP,restoredHP||PLAYER_MAX_HP));
   heroProgress = {}; firedTiers = {}; heroReady = {}; heroActiveQueue = {};
   pendingRoomPassives=[]; roomClearScheduled=false; golemAllies=0; harpyAllies=0; heroEmpower={};
+  eternalReviveCharges=0; coinDoubleRun=false; xpDoubleRun=false; bannerAtkRun=1; battleConsumablesDone=false;
   selected=null; busy=false; comboStep=0; closeAllPanels();
   battleHistory=[]; battleHistorySeq=0; qaRitualTriggered=false;
   document.body.classList.add('game-active');
@@ -4851,6 +5230,9 @@ function beginGame(startAt=0,restoredHP=null){
   renderPartyArena();
   renderCardStrip();
   updatePlayerHP();
+  if(allianceBonus.rotulos.length){
+    setTimeout(()=>setBattleStatus('⚜ '+T('Bônus de Aliança','Alliance Bonus','Bono de Alianza')+': '+allianceBonus.rotulos.join(' · '),'support'),700);
+  }
   loadStage(Math.max(0,Math.min(DUNGEON.length-1,startAt)));
   pendingStage=0;
   if(!localStorage.getItem('12r_tutorial_seen')){
@@ -4892,7 +5274,8 @@ function renderGallery(){
     const dgrid=document.createElement('div');
     dgrid.className='deck-grid';
     const favs=(()=>{ try{ return JSON.parse(localStorage.getItem('12r_favs')||'[]'); }catch(e){ return []; } })();
-    membros.sort((a,b)=>(favs.includes(b.id)?1:0)-(favs.includes(a.id)?1:0));
+    /* Ordem: favoritas primeiro; depois maior raridade (estrelas) primeiro */
+    membros.sort((a,b)=>((favs.includes(b.id)?1:0)-(favs.includes(a.id)?1:0)) || ((b.stars||0)-(a.stars||0)));
     membros.forEach(k=>{
       const idx=KINGDOMS.indexOf(k);
       const card=document.createElement('div');
@@ -4954,6 +5337,7 @@ function openPanel(id){
   if(id==='galleryScreen') renderGallery();
   if(id==='achScreen') renderAchievements();
   if(id==='shopScreen') renderShop();
+  if(id==='mochilaScreen') renderMochila();
   if(id==='worldScreen') renderWorldMap();
   document.getElementById(id).classList.add('show');
 }
@@ -4971,11 +5355,11 @@ startBtnEl.addEventListener('click',()=>beginGame(pendingStage));
 document.getElementById('playBtn').addEventListener('click',()=>{ towerMode=false; worldRun.active=false; pendingStage=0; openMapScreen(); });
 document.getElementById('continueBtn').addEventListener('click',()=>{ const prog=worldProg('humanos'); startWorldFase(Math.min(prog.unlocked, WORLDS[0].fases.length-1)); });
 document.getElementById('bossRushBtn')?.addEventListener('click',()=>{
-  bossRushMode=true; bossRushIdx=0; towerMode=false; worldRun.active=false; pendingStage=0;
-  sceneBgEl.dataset.screen='selection';
-  document.getElementById('mainMenu').style.display='none';
-  document.getElementById('selectScreen').style.display='flex';
-  renderSelectGrid(); sfxSelect();
+  /* v9.2: o Desafio dos Chefes agora passa pelo MAPA DE YGDRIA — cada reino
+     conquistado libera o seu próprio desafio */
+  towerMode=false; worldRun.active=false; bossRushMode=false; pendingStage=0;
+  openMapScreen('boss');
+  sfxSelect();
 });
 document.getElementById('shakeToggle')?.addEventListener('click',()=>{
   const lig=localStorage.getItem('12r_shake')!=='0';
@@ -5142,11 +5526,13 @@ const ESPR={
 const HUMANOS_ETYPES={
   /* Fases 1-5 · chibis oficiais (Reino Rosa). Bases calibradas para o ATK oficial
      das cartas (2-4): time recomendado da fase 1 tem ~200-350 HP no Normal. */
-  slimeCereja:{n:'Slime de Cerejeira', sprite:'assets/enemies/humanos/slime-cerejeira.png', hp:45, atk:7, flip:true},
-  loboRaivoso:{n:'Lobo Raivoso', sprite:'assets/enemies/humanos/lobo-raivoso.png', hp:60, atk:9, flip:true},
-  soldado1:{n:'Soldado 1', sprite:'assets/enemies/humanos/soldado-1.png', hp:70, atk:10, flip:true},
-  soldado2:{n:'Soldado 2', sprite:'assets/enemies/humanos/soldado-2.png', hp:78, atk:11, flip:true},
-  capitao:{n:'Capitão dos Soldados', sprite:'assets/enemies/humanos/capitao.png', hp:105, atk:13, flip:true},
+  /* VIRADA: todos os chibis oficiais olham para a ESQUERDA na arte — como inimigos
+     (lado direito) já encaram o centro SEM flip; como heróis usam heroFlip. */
+  slimeCereja:{n:'Slime de Cerejeira', fera:true, sprite:'assets/enemies/humanos/slime-cerejeira.png', hp:45, atk:7},
+  loboRaivoso:{n:'Lobo Raivoso', fera:true, sprite:'assets/enemies/humanos/lobo-raivoso.png', hp:60, atk:9},
+  soldado1:{n:'Soldado 1', sprite:'assets/enemies/humanos/soldado-1.png', hp:70, atk:10},
+  soldado2:{n:'Soldado 2', sprite:'assets/enemies/humanos/soldado-2.png', hp:78, atk:11},
+  capitao:{n:'Capitão dos Soldados', sprite:'assets/enemies/humanos/capitao.png', hp:105, atk:13},
   /* Fases 6-10 · genéricos (sprites reutilizados até os chibis chegarem) */
   vulto:{n:'Vulto Sombrio', sprite:'assets/enemies/humanos/vulto-sombrio.png', hp:85, atk:11},
   espectro:{n:'Espectro Sombrio', sprite:'assets/enemies/humanos/espectro-sombrio.png', hp:95, atk:12},
@@ -5163,10 +5549,10 @@ const HUMANOS_ETYPES={
    (a carta vai para a galeria do Reino Rosa); sem chibi ainda, aparecem
    como carta no campo (isCard). Chefes recebem +30% HP e +15% ATK. */
 const HUMANOS_CARDS={
-  gareth:{nome:'Gareth', hp:130, atk:16, sprite:'assets/enemies/humanos/gareth.png', card:'assets/cards/enemies/gareth-card.png', flip:true},
-  cedric:{nome:'Cedric', hp:150, atk:18, sprite:'assets/enemies/humanos/cedric.png', card:'assets/cards/enemies/cedric-card.png', flip:true},
-  elizier:{nome:'Elizier', hp:160, atk:19, sprite:'assets/enemies/humanos/elizier.png', card:'assets/cards/enemies/elizier-card.png', flip:true},
-  roland:{nome:'Roland', hp:175, atk:20, sprite:'assets/enemies/humanos/roland.png', card:'assets/cards/enemies/roland-card.png', flip:true},
+  gareth:{nome:'Gareth', hp:130, atk:16, sprite:'assets/enemies/humanos/gareth.png', card:'assets/cards/enemies/gareth-card.png'},
+  cedric:{nome:'Cedric', hp:150, atk:18, sprite:'assets/enemies/humanos/cedric.png', card:'assets/cards/enemies/cedric-card.png'},
+  elizier:{nome:'Elizier', hp:160, atk:19, sprite:'assets/enemies/humanos/elizier.png', card:'assets/cards/enemies/elizier-card.png'},
+  roland:{nome:'Roland', hp:175, atk:20, sprite:'assets/enemies/humanos/roland.png', card:'assets/cards/enemies/roland-card.png'},
   jules:{nome:'Jules, The Joker', hp:200, atk:22, sprite:'assets/enemies/humanos/jules.png', card:'assets/cards/enemies/jules-card.png'},
   bernyce:{nome:'Bernyce', hp:220, atk:23, sprite:'assets/enemies/humanos/bernyce.png', card:'assets/cards/enemies/bernyce-card.png'},
   kalander:{nome:'Kalander', hp:240, atk:24, sprite:'assets/enemies/humanos/kalander.png', card:'assets/cards/enemies/kalander-card.png'},
@@ -5223,8 +5609,19 @@ const REALMS_MAP=[
   {id:'areia',    x:68.5, y:81.5},
   {id:'luz',      x:36.5, y:83.5}
 ];
-function openMapScreen(){
+let mapMode='world'; /* 'world' = jogar fases · 'boss' = escolher reino do Desafio dos Chefes */
+function realmComplete(id){
+  if(id!=='humanos') return false; /* demais reinos chegam com seus mundos */
+  const prog=worldProg('humanos');
+  return !!(prog.stars&&prog.stars[9]); /* fase 10 vencida = reino finalizado */
+}
+function openMapScreen(mode){
   armTapGuard();
+  mapMode=mode==='boss'?'boss':'world';
+  const sub=document.getElementById('mapSubtitle');
+  if(sub) sub.textContent=mapMode==='boss'
+    ? T('Desafio dos Chefes — escolha um reino CONQUISTADO','Boss Challenge — pick a CONQUERED realm','Desafío de Jefes — elige un reino CONQUISTADO')
+    : T('Escolha um reino para explorar','Choose a realm to explore','Elige un reino para explorar');
   renderMapScreen();
   document.getElementById('mapScreen')?.classList.add('show');
 }
@@ -5236,24 +5633,34 @@ function renderMapScreen(){
   REALMS_MAP.forEach(r=>{
     const k=KINGDOMS.find(kk=>kk.id===r.id);
     if(!k) return;
+    const liberado=mapMode==='boss'?realmComplete(r.id):!!r.unlocked;
     const pin=document.createElement('button');
     pin.type='button';
-    pin.className='realm-pin'+(r.unlocked?' unlocked':' locked');
+    pin.className='realm-pin'+(liberado?' unlocked':' locked')+(mapMode==='boss'?' pin-boss':'');
     pin.style.left=Math.max(4.5,Math.min(94,r.x))+'%';
     pin.style.top=Math.max(5,Math.min(95,r.y))+'%';
     pin.style.setProperty('--realm-c',k.color);
-    pin.setAttribute('aria-label',L(k.reino)+(r.unlocked?'':' — '+T('em breve','coming soon','próximamente')));
+    pin.setAttribute('aria-label',L(k.reino)+(liberado?'':' — '+(mapMode==='boss'?T('finalize o reino para liberar','finish the realm to unlock','termina el reino para desbloquear'):T('em breve','coming soon','próximamente'))));
     pin.innerHTML=`
-      <span class="pin-gem"><svg viewBox="0 0 24 24">${KINGDOM_ICON[r.id]||''}</svg>${r.unlocked?'':'<i class="pin-lock">🔒</i>'}</span>
-      ${r.unlocked?`<span class="pin-label">${T('ENTRAR','ENTER','ENTRAR')}</span>`:''}`;
+      <span class="pin-gem"><svg viewBox="0 0 24 24">${KINGDOM_ICON[r.id]||''}</svg>${liberado?(mapMode==='boss'?'<i class="pin-crown">🏆</i>':''):'<i class="pin-lock">🔒</i>'}</span>
+      ${liberado?`<span class="pin-label">${mapMode==='boss'?T('DESAFIAR','CHALLENGE','DESAFIAR'):T('ENTRAR','ENTER','ENTRAR')}</span>`:''}`;
     pin.addEventListener('click',()=>{
-      if(!r.unlocked){
+      if(!liberado){
         sfxInvalid();
         pin.classList.remove('deny'); void pin.offsetWidth; pin.classList.add('deny');
-        showMapTip(T('Em breve: ','Coming soon: ','Próximamente: ')+L(k.reino));
+        showMapTip(mapMode==='boss'
+          ? T('Finalize o ','Finish the ','Termina el ')+L(k.reino)+T(' para liberar o Desafio dos Chefes.',' to unlock its Boss Challenge.',' para desbloquear su Desafío de Jefes.')
+          : T('Em breve: ','Coming soon: ','Próximamente: ')+L(k.reino));
         return;
       }
       sfxSelect();
+      if(mapMode==='boss'){
+        /* 🏆 Desafio dos Chefes do reino escolhido */
+        bossRushMode=true; bossRushIdx=0; towerMode=false; worldRun.active=false; pendingStage=0;
+        closeMapScreen();
+        showSelection();
+        return;
+      }
       renderWorldMap();
       openPanel('worldScreen');
     });
@@ -5298,7 +5705,7 @@ function buildWorldLevel(){
       return e;
     }
     const tpl=HUMANOS_ETYPES[key]||HUMANOS_ETYPES.soldado1;
-    const e={name:tpl.n, hp:Math.round(tpl.hp*hpMult), atk:Math.round(tpl.atk*atkMult)};
+    const e={name:tpl.n, hp:Math.round(tpl.hp*hpMult), atk:Math.round(tpl.atk*atkMult), etype:key};
     if(tpl.sprite){ e.sprite=tpl.sprite; if(tpl.flip) e.flip=true; }
     else{ e.sprite=ESPR[tpl.s]; e.tint=tpl.t; }
     return e;
@@ -5344,6 +5751,7 @@ function renderWorldMap(){
   const prog=worldProg('humanos');
   map.innerHTML='';
   const fb=faseBest();
+  const ft=faseTime();
   world.fases.forEach((fase,idx)=>{
     const locked=idx>prog.unlocked;
     const stars=prog.stars[idx]||0;
@@ -5355,8 +5763,8 @@ function renderWorldMap(){
     node.innerHTML=`<span class="fase-num">${idx+1}</span>
       <span class="fase-copy"><b>${L(fase.nome)}</b><small>${L(fase.sub)}</small>
       ${fase.rec?`<small class="fase-rec">🎴 ${T('Recomendado','Recommended','Recomendado')}: ${L(fase.rec)}</small>`:''}
-      ${fb[idx]?`<small class="fase-best">⏱ ${T('Recorde','Record','Récord')}: ${fb[idx]} ${T('turnos','turns','turnos')}</small>`:''}
-      ${!locked?`<span class="fase-diffs" role="group" aria-label="${T('Dificuldade','Difficulty','Dificultad')}"><i data-d="facil" class="${difficulty==='facil'?'on':''}">F</i><i data-d="normal" class="${difficulty==='normal'?'on':''}">N</i><i data-d="pesadelo" class="${difficulty==='pesadelo'?'on':''}">P</i></span>`:''}
+      ${fb[idx]?`<small class="fase-best">⏱ ${T('Recorde','Record','Récord')}: ${fb[idx]} ${T('turnos','turns','turnos')}${ft[idx]?` · 🕐 ${fmtTempo(ft[idx])}`:''}</small>`:''}
+      ${!locked?`<span class="fase-diffs" role="group" aria-label="${T('Dificuldade','Difficulty','Dificultad')}"><i data-d="facil" class="${difficulty==='facil'?'on':''}">F</i><i data-d="normal" class="${difficulty==='normal'?'on':''}">N</i><i data-d="dificil" class="${difficulty==='dificil'?'on':''}">D</i><i data-d="pesadelo" class="${difficulty==='pesadelo'?'on':''}">P</i></span>`:''}
       <em>${locked?'🔒 '+T('Bloqueada','Locked','Bloqueada'):(stars?'★'.repeat(stars)+'☆'.repeat(3-stars):T('5 missões · chefe no final','5 missions · boss at the end','5 misiones · jefe al final'))}</em></span>`;
     node.querySelectorAll('.fase-diffs i').forEach(pill=>pill.addEventListener('click',ev=>{
       ev.stopPropagation();
@@ -5374,6 +5782,7 @@ function renderWorldMap(){
 function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 (function initV91(){
   document.querySelectorAll('#diffGroup [data-diff]').forEach(b=>b.addEventListener('click',()=>{
+    if(towerMode){ sfxInvalid(); return; } /* a Torre trava no Pesadelo */
     difficulty=b.dataset.diff;
     localStorage.setItem('12r_difficulty',difficulty);
     applyDifficultyUI();
@@ -5388,12 +5797,57 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
     url.searchParams.set('daily','1');
     location.href=url.toString();
   });
+  { const bossHint=document.getElementById('bossRushHint');
+    if(bossHint) bossHint.textContent=realmComplete('humanos')
+      ? T('Reino dos Humanos liberado!','Human Realm unlocked!','¡Reino de los Humanos desbloqueado!')
+      : T('Conquiste um reino para liberar','Conquer a realm to unlock','Conquista un reino para desbloquear'); }
   const towerHint=document.getElementById('towerHint');
   const bestT=Number(localStorage.getItem('12r_tower_best')||0);
-  if(towerHint) towerHint.textContent = bestT>0 ? T(`Recorde: andar ${bestT}`,`Best: floor ${bestT}`,`Récord: piso ${bestT}`) : T('Inimigos sem fim','Endless foes','Enemigos sin fin');
-  document.getElementById('towerBtn')?.addEventListener('click',()=>{ towerMode=true; worldRun.active=false; towerFloor=1; pendingStage=0; showSelection(); });
+  if(towerHint) towerHint.textContent = bestT>0 ? T(`(Torre Infinita) · Recorde: andar ${bestT}`,`(Infinite Tower) · Best: floor ${bestT}`,`(Torre Infinita) · Récord: piso ${bestT}`) : T('(Torre Infinita) · Survivor no Pesadelo','(Infinite Tower) · Nightmare survivor','(Torre Infinita) · Survivor en Pesadilla');
+  /* 🗼 Torre de Acesso à Eternidade: painel com regras + ranking mensal antes de escalar */
+  function renderTowerScreen(){
+    const rules=document.getElementById('towerRules');
+    if(rules) rules.textContent=T(
+      'Modo SURVIVOR sem fim: enfrente TODOS os personagens do jogo, um por missão, na ordem em que surgiram em Ygdria. Ao vencer o último, o ciclo recomeça mais forte. Só no PESADELO, a vida NÃO renova entre as missões — mas a mochila de consumíveis está liberada.',
+      'Endless SURVIVOR mode: face ALL game characters, one per mission, in order of appearance. Beat the last one and the cycle restarts stronger. NIGHTMARE only, HP does NOT refresh between missions — but your consumables bag is allowed.',
+      'Modo SURVIVOR sin fin: enfrenta a TODOS los personajes, uno por misión, en orden de aparición. Al vencer al último, el ciclo reinicia más fuerte. Solo PESADILLA, la vida NO se renueva — pero la mochila está permitida.');
+    const box=document.getElementById('towerRankBox');
+    if(box){
+      const tm=towerMonthly(); const mk=towerMonthKey();
+      box.innerHTML='<div class="quests-box"><b>🏆 '+T('Ranking mensal','Monthly ranking','Ranking mensual')+' · '+mk+'</b>'
+        +'<div class="quest-row"><span>'+T('Seu recorde do mês','Your record this month','Tu récord del mes')+'</span><span>'+(tm[mk]||0)+' '+T('andares','floors','pisos')+'</span></div>'
+        +TOWER_RANK_REWARDS.map(r=>'<div class="quest-row"><span>'+r[0]+'</span><span>'+r[1]+'</span></div>').join('')
+        +'<small style="opacity:.7">'+T('O ranking global e a entrega dos prêmios serão ativados junto com o servidor.','Global ranking and prize delivery activate with the server.','El ranking global se activa con el servidor.')+'</small></div>';
+    }
+  }
+  document.getElementById('towerBtn')?.addEventListener('click',()=>{ renderTowerScreen(); openPanel('towerScreen'); sfxSelect(); });
+  document.getElementById('towerStartBtn')?.addEventListener('click',()=>{
+    document.getElementById('towerScreen')?.classList.remove('show');
+    towerMode=true; worldRun.active=false; bossRushMode=false; towerFloor=1; pendingStage=0;
+    if(difficulty!=='pesadelo'){ towerPrevDifficulty=difficulty; difficulty='pesadelo'; applyDifficultyUI(); }
+    showSelection();
+    sfxSelect();
+  });
   document.getElementById('mapBackBtn')?.addEventListener('click',()=>{ closeMapScreen(); sfxSelect(); });
   document.getElementById('shopBtn')?.addEventListener('click',()=>openPanel('shopScreen'));
+  document.getElementById('mochilaBtn')?.addEventListener('click',()=>{ openPanel('mochilaScreen'); sfxSelect(); });
+  document.getElementById('mochilaShopBtn')?.addEventListener('click',()=>{ openPanel('shopScreen'); sfxSelect(); });
+  /* 👁 Visualização: nomes (ciclo embaixo→em cima→desabilitado) e toggles */
+  const vizCycle={bottom:'top',top:'off',off:'bottom'};
+  const syncVizLabels=()=>{
+    const h=document.getElementById('vizHeroNames'); if(h) h.textContent=vizNameLabel(vizPrefs.heroNames);
+    const e2=document.getElementById('vizEnemyNames'); if(e2) e2.textContent=vizNameLabel(vizPrefs.enemyNames);
+    const d=document.getElementById('vizDmg'); if(d) d.textContent=vizOnOff(vizPrefs.dmg);
+    const p=document.getElementById('vizDps'); if(p) p.textContent=vizOnOff(vizPrefs.dps);
+    const t2=document.getElementById('vizTimer'); if(t2) t2.textContent=vizOnOff(vizPrefs.timer);
+  };
+  document.getElementById('vizHeroNames')?.addEventListener('click',()=>{ vizPrefs.heroNames=vizCycle[vizPrefs.heroNames]||'bottom'; saveViz(); syncVizLabels(); refreshVizBattle(); sfxSelect(); });
+  document.getElementById('vizEnemyNames')?.addEventListener('click',()=>{ vizPrefs.enemyNames=vizCycle[vizPrefs.enemyNames]||'bottom'; saveViz(); syncVizLabels(); refreshVizBattle(); sfxSelect(); });
+  document.getElementById('vizDmg')?.addEventListener('click',()=>{ vizPrefs.dmg=!vizPrefs.dmg; saveViz(); syncVizLabels(); sfxSelect(); });
+  document.getElementById('vizDps')?.addEventListener('click',()=>{ vizPrefs.dps=!vizPrefs.dps; saveViz(); syncVizLabels(); sfxSelect(); });
+  document.getElementById('vizTimer')?.addEventListener('click',()=>{ vizPrefs.timer=!vizPrefs.timer; saveViz(); syncVizLabels(); sfxSelect(); });
+  syncVizLabels();
+  applyVizSettings();
   document.getElementById('achBtn')?.addEventListener('click',()=>openPanel('achScreen'));
   document.getElementById('coachNext')?.addEventListener('click',()=>{ coachStep++; renderCoach(); sfxSelect(); });
   document.getElementById('storyLayer')?.addEventListener('click',(e)=>{ if(e.target.id!=='storySkip') advanceStory(); });
@@ -5428,10 +5882,17 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
     if(!hasAccountDecision()) document.getElementById('loginScreen')?.classList.add('show');
   }
   document.getElementById('introNext')?.addEventListener('click',()=>{
+    stopIntroMusic();
     document.getElementById('introScreen')?.classList.remove('show');
     if(!localStorage.getItem('12r_lang_set')) document.getElementById('langScreen')?.classList.add('show');
     else maybeShowLogin();
     sfxSelect();
+  });
+  /* Letreiro: música começa no 1º toque (regra de áudio dos navegadores) e a
+     abertura avança sozinha quando o texto termina de subir */
+  document.getElementById('introScreen')?.addEventListener('pointerdown',()=>startIntroMusic(),{once:true});
+  document.getElementById('crawlScroll')?.addEventListener('animationend',()=>{
+    if(document.getElementById('introScreen')?.classList.contains('show')) document.getElementById('introNext')?.click();
   });
   document.querySelectorAll('#langScreen [data-lang]').forEach(b=>b.addEventListener('click',()=>{
     lang=VALID_LANGS.includes(b.dataset.lang)?b.dataset.lang:'pt';
@@ -5623,18 +6084,57 @@ function renderAccountPanel(){
   if(ob) ob.style.display=account?'inline-block':'none';
 }
 
-/* v9.1 · Textos da introdução (relocalizáveis) */
+/* v9.2 · ABERTURA EM LETREIRO: a história oficial sobe linha a linha do rodapé,
+   com música de introdução e botão Pular. Texto oficial definido pelo criador. */
+function introStoryParagraphs(){
+  return [
+    T('Ygdria era um mundo tomado por guerras, caos e destruição. Feras mágicas, guerreiros implacáveis e magos poderosos, travavam batalhas por soberania.',
+      'Ygdria was a world consumed by war, chaos and destruction. Magical beasts, relentless warriors and powerful mages waged battles for sovereignty.',
+      'Ygdria era un mundo tomado por guerras, caos y destrucción. Bestias mágicas, guerreros implacables y magos poderosos libraban batallas por la soberanía.'),
+    T('Foi quando um ser chamado Eternidade, resolveu colocar um fim a esse caos. Escolhendo uma tribo de humanos para serem seus reguladores.',
+      'That was when a being called Eternity decided to put an end to this chaos. Choosing a tribe of humans to be her regulators.',
+      'Fue cuando un ser llamado Eternidad decidió poner fin a ese caos. Eligiendo a una tribu de humanos como sus reguladores.'),
+    T('Ela separou o mundo em 12 reinos, colocando o que chamou de Reino Humano no centro de todos os outros.',
+      'She divided the world into 12 realms, placing what she called the Human Realm at the center of all the others.',
+      'Ella separó el mundo en 12 reinos, colocando el que llamó Reino Humano en el centro de todos los demás.'),
+    T('Luz, Sombras, Fogo, Água, Vento, Terra, Natureza, Raios, Areia, Chuva, Gelo e o Reino dos Humanos.',
+      'Light, Shadows, Fire, Water, Wind, Earth, Nature, Lightning, Sand, Rain, Ice and the Realm of Humans.',
+      'Luz, Sombras, Fuego, Agua, Viento, Tierra, Naturaleza, Rayos, Arena, Lluvia, Hielo y el Reino de los Humanos.'),
+    T('Esses são, os 12 Reinos!','These are, the 12 Realms!','¡Esos son, los 12 Reinos!'),
+    T('E assim, Ygdria viveu em paz por séculos. Cada reino governado por seu Rei Mago ou Rainha Maga e protegidos por seus cavaleiros.',
+      'And so, Ygdria lived in peace for centuries. Each realm ruled by its Mage King or Mage Queen and protected by its knights.',
+      'Y así, Ygdria vivió en paz durante siglos. Cada reino gobernado por su Rey Mago o Reina Maga y protegido por sus caballeros.'),
+    T('Mas o que a Eternidade não esperava, é que alguém de fora dos 12 reinos surgiria...',
+      'But what Eternity did not expect... is that someone from beyond the 12 realms would appear...',
+      'Pero lo que la Eternidad no esperaba... es que alguien de fuera de los 12 reinos aparecería...')
+  ];
+}
 function renderIntroTexts(){
-  const lore=document.getElementById('introLore');
-  if(lore) lore.textContent=T(
-    'Doze reinos, doze coroas, um único Trono. Quando a última aurora tocou as torres de Ygdria, as gemas dos reinos despertaram — e com elas, algo antigo abriu os olhos nas profundezas. Reúna quatro campeões, domine as esferas elementais e devolva a luz ao Trono dos 12 Reinos.',
-    'Twelve realms, twelve crowns, a single Throne. When the last dawn touched the towers of Ygdria, the realm gems awakened — and with them, something ancient opened its eyes in the depths. Gather four champions, master the elemental spheres and return the light to the Throne of the 12 Realms.',
-    'Doce reinos, doce coronas, un único Trono. Cuando la última aurora tocó las torres de Ygdria, las gemas de los reinos despertaron — y con ellas, algo antiguo abrió los ojos en las profundidades. Reúne a cuatro campeones, domina las esferas elementales y devuelve la luz al Trono de los 12 Reinos.');
+  const crawl=document.getElementById('crawlText');
+  if(crawl) crawl.innerHTML=introStoryParagraphs().map(p=>`<p>${p}</p>`).join('');
   const eyebrow=document.getElementById('introEyebrow');
   if(eyebrow) eyebrow.textContent=T('AS CRÔNICAS DE YGDRIA','THE CHRONICLES OF YGDRIA','LAS CRÓNICAS DE YGDRIA');
   const btn=document.getElementById('introNext');
-  if(btn) btn.textContent=T('Começar jornada','Begin the journey','Comenzar la travesía');
+  if(btn) btn.textContent=T('Pular ⏭','Skip ⏭','Saltar ⏭');
 }
+/* 🎵 Música da introdução: arpejo suave gerado no WebAudio (para no Pular/fim) */
+let introMusicOn=false, introMusicTimer=null;
+function startIntroMusic(){
+  if(introMusicOn) return;
+  const ctx=ensureAudio(); if(!ctx) return;
+  introMusicOn=true;
+  const acordes=[[220,277.2,329.6],[196,246.9,293.7],[174.6,220,261.6],[196,246.9,293.7]];
+  let barra=0;
+  const loop=()=>{
+    if(!introMusicOn) return;
+    const notas=acordes[barra%acordes.length]; barra++;
+    beep(notas[0]/2,1.9,'sine',.045);
+    notas.forEach((f,i)=>{ beep(f,0.95,'triangle',.05,i*0.55); beep(f*2,0.55,'sine',.026,i*0.55+0.28); });
+    introMusicTimer=setTimeout(loop,1800);
+  };
+  loop();
+}
+function stopIntroMusic(){ introMusicOn=false; clearTimeout(introMusicTimer); introMusicTimer=null; }
 
 /* v9.1 · Smoke test automatizado de gameplay: abra com ?qa=smoke
    Joga de verdade: escala time, entra em batalha, dispara habilidade,
@@ -5685,6 +6185,16 @@ async function runSmokeTest(){
     ok('fórmula de HP 50/30/15', DIFFICULTY_MULTS.facil.hpFactor===50 && DIFFICULTY_MULTS.normal.hpFactor===30 && DIFFICULTY_MULTS.pesadelo.hpFactor===15);
     /* 12 escadas cíclicas de cores aliadas: cada reino inicia a própria rotação de 4 */
     ok('12 alianças cíclicas de gemas', Object.keys(ALLIED_ORDER).length===12 && Object.entries(ALLIED_ORDER).every(([id,seq])=>seq.length===4&&seq[0]===id&&seq.every(r=>KINGDOMS.some(k=>k.id===r))));
+    /* v9.2 · contratos novos */
+    ok('dificuldade Difícil (4 níveis)', !!DIFFICULTY_MULTS.dificil && DIFFICULTY_MULTS.dificil.hpFactor===30 && typeof allEnemiesAttackMode==='function');
+    ok('3 grandes alianças nomeadas', ALLIANCES.length===3 && ALLIANCES.every(a=>a.membros.length===4) && ALLIANCES[0].nome.includes('Lago') && ALLIANCES[1].nome.includes('Dragão') && ALLIANCES[2].nome.includes('Barion'));
+    ok('loja com 20 consumíveis', SHOP_ITEMS.length===20 && SHOP_ITEMS.filter(i=>i.uso==='batalha').length>=12 && typeof usarItemBatalha==='function');
+    ok('login diário: ciclo de 7 dias', LOGIN_REWARDS.length===7 && LOGIN_REWARDS[6].c===80);
+    ok('Torre da Eternidade: 1 personagem/andar + cenário fase 9', (()=>{ const t2=buildTowerStage(1); return t2.enemies.length===1 && t2.bgUrl==='assets/bg/humanos/fase-09.jpg' && buildTowerStage(1+KINGDOMS.length).enemies[0].hp>t2.enemies[0].hp; })());
+    ok('timer de missão + mochila em batalha', !!document.getElementById('missionTimer') && !!document.getElementById('mochilaBtn') && !!document.getElementById('mochilaScreen'));
+    ok('letreiro da história (7 parágrafos)', !!document.getElementById('crawlScroll') && introStoryParagraphs().length===7);
+    ok('falas de entrada dos inimigos', Object.keys(ENEMY_LINES).length>=23 && typeof enemyLineFor==='function');
+    ok('inimigos sem espelhamento invertido', enemies.every(e2=>!e2.flip));
     ok('moedas e XP de perfil operantes', typeof coins==='number'&&typeof profileLevel()==='number');
     worldRun.active=false;
   }catch(e){

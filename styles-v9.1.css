@@ -168,10 +168,10 @@
 
   .unit.attacking .avatar-circle{ animation:lungeAttack .55s ease; z-index:6; }
   @keyframes lungeAttack{
-    0%{ transform:translate(0,0) scale(1); filter:brightness(1); }
-    30%{ transform:translate(0,-16px) scale(1.18) rotate(-3deg); filter:brightness(1.15); }
-    55%{ transform:translate(0,-18px) scale(1.25) rotate(3deg); filter:brightness(1.4) drop-shadow(0 0 10px #fff); }
-    100%{ transform:translate(0,0) scale(1); filter:brightness(1); }
+    0%{ transform:translate(0,0) scale(1); }
+    30%{ transform:translate(0,-16px) scale(1.18) rotate(-3deg); }
+    55%{ transform:translate(0,-18px) scale(1.25) rotate(3deg); }
+    100%{ transform:translate(0,0) scale(1); }
   }
   .unit.hit .avatar-circle{ animation:hitShake .35s ease; }
   @keyframes hitShake{
@@ -432,6 +432,10 @@
   .menu-btn:disabled{ opacity:.34; cursor:default; filter:grayscale(1); }
   .menu-btn:not(:disabled):hover,.ghost-btn:hover{ transform:translateY(-2px); border-color:#e7c66f; filter:brightness(1.09); }
   .menu-icon{ font-size:18px; width:26px; text-align:center; }
+  /* v9.2 · Ícones SVG dourados do menu (medalhão + traço consistente) */
+  .menu-icon svg{ width:22px; height:22px; display:block; margin:0 auto;
+    fill:#e9c25f; filter:drop-shadow(0 1px 1px rgba(0,0,0,.55)); }
+  .menu-btn.primary .menu-icon svg{ fill:#1a1226; filter:none; }
   .menu-label{ flex:1; padding-left:9px; }
   .menu-hint{ font-size:8px; font-weight:normal; letter-spacing:.6px; opacity:.58; }
   .menu-footer{ margin-top:16px; font-size:9px; letter-spacing:1px; opacity:.55; }
@@ -2104,24 +2108,26 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
 @media (prefers-reduced-motion:reduce){ .pow-fx{ display:none; } .gem.falling{ animation:none; } }
 /* v9 · Ações dos heróis: anticipação, squash & stretch e rastro do reino */
 .unit.attacking .avatar-circle{ animation:lungeAttack9 .55s cubic-bezier(.35,0,.35,1); z-index:6; }
+/* v9.2 anti-flicker: SEM animação de filter/brightness (re-rasterizava o sprite
+   a cada frame no celular e a tela "piscava") — só transform, que é composto na GPU */
 @keyframes lungeAttack9{
-  0%{ transform:translate(0,0) scale(1); filter:brightness(1); }
-  18%{ transform:translate(0,6px) scale(1.06,.9); filter:brightness(.95); }
-  38%{ transform:translate(0,-22px) scale(.94,1.16) rotate(-4deg); filter:brightness(1.25) drop-shadow(0 6px 10px var(--realm,#fff)); }
-  52%{ transform:translate(0,-24px) scale(1.28,1.18) rotate(3deg); filter:brightness(1.55) drop-shadow(0 0 16px var(--realm,#fff)) drop-shadow(0 0 26px var(--realm,#fff)); }
-  70%{ transform:translate(0,-6px) scale(1.04); filter:brightness(1.1) drop-shadow(0 0 8px var(--realm,#fff)); }
-  100%{ transform:translate(0,0) scale(1); filter:brightness(1); }
+  0%{ transform:translate(0,0) scale(1); }
+  18%{ transform:translate(0,6px) scale(1.06,.9); }
+  38%{ transform:translate(0,-22px) scale(.94,1.16) rotate(-4deg); }
+  52%{ transform:translate(0,-24px) scale(1.28,1.18) rotate(3deg); }
+  70%{ transform:translate(0,-6px) scale(1.04); }
+  100%{ transform:translate(0,0) scale(1); }
 }
 .unit.casting .avatar-circle{ animation:castRise9 .9s cubic-bezier(.3,.7,.3,1); z-index:6; }
 @keyframes castRise9{
-  0%{ transform:translateY(0) scale(1); filter:brightness(1); }
-  30%{ transform:translateY(-14px) scale(1.08); filter:brightness(1.3) drop-shadow(0 0 14px var(--realm,#fff)); }
-  60%{ transform:translateY(-16px) scale(1.12); filter:brightness(1.6) drop-shadow(0 0 22px var(--realm,#fff)) drop-shadow(0 0 34px var(--realm,#fff)); }
-  100%{ transform:translateY(0) scale(1); filter:brightness(1); }
+  0%{ transform:translateY(0) scale(1); }
+  30%{ transform:translateY(-14px) scale(1.08); }
+  60%{ transform:translateY(-16px) scale(1.12); }
+  100%{ transform:translateY(0) scale(1); }
 }
 #partyArena.party-hurt .unit:not(.golem-unit) .avatar-circle{ animation:partyFlinch9 .42s ease; }
 @keyframes partyFlinch9{
-  0%{ transform:translate(0,0); } 25%{ transform:translate(-5px,2px) rotate(-3deg); filter:brightness(1.35) saturate(.7); }
+  0%{ transform:translate(0,0); } 25%{ transform:translate(-5px,2px) rotate(-3deg); }
   55%{ transform:translate(4px,-1px) rotate(2deg); } 100%{ transform:translate(0,0); }
 }
 @media (prefers-reduced-motion:reduce){
@@ -2401,6 +2407,9 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
 /* v9.1 · Inimigos espelhados (confrontando os heróis à esquerda) */
 .enemy-sprite-image.flip{ animation-name:enemySwayFlip; transform:scaleX(-1); }
 @keyframes enemySwayFlip{ 0%,100%{ transform:scaleX(-1) rotate(1.2deg) translateY(0); } 50%{ transform:scaleX(-1) rotate(-1.2deg) translateY(-2.5px); } }
+/* Heróis-carta cuja arte olha para a esquerda: espelhados para encarar o centro */
+.hero-sprite-image.flip{ animation-name:idleBreathFlip; transform:scaleX(-1); }
+@keyframes idleBreathFlip{ 0%,100%{ transform:scaleX(-1) translateY(0) scale(1); } 50%{ transform:scaleX(-1) translateY(-3px) scale(1.016,1.034); } }
 /* v9.1 · Galeria em decks por reino */
 #galleryGrid{ display:block!important; }
 .deck-section{ margin-bottom:22px; }
@@ -2785,3 +2794,55 @@ body.game-active .arena{ height:calc(70dvh - env(safe-area-inset-bottom,0px))!im
 .gallery-card.fav{ border-color:#ff8fae!important; }
 /* Contador de coleção */
 .gallery-count{ font:700 11px Georgia,serif; letter-spacing:1.4px; color:#e8d8ae; opacity:.85; margin:0 0 10px; }
+
+/* ============ v9.2 · NOVA LEVA (alianças, mochila, timer, torre, letreiro) ============ */
+/* ⚜ Prévia do bônus de aliança na formação da equipe */
+.alliance-hint{ text-align:center; font-size:11px; color:#cbb98a; min-height:16px; margin:2px 0 8px; letter-spacing:.4px; }
+.alliance-hint.on{ color:#ffe9a8; text-shadow:0 0 12px rgba(255,215,120,.35); }
+/* 🛡 Botões de equipe com brasão */
+.team-crest{ width:13px; height:13px; fill:currentColor; vertical-align:-2px; margin-right:2px; }
+/* 👁 Visualização */
+body.viz-dmg-off .dmg-float{ display:none!important; }
+body.viz-dps-off .mini-dps{ display:none!important; }
+body.viz-timer-off .mission-timer{ display:none!important; }
+.unit-name.name-top{ margin-top:0; margin-bottom:3px; }
+.option-section{ margin:14px 0 6px; font-size:12px; letter-spacing:2px; color:#f1d98d; font-family:Georgia,serif;
+  border-bottom:1px solid rgba(212,175,90,.25); padding-bottom:4px; }
+/* ⏱ Timer da missão sob os 4 ícones do topo */
+.mission-actions{ flex-wrap:wrap; }
+.mission-actions .mission-timer{ width:100%; text-align:right; font-size:10px; letter-spacing:1.2px; color:#ffe9b0;
+  text-shadow:0 1px 2px #000; font-variant-numeric:tabular-nums; }
+/* 🎒 Mochila e loja */
+.shop-uso{ display:inline-block; font-size:9px; letter-spacing:.6px; padding:1px 6px; border-radius:8px;
+  border:1px solid rgba(212,175,90,.45); color:#e9c25f; margin-left:4px; white-space:nowrap; }
+/* 📅 Calendário de login */
+.login-days{ display:flex; gap:5px; margin:8px 0 6px; flex-wrap:wrap; }
+.login-day{ flex:1; min-width:34px; text-align:center; font-size:10px; padding:6px 2px; border-radius:9px;
+  background:rgba(255,255,255,.05); border:1px solid rgba(212,175,90,.25); color:#d9c9a8; }
+.login-day i{ display:block; font-style:normal; font-size:8px; opacity:.6; }
+.login-day em{ display:block; font-style:normal; font-size:11px; }
+.login-day.done{ opacity:.55; border-color:rgba(120,220,140,.5); }
+.login-day.today{ border-color:#ffd75e; background:rgba(255,215,94,.12); color:#ffe9a8; box-shadow:0 0 10px rgba(255,215,94,.25); }
+/* 🏆 Pin do Desafio dos Chefes no mapa */
+.realm-pin .pin-crown{ position:absolute; top:-7px; right:-7px; font-size:11px; filter:drop-shadow(0 1px 2px #000); }
+/* 🗼 Painel da Torre */
+#towerRankBox .quest-row span:last-child{ color:#ffe9a8; }
+/* 🎬 ABERTURA EM LETREIRO (história subindo) */
+.intro-crawl{ overflow:hidden; }
+.intro-crawl .crawl-stage{ position:absolute; inset:0; overflow:hidden;
+  background:radial-gradient(ellipse at 50% 110%,#2c2140 0%,transparent 60%),linear-gradient(180deg,#0b0714 0%,#060409 100%); }
+.crawl-scroll{ position:absolute; top:100%; left:50%; width:min(90vw,560px);
+  transform:translate(-50%,0); text-align:center;
+  animation:crawlUp 58s linear forwards; will-change:transform; }
+@keyframes crawlUp{ from{ transform:translate(-50%,0); } to{ transform:translate(-50%,calc(-100% - 108vh)); } }
+.crawl-eyebrow{ font-size:12px; letter-spacing:4px; color:#cbb98a; margin-bottom:10px; }
+.crawl-title{ font-family:'Cinzel',Georgia,serif; font-size:44px; letter-spacing:6px; margin:0 0 26px;
+  background:linear-gradient(90deg,#f6e6b4,#c9a24b,#f6e6b4); -webkit-background-clip:text; background-clip:text; color:transparent;
+  text-shadow:0 0 30px rgba(212,175,90,.25); }
+.crawl-text p{ font-family:Georgia,serif; font-size:17px; line-height:1.75; color:#f2e8d0; margin:0 0 26px;
+  text-shadow:0 1px 3px #000; }
+.crawl-fade-top{ position:absolute; top:0; left:0; right:0; height:22vh; pointer-events:none;
+  background:linear-gradient(180deg,#060409 0%,transparent 100%); }
+.crawl-skip{ position:absolute; right:calc(14px + env(safe-area-inset-right)); bottom:calc(14px + env(safe-area-inset-bottom));
+  z-index:5; border-color:rgba(212,175,90,.6); }
+@media (prefers-reduced-motion:reduce){ .crawl-scroll{ animation-duration:20s; } }
