@@ -2662,3 +2662,59 @@ h1.maintitle{ display:none; }
 .unit-ground-shadow, .unit-ground-shadow::before, .unit-ground-shadow::after{
   display:none!important; animation:none!important;
 }
+
+/* ===== v9.1 · Nova leva: obstáculos Sombra (Julius) e Copas (Jules) ===== */
+.obstacle-block.ob-sombra{
+  background:radial-gradient(circle at 34% 30%, #40364f, #16101f 58%, #000 125%);
+  border-color:#584a6e; box-shadow:0 0 10px 2px rgba(64,44,92,.75), inset 0 0 8px rgba(0,0,0,.9);
+  animation:sombraPulse 2.4s ease-in-out infinite;
+}
+@keyframes sombraPulse{ 0%,100%{ box-shadow:0 0 8px 1px rgba(64,44,92,.6), inset 0 0 8px rgba(0,0,0,.9);} 50%{ box-shadow:0 0 14px 4px rgba(96,64,140,.85), inset 0 0 8px rgba(0,0,0,.9);} }
+.obstacle-block.ob-copas{
+  background:radial-gradient(circle at 34% 30%, #ffd7e8, #ff6fa5 58%, #7c1f4b 125%);
+  border-color:#ffb9d2;
+}
+.obstacle-block.ob-copas .ob-icon{ color:#e01935; text-shadow:0 0 6px #ff5470; font-size:15px; }
+
+/* ===== v9.1 · 10 MELHORIAS + 10 FUNCIONALIDADES ===== */
+/* M1 chefe coroado */
+.unit-name.boss-name{ color:#ffd75e!important; text-shadow:0 0 8px rgba(255,180,60,.6),0 1px 3px #000; font-weight:800; }
+/* M2 fade entre missões */
+.arena.stage-fade{ animation:stageFadeIn .55s ease; }
+@keyframes stageFadeIn{ from{ opacity:.25; } to{ opacity:1; } }
+/* M4 dano com intensidade */
+.dmg-float.dmg-big{ font-size:15px; color:#ffb020; }
+.dmg-float.dmg-huge{ font-size:19px; color:#ff5040; text-shadow:0 0 8px rgba(255,60,40,.7); }
+/* M5 badge NOVO! */
+.new-badge{ position:absolute; top:4px; left:4px; z-index:3; font:800 8px Georgia,serif; letter-spacing:.5px;
+  padding:2px 6px; border-radius:8px; background:linear-gradient(135deg,#ff5470,#c9184a); color:#fff;
+  box-shadow:0 2px 6px rgba(0,0,0,.6); animation:newPulse 1.6s ease-in-out infinite; }
+@keyframes newPulse{ 50%{ transform:scale(1.08); } }
+/* M7 HUD do Tempo Sombrio */
+#sombraHud{ font:700 10px Georgia,serif; color:#b9a5e8; text-shadow:0 0 6px #5a3d8a; padding:2px 8px;
+  border:1px solid #584a6e; border-radius:99px; background:rgba(20,12,32,.8); animation:sombraPulse 2.4s ease-in-out infinite; }
+/* F5 equipes salvas */
+.team-slots{ display:flex; gap:6px; justify-content:center; margin:2px 0 8px; }
+.team-slot{ font:700 9px Georgia,serif; letter-spacing:.4px; color:#d8c8a8; cursor:pointer;
+  padding:4px 10px; border-radius:99px; border:1px dashed rgba(212,175,90,.45); background:rgba(10,7,18,.5); }
+.team-slot.filled{ border-style:solid; color:#ffe9c9; background:rgba(60,40,20,.45); }
+.team-slot:active{ transform:scale(.95); }
+/* F4 missões diárias */
+.quests-box{ margin:0 0 12px; padding:10px 12px; border-radius:12px; border:1px solid rgba(212,175,90,.35);
+  background:linear-gradient(160deg,rgba(30,22,40,.6),rgba(10,7,16,.7)); }
+.quests-box>b{ display:block; font-size:11px; letter-spacing:1px; color:#ffd75e; margin-bottom:7px; }
+.quest-row{ display:flex; justify-content:space-between; gap:8px; font-size:10.5px; padding:4px 0; color:#e8dcc0;
+  border-bottom:1px dashed rgba(212,175,90,.15); }
+.quest-row:last-child{ border-bottom:0; }
+.quest-row.done{ opacity:.65; text-decoration:line-through; }
+.quest-row.done span:last-child{ text-decoration:none; }
+/* F7 recorde no card da fase */
+.fase-best{ display:block; font-size:8.5px; color:#8fd8a8; letter-spacing:.4px; }
+/* F9 modo foto: esconde todo o HUD */
+body.photo-mode .mission-topbar, body.photo-mode .combat-console, body.photo-mode .battle-feed-row,
+body.photo-mode .unit-name, body.photo-mode .unit-hp-outer, body.photo-mode .charge-outer,
+body.photo-mode .unit-hp-text, body.photo-mode .charge-text, body.photo-mode .enemy-intent,
+body.photo-mode #sombraHud{ display:none!important; }
+body.photo-mode .arena{ height:100dvh!important; flex:1 1 100dvh!important; }
+/* F2 bestiário */
+.beast-card img{ object-fit:contain; max-height:96px; filter:drop-shadow(0 4px 6px rgba(0,0,0,.6)); }
