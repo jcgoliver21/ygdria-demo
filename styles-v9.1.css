@@ -2125,7 +2125,7 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
   55%{ transform:translate(4px,-1px) rotate(2deg); } 100%{ transform:translate(0,0); }
 }
 @media (prefers-reduced-motion:reduce){
-  .unit.attacking .avatar-circle,.unit.casting .avatar-circle,#partyArena.party-hurt .unit .avatar-circle{ animation:none; }
+  .unit.attacking .avatar-circle,.unit.casting .avatar-circle,#partyArena.party-hurt .unit .avatar-circle{ animation-play-state:paused; }
 }
 /* v9 · Estrelas de fase, relatório de batalha e confete de vitória */
 .stage-stars{ display:flex; gap:8px; justify-content:center; margin:6px 0 2px; font-size:30px; }
@@ -2729,3 +2729,32 @@ html, body{ overflow-x:hidden!important; max-width:100vw; }
    longa (ex. "· Castelo da Coroa Humana") alargava o botão além da tela. */
 .menu-btn{ min-width:0; }
 .menu-btn .menu-label{ min-width:0; overflow:hidden; }
+
+/* ===== v9.1 · CABEÇALHO DA BATALHA REORGANIZADO =====
+   Esquerda: título + (objetivo · recorde lado a lado). Direita: botões com respiro. */
+.mission-topbar{
+  display:grid!important; grid-template-columns:minmax(0,1fr) auto!important;
+  grid-template-areas:'ident acoes' 'metricas acoes'!important;
+  gap:3px 10px!important; align-items:start!important;
+}
+.mission-identity{ grid-area:ident; min-width:0; }
+.mission-actions{
+  grid-area:acoes; display:flex!important; flex-direction:row!important; gap:8px!important;
+  align-self:center!important; justify-self:end!important; grid-template-columns:none!important;
+}
+.mission-metrics{
+  grid-area:metricas; display:flex!important; flex-direction:row!important; align-items:center!important;
+  gap:10px!important; justify-content:flex-start!important; min-width:0;
+}
+.stage-objective{ order:1; position:static!important; top:auto!important; left:auto!important; max-width:none!important; flex:0 1 auto; }
+.combo-record{ order:2; position:static!important; top:auto!important; left:auto!important; transform:none!important; white-space:nowrap; }
+#sombraHud{ order:3; }
+
+/* ===== v9.1 · TABULEIRO SEM CORTE EMBAIXO (safe-area do iPhone/Android) ===== */
+body.game-active #gameScreen{ padding-bottom:0!important; }
+body.game-active .arena{ height:calc(70dvh - env(safe-area-inset-bottom,0px))!important; flex:0 0 calc(70dvh - env(safe-area-inset-bottom,0px))!important; }
+.combat-console{ flex:0 0 calc(30dvh + env(safe-area-inset-bottom,0px))!important; padding-bottom:max(4px, env(safe-area-inset-bottom,0px))!important; }
+.combat-console .board{ width:min(100%, calc(30dvh - 18px))!important; }
+
+/* ===== v9.1 · Flinch de dano sem flash de brilho (só recuo físico) ===== */
+#partyArena.party-hurt .unit:not(.golem-unit) .avatar-circle{ filter:none!important; }

@@ -973,12 +973,12 @@ let heroEmpower = {};  // v9: cargas de Full Power por herói {idx:{left,mult}}
    Fácil = 50×(soma do ataque das 4 cartas) · Normal = 25× · Pesadelo = 10× */
 const DIFFICULTY_MULTS={
   facil:{hp:.85,atk:.85,hpFactor:50},
-  normal:{hp:1,atk:1,hpFactor:25},
-  pesadelo:{hp:1.15,atk:1.15,hpFactor:10}
+  normal:{hp:1,atk:1,hpFactor:30},
+  pesadelo:{hp:1.15,atk:1.15,hpFactor:15}
 };
 function computePlayerMaxHP(){
   const soma=ACTIVE.reduce((acc,i)=>acc+heroAtkFor(i),0)||80;
-  /* Fórmula OFICIAL sem piso artificial: Fácil 50× · Normal 25× · Pesadelo 10× a soma de ATK */
+  /* Fórmula OFICIAL sem piso artificial: Fácil 50× · Normal 30× · Pesadelo 15× a soma de ATK */
   return Math.max(60,(DIFFICULTY_MULTS[difficulty]?.hpFactor||25)*soma);
 }
 let difficulty=localStorage.getItem('12r_difficulty')||'normal';
@@ -2294,7 +2294,11 @@ function loadStage(idx){
   hiddenGems={};
   boardRenderCache=null; /* nova fase = render completo do tabuleiro */
   { const ar=document.querySelector('.arena'); if(ar){ ar.classList.remove('stage-fade'); void ar.offsetWidth; ar.classList.add('stage-fade'); } }
-  const stageData = worldRun.active ? buildWorldLevel() : towerMode ? buildTowerStage(towerFloor) : DUNGEON[idx];
+  if(!worldRun.active && !towerMode){
+    /* rota órfã: reancora no Reino dos Humanos (fases demo NUNCA voltam) */
+    worldRun={active:true, fase:Math.min(worldProg('humanos').unlocked, WORLDS[0].fases.length-1), nivel:1};
+  }
+  const stageData = worldRun.active ? buildWorldLevel() : buildTowerStage(towerFloor);
   activeStageData = stageData;
   const diffM=DIFFICULTY_MULTS[difficulty]||DIFFICULTY_MULTS.normal;
   enemies = stageData.enemies.map(e=>{
@@ -5500,6 +5504,12 @@ async function runSmokeTest(){
     execStageAbility(enemies[0]||{}, fakeSA);
     ok('habilidade de fase executa', document.querySelectorAll('#board .cell').length===SIZE*SIZE);
     ok('20 habilidades de fase definidas', KINGDOMS.filter(k=>k.stageAbility&&k.stageAbility.nome).length>=20);
+    /* Reiniciar fase NUNCA volta à demo (Portão do Pântano) */
+    restartCurrentStage();
+    await wait(500);
+    const nomesDemo=['Limo Rúnico','Sentinela de Pedra','Lobo Batedor','Espectro Menor','Servo das Trevas','Dragão Carmesim','Dragão das Sombras'];
+    ok('reiniciar fase fica no mundo oficial', worldRun.active===true && enemies.every(e2=>!nomesDemo.includes(e2.name)));
+    ok('fórmula de HP 50/30/15', DIFFICULTY_MULTS.facil.hpFactor===50 && DIFFICULTY_MULTS.normal.hpFactor===30 && DIFFICULTY_MULTS.pesadelo.hpFactor===15);
     ok('moedas e XP de perfil operantes', typeof coins==='number'&&typeof profileLevel()==='number');
     worldRun.active=false;
   }catch(e){
