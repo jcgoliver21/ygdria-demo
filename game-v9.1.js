@@ -1032,6 +1032,10 @@ const ACHIEVEMENTS=[
   {id:'no-damage', nome:'Intocável', desc:'Vença uma fase sem sofrer dano.', icon:'🛡️', en:{nome:'Untouchable', desc:'Win a stage without taking damage.'}},
   {id:'combo8', nome:'Mestre do Combo', desc:'Alcance um combo ×8.', icon:'🔥', en:{nome:'Combo Master', desc:'Reach an x8 combo.'}},
   {id:'powerup10', nome:'Artífice', desc:'Crie 10 power-ups em uma run.', icon:'💠', en:{nome:'Artificer', desc:'Craft 10 power-ups in one run.'}},
+  {id:'colecionador', nome:'Colecionador', desc:'Veja as 20 cartas na galeria.', icon:'🎴', en:{nome:'Collector', desc:'View all 20 cards in the gallery.'}},
+  {id:'bestia10', nome:'Caçador de Ygdria', desc:'Registre 10 inimigos no bestiário.', icon:'🏹', en:{nome:'Hunter of Ygdria', desc:'Record 10 enemies in the bestiary.'}},
+  {id:'streak3', nome:'Fiel à Coroa', desc:'Entre no jogo 3 dias seguidos.', icon:'📅', en:{nome:'Loyal to the Crown', desc:'Log in 3 days in a row.'}},
+  {id:'lenda', nome:'Lenda de Ygdria', desc:'Complete o Desafio dos Chefes.', icon:'🏆', en:{nome:'Legend of Ygdria', desc:'Complete the Boss Challenge.'}},
   {id:'dungeon', nome:'Regulador de Ygdria', desc:'Conquiste as 10 fases do Reino dos Humanos.', icon:'👑', en:{nome:'Regulator of Ygdria', desc:'Conquer all 10 stages of the Human Realm.'}},
   {id:'stars-all', nome:'Perfeccionista', desc:'Conquiste 3 estrelas em 5 fases.', icon:'⭐', en:{nome:'Perfectionist', desc:'Earn 3 stars on 5 stages.'}},
   {id:'tower5', nome:'Escalador', desc:'Supere o andar 5 da Torre Infinita.', icon:'🗼', en:{nome:'Climber', desc:'Clear floor 5 of the Infinite Tower.'}},
@@ -1072,6 +1076,11 @@ function checkAchievements(ctx){
   if(ctx==='daily') unlockAch('daily');
   if(ctx==='tower'){ if(towerFloor>=5) unlockAch('tower5'); if(towerFloor>=10) unlockAch('tower10'); }
   if(coins>=500) unlockAch('rich');
+  try{
+    if(JSON.parse(localStorage.getItem('12r_seen')||'[]').length>=20) unlockAch('colecionador');
+    if(Object.keys(JSON.parse(localStorage.getItem('12r_bestiary')||'{}')).length>=10) unlockAch('bestia10');
+    if((JSON.parse(localStorage.getItem('12r_login')||'{}').streak||0)>=3) unlockAch('streak3');
+  }catch(e){}
 }
 function renderQuestsPanel(){
   const el=document.getElementById('profileStats'); if(!el) return;
@@ -1135,6 +1144,19 @@ function consumeInventoryOnBattleStart(){
   if(used.length){ saveInventory(); setBattleStatus(T(`Itens usados: ${used.join(' · ')}.`,`Items used: ${used.join(' · ')}.`,`Objetos usados: ${used.join(' · ')}.`),'support'); }
 }
 
+/* F2-1 · Desafio dos Chefes: os 8 chefes-Carta em sequência, escalando */
+let bossRushMode=false, bossRushIdx=0;
+const BOSS_RUSH_ORDER=['gareth','cedric','elizier','roland','jules','bernyce','kalander','julius'];
+function buildBossRushStage(n){
+  const key=BOSS_RUSH_ORDER[Math.min(n,BOSS_RUSH_ORDER.length-1)];
+  const c=HUMANOS_CARDS[key];
+  const escala=1+n*0.18;
+  return {
+    title:`${T('Desafio dos Chefes','Boss Challenge','Desafío de Jefes')} · ${n+1}/8`,
+    scene:4,
+    enemies:[{name:c.nome, hp:Math.round(c.hp*1.6*escala), atk:Math.round(c.atk*1.1*escala), sprite:c.sprite, flip:!!c.flip, cardId:key, isBoss:true, maxHp:Math.round(c.hp*1.6*escala)}]
+  };
+}
 /* v9.1 · Torre Infinita: andares gerados, inimigos escalando */
 let towerMode=false, towerFloor=1;
 function buildTowerStage(floor){
@@ -1149,7 +1171,7 @@ function buildTowerStage(floor){
   for(let i=0;i<count;i++) picks.push(flat[Math.floor(gameRandom()*flat.length)]);
   if(isBossFloor) picks[picks.length-1]=bosses[Math.floor(gameRandom()*bosses.length)];
   return {
-    title:T(`Torre · Andar ${floor}`,`Tower · Floor ${floor}`,`Torre · Piso ${floor}`),
+    title:T(`Torre · Andar ${floor} · 🎁 em ${5-((floor-1)%5)}`,`Tower · Floor ${floor} · 🎁 in ${5-((floor-1)%5)}`,`Torre · Piso ${floor} · 🎁 en ${5-((floor-1)%5)}`),
     scene:(floor-1)%5,
     enemies:picks.map(p=>({...p, hp:Math.round(p.hp*scale*(isBossFloor?1.3:1)), atk:Math.round(p.atk*scale), isBoss:isBossFloor&&p.cardId?true:p.isBoss}))
   };
@@ -1592,8 +1614,8 @@ function useQueuedActive(idx,a){
 
 function renderStageProgress(){
   stageProgressEl.innerHTML = '';
-  const total=worldRun.active?5:towerMode?5:DUNGEON.length;
-  const atual=worldRun.active?worldRun.nivel-1:towerMode?((towerFloor-1)%5):stageIndex;
+  const total=worldRun.active?5:towerMode?5:bossRushMode?8:5;
+  const atual=worldRun.active?worldRun.nivel-1:towerMode?((towerFloor-1)%5):bossRushMode?bossRushIdx:0;
   for(let i=0;i<total;i++){
     const seg = document.createElement('div');
     seg.className = 'arena-seg' + (i<atual ? ' done' : (i===atual ? ' current' : ''));
@@ -1607,10 +1629,11 @@ function renderStageProgress(){
     stageLabelEl.textContent = `${T('Andar','Floor','Piso')} ${towerFloor}`;
     dungeonTitleEl.textContent = T('Torre Infinita','Infinite Tower','Torre Infinita');
   }else{
-    stageLabelEl.textContent = `${T('Fase','Stage','Fase')} ${stageIndex+1}/${DUNGEON.length}`;
-    dungeonTitleEl.textContent = L(DUNGEON[stageIndex].title);
+    /* modos extra (Desafio dos Chefes etc.): título vem SEMPRE do stage ativo — nunca da demo */
+    stageLabelEl.textContent = bossRushMode ? `${T('Chefe','Boss','Jefe')} ${bossRushIdx+1}/8` : '';
+    dungeonTitleEl.textContent = activeStageData?.title || '';
   }
-  arenaEl.className = 'arena scene-'+((activeStageData&&Number.isFinite(activeStageData.scene))?activeStageData.scene:DUNGEON[stageIndex].scene);
+  arenaEl.className = 'arena scene-'+((activeStageData&&Number.isFinite(activeStageData.scene))?activeStageData.scene:4);
   if(activeStageData?.bgUrl){
     arenaEl.style.setProperty('background-image',`linear-gradient(rgba(6,3,13,.22),rgba(6,3,13,.5)),url('${activeStageData.bgUrl}')`,'important');
     arenaEl.style.setProperty('background-size','cover');
@@ -1688,9 +1711,11 @@ function applyFormationSlot(unit,slot,width){
   }
   unit.style.setProperty('--slot-x',x+'%');
   unit.style.setProperty('--slot-y',yFin+'%');
-  unit.style.setProperty('--slot-scale',String(s));
+  /* nitidez: a escala é aplicada na LARGURA (layout) — o navegador rasteriza o sprite
+     no tamanho final em vez de ampliar um raster menor (que ficava embaçado) */
+  unit.style.setProperty('--slot-scale','1');
   unit.style.setProperty('--slot-z',String(slot.z));
-  unit.style.setProperty('--slot-w',w+'px');
+  unit.style.setProperty('--slot-w',Math.round(w*s)+'px');
 }
 /* Reaplica a formação ao girar/redimensionar a tela durante a batalha */
 let formResizeTimer=null;
@@ -1934,16 +1959,33 @@ function renderEnemies(){
    quando há 2+ cartas do reino na equipe, as gemas seguem a escada de cores de
    reinos aliados para se distinguirem no tabuleiro.
    Reino Rosa: Rosa → Branco → Azul Escuro → Marrom. (Demais reinos: a definir.) */
-const ALLIED_GEM_LADDERS={
-  humanos:[
-    null,                                    /* 1ª carta: rosa oficial do reino */
-    {c:'#f2f5fa', l:'#ffffff', d:'#8c99ad'}, /* Reino Branco */
-    {c:'#1e3f9c', l:'#84a7ff', d:'#0a1c4d'}, /* Reino Azul Escuro */
-    {c:'#8a5a2a', l:'#dca768', d:'#40250c'}  /* Reino Marrom */
-  ]
+/* == ALIANÇAS CÍCLICAS DE REINOS (definidas pelo usuário, 2026-08-05):
+   Aliança A: Rosa(humanos) → Branco(luz) → Azul Escuro(agua) → Marrom(terra)
+   Aliança B: Sombras → Raio → Gelo → Chuva
+   Aliança C: Fogo → Vento → Areia → Natureza
+   Regra: com 2+ cartas do mesmo reino na equipe, a N-ésima carta usa as CORES do
+   N-ésimo reino da aliança (rotação cíclica a partir do próprio reino), mantendo
+   SEMPRE o símbolo do reino de origem — pintado na cor do reino quando a cor muda. */
+const ALLIED_ORDER={
+  humanos:['humanos','luz','agua','terra'],
+  luz:['luz','agua','terra','humanos'],
+  agua:['agua','terra','humanos','luz'],
+  terra:['terra','humanos','luz','agua'],
+  sombras:['sombras','raio','gelo','chuvas'],
+  raio:['raio','gelo','chuvas','sombras'],
+  gelo:['gelo','chuvas','sombras','raio'],
+  chuvas:['chuvas','sombras','raio','gelo'],
+  fogo:['fogo','vento','areia','natureza'],
+  vento:['vento','areia','natureza','fogo'],
+  areia:['areia','natureza','fogo','vento'],
+  natureza:['natureza','fogo','vento','areia']
 };
+function realmOrb(id){
+  const k=KINGDOMS.find(x=>x.id===id);
+  return k?{c:k.orbColor||k.color, l:k.orbColorLight||k.colorLight, d:k.orbColorDark||k.colorDark}:null;
+}
 let battleGemColors={};
-/* Nova leva: estados de combate das cartas SUPER/ULTRA RARAS */
+/* Estados de combate das cartas SUPER/ULTRA RARAS (restaurados) */
 let damageReductionStacks=0;   /* Kalander · O Herói da Nação (cap 2) */
 let queenFuryStacks=0;         /* Bernyce · Ímpeto da Rainha */
 let chamarizCharges=0;         /* Jules · Chamariz (reviver com 100 HP) */
@@ -1959,13 +2001,16 @@ function computeBattleGemColors(){
   });
   Object.entries(fams).forEach(([fam,idxs])=>{
     if(idxs.length<2) return;
-    const ladder=ALLIED_GEM_LADDERS[fam];
-    if(!ladder) return;
-    const lead=KINGDOMS.find(k=>k.id===fam)||KINGDOMS[idxs[0]];
+    const ordem=ALLIED_ORDER[fam];
+    if(!ordem) return;
+    const lead=KINGDOMS.find(k=>k.id===fam);
     idxs.forEach((i,ord)=>{
-      const step=ladder[ord%ladder.length];
-      /* Gema que trocou de cor pela escada leva o SÍMBOLO na cor do reino (identifica a família) */
-      battleGemColors[i]=step?{...step, icon:(lead.color||'#ff6fa5')}:{c:lead.orbColor||lead.color,l:lead.orbColorLight||lead.colorLight,d:lead.orbColorDark||lead.colorDark};
+      const doador=ordem[ord%ordem.length];
+      const cores=realmOrb(doador);
+      if(!cores) return;
+      battleGemColors[i]={...cores};
+      /* Gema com cor emprestada leva o SÍMBOLO na cor do reino de origem */
+      if(doador!==fam && lead) battleGemColors[i].icon=lead.color;
     });
   });
 }
@@ -2034,6 +2079,11 @@ function runStageAbilities(){
     const sa=stageAbilityFor(e.cardId);
     if(!sa||sa.tempoReal) return;
     e.saCounter=(e.saCounter||0)+1;
+    { const iEn=enemies.indexOf(e);
+      const anc=document.getElementById('enemy-'+iEn);
+      let bdg=anc?.querySelector('.sa-count');
+      if(anc&&!bdg){ bdg=document.createElement('div'); bdg.className='sa-count'; anc.appendChild(bdg); }
+      if(bdg) bdg.textContent='🗡'+Math.max(0,sa.cd-e.saCounter); }
     if(e.saCounter<sa.cd) return;
     e.saCounter=0;
     try{ execStageAbility(e,sa); saAnnounce(e,sa); }catch(err){ console.warn('stageAbility', err); }
@@ -2187,6 +2237,7 @@ document.addEventListener('click',e=>{
 /* ===== v9.1 · FUNCIONALIDADES NOVAS ===== */
 /* F1 · Auto-batalha */
 let autoBattle=false, autoBattleTimer=null;
+let autoActives=localStorage.getItem('12r_autoactives')==='1';
 function setAutoBattle(on){
   autoBattle=on;
   const b=document.getElementById('autoTool');
@@ -2196,6 +2247,13 @@ function setAutoBattle(on){
     autoBattleTimer=setInterval(()=>{
       if(!autoBattle||busy||playerHP<=0||document.hidden) return;
       if(!document.body.classList.contains('game-active')) return;
+      /* auto-ativas: dispara a primeira ativa carregada antes de jogar */
+      if(autoActives){
+        for(const hi of ACTIVE){
+          const fila=heroActiveQueue[hi]||[];
+          if(fila.length){ useQueuedActive(hi,fila[0]); break; }
+        }
+      }
       const mv=findBestMove();
       if(mv) trySwap(mv[0],mv[1]);
     },1300);
@@ -2254,6 +2312,12 @@ function questEvent(tipo,valor){
   localStorage.setItem('12r_quests',JSON.stringify(q));
 }
 /* F5 · Equipes salvas (3 slots) */
+function teamCode(ids){ return '12R-'+ids.map(i=>KINGDOMS[i]?.id).join('.'); }
+function parseTeamCode(txt){
+  const m=String(txt||'').trim().match(/^12R-(.+)$/i); if(!m) return null;
+  const ids=m[1].split('.').map(idn=>KINGDOMS.findIndex(k=>k.id===idn.trim().toLowerCase())).filter(i=>i>=0);
+  return ids.length===4?ids:null;
+}
 function renderTeamSlots(){
   const box=document.getElementById('teamSlots'); if(!box) return;
   let times; try{ times=JSON.parse(localStorage.getItem('12r_teams')||'[null,null,null]'); }catch(e){ times=[null,null,null]; }
@@ -2271,6 +2335,21 @@ function renderTeamSlots(){
     });
     box.appendChild(b);
   });
+  const share=document.createElement('button');
+  share.type='button'; share.className='team-slot';
+  share.textContent='🔗';
+  share.title=T('Com 4 escolhidas: copia o código da equipe. Vazio: cola um código.','With 4 chosen: copies team code. Empty: paste a code.','Con 4: copia el código. Vacío: pega un código.');
+  share.addEventListener('click',async()=>{
+    if(chosenIds.length===4){
+      await navigator.clipboard?.writeText(teamCode(chosenIds));
+      share.textContent='✅'; setTimeout(()=>share.textContent='🔗',1400);
+    } else {
+      const txt=prompt(T('Cole o código da equipe (12R-...)','Paste the team code (12R-...)','Pega el código (12R-...)'));
+      const ids=parseTeamCode(txt);
+      if(ids){ chosenIds=ids; renderSelectGrid(); sfxSelect(); } else if(txt) sfxInvalid();
+    }
+  });
+  box.appendChild(share);
 }
 /* F7 · Recorde de turnos por fase */
 function faseBest(){ try{ return JSON.parse(localStorage.getItem('12r_fase_best')||'{}'); }catch(e){ return {}; } }
@@ -2294,11 +2373,11 @@ function loadStage(idx){
   hiddenGems={};
   boardRenderCache=null; /* nova fase = render completo do tabuleiro */
   { const ar=document.querySelector('.arena'); if(ar){ ar.classList.remove('stage-fade'); void ar.offsetWidth; ar.classList.add('stage-fade'); } }
-  if(!worldRun.active && !towerMode){
+  if(!worldRun.active && !towerMode && !bossRushMode){
     /* rota órfã: reancora no Reino dos Humanos (fases demo NUNCA voltam) */
     worldRun={active:true, fase:Math.min(worldProg('humanos').unlocked, WORLDS[0].fases.length-1), nivel:1};
   }
-  const stageData = worldRun.active ? buildWorldLevel() : buildTowerStage(towerFloor);
+  const stageData = bossRushMode ? buildBossRushStage(bossRushIdx) : worldRun.active ? buildWorldLevel() : buildTowerStage(towerFloor);
   activeStageData = stageData;
   const diffM=DIFFICULTY_MULTS[difficulty]||DIFFICULTY_MULTS.normal;
   enemies = stageData.enemies.map(e=>{
@@ -2316,6 +2395,13 @@ function loadStage(idx){
   stoneArmorTurns = 0;
   manualTarget = null; lastDamageDealt = 0; heroLastDamage = {}; nextAttackMult = {};
   royalShuffles = 1;
+  /* Prefetch: sprites da próxima missão nunca dão pop-in */
+  if(worldRun.active && worldRun.nivel<5){
+    try{
+      const proxKeys=WORLDS[0].fases[worldRun.fase].missoes[worldRun.nivel]||[];
+      proxKeys.forEach(kk=>{ const src=HUMANOS_CARDS[kk]?.sprite||HUMANOS_ETYPES[kk]?.sprite; if(src){ const im=new Image(); im.src=src; } });
+    }catch(e){}
+  }
   /* Julius · Lâmina Dimensional: as sombras acumuladas ferem os inimigos desta missão */
   if(worldRun.active && pendingDimensional.length){
     let somaPct=0;
@@ -2557,6 +2643,8 @@ function L(str){ if(lang==='pt'||!str) return str; const e=I18N_DICT[str]; retur
 /* == ARTE LOCALIZADA: se existir assets/i18n/<idioma>/<mesmo caminho> (ex.:
    assets/i18n/en/assets/cards/enemies/gareth-card.png), o jogo usa a versão
    traduzida; senão cai na original automaticamente (onerror / camada dupla). */
+function THUMB(src){ return src?('assets/thumbs/'+String(src).split('/').pop()):src; }
+function THUMBF(src){ return src?` onerror="this.onerror=null;this.src='${src}'"`:''; }
 function IMGL(src){ return (lang==='pt'||!src) ? src : 'assets/i18n/'+lang+'/'+src; }
 function IMGF(src){ return (lang==='pt'||!src) ? '' : ` onerror="this.onerror=null;this.src='${src}'"`; }
 function applyI18nArtCss(){
@@ -2721,7 +2809,7 @@ let storyQueue=[];
 function maybeShowStory(idx){
   if(towerMode) return;
   if(coachStep>=0&&coachStep<COACH_STEPS_I18N.pt.length) return;
-  const seq=worldRun.active?(activeStageData?.dial||null):STAGE_DIALOGS[idx];
+  const seq=worldRun.active?(activeStageData?.dial||null):null; /* diálogos legados da demo aposentados */
   if(!seq||!seq.length) return;
   storyQueue=[...seq];
   renderStoryStep();
@@ -3399,6 +3487,7 @@ async function resolveMatches(){
   lastSwap=null;
   comboStep++; showCombo(comboStep); updateComboRecord(comboStep); sfxMatch(comboStep);
   runStats.maxCombo=Math.max(runStats.maxCombo,comboStep);
+  if(comboStep>=3) setTimeout(()=>setBattleStatus(`⚡ ${T('Cascata','Cascade','Cascada')} ×${comboStep}!`,'action'),200);
   if(comboStep>=4) questEvent('combo',comboStep);
   if(createdPlans.length){ runStats.powerUps+=createdPlans.length; sfxPowerCreated(); }
   if(createdPlans.length){
@@ -4108,6 +4197,8 @@ function applyDamageToEnemy(dmg, colorIdx, targetIdxOverride){
   if(colorIdx!==null && colorIdx!==undefined){
     heroLastDamage[colorIdx]=finalDamage;
     runStats.damage[colorIdx]=(runStats.damage[colorIdx]||0)+finalDamage;
+    { const kD=KINGDOMS[colorIdx]; const elD=kD&&document.getElementById('dps-'+kD.id);
+      if(elD) elD.textContent='⚔ '+runStats.damage[colorIdx]; }
   }
   sfxHit();
   const bar = document.getElementById('enemyHpBar-'+idx);
@@ -4280,9 +4371,11 @@ function enemyCounterAttack(){
   haptic([25,20,25]);
   if(dmg>0) setBattleStatus(T(`${L(enemy.name)} contra-atacou e causou ${dmg} de dano.`,`${L(enemy.name)} counterattacked for ${dmg} damage.`,`${L(enemy.name)} contraatacó y causó ${dmg} de daño.`));
   /* anti-flicker: o tremor fica no palco da batalha, não no body inteiro */
-  const shakeEl=document.querySelector('.arena')||document.body;
-  shakeEl.classList.remove('shake'); void shakeEl.offsetWidth; shakeEl.classList.add('shake');
-  window.setTimeout(()=>shakeEl.classList.remove('shake'), 450);
+  if(localStorage.getItem('12r_shake')!=='0'){
+    const shakeEl=document.querySelector('.arena')||document.body;
+    shakeEl.classList.remove('shake'); void shakeEl.offsetWidth; shakeEl.classList.add('shake');
+    window.setTimeout(()=>shakeEl.classList.remove('shake'), 450);
+  }
   showFloatDamage(dmg, 'playerHpAnchor', true);
   if(sombrasDevoradorasOn){
     enemies.forEach((sx,si)=>{ if(sx.hp>0) applyDamageToEnemy(Math.max(1,Math.round(sx.maxHp*0.05)),0,si); });
@@ -4366,6 +4459,13 @@ function onStageCleared(){
       return;
     }
     // Chefe vencido — fase completa!
+    { const hoje=todayKey();
+      if(localStorage.getItem('12r_firstwin')!==hoje){
+        localStorage.setItem('12r_firstwin',hoje);
+        grantCoins(40+worldRun.fase*10); /* dobra a recompensa base da primeira vitória do dia */
+        setBattleStatus('✨ '+T('Primeira vitória do dia: moedas em DOBRO!','First win of the day: DOUBLE coins!','¡Primera victoria del día: monedas DOBLES!'),'support');
+      }
+    }
     questEvent('win');
     worldRun.turnosFase=(worldRun.turnosFase||0)+stageTurns;
     { /* F7 · recorde de turnos da fase */
@@ -4412,6 +4512,28 @@ function onStageCleared(){
       openPanel('worldScreen');
       busy=false;
     },2400);
+    return;
+  }
+  if(bossRushMode){
+    bossRushIdx++;
+    grantCoins(50+bossRushIdx*15);
+    const best=Math.max(Number(localStorage.getItem('12r_bossrush_best')||0),bossRushIdx);
+    localStorage.setItem('12r_bossrush_best',String(best));
+    if(bossRushIdx>=BOSS_RUSH_ORDER.length){
+      unlockAch('lenda');
+      const gt=document.getElementById('grandClearTitle'), gx=document.getElementById('grandClearText');
+      if(gt) gt.textContent=T('Lenda de Ygdria!','Legend of Ygdria!','¡Leyenda de Ygdria!');
+      if(gx) gx.textContent=T('Você venceu os 8 campeões em sequência. Nenhum trono resiste a você.','You defeated all 8 champions in a row. No throne can resist you.','Venciste a los 8 campeones seguidos. Ningún trono se te resiste.');
+      renderBattleReport('victoryReport'); launchVictoryConfetti();
+      bossRushMode=false;
+      showOverlay('dungeonClearOverlay');
+      return;
+    }
+    const starsEl=document.getElementById('stageStars');
+    if(starsEl) starsEl.innerHTML='';
+    document.getElementById('stageClearText').textContent=T(`Chefe ${bossRushIdx}/8 derrotado! O próximo campeão avança...`,`Boss ${bossRushIdx}/8 defeated! The next champion steps up...`,`¡Jefe ${bossRushIdx}/8 derrotado! El próximo campeón avanza...`);
+    showOverlay('stageClearOverlay');
+    setTimeout(()=>{ hideOverlay('stageClearOverlay'); loadStage(0); busy=false; }, 1600);
     return;
   }
   if(towerMode){
@@ -4553,7 +4675,7 @@ function renderSelectGrid(){
       card.style.setProperty('--realm-dark',k.colorDark);
       const pickOrder = chosenIds.indexOf(idx);
       card.innerHTML = `
-        <div class="thumb-wrap"><img src="${IMGL(k.cardThumb||k.img)}"${IMGF(k.cardThumb||k.img)} alt="${k.nome}" loading="lazy">${pickOrder>=0?`<div class="pick-badge" aria-hidden="true">${pickOrder+1}</div>`:''}<button class="zoom-btn" type="button" data-idx="${idx}" aria-label="${T(`Abrir carta de ${L(k.nome)} em alta resolução`,`Open ${L(k.nome)}'s card in high resolution`,`Abrir la carta de ${L(k.nome)} en alta resolución`)}">🔍</button></div>
+        <div class="thumb-wrap"><img src="${THUMB(k.cardThumb||k.img)}"${THUMBF(k.cardThumb||k.img)} alt="${k.nome}" loading="lazy" decoding="async">${pickOrder>=0?`<div class="pick-badge" aria-hidden="true">${pickOrder+1}</div>`:''}<button class="zoom-btn" type="button" data-idx="${idx}" aria-label="${T(`Abrir carta de ${L(k.nome)} em alta resolução`,`Open ${L(k.nome)}'s card in high resolution`,`Abrir la carta de ${L(k.nome)} en alta resolución`)}">🔍</button></div>
       `;
       card.setAttribute('role','button');
       card.setAttribute('tabindex','0');
@@ -4641,9 +4763,10 @@ function renderCardStrip(){
     mini.setAttribute('tabindex','0');
     mini.setAttribute('aria-label',T(`Abrir carta de ${L(k.nome)}`,`Open ${L(k.nome)}'s card`,`Abrir la carta de ${L(k.nome)}`));
     mini.innerHTML = `
-      <div class="mini-thumb"><img src="${IMGL(k.cardThumb||k.img)}"${IMGF(k.cardThumb||k.img)} alt="${L(k.nome)}"></div>
+      <div class="mini-thumb"><img src="${THUMB(k.cardThumb||k.img)}"${THUMBF(k.cardThumb||k.img)} alt="${L(k.nome)}" decoding="async"></div>
       <div class="mini-card-copy">
         <div class="mini-name">${L(k.nome)}</div>
+        <div class="mini-dps" id="dps-${k.id}">⚔ 0</div>
         <div class="mini-rarity"><span class="unit-gem" style="--ug:${gemC};--ug-l:${gemL};--ug-d:${gemD}" aria-hidden="true"></span>${L(k.rarity||'DIVINA')}</div>
         <div class="mini-stars" aria-label="${k.stars||7} ${T('estrelas','stars','estrellas')}">${'★'.repeat(k.stars||7)}</div>
       </div>
@@ -4740,6 +4863,11 @@ var galleryDeckOpen={}; /* decks abertos na galeria */
 function renderGallery(){
   const grid=document.getElementById('galleryGrid');
   grid.innerHTML='';
+  { const tot=KINGDOMS.length;
+    const head=document.createElement('div');
+    head.className='gallery-count';
+    head.textContent=`🎴 ${tot} ${T('cartas','cards','cartas')} · 12 ${T('reinos','realms','reinos')}`;
+    grid.appendChild(head); }
   document.getElementById('enemyGallerySection')?.remove();
   /* v9.1 · Galeria em DECKS por reino: cada reino agrupa seu herói divino,
      as cartas jogáveis do deck (campo deck:'<reino>') e as cartas por vir.
@@ -4763,14 +4891,27 @@ function renderGallery(){
     gHeader.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); gAlternar(); } });
     const dgrid=document.createElement('div');
     dgrid.className='deck-grid';
+    const favs=(()=>{ try{ return JSON.parse(localStorage.getItem('12r_favs')||'[]'); }catch(e){ return []; } })();
+    membros.sort((a,b)=>(favs.includes(b.id)?1:0)-(favs.includes(a.id)?1:0));
     membros.forEach(k=>{
       const idx=KINGDOMS.indexOf(k);
       const card=document.createElement('div');
-      card.className='gallery-card';
+      card.className='gallery-card'+(favs.includes(k.id)?' fav':'');
       card.style.setProperty('--realm',k.color); card.style.setProperty('--realm-dark',k.colorDark);
       const vistos=(()=>{ try{ return JSON.parse(localStorage.getItem('12r_seen')||'[]'); }catch(e){ return []; } })();
-      card.innerHTML=`<div class="gallery-thumb-wrap">${vistos.includes(k.id)?'':'<span class="new-badge">'+T('NOVO!','NEW!','¡NUEVO!')+'</span>'}<img src="${IMGL(k.cardThumb||k.img)}"${IMGF(k.cardThumb||k.img)} alt="${k.nome}" loading="lazy"><button class="gallery-zoom" type="button" aria-label="${T('Ampliar carta de','Enlarge card of','Ampliar la carta de')} ${k.nome}">🔍</button></div><b><span class="realm-dot" style="--realm:${k.color};--realm-light:${k.colorLight};--realm-dark:${k.colorDark};margin-right:3px;"></span>${k.nome}</b><small>${L(k.rarity||'DIVINA')} · ${'★'.repeat(k.stars||7)}</small>`;
+      card.innerHTML=`<div class="gallery-thumb-wrap">${vistos.includes(k.id)?'':'<span class="new-badge">'+T('NOVO!','NEW!','¡NUEVO!')+'</span>'}<img src="${THUMB(k.cardThumb||k.img)}"${THUMBF(k.cardThumb||k.img)} alt="${k.nome}" loading="lazy" decoding="async"><button class="gallery-zoom" type="button" aria-label="${T('Ampliar carta de','Enlarge card of','Ampliar la carta de')} ${k.nome}">🔍</button></div><b><span class="realm-dot" style="--realm:${k.color};--realm-light:${k.colorLight};--realm-dark:${k.colorDark};margin-right:3px;"></span>${k.nome}</b><small>${L(k.rarity||'DIVINA')} · ${'★'.repeat(k.stars||7)}</small>`;
       card.querySelector('.gallery-zoom').addEventListener('click',()=>openCardModal(idx));
+      const favBtn=document.createElement('button');
+      favBtn.type='button'; favBtn.className='fav-btn'; favBtn.setAttribute('aria-label',T('Favoritar','Favorite','Favorito'));
+      favBtn.textContent=favs.includes(k.id)?'❤':'🤍';
+      favBtn.addEventListener('click',ev=>{
+        ev.stopPropagation();
+        let f2; try{ f2=JSON.parse(localStorage.getItem('12r_favs')||'[]'); }catch(e){ f2=[]; }
+        f2=f2.includes(k.id)?f2.filter(x=>x!==k.id):[...f2,k.id];
+        localStorage.setItem('12r_favs',JSON.stringify(f2));
+        renderGallery(); sfxSelect();
+      });
+      card.querySelector('.gallery-thumb-wrap').appendChild(favBtn);
       dgrid.appendChild(card);
     });
     emBreve.forEach(c=>{
@@ -4829,6 +4970,30 @@ function applySettings(){
 startBtnEl.addEventListener('click',()=>beginGame(pendingStage));
 document.getElementById('playBtn').addEventListener('click',()=>{ towerMode=false; worldRun.active=false; pendingStage=0; openMapScreen(); });
 document.getElementById('continueBtn').addEventListener('click',()=>{ const prog=worldProg('humanos'); startWorldFase(Math.min(prog.unlocked, WORLDS[0].fases.length-1)); });
+document.getElementById('bossRushBtn')?.addEventListener('click',()=>{
+  bossRushMode=true; bossRushIdx=0; towerMode=false; worldRun.active=false; pendingStage=0;
+  sceneBgEl.dataset.screen='selection';
+  document.getElementById('mainMenu').style.display='none';
+  document.getElementById('selectScreen').style.display='flex';
+  renderSelectGrid(); sfxSelect();
+});
+document.getElementById('shakeToggle')?.addEventListener('click',()=>{
+  const lig=localStorage.getItem('12r_shake')!=='0';
+  localStorage.setItem('12r_shake', lig?'0':'1');
+  document.getElementById('shakeToggle').textContent=lig?T('Desligado','Off','Apagado'):T('Ligado','On','Encendido');
+  sfxSelect();
+});
+document.getElementById('autoActivesToggle')?.addEventListener('click',()=>{
+  autoActives=!autoActives;
+  localStorage.setItem('12r_autoactives', autoActives?'1':'0');
+  document.getElementById('autoActivesToggle').textContent=autoActives?T('Ligado','On','Encendido'):T('Desligado','Off','Apagado');
+  sfxSelect();
+});
+document.getElementById('restoreDefaultsBtn')?.addEventListener('click',()=>{
+  ['12r_shake','12r_autoactives','12r_difficulty','12r_lang_set'].forEach(k=>localStorage.removeItem(k));
+  setBattleStatus?.(T('Padrões restaurados. Recarregue o jogo.','Defaults restored. Reload the game.','Valores restaurados. Recarga el juego.'));
+  location.reload();
+});
 document.getElementById('galleryBtn').addEventListener('click',()=>openPanel('galleryScreen'));
 document.getElementById('selectGalleryBtn').addEventListener('click',()=>openPanel('galleryScreen'));
 // v9.1: botões Jornada/Mundos removidos — o fluxo agora é Jogar → Mapa de Ygdria
@@ -5191,7 +5356,15 @@ function renderWorldMap(){
       <span class="fase-copy"><b>${L(fase.nome)}</b><small>${L(fase.sub)}</small>
       ${fase.rec?`<small class="fase-rec">🎴 ${T('Recomendado','Recommended','Recomendado')}: ${L(fase.rec)}</small>`:''}
       ${fb[idx]?`<small class="fase-best">⏱ ${T('Recorde','Record','Récord')}: ${fb[idx]} ${T('turnos','turns','turnos')}</small>`:''}
+      ${!locked?`<span class="fase-diffs" role="group" aria-label="${T('Dificuldade','Difficulty','Dificultad')}"><i data-d="facil" class="${difficulty==='facil'?'on':''}">F</i><i data-d="normal" class="${difficulty==='normal'?'on':''}">N</i><i data-d="pesadelo" class="${difficulty==='pesadelo'?'on':''}">P</i></span>`:''}
       <em>${locked?'🔒 '+T('Bloqueada','Locked','Bloqueada'):(stars?'★'.repeat(stars)+'☆'.repeat(3-stars):T('5 missões · chefe no final','5 missions · boss at the end','5 misiones · jefe al final'))}</em></span>`;
+    node.querySelectorAll('.fase-diffs i').forEach(pill=>pill.addEventListener('click',ev=>{
+      ev.stopPropagation();
+      difficulty=pill.dataset.d;
+      localStorage.setItem('12r_difficulty',difficulty);
+      node.querySelectorAll('.fase-diffs i').forEach(x=>x.classList.toggle('on',x===pill));
+      sfxSelect();
+    }));
     node.addEventListener('click',()=>startWorldFase(idx));
     map.appendChild(node);
   });
@@ -5510,6 +5683,8 @@ async function runSmokeTest(){
     const nomesDemo=['Limo Rúnico','Sentinela de Pedra','Lobo Batedor','Espectro Menor','Servo das Trevas','Dragão Carmesim','Dragão das Sombras'];
     ok('reiniciar fase fica no mundo oficial', worldRun.active===true && enemies.every(e2=>!nomesDemo.includes(e2.name)));
     ok('fórmula de HP 50/30/15', DIFFICULTY_MULTS.facil.hpFactor===50 && DIFFICULTY_MULTS.normal.hpFactor===30 && DIFFICULTY_MULTS.pesadelo.hpFactor===15);
+    /* 12 escadas cíclicas de cores aliadas: cada reino inicia a própria rotação de 4 */
+    ok('12 alianças cíclicas de gemas', Object.keys(ALLIED_ORDER).length===12 && Object.entries(ALLIED_ORDER).every(([id,seq])=>seq.length===4&&seq[0]===id&&seq.every(r=>KINGDOMS.some(k=>k.id===r))));
     ok('moedas e XP de perfil operantes', typeof coins==='number'&&typeof profileLevel()==='number');
     worldRun.active=false;
   }catch(e){

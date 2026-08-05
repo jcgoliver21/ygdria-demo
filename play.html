@@ -9,7 +9,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
 <link rel="apple-touch-icon" href="assets/icon.svg">
-<link rel="stylesheet" href="styles-v9.1.css?v=msfxc5h0">
+<link rel="stylesheet" href="styles-v9.1.css?v=msgbyu26">
 </head>
 <body>
 <div class="scene-bg" data-screen="menu"></div>
@@ -26,6 +26,7 @@
       <button class="menu-btn" id="continueBtn" disabled><span class="menu-icon">✦</span><span class="menu-label">Continuar <small class="menu-hint" id="continueHint">Sem progresso salvo</small></span><span>›</span></button>
       <button class="menu-btn" id="galleryBtn"><span class="menu-icon">▦</span><span class="menu-label">Galeria <small class="menu-hint">Cartas e habilidades</small></span><span>›</span></button>
       <button class="menu-btn" id="dailyBtn"><span class="menu-icon">📅</span><span class="menu-label">Desafio Diário <small class="menu-hint" id="dailyHint">Seed do dia</small></span><span>›</span></button>
+      <button class="menu-btn" id="bossRushBtn"><span class="menu-icon">🏆</span><span class="menu-label">Desafio dos Chefes <small class="menu-hint" id="bossRushHint">Os 8 campeões em sequência</small></span><span>›</span></button>
       <button class="menu-btn" id="towerBtn"><span class="menu-icon">🗼</span><span class="menu-label">Torre Infinita <small class="menu-hint" id="towerHint">Inimigos sem fim</small></span><span>›</span></button>
       <button class="menu-btn" id="shopBtn"><span class="menu-icon">🪙</span><span class="menu-label">Loja <small class="menu-hint">Consumíveis de batalha</small></span><span>›</span></button>
       <button class="menu-btn" id="achBtn"><span class="menu-icon">🏅</span><span class="menu-label">Conquistas</span><span>›</span></button>
@@ -209,6 +210,9 @@
     <label class="option-row"><span>Reduzir animações</span><input class="switch" id="reduceMotionToggle" type="checkbox"></label>
     <label class="option-row"><span>Partículas de batalha</span><input class="switch" id="particlesToggle" type="checkbox" checked></label>
     <label class="option-row"><span>Vibração em dispositivos móveis</span><input class="switch" id="hapticsToggle" type="checkbox" checked></label>
+    <div class="option-row"><span>Tremor de tela</span><button class="battle-tool" id="shakeToggle" type="button">Ligado</button></div>
+    <div class="option-row"><span>Auto-ativas (na auto-batalha)</span><button class="battle-tool" id="autoActivesToggle" type="button">Desligado</button></div>
+    <button class="ghost-btn" id="restoreDefaultsBtn" style="width:100%;margin-top:10px;">Restaurar padrões</button>
     <button class="ghost-btn" id="resetProgressBtn" style="width:100%;margin-top:14px;">Apagar progresso local</button>
   </div>
 </div>
@@ -360,7 +364,8 @@
     <button class="overlay-btn" id="coachNext" type="button">Entendi</button>
   </div>
 </div>
-<script src="game-v9.1.js?v=msfxc5h0" defer></script>
+<script>window.addEventListener('error',function(e){(window.__bootErrors=window.__bootErrors||[]).push({m:String(e.message).slice(0,200),l:e.lineno,c:e.colno})});</script>
+<script src="game-v9.1.js?v=msgbyu26" defer></script>
 
 </body>
 </html>

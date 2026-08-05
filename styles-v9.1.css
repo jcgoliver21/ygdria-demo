@@ -2758,3 +2758,30 @@ body.game-active .arena{ height:calc(70dvh - env(safe-area-inset-bottom,0px))!im
 
 /* ===== v9.1 · Flinch de dano sem flash de brilho (só recuo físico) ===== */
 #partyArena.party-hurt .unit:not(.golem-unit) .avatar-circle{ filter:none!important; }
+
+/* ===== v9.1 · LOTE 2: nitidez + 10 melhorias + 10 funcionalidades ===== */
+/* Nitidez: garantias de qualidade de render nas imagens */
+.avatar-circle img, .enemy-sprite-image, .mini-thumb img, .thumb-wrap img, .gallery-thumb-wrap img{
+  image-rendering:auto; -webkit-backface-visibility:hidden; backface-visibility:hidden;
+}
+/* HP do inimigo sempre legível */
+.unit-hp-text, .enemy-hp-text{ text-shadow:0 1px 2px #000, 0 0 4px rgba(0,0,0,.9); font-weight:700; }
+/* Foco de teclado dourado (acessibilidade) */
+:focus-visible{ outline:2px solid #e3c470!important; outline-offset:2px; border-radius:6px; }
+/* DPS por herói no strip */
+.mini-dps{ font-size:7.5px; color:#ffca7a; letter-spacing:.3px; }
+/* Contagem regressiva da Habilidade de Fase */
+.sa-count{ position:absolute; top:-6px; left:-4px; z-index:7; font:800 9px Georgia,serif; color:#ffb3c8;
+  background:rgba(30,10,22,.85); border:1px solid #c25a78; border-radius:99px; padding:1px 6px; }
+/* Pílulas de dificuldade no card da fase */
+.fase-diffs{ display:inline-flex; gap:4px; margin-top:4px; }
+.fase-diffs i{ font-style:normal; font:800 8.5px Georgia,serif; width:18px; height:18px; border-radius:50%;
+  display:inline-flex; align-items:center; justify-content:center; cursor:pointer;
+  color:#cbb; border:1px solid rgba(212,175,90,.4); background:rgba(8,5,12,.6); }
+.fase-diffs i.on{ color:#1a0f22; background:linear-gradient(135deg,#f4dfa0,#b7832c); border-color:#ffe198; }
+/* Favoritos na galeria */
+.fav-btn{ position:absolute; top:4px; right:4px; z-index:3; font-size:12px; background:rgba(10,6,14,.55);
+  border:none; border-radius:99px; width:22px; height:22px; cursor:pointer; }
+.gallery-card.fav{ border-color:#ff8fae!important; }
+/* Contador de coleção */
+.gallery-count{ font:700 11px Georgia,serif; letter-spacing:1.4px; color:#e8d8ae; opacity:.85; margin:0 0 10px; }
