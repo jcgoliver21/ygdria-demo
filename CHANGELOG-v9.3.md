@@ -15,6 +15,7 @@
 - Correção v9.3.3: o botão Opções do menu inicial e da pausa ignora o bloqueio antitoque durante transições e abre no primeiro toque; atualização do service worker reforçada.
 - Correção v9.3.4: o acesso a Opções passa a ser registrado no início do HTML, antes do JavaScript principal, permitindo abrir o painel mesmo durante carregamento lento em celulares.
 - Correção v9.3.5: se Opções for aberto durante o carregamento, a intenção é preservada e o painel permanece aberto depois que a inicialização do menu termina.
+- Correção v9.3.6: Opções aberto a partir de Jogo pausado passa a ficar acima da tela de pausa, mantendo a batalha e o cronômetro pausados; ao fechar, o jogador retorna ao menu de pausa.
 
 ## Compatibilidade
 
