@@ -2,6 +2,18 @@
 <html lang="pt-BR">
 <head>
 <script data-gate>(function(){const local=['127.0.0.1','localhost'].includes(location.hostname);const qa=new URLSearchParams(location.search).has('qa');if(!(local&&qa)&&sessionStorage.getItem('ygdria_gate')!=='ok')location.replace('./index.html');})();</script>
+<script data-early-options>(function(){
+  function optionsPanel(){ return document.getElementById('optionsScreen'); }
+  function closest(target,selector){ return target instanceof Element?target.closest(selector):null; }
+  document.addEventListener('click',function(event){
+    if(closest(event.target,'#optionsBtn,#pauseOptionsBtn')){
+      const panel=optionsPanel();
+      if(panel){ panel.classList.add('show'); panel.dataset.earlyOpened='1'; }
+      return;
+    }
+    if(closest(event.target,'[data-close="optionsScreen"]')) optionsPanel()?.classList.remove('show');
+  },true);
+})();</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>12 Reinos · Crônicas de Ygdria</title>
@@ -9,7 +21,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
 <link rel="apple-touch-icon" href="assets/icon.svg">
-<link rel="stylesheet" href="styles-v9.3.css?v=9.3.3">
+<link rel="stylesheet" href="styles-v9.3.css?v=9.3.4">
 </head>
 <body>
 <div class="scene-bg" data-screen="menu"></div>
@@ -406,8 +418,8 @@
   </div>
 </div>
 <script>window.addEventListener('error',function(e){(window.__bootErrors=window.__bootErrors||[]).push({m:String(e.message).slice(0,200),l:e.lineno,c:e.colno})});</script>
-<script src="v9.3-config.js?v=9.3.3"></script>
-<script src="game-v9.3.js?v=9.3.3" defer></script>
+<script src="v9.3-config.js?v=9.3.4"></script>
+<script src="game-v9.3.js?v=9.3.4" defer></script>
 
 </body>
 </html>

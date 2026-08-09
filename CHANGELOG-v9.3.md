@@ -13,6 +13,7 @@
 - Correção v9.3.1: o botão Opções responde já no primeiro toque após a abertura do menu.
 - Correção v9.3.2: orientação do Lobo Raivoso, indicador de turno ao lado do relógio e novos controles persistentes de transparência/visibilidade do HUD superior e da barra de informações.
 - Correção v9.3.3: o botão Opções do menu inicial e da pausa ignora o bloqueio antitoque durante transições e abre no primeiro toque; atualização do service worker reforçada.
+- Correção v9.3.4: o acesso a Opções passa a ser registrado no início do HTML, antes do JavaScript principal, permitindo abrir o painel mesmo durante carregamento lento em celulares.
 
 ## Compatibilidade
 
