@@ -11,6 +11,7 @@
 - Interface, botões, superfícies e HUD padronizados para celular e desktop.
 - Pré-carregamento progressivo de imagens para reduzir uso de memória e dados móveis.
 - Correção v9.3.1: o botão Opções responde já no primeiro toque após a abertura do menu.
+- Correção v9.3.2: orientação do Lobo Raivoso, indicador de turno ao lado do relógio e novos controles persistentes de transparência/visibilidade do HUD superior e da barra de informações.
 
 ## Compatibilidade
 

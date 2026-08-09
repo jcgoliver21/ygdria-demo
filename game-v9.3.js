@@ -1441,7 +1441,18 @@ function organizeMissionHeader(){
   const metrics=document.querySelector('.mission-metrics');
   const actions=document.querySelector('.mission-actions');
   const timer=document.getElementById('missionTimer');
-  if(top&&metrics&&actions&&timer){ metrics.appendChild(actions); top.appendChild(timer); }
+  const phase=document.getElementById('battlePhaseChip');
+  if(top&&metrics&&actions&&timer&&phase){
+    metrics.appendChild(actions);
+    let clockGroup=document.getElementById('missionClockGroup');
+    if(!clockGroup){
+      clockGroup=document.createElement('div');
+      clockGroup.id='missionClockGroup';
+      clockGroup.className='mission-clock-group';
+    }
+    clockGroup.append(phase,timer);
+    top.appendChild(clockGroup);
+  }
 }
 organizeMissionHeader();
 
@@ -2690,16 +2701,25 @@ function resumeMissionClock(){
   if(missionStartMs) startMissionTimer(false);
 }
 /* 👁 Preferências de VISUALIZAÇÃO (menu Opções → Visualização) */
-let vizPrefs={heroNames:'bottom',enemyNames:'bottom',dmg:true,dps:true,timer:true};
+let vizPrefs={heroNames:'bottom',enemyNames:'bottom',dmg:true,dps:true,timer:true,turnInfo:true,topHud:'solid',infoBar:'transparent'};
 try{ vizPrefs={...vizPrefs,...JSON.parse(localStorage.getItem('12r_viz')||'{}')}; }catch(e){}
+if(!['solid','transparent','off'].includes(vizPrefs.topHud)) vizPrefs.topHud='solid';
+if(!['solid','transparent','off'].includes(vizPrefs.infoBar)) vizPrefs.infoBar='transparent';
 function saveViz(){ localStorage.setItem('12r_viz',JSON.stringify(vizPrefs)); applyVizSettings(); }
 function applyVizSettings(){
   document.body.classList.toggle('viz-dmg-off',!vizPrefs.dmg);
   document.body.classList.toggle('viz-dps-off',!vizPrefs.dps);
   document.body.classList.toggle('viz-timer-off',!vizPrefs.timer);
+  document.body.classList.toggle('viz-turn-info-off',!vizPrefs.turnInfo);
+  ['solid','transparent','off'].forEach(mode=>{
+    document.body.classList.toggle(`viz-top-hud-${mode}`,vizPrefs.topHud===mode);
+    document.body.classList.toggle(`viz-info-bar-${mode}`,vizPrefs.infoBar===mode);
+  });
+  if(vizPrefs.topHud!=='off') document.body.classList.remove('hud-peek');
 }
 function vizNameLabel(v){ return v==='top'?T('Em cima','Top','Arriba'):v==='off'?T('Desabilitado','Disabled','Desactivado'):T('Embaixo','Bottom','Abajo'); }
 function vizOnOff(v){ return v?T('Mostrar','Show','Mostrar'):T('Ocultar','Hide','Ocultar'); }
+function vizSurfaceLabel(v){ return v==='transparent'?T('Transparente','Transparent','Transparente'):v==='off'?T('Desabilitado','Disabled','Desactivado'):T('Ativo','On','Activo'); }
 function refreshVizBattle(){
   applyVizSettings();
   if(document.body.classList.contains('game-active')){
@@ -3112,6 +3132,9 @@ const STATIC_I18N=[
   ["#vizDmgLabel","Números de dano","Damage numbers","Números de daño"],
   ["#vizDpsLabel","DPS nas mini-cartas","DPS on mini-cards","DPS en las mini-cartas"],
   ["#vizTimerLabel","Timer da missão","Mission timer","Temporizador de misión"],
+  ["#vizTurnInfoLabel","Indicador de turno","Turn indicator","Indicador de turno"],
+  ["#vizTopHudLabel","HUD superior","Top HUD","HUD superior"],
+  ["#vizInfoBarLabel","Barra de informações","Information bar","Barra de información"],
   ["#mochilaTitle","🎒 Mochila","🎒 Bag","🎒 Mochila"],
   ["[data-close=\"mochilaScreen\"]","Fechar","Close","Cerrar"],
   ["#mochilaShopBtn","🪙 Abrir Loja de Consumíveis","🪙 Open Consumables Shop","🪙 Abrir Tienda de Consumibles"],
@@ -5775,10 +5798,10 @@ const ESPR={
 const HUMANOS_ETYPES={
   /* Fases 1-5 · chibis oficiais (Reino Rosa). Bases calibradas para o ATK oficial
      das cartas (2-4): time recomendado da fase 1 tem ~200-350 HP no Normal. */
-  /* VIRADA: todos os chibis oficiais olham para a ESQUERDA na arte — como inimigos
-     (lado direito) já encaram o centro SEM flip; como heróis usam heroFlip. */
+  /* VIRADA: os inimigos ficam sem flip quando a própria arte já olha para a esquerda.
+     O Lobo Raivoso é a exceção: sua imagem olha para a direita e precisa ser espelhada. */
   slimeCereja:{n:'Slime de Cerejeira', fera:true, sprite:'assets/enemies/humanos/slime-cerejeira.png', hp:45, atk:7},
-  loboRaivoso:{n:'Lobo Raivoso', fera:true, sprite:'assets/enemies/humanos/lobo-raivoso.png', hp:60, atk:9},
+  loboRaivoso:{n:'Lobo Raivoso', fera:true, sprite:'assets/enemies/humanos/lobo-raivoso.png', hp:60, atk:9, flip:true},
   soldado1:{n:'Soldado 1', sprite:'assets/enemies/humanos/soldado-1.png', hp:70, atk:10},
   soldado2:{n:'Soldado 2', sprite:'assets/enemies/humanos/soldado-2.png', hp:78, atk:11},
   capitao:{n:'Capitão dos Soldados', sprite:'assets/enemies/humanos/capitao.png', hp:105, atk:13},
@@ -6081,20 +6104,32 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
   document.getElementById('shopBtn')?.addEventListener('click',()=>openPanel('shopScreen'));
   document.getElementById('mochilaBtn')?.addEventListener('click',()=>{ openPanel('mochilaScreen'); sfxSelect(); });
   document.getElementById('mochilaShopBtn')?.addEventListener('click',()=>{ openPanel('shopScreen'); sfxSelect(); });
-  /* 👁 Visualização: nomes (ciclo embaixo→em cima→desabilitado) e toggles */
+  /* 👁 Visualização: nomes, superfícies do HUD e indicadores persistentes */
   const vizCycle={bottom:'top',top:'off',off:'bottom'};
+  const vizSurfaceCycle={solid:'transparent',transparent:'off',off:'solid'};
   const syncVizLabels=()=>{
     const h=document.getElementById('vizHeroNames'); if(h) h.textContent=vizNameLabel(vizPrefs.heroNames);
     const e2=document.getElementById('vizEnemyNames'); if(e2) e2.textContent=vizNameLabel(vizPrefs.enemyNames);
     const d=document.getElementById('vizDmg'); if(d) d.textContent=vizOnOff(vizPrefs.dmg);
     const p=document.getElementById('vizDps'); if(p) p.textContent=vizOnOff(vizPrefs.dps);
     const t2=document.getElementById('vizTimer'); if(t2) t2.textContent=vizOnOff(vizPrefs.timer);
+    const turn=document.getElementById('vizTurnInfo'); if(turn) turn.textContent=vizOnOff(vizPrefs.turnInfo);
+    const hud=document.getElementById('vizTopHud'); if(hud) hud.textContent=vizSurfaceLabel(vizPrefs.topHud);
+    const info=document.getElementById('vizInfoBar'); if(info) info.textContent=vizSurfaceLabel(vizPrefs.infoBar);
   };
   document.getElementById('vizHeroNames')?.addEventListener('click',()=>{ vizPrefs.heroNames=vizCycle[vizPrefs.heroNames]||'bottom'; saveViz(); syncVizLabels(); refreshVizBattle(); sfxSelect(); });
   document.getElementById('vizEnemyNames')?.addEventListener('click',()=>{ vizPrefs.enemyNames=vizCycle[vizPrefs.enemyNames]||'bottom'; saveViz(); syncVizLabels(); refreshVizBattle(); sfxSelect(); });
   document.getElementById('vizDmg')?.addEventListener('click',()=>{ vizPrefs.dmg=!vizPrefs.dmg; saveViz(); syncVizLabels(); sfxSelect(); });
   document.getElementById('vizDps')?.addEventListener('click',()=>{ vizPrefs.dps=!vizPrefs.dps; saveViz(); syncVizLabels(); sfxSelect(); });
   document.getElementById('vizTimer')?.addEventListener('click',()=>{ vizPrefs.timer=!vizPrefs.timer; saveViz(); syncVizLabels(); sfxSelect(); });
+  document.getElementById('vizTurnInfo')?.addEventListener('click',()=>{ vizPrefs.turnInfo=!vizPrefs.turnInfo; saveViz(); syncVizLabels(); sfxSelect(); });
+  document.getElementById('vizTopHud')?.addEventListener('click',()=>{ vizPrefs.topHud=vizSurfaceCycle[vizPrefs.topHud]||'solid'; saveViz(); syncVizLabels(); sfxSelect(); });
+  document.getElementById('vizInfoBar')?.addEventListener('click',()=>{ vizPrefs.infoBar=vizSurfaceCycle[vizPrefs.infoBar]||'transparent'; saveViz(); syncVizLabels(); sfxSelect(); });
+  document.getElementById('arena')?.addEventListener('click',event=>{
+    if(vizPrefs.topHud!=='off') return;
+    if(event.target.closest('button,[role="button"],.unit,.battle-feed-row,.status-tray,.battle-tools-panel,.mission-topbar')) return;
+    document.body.classList.toggle('hud-peek');
+  });
   syncVizLabels();
   applyVizSettings();
   document.getElementById('achBtn')?.addEventListener('click',()=>openPanel('achScreen'));
@@ -6464,7 +6499,7 @@ async function runSmokeTest(){
     ok('timer de missão + mochila em batalha', !!document.getElementById('missionTimer') && !!document.getElementById('mochilaBtn') && !!document.getElementById('mochilaScreen'));
     ok('letreiro da história (7 parágrafos)', !!document.getElementById('crawlScroll') && introStoryParagraphs().length===7);
     ok('falas de entrada dos inimigos', Object.keys(ENEMY_LINES).length>=23 && typeof enemyLineFor==='function');
-    ok('inimigos sem espelhamento invertido', enemies.every(e2=>!e2.flip));
+    ok('Lobo Raivoso encara o centro da arena', HUMANOS_ETYPES.loboRaivoso.flip===true);
     ok('moedas e XP de perfil operantes', typeof coins==='number'&&typeof profileLevel()==='number');
     /* v9.3 · contratos de estabilidade, apresentação e acessibilidade */
     ok('v9.3 usa configuração central dos 12 reinos', APP_VERSION==='v9.3' && V93.realms?.length===12);
@@ -6472,6 +6507,7 @@ async function runSmokeTest(){
     ok('áudio separado em música e efeitos', !!document.getElementById('musicVolumeRange') && !!document.getElementById('sfxVolumeRange'));
     ok('4 perfis de qualidade gráfica', V93.quality?.values?.length===4 && !!document.getElementById('qualitySelect'));
     ok('3 recursos de acessibilidade', ['highContrastToggle','largeTextToggle','reduceFlashesToggle'].every(id=>!!document.getElementById(id)));
+    ok('HUD superior e barra de informações configuráveis', ['vizTurnInfo','vizTopHud','vizInfoBar'].every(id=>!!document.getElementById(id)) && !!document.getElementById('missionClockGroup'));
     worldRun.active=false;
   }catch(e){
     results.push({name:'exceção: '+e.message, pass:false});

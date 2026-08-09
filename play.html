@@ -9,7 +9,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
 <link rel="apple-touch-icon" href="assets/icon.svg">
-<link rel="stylesheet" href="styles-v9.3.css?v=9.3.1">
+<link rel="stylesheet" href="styles-v9.3.css?v=9.3.2">
 </head>
 <body>
 <div class="scene-bg" data-screen="menu"></div>
@@ -238,6 +238,9 @@
     <div class="option-row"><span id="vizDmgLabel">Números de dano</span><button class="battle-tool" id="vizDmg" type="button">Mostrar</button></div>
     <div class="option-row"><span id="vizDpsLabel">DPS nas mini-cartas</span><button class="battle-tool" id="vizDps" type="button">Mostrar</button></div>
     <div class="option-row"><span id="vizTimerLabel">Timer da missão</span><button class="battle-tool" id="vizTimer" type="button">Mostrar</button></div>
+    <div class="option-row"><span id="vizTurnInfoLabel">Indicador de turno</span><button class="battle-tool" id="vizTurnInfo" type="button">Mostrar</button></div>
+    <div class="option-row"><span id="vizTopHudLabel">HUD superior</span><button class="battle-tool" id="vizTopHud" type="button">Ativo</button></div>
+    <div class="option-row"><span id="vizInfoBarLabel">Barra de informações</span><button class="battle-tool" id="vizInfoBar" type="button">Transparente</button></div>
     <label class="option-row"><span id="optReduceLabel">Reduzir animações</span><input class="switch" id="reduceMotionToggle" type="checkbox"></label>
     <label class="option-row"><span id="optParticlesLabel">Partículas de batalha</span><input class="switch" id="particlesToggle" type="checkbox" checked></label>
     <label class="option-row"><span id="optHapticsLabel">Vibração em dispositivos móveis</span><input class="switch" id="hapticsToggle" type="checkbox" checked></label>
@@ -403,8 +406,8 @@
   </div>
 </div>
 <script>window.addEventListener('error',function(e){(window.__bootErrors=window.__bootErrors||[]).push({m:String(e.message).slice(0,200),l:e.lineno,c:e.colno})});</script>
-<script src="v9.3-config.js?v=9.3.1"></script>
-<script src="game-v9.3.js?v=9.3.1" defer></script>
+<script src="v9.3-config.js?v=9.3.2"></script>
+<script src="game-v9.3.js?v=9.3.2" defer></script>
 
 </body>
 </html>

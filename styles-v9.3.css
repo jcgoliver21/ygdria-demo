@@ -3083,8 +3083,19 @@ button,input,select,textarea{font:inherit}
 .menu-actions .menu-btn{min-height:48px}
 
 .mission-topbar{position:relative!important;box-shadow:0 7px 20px rgba(0,0,0,.22)!important}
+.mission-topbar{
+  grid-template-areas:"identity clock" "metrics metrics"!important;
+  transition:opacity .18s ease,transform .18s ease,background .18s ease,box-shadow .18s ease;
+}
+.mission-clock-group{
+  grid-area:clock;display:flex;align-items:center;justify-content:flex-end;gap:5px;
+  align-self:center;justify-self:end;min-width:0;white-space:nowrap;
+}
+.mission-clock-group .mission-timer{
+  grid-area:auto!important;align-self:auto!important;display:block!important;
+}
 .battle-phase-chip{
-  position:absolute;top:6px;left:50%;transform:translateX(-50%);z-index:4;
+  position:static;top:auto;left:auto;transform:none;z-index:4;
   max-width:130px;padding:3px 8px;border:1px solid rgba(229,200,110,.38);border-radius:999px;
   background:rgba(8,5,14,.68);backdrop-filter:blur(5px);color:#fff0b8;font-size:7px;font-weight:800;
   letter-spacing:.65px;text-transform:uppercase;white-space:nowrap;pointer-events:none;
@@ -3092,6 +3103,28 @@ button,input,select,textarea{font:inherit}
 body[data-battle-phase="enemies"] .battle-phase-chip{color:#ffd5da;border-color:rgba(255,110,135,.48);background:rgba(54,6,20,.72)}
 body[data-battle-phase="paused"] .battle-phase-chip{color:#d9d3e7;border-color:rgba(210,202,230,.4)}
 body:not(.game-active) .battle-phase-chip{display:none}
+body.viz-turn-info-off .battle-phase-chip{display:none!important}
+body.viz-top-hud-transparent .mission-topbar{
+  background:rgba(8,5,14,.2)!important;backdrop-filter:blur(2px)!important;box-shadow:none!important;
+}
+body.viz-top-hud-off .mission-topbar{
+  opacity:0!important;pointer-events:none!important;transform:translateY(-8px);
+}
+body.viz-top-hud-off.hud-peek .mission-topbar{
+  opacity:1!important;pointer-events:auto!important;transform:none;
+}
+.battle-feed-row{transition:opacity .18s ease,transform .18s ease}
+body.viz-info-bar-solid .battle-feed-row .battle-status,
+body.viz-info-bar-solid .battle-feed-row .history-btn{
+  background:rgba(8,5,14,.9)!important;backdrop-filter:blur(7px)!important;
+}
+body.viz-info-bar-transparent .battle-feed-row .battle-status,
+body.viz-info-bar-transparent .battle-feed-row .history-btn{
+  background:rgba(5,3,10,.2)!important;backdrop-filter:blur(2px)!important;
+}
+body.viz-info-bar-off .battle-feed-row{
+  opacity:0!important;pointer-events:none!important;transform:translateY(6px);
+}
 body[data-battle-phase]:not([data-battle-phase="idle"]) .board{cursor:progress}
 body[data-battle-phase]:not([data-battle-phase="idle"]) .board .gem{pointer-events:none}
 
@@ -3113,7 +3146,7 @@ body.quality-economy .unit-ground-shadow,body.quality-economy .arena-floor{filte
   .pro-dialog.small{width:min(94vw,480px)!important;max-height:88dvh!important;padding:max(12px,env(safe-area-inset-top)) 12px max(14px,env(safe-area-inset-bottom))!important}
   .option-row{gap:8px}
   .option-row input[type=range]{width:min(160px,48vw)!important}
-  .battle-phase-chip{top:5px;font-size:6px;max-width:105px;padding:2px 6px}
+  .battle-phase-chip{font-size:6px;max-width:105px;padding:2px 6px}
   .mission-identity .arena-dungeon-title{padding-right:4px}
 }
 

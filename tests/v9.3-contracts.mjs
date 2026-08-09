@@ -14,14 +14,14 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v9.3',()=>{
-  assert.match(html,/styles-v9\.3\.css\?v=9\.3\.1/);
-  assert.match(html,/v9\.3-config\.js\?v=9\.3\.1/);
-  assert.match(html,/game-v9\.3\.js\?v=9\.3\.1/);
+  assert.match(html,/styles-v9\.3\.css\?v=9\.3\.2/);
+  assert.match(html,/v9\.3-config\.js\?v=9\.3\.2/);
+  assert.match(html,/game-v9\.3\.js\?v=9\.3\.2/);
   assert.doesNotMatch(html+sw,/game-v9\.1|styles-v9\.1|spritehud2/);
 });
 
 check('cache offline da v9.3 é isolado',()=>{
-  assert.match(sw,/12r-v9\.3\.1/);
+  assert.match(sw,/12r-v9\.3\.2/);
   for(const file of ['play.html','styles-v9.3.css','v9.3-config.js','game-v9.3.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -55,6 +55,20 @@ check('opções profissionais estão ligadas à persistência',()=>{
 
 check('CSS inclui acessibilidade, qualidade e HUD de fase',()=>{
   for(const selector of ['body.high-contrast','body.large-text','body.reduce-flashes','body.quality-economy','.battle-phase-chip']) assert.ok(css.includes(selector));
+});
+
+check('visualização controla indicador, HUD superior e barra de informações',()=>{
+  for(const id of ['vizTurnInfo','vizTopHud','vizInfoBar']){
+    assert.ok(html.includes(`id="${id}"`),`${id} ausente no HTML`);
+    assert.ok(game.includes(`getElementById('${id}')`),`${id} sem integração no jogo`);
+  }
+  for(const selector of ['body.viz-turn-info-off','body.viz-top-hud-transparent','body.viz-top-hud-off.hud-peek','body.viz-info-bar-transparent','body.viz-info-bar-off']) assert.ok(css.includes(selector));
+  assert.match(game,/getElementById\('arena'\)\?\.addEventListener\('click'/);
+});
+
+check('Lobo Raivoso é espelhado para encarar o centro',()=>{
+  assert.match(game,/loboRaivoso:\{[^\n]+flip:true\}/);
+  assert.match(game,/\(e\.flip\|\|e\.isCard\)\?' flip'/);
 });
 
 check('IDs do HTML são únicos',()=>{
