@@ -3052,3 +3052,77 @@ body.game-active .hero-unit.hero-young .hero-sprite-image{
   .characters-game-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important}
   .character-game-card .gallery-thumb-wrap{height:104px!important}
 }
+
+/* ============================================================
+   v9.3 · Sistema visual final e padronizações profissionais
+   ============================================================ */
+:root{
+  --v93-gold:#e5c86e;
+  --v93-gold-soft:#fff0b8;
+  --v93-ink:#090711;
+  --v93-surface:rgba(15,10,24,.88);
+  --v93-surface-soft:rgba(20,14,31,.72);
+  --v93-border:rgba(229,200,110,.42);
+  --v93-radius:12px;
+  --v93-control:44px;
+}
+button,input,select,textarea{font:inherit}
+.menu-btn,.ghost-btn,.overlay-btn,.battle-tool,.account-chip{
+  border-radius:var(--v93-radius)!important;
+  transition:transform .16s ease,border-color .16s ease,background-color .16s ease,box-shadow .16s ease;
+}
+.menu-btn:active,.ghost-btn:active,.overlay-btn:active,.battle-tool:active{transform:translateY(1px) scale(.985)}
+.pro-dialog{border-color:var(--v93-border)!important;background:linear-gradient(155deg,var(--v93-surface),rgba(7,5,12,.96))!important}
+.dialog-header{position:sticky;top:0;z-index:4;background:linear-gradient(180deg,rgba(12,8,20,.98),rgba(12,8,20,.84));backdrop-filter:blur(10px);padding-bottom:8px}
+.option-row{min-height:var(--v93-control);padding:7px 3px;border-bottom:1px solid rgba(229,200,110,.1)}
+.option-row>span{font-size:12px;line-height:1.25;color:#f5ecd8}
+.option-row input[type=range]{min-height:30px;accent-color:var(--v93-gold)}
+.option-select{min-width:132px;min-height:36px;padding:5px 30px 5px 10px;border-radius:10px;color:#fff4cf;background:#171020;border:1px solid var(--v93-border)}
+.switch{min-width:44px;min-height:26px}
+.dialog-header .ghost-btn{min-width:76px;min-height:40px}
+.menu-actions .menu-btn{min-height:48px}
+
+.mission-topbar{position:relative!important;box-shadow:0 7px 20px rgba(0,0,0,.22)!important}
+.battle-phase-chip{
+  position:absolute;top:6px;left:50%;transform:translateX(-50%);z-index:4;
+  max-width:130px;padding:3px 8px;border:1px solid rgba(229,200,110,.38);border-radius:999px;
+  background:rgba(8,5,14,.68);backdrop-filter:blur(5px);color:#fff0b8;font-size:7px;font-weight:800;
+  letter-spacing:.65px;text-transform:uppercase;white-space:nowrap;pointer-events:none;
+}
+body[data-battle-phase="enemies"] .battle-phase-chip{color:#ffd5da;border-color:rgba(255,110,135,.48);background:rgba(54,6,20,.72)}
+body[data-battle-phase="paused"] .battle-phase-chip{color:#d9d3e7;border-color:rgba(210,202,230,.4)}
+body:not(.game-active) .battle-phase-chip{display:none}
+body[data-battle-phase]:not([data-battle-phase="idle"]) .board{cursor:progress}
+body[data-battle-phase]:not([data-battle-phase="idle"]) .board .gem{pointer-events:none}
+
+body.high-contrast{--v93-border:rgba(255,232,130,.88)}
+body.high-contrast .pro-dialog,body.high-contrast .menu-card,body.high-contrast .mission-topbar{background:#05030a!important;border-color:#ffe782!important}
+body.high-contrast .battle-status,body.high-contrast .status-chip{background:rgba(0,0,0,.82)!important;color:#fff!important;border-color:#ffe782!important}
+body.high-contrast button:focus-visible,body.high-contrast [role=button]:focus-visible{outline:3px solid #fff36b!important;outline-offset:2px}
+body.large-text{font-size:112%}
+body.large-text .battle-status,body.large-text .status-chip small,body.large-text .option-row>span{font-size:max(9px,.75em)!important}
+body.reduce-flashes .ability-banner,body.reduce-flashes .cutin-layer,body.reduce-flashes .victory-flash{animation:none!important;filter:none!important}
+body.reduce-flashes .realm-particle{opacity:.55!important;mix-blend-mode:normal!important}
+body.quality-medium .realm-particle:nth-child(2n),body.quality-economy .realm-particle:nth-child(n+7){display:none!important}
+body.quality-economy .scene-bg,body.quality-economy .arena{background-attachment:scroll!important}
+body.quality-economy *{backdrop-filter:none!important}
+body.quality-economy .unit-ground-shadow,body.quality-economy .arena-floor{filter:none!important}
+
+@media (max-width:600px){
+  :root{--v93-control:42px}
+  .pro-dialog.small{width:min(94vw,480px)!important;max-height:88dvh!important;padding:max(12px,env(safe-area-inset-top)) 12px max(14px,env(safe-area-inset-bottom))!important}
+  .option-row{gap:8px}
+  .option-row input[type=range]{width:min(160px,48vw)!important}
+  .battle-phase-chip{top:5px;font-size:6px;max-width:105px;padding:2px 6px}
+  .mission-identity .arena-dungeon-title{padding-right:4px}
+}
+
+@media (orientation:landscape) and (max-height:520px){
+  .mission-topbar{padding-top:max(3px,env(safe-area-inset-top))!important}
+  .battle-phase-chip{display:none}
+  .pro-dialog{max-height:94dvh!important}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .realm-particle,.ability-banner,.cutin-layer,.hero-sprite-image,.enemy-sprite-image{animation-duration:.001ms!important;animation-iteration-count:1!important}
+}

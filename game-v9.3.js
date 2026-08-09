@@ -1,7 +1,8 @@
 
 /* ---------- Versão única do app (fonte da verdade) ---------- */
-const APP_VERSION = 'v9.1';
-const APP_VERSION_LABEL = 'VERSÃO 9.1';
+const V93 = window.YGDRIA_V93 || {};
+const APP_VERSION = V93.version || 'v9.3';
+const APP_VERSION_LABEL = V93.label || 'VERSÃO 9.3';
 try {
   const _mv = document.getElementById('menuVersion');
   if (_mv) _mv.textContent = `${APP_VERSION_LABEL} · DEMO OFICIAL MOBILE`;
@@ -695,9 +696,15 @@ let musicMuted = localStorage.getItem('12r_muted') === 'true';
 let musicTimer = null;
 let currentTrack = -1;
 let masterVolume = Number(localStorage.getItem('12r_volume') ?? 70) / 100;
+let musicVolume = Number(localStorage.getItem('12r_music_volume') ?? V93.audio?.music ?? 65) / 100;
+let sfxVolume = Number(localStorage.getItem('12r_sfx_volume') ?? V93.audio?.sfx ?? 85) / 100;
 let particlesEnabled = localStorage.getItem('12r_particles') !== 'false';
 let hapticsEnabled = localStorage.getItem('12r_haptics') !== 'false';
 let reducedMotion = localStorage.getItem('12r_motion') === 'reduced';
+let graphicsQuality = localStorage.getItem('12r_quality') || 'auto';
+let highContrast = localStorage.getItem('12r_high_contrast') === '1';
+let largeText = localStorage.getItem('12r_large_text') === '1';
+let reduceFlashes = localStorage.getItem('12r_reduce_flashes') === '1';
 let masterBus = null;
 let musicBus = null;
 let sfxBus = null;
@@ -740,7 +747,7 @@ function beep(freq, dur, type, vol, delay){
   osc.type = type||'triangle';
   osc.frequency.setValueAtTime(freq, t0);
   gain.gain.setValueAtTime(0.0001, t0);
-  gain.gain.exponentialRampToValueAtTime(Math.max(0.0001,(vol||0.16)*masterVolume), t0+0.012);
+  gain.gain.exponentialRampToValueAtTime(Math.max(0.0001,(vol||0.16)*masterVolume*sfxVolume), t0+0.012);
   gain.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
   osc.connect(gain); gain.connect(sfxBus||ctx.destination);
   osc.start(t0); osc.stop(t0+dur+0.03);
@@ -796,7 +803,7 @@ function noiseBurst({dur=0.3,vol=0.2,delay=0,filter='bandpass',freq=800,q=1,freq
   if(freqEnd) flt.frequency.exponentialRampToValueAtTime(Math.max(40,freqEnd),t0+dur);
   const g=ctx.createGain();
   g.gain.setValueAtTime(0.0001,t0);
-  g.gain.linearRampToValueAtTime(Math.max(0.0001,vol*masterVolume),t0+attack);
+  g.gain.linearRampToValueAtTime(Math.max(0.0001,vol*masterVolume*sfxVolume),t0+attack);
   g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
   src.connect(flt); flt.connect(g); g.connect(sfxBus||ctx.destination);
   src.start(t0); src.stop(t0+dur+0.05);
@@ -864,7 +871,7 @@ function musicTone(freq,duration,type,volume,startTime,attack=.025){
   osc.type=type||'triangle';
   osc.frequency.setValueAtTime(freq,startTime);
   gain.gain.setValueAtTime(.0001,startTime);
-  gain.gain.exponentialRampToValueAtTime(Math.max(.0001,volume*masterVolume),startTime+attack);
+  gain.gain.exponentialRampToValueAtTime(Math.max(.0001,volume*masterVolume*musicVolume),startTime+attack);
   gain.gain.exponentialRampToValueAtTime(.0001,startTime+duration);
   osc.connect(filter); filter.connect(gain); gain.connect(musicBus);
   activeMusicNodes.add(osc);
@@ -966,6 +973,21 @@ let forcedResolution = null;
 let selected = null;
 let busy = false;
 let gamePaused = false;
+const BATTLE_PHASES=new Set(V93.battle?.phases||['idle','resolving','heroes','enemies','transition','paused']);
+let battlePhase=V93.battle?.defaultPhase||'idle';
+function phaseLabel(phase){
+  return ({idle:T('Sua jogada','Your move','Tu jugada'),resolving:T('Resolvendo combinação','Resolving match','Resolviendo combinación'),heroes:T('Ataque dos heróis','Heroes attacking','Ataque de héroes'),enemies:T('Turno inimigo','Enemy turn','Turno enemigo'),transition:T('Transição','Transition','Transición'),paused:T('Pausado','Paused','Pausado')})[phase]||phase;
+}
+function setBattlePhase(next){
+  if(!BATTLE_PHASES.has(next)) return;
+  battlePhase=next;
+  document.body.dataset.battlePhase=next;
+  const chip=document.getElementById('battlePhaseChip');
+  if(chip) chip.textContent=phaseLabel(next);
+}
+function canAcceptPlayerInput(){
+  return battlePhase==='idle'&&!busy&&!gamePaused&&!stageTransitioning&&playerHP>0;
+}
 let comboStep = 0;
 let stageIndex = 0;
 let enemies = [];
@@ -1529,6 +1551,13 @@ const HERO_ACTIONS = Object.freeze({
   hit:    { frames:3, duration:300, loop:false }
 });
 const MAX_ACTIVE_FX = 28;
+function resolvedGraphicsQuality(){
+  if(graphicsQuality!=='auto') return graphicsQuality;
+  if(reducedMotion||navigator.connection?.saveData||(navigator.deviceMemory&&navigator.deviceMemory<=2)) return 'economy';
+  if((navigator.deviceMemory&&navigator.deviceMemory<=4)||matchMedia('(max-width:700px)').matches) return 'medium';
+  return 'high';
+}
+function particleBudget(){ return V93.quality?.particles?.[resolvedGraphicsQuality()]||MAX_ACTIVE_FX; }
 const heroFacingOverrides = new Set();
 
 function heroIsFlipped(k){
@@ -1566,7 +1595,7 @@ function trimCombatFx(){
   const layer = document.getElementById('specialFxLayer');
   if(!layer) return;
   const fx = layer.querySelectorAll('[data-fx]');
-  for(let i=0;i<Math.max(0,fx.length-MAX_ACTIVE_FX);i++) fx[i].remove();
+  for(let i=0;i<Math.max(0,fx.length-particleBudget());i++) fx[i].remove();
 }
 
 function spawnCombatFx(kind,target,color='#fff',duration=650){
@@ -1606,7 +1635,7 @@ function spawnRealmParticles(realmId, targetEl, countOverride){
   const lr=layer.getBoundingClientRect(), tr=targetEl.getBoundingClientRect();
   const cx=tr.left-lr.left+tr.width/2, cy=tr.top-lr.top+tr.height/2;
   const rand=(a,b)=>a+Math.random()*(b-a);
-  const n=Math.max(1,countOverride||prof.count);
+  const n=Math.max(1,Math.min(countOverride||prof.count,particleBudget()));
   for(let i=0;i<n;i++){
     const p=document.createElement('div');
     p.className='realm-particle rp-'+realmId;
@@ -1752,7 +1781,7 @@ function updateHeroProgressUI(idx){
 }
 
 function onHeroAvatarClick(idx){
-  if(busy) return;
+  if(!canAcceptPlayerInput()) return;
   const k=KINGDOMS[idx];
   if(!k) return;
   if(heroFacingOverrides.has(k.id)) heroFacingOverrides.delete(k.id);
@@ -1800,7 +1829,7 @@ function openAbilityPicker(idx){
 
 function useQueuedActive(idx,a){
   questEvent('active');
-  if(busy || gamePaused || !abilityCanBeUsed(a)) return;
+  if(!canAcceptPlayerInput() || !abilityCanBeUsed(a)) return;
   if(!missionStartMs) startMissionTimer();
   const queue=heroActiveQueue[idx]||[];
   const queueIndex=queue.indexOf(a);
@@ -1810,11 +1839,12 @@ function useQueuedActive(idx,a){
   updateHeroProgressUI(idx);
   document.getElementById('abilityPickerScreen').classList.remove('show');
   busy=true;
+  setBattlePhase('heroes');
   triggerAbility(idx,a);
   setBattleStatus(T(`${L(KINGDOMS[idx].nome)} liberou ${L(a.name)}!`,`${L(KINGDOMS[idx].nome)} unleashed ${L(a.name)}!`,`¡${L(KINGDOMS[idx].nome)} liberó ${L(a.name)}!`));
   haptic([30,25,55]);
   window.setTimeout(()=>{
-    if(!roomClearScheduled&&!stageTransitioning) busy=false;
+    if(!roomClearScheduled&&!stageTransitioning){ busy=false; setBattlePhase('idle'); }
   },1200);
 }
 
@@ -2493,7 +2523,7 @@ function setAutoBattle(on){
   clearInterval(autoBattleTimer); autoBattleTimer=null;
   if(on){
     autoBattleTimer=setInterval(()=>{
-      if(!autoBattle||busy||gamePaused||playerHP<=0||document.hidden) return;
+      if(!autoBattle||!canAcceptPlayerInput()||document.hidden) return;
       if(!document.body.classList.contains('game-active')) return;
       /* auto-ativas: dispara a primeira ativa carregada antes de jogar */
       if(autoActives){
@@ -2745,7 +2775,7 @@ function loadStage(idx){
   /* Julius inimigo · Tempo Sombrio: a cada 30s reais corrompe uma gema; tudo corrompido = derrota */
   if(enemies.some(e2=>e2.cardId==='julius'&&e2.hp>0)){
     tempoSombrioTimer=setInterval(()=>{
-      if(document.hidden||playerHP<=0) return;
+      if(document.hidden||gamePaused||battlePhase==='paused'||playerHP<=0) return;
       const cand=[];
       for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){ const key=cellKey(r,c); if(board[r][c]>=0&&!powerUps[key]) cand.push({r,c,key}); }
       if(!cand.length){
@@ -2839,6 +2869,7 @@ function loadStage(idx){
   if(pendingRoomPassives.length){
     window.setTimeout(()=>launchPendingRoomPassives(),260);
   }
+  setBattlePhase('idle');
   saveProgress();
 }
 
@@ -2978,6 +3009,7 @@ const VALID_LANGS=['pt','en','es'];
 let lang=VALID_LANGS.includes(localStorage.getItem('12r_lang'))?localStorage.getItem('12r_lang'):'pt';
 function T(pt,en,es){ return lang==='en'?en:lang==='es'?(es||en):pt; }
 const I18N_DICT={"Reino da Luz":["Realm of Light","Reino de la Luz"],"Reino dos Humanos":["Realm of Humans","Reino de los Humanos"],"Reino da Água":["Realm of Water","Reino del Agua"],"Reino do Fogo":["Realm of Fire","Reino del Fuego"],"Reino da Natureza":["Realm of Nature","Reino de la Naturaleza"],"Reino da Terra":["Realm of Earth","Reino de la Tierra"],"Reino da Areia":["Realm of Sand","Reino de la Arena"],"Reino das Sombras":["Realm of Shadows","Reino de las Sombras"],"Reino do Raio":["Realm of Lightning","Reino del Rayo"],"Reino do Vento":["Realm of Wind","Reino del Viento"],"Reino das Chuvas":["Realm of Rains","Reino de las Lluvias"],"Reino do Gelo":["Realm of Ice","Reino del Hielo"],"DIVINA":["DIVINE","DIVINA"],"NORMAL":["NORMAL","NORMAL"],"RARO":["RARE","RARO"],"Berenice das Sombras":["Shadow Berenice","Berenice de las Sombras"],"VERSÃO 9.1":["VERSION 9.1","VERSIÓN 9.1"],"A Luz Divina de Ygdria · Rainha Maga":["The Divine Light of Ygdria · Mage Queen","La Luz Divina de Ygdria · Reina Maga"],"A Maga da Eternidade · Rainha Maga":["The Mage of Eternity · Mage Queen","La Maga de la Eternidad · Reina Maga"],"Soberana dos Mares · Rainha Maga":["Sovereign of the Seas · Mage Queen","Soberana de los Mares · Reina Maga"],"O Sucessor do Dragão de Ignis · Rei Mago":["The Successor of the Dragon of Ignis · Mage King","El Sucesor del Dragón de Ignis · Rey Mago"],"A Guardiã de Toda a Natureza · Rainha Maga":["The Guardian of All Nature · Mage Queen","La Guardiana de Toda la Naturaleza · Reina Maga"],"A Maga Mais Forte · Rainha Maga":["The Strongest Mage · Mage Queen","La Maga Más Fuerte · Reina Maga"],"A Flor Dançante do Oásis de Meriady · Rainha Maga":["The Dancing Flower of the Oasis of Meriady · Mage Queen","La Flor Danzante del Oasis de Meriady · Reina Maga"],"A Soberana das Sombras Eternas · Rainha Maga":["The Sovereign of the Eternal Shadows · Mage Queen","La Soberana de las Sombras Eternas · Reina Maga"],"Senhor dos Trovões e da Destruição · Rei Mago":["Lord of Thunder and Destruction · Mage King","Señor de los Truenos y la Destrucción · Rey Mago"],"A Rainha Harpia · Rainha Maga":["The Harpy Queen · Mage Queen","La Reina Arpía · Reina Maga"],"Senhor das Chuvas Torrenciais · Rei Mago":["Lord of the Torrential Rains · Mage King","Señor de las Lluvias Torrenciales · Rey Mago"],"O Abominável Rei das Neves · Rei Mago":["The Abominable Snow King · Mage King","El Abominable Rey de las Nieves · Rey Mago"],"Sentinela da Capital · Soldado":["Sentinel of the Capital · Soldier","Centinela de la Capital · Soldado"],"O Mago Nobre · Mago":["The Noble Mage · Mage","El Mago Noble · Mago"],"Olhos da Coroa · Arqueira":["Eyes of the Crown · Archer","Ojos de la Corona · Arquera"],"Escudo Real de Bernyce · Cavaleiro":["Royal Shield of Bernyce · Knight","Escudo Real de Bernyce · Caballero"],"Toda grande vitória começa com um simples soldado.":["Every great victory begins with a simple soldier.","Toda gran victoria comienza con un simple soldado."],"Cada feitiço escrito hoje será uma lenda amanhã.":["Every spell written today will be a legend tomorrow.","Cada hechizo escrito hoy será una leyenda mañana."],"Nenhum inimigo escapa do olhar da Coroa.":["No enemy escapes the gaze of the Crown.","Ningún enemigo escapa a la mirada de la Corona."],"Minha Lança protege o reino antes da minha própria vida.":["My Lance protects the realm before my own life.","Mi Lanza protege el reino antes que mi propia vida."],"Fulgor Ofuscante":["Blinding Radiance","Fulgor Cegador"],"A cada 4 turnos, a luz ofusca e embaralha todo o tabuleiro.":["Every 4 turns, the light dazzles and shuffles the entire board.","Cada 4 turnos, la luz deslumbra y baraja todo el tablero."],"Decreto da Coroa":["Crown Decree","Decreto de la Corona"],"A cada 4 turnos, todos os heróis perdem 6 de energia e ela recupera 5× o total drenado.":["Every 4 turns, all heroes lose 6 energy and she heals 5x the total drained.","Cada 4 turnos, todos los héroes pierden 6 de energía y ella recupera 5× el total drenado."],"Maré Vazante":["Ebb Tide","Marea Menguante"],"A cada 4 turnos, uma coluna inteira é lavada e re-preenchida sem conceder energia.":["Every 4 turns, an entire column is washed away and refilled without granting energy.","Cada 4 turnos, una columna entera es arrastrada y rellenada sin otorgar energía."],"Sopro de Brasas":["Ember Breath","Aliento de Brasas"],"A cada 4 turnos, queima uma cruz de 5 células; power-ups atingidos são destruídos.":["Every 4 turns, burns a cross of 5 cells; power-ups caught in it are destroyed.","Cada 4 turnos, quema una cruz de 5 celdas; los potenciadores alcanzados son destruidos."],"Raízes Famintas":["Hungry Roots","Raíces Hambrientas"],"A cada 4 turnos, raízes prendem 2 esferas do tabuleiro.":["Every 4 turns, roots trap 2 orbs on the board.","Cada 4 turnos, las raíces atrapan 2 esferas del tablero."],"Abalo Sísmico":["Seismic Shock","Sacudida Sísmica"],"A cada 4 turnos, duas linhas do tabuleiro são sacudidas e embaralhadas.":["Every 4 turns, two rows of the board are shaken and shuffled.","Cada 4 turnos, dos filas del tablero son sacudidas y barajadas."],"Miragem de Meriady":["Mirage of Meriady","Espejismo de Meriady"],"A cada 4 turnos, a areia cobre 3 esferas do tabuleiro.":["Every 4 turns, sand covers 3 orbs on the board.","Cada 4 turnos, la arena cubre 3 esferas del tablero."],"Véu do Eclipse":["Veil of the Eclipse","Velo del Eclipse"],"A cada 4 turnos, 5 esferas têm a cor oculta por 3 turnos.":["Every 4 turns, 5 orbs have their color hidden for 3 turns.","Cada 4 turnos, 5 esferas tienen su color oculto por 3 turnos."],"Curto-Circuito":["Short Circuit","Cortocircuito"],"A cada 4 turnos, o herói mais carregado perde toda energia acima de 50.":["Every 4 turns, the most charged hero loses all energy above 50.","Cada 4 turnos, el héroe más cargado pierde toda la energía por encima de 50."],"Rajada de Lafesia":["Gust of Lafesia","Ráfaga de Lafesia"],"A cada 4 turnos, uma linha desliza em círculo e power-ups na linha são levados pelo vento.":["Every 4 turns, a row slides in a loop and power-ups on it are swept away by the wind.","Cada 4 turnos, una fila se desliza en círculo y los potenciadores en ella son llevados por el viento."],"Manto de Chuva":["Rain Cloak","Manto de Lluvia"],"A cada 4 turnos, encharca as armas: o próximo ataque de cada herói causa metade do dano.":["Every 4 turns, soaks the weapons: each hero's next attack deals half damage.","Cada 4 turnos, empapa las armas: el próximo ataque de cada héroe causa la mitad del daño."],"Nevasca de Artyka":["Blizzard of Artyka","Ventisca de Artyka"],"A cada 4 turnos, congela 3 esferas — uma delas com gelo reforçado.":["Every 4 turns, freezes 3 orbs — one of them with reinforced ice.","Cada 4 turnos, congela 3 esferas — una de ellas con hielo reforzado."],"Troca de Guarda":["Changing of the Guard","Cambio de Guardia"],"A cada 6 turnos, 3 esferas aleatórias trocam de cor.":["Every 6 turns, 3 random orbs change color.","Cada 6 turnos, 3 esferas aleatorias cambian de color."],"Selo Arcano":["Arcane Seal","Sello Arcano"],"A cada 5 turnos, sela 1 power-up do tabuleiro; sem power-up, recupera 60 de vida.":["Every 5 turns, seals 1 power-up on the board; with no power-up, restores 60 HP.","Cada 5 turnos, sella 1 potenciador del tablero; si no hay potenciador, recupera 60 de vida."],"Flecha Certeira":["Deadeye Arrow","Flecha Certera"],"A cada 5 turnos, o herói mais carregado perde 12 de energia.":["Every 5 turns, the most charged hero loses 12 energy.","Cada 5 turnos, el héroe más cargado pierde 12 de energía."],"Bastião de Lanças":["Bastion of Lances","Bastión de Lanzas"],"A cada 5 turnos, finca um bloqueio de pedra no tabuleiro.":["Every 5 turns, plants a stone blocker on the board.","Cada 5 turnos, clava un bloqueo de piedra en el tablero."],"Corte de Luz":["Light Slash","Corte de Luz"],"Dobra o dano do próximo ataque de Galatéia.":["Doubles the damage of Galatéia's next attack.","Duplica el daño del próximo ataque de Galatéia."],"Luz da Proteção":["Light of Protection","Luz de la Protección"],"Cega todos os inimigos por uma rodada; o próximo ataque erra.":["Blinds all enemies for one round; their next attack misses.","Ciega a todos los enemigos por una ronda; el próximo ataque falla."],"Cura Divina":["Divine Heal","Curación Divina"],"Recupera 20% da vida máxima do grupo.":["Restores 20% of the party's max HP.","Recupera el 20% de la vida máxima del grupo."],"Explosão de Luz":["Light Burst","Explosión de Luz"],"Atinge todos os inimigos com três vezes o último ataque.":["Hits all enemies with three times the last attack.","Golpea a todos los enemigos con tres veces el último ataque."],"Luz Divina de Ygdria":["Divine Light of Ygdria","Luz Divina de Ygdria"],"Recupera 30% da vida máxima do grupo.":["Restores 30% of the party's max HP.","Recupera el 30% de la vida máxima del grupo."],"Por Toda a Luz do Universo":["By All the Light of the Universe","Por Toda la Luz del Universo"],"Atinge todos os inimigos com o dobro da soma dos últimos ataques do grupo.":["Hits all enemies with double the sum of the party's last attacks.","Golpea a todos los enemigos con el doble de la suma de los últimos ataques del grupo."],"Coração Piedoso":["Merciful Heart","Corazón Piadoso"],"Ergue um escudo de vida por dois turnos.":["Raises a life shield for two turns.","Levanta un escudo de vida por dos turnos."],"Coração Puro":["Pure Heart","Corazón Puro"],"O dano do último ataque ecoa em todos os inimigos.":["The damage of the last attack echoes across all enemies.","El daño del último ataque resuena en todos los enemigos."],"Milagre":["Miracle","Milagro"],"Ataque das Fronteiras do Universo":["Attack from the Borders of the Universe","Ataque de las Fronteras del Universo"],"Desfere um dano crítico igual a cinco vezes o ataque base.":["Deals critical damage equal to five times the base attack.","Asesta un daño crítico igual a cinco veces el ataque base."],"Sempre Comigo":["Always With Me","Siempre Conmigo"],"Carrega as três habilidades ativas de todos os aliados.":["Charges the three active abilities of all allies.","Carga las tres habilidades activas de todos los aliados."],"Por Toda Eternidade":["For All Eternity","Por Toda la Eternidad"],"Os próximos três ataques curam cinco vezes o valor de ataque.":["The next three attacks heal five times the attack value.","Los próximos tres ataques curan cinco veces el valor de ataque."],"Corais Explosivos":["Explosive Corals","Corales Explosivos"],"Atinge um oponente com duas vezes o último ataque.":["Hits one opponent with twice the last attack.","Golpea a un oponente con dos veces el último ataque."],"Armadura de Corais":["Coral Armor","Armadura de Corales"],"Protege o grupo e devolve o dano ao inimigo por um turno.":["Protects the party and returns damage to the enemy for one turn.","Protege al grupo y devuelve el daño al enemigo por un turno."],"Cardumes Invasores":["Invading Shoals","Cardúmenes Invasores"],"Impede que o grupo sofra dano por dois turnos.":["Prevents the party from taking damage for two turns.","Impide que el grupo sufra daño por dos turnos."],"Concha Impenetrável":["Impenetrable Shell","Concha Impenetrable"],"Ergue um escudo resistente durante três turnos.":["Raises a sturdy shield for three turns.","Levanta un escudo resistente durante tres turnos."],"Abertura dos Portões de Atlantis":["Opening of the Gates of Atlantis","Apertura de las Puertas de Atlantis"],"Atinge todos os inimigos com três vezes o último combo.":["Hits all enemies with three times the last combo.","Golpea a todos los enemigos con tres veces el último combo."],"Garras do Dragão":["Dragon Claws","Garras del Dragón"],"Inflige duas vezes o dano do último ataque de Lucius.":["Deals twice the damage of Lucius's last attack.","Inflige dos veces el daño del último ataque de Lucius."],"Renascido das Chamas":["Reborn from the Flames","Renacido de las Llamas"],"Recupera 10% da vida máxima do grupo.":["Restores 10% of the party's max HP.","Recupera el 10% de la vida máxima del grupo."],"Chuva de Lava":["Lava Rain","Lluvia de Lava"],"Uma chuva vulcânica causa 100 de dano em cada inimigo.":["A volcanic rain deals 100 damage to each enemy.","Una lluvia volcánica causa 100 de daño a cada enemigo."],"Ritual do Dragão":["Dragon Ritual","Ritual del Dragón"],"Dobra uma única vez a quantidade atual de pedras vermelhas, preservando power-ups.":["Doubles the current number of red gems a single time, preserving power-ups.","Duplica una sola vez la cantidad actual de gemas rojas, conservando los potenciadores."],"Explosão de Fogo do Dragão":["Dragon Fire Burst","Explosión de Fuego del Dragón"],"Explode o alvo com 500 de dano direto.":["Blasts the target with 500 direct damage.","Hace estallar al objetivo con 500 de daño directo."],"Armadura de Fogo Eterna":["Eternal Fire Armor","Armadura de Fuego Eterna"],"Até o fim da fase, cada ataque acumula Incinerar e causa dano crescente ao longo do tempo.":["Until the end of the stage, each attack stacks Incinerate and deals increasing damage over time.","Hasta el final de la fase, cada ataque acumula Incinerar y causa daño creciente con el tiempo."],"Benção":["Blessing","Bendición"],"Adiciona 10 pontos ao contador de energia de todos os aliados.":["Adds 10 points to every ally's energy counter.","Añade 10 puntos al contador de energía de todos los aliados."],"Escudo de Folhas":["Leaf Shield","Escudo de Hojas"],"Protege o grupo contra o próximo ataque.":["Protects the party against the next attack.","Protege al grupo contra el próximo ataque."],"Vinhas Mortais":["Deadly Vines","Enredaderas Mortales"],"Prende o inimigo por três turnos e causa duas vezes o dano do último ataque.":["Traps the enemy for three turns and deals twice the damage of the last attack.","Atrapa al enemigo por tres turnos y causa dos veces el daño del último ataque."],"Natureza Morta":["Still Life","Naturaleza Muerta"],"Adiciona três power-ups aleatórios ao tabuleiro.":["Adds three random power-ups to the board.","Añade tres potenciadores aleatorios al tablero."],"Espírito da Natureza":["Spirit of Nature","Espíritu de la Naturaleza"],"Cada joia verde no tabuleiro recupera 100 de HP.":["Each green gem on the board restores 100 HP.","Cada gema verde en el tablero recupera 100 de vida."],"Unidade da Natureza":["Unity of Nature","Unidad de la Naturaleza"],"Cada joia verde no tabuleiro adiciona 100 de dano ao ataque.":["Each green gem on the board adds 100 damage to the attack.","Cada gema verde en el tablero añade 100 de daño al ataque."],"Golpe da Clava":["Club Smash","Golpe de Maza"],"Atinge o inimigo com duas vezes o último ataque e o atordoa por dois turnos.":["Hits the enemy with twice the last attack and stuns it for two turns.","Golpea al enemigo con dos veces el último ataque y lo aturde por dos turnos."],"Armadura de Pedra":["Stone Armor","Armadura de Piedra"],"Reduz o dano recebido e devolve parte dele durante dois turnos.":["Reduces damage taken and returns part of it for two turns.","Reduce el daño recibido y devuelve parte de él durante dos turnos."],"Terremoto Destruidor":["Devastating Earthquake","Terremoto Destructor"],"Causa 100 de dano em todos e reduz a defesa inimiga.":["Deals 100 damage to all and lowers enemy defense.","Causa 100 de daño a todos y reduce la defensa enemiga."],"Invocação de Golens":["Golem Summoning","Invocación de Gólems"],"Invoca dois golens; cada um replica metade do dano de Kallendra até o fim da missão.":["Summons two golems; each replicates half of Kallendra's damage until the end of the mission.","Invoca dos gólems; cada uno replica la mitad del daño de Kallendra hasta el final de la misión."],"Força Terra":["Earth Force","Fuerza Tierra"],"Atinge todos os inimigos com 300 de dano.":["Hits all enemies with 300 damage.","Golpea a todos los enemigos con 300 de daño."],"Terra Viva":["Living Earth","Tierra Viva"],"Sacrifica dois golens para infligir 1000 de dano ao alvo.":["Sacrifices two golems to inflict 1000 damage on the target.","Sacrifica dos gólems para infligir 1000 de daño al objetivo."],"Tempestade de Areia":["Sandstorm","Tormenta de Arena"],"Anula a visão dos inimigos, fazendo os ataques errarem neste turno.":["Blots out the enemies' vision, making their attacks miss this turn.","Anula la visión de los enemigos, haciendo que sus ataques fallen este turno."],"Lâmina Dançante":["Dancing Blade","Hoja Danzante"],"Atinge um inimigo com 300 de dano.":["Hits one enemy with 300 damage.","Golpea a un enemigo con 300 de daño."],"Pirâmide de Meriady":["Pyramid of Meriady","Pirámide de Meriady"],"Adiciona um escudo por uma rodada.":["Adds a shield for one round.","Añade un escudo por una ronda."],"Oásis no Deserto":["Oasis in the Desert","Oasis en el Desierto"],"Recupera 600 de vida.":["Restores 600 HP.","Recupera 600 de vida."],"Enigma da Esfinge":["Riddle of the Sphinx","Enigma de la Esfinge"],"Com vários inimigos, o mais fraco perde metade da vida; sozinho, recebe 500 de dano.":["With several enemies, the weakest loses half its HP; if alone, it takes 500 damage.","Con varios enemigos, el más débil pierde la mitad de su vida; si está solo, recibe 500 de daño."],"Dança das Mil Lâminas":["Dance of a Thousand Blades","Danza de las Mil Hojas"],"Atinge todos os inimigos com 70 de dano para cada peça amarela no tabuleiro.":["Hits all enemies with 70 damage for each yellow piece on the board.","Golpea a todos los enemigos con 70 de daño por cada pieza amarilla en el tablero."],"Coração Impiedoso":["Merciless Heart","Corazón Despiadado"],"Cria um campo que dobra o dano recebido pelo inimigo por um turno.":["Creates a field that doubles the damage the enemy takes for one turn.","Crea un campo que duplica el daño que recibe el enemigo por un turno."],"Coração Impuro":["Impure Heart","Corazón Impuro"],"Todo o dano recebido volta ao inimigo durante dois turnos.":["All damage taken returns to the enemy for two turns.","Todo el daño recibido vuelve al enemigo durante dos turnos."],"Maldição":["Curse","Maldición"],"Retira 10% da vida do alvo inimigo que atacou no último turno.":["Drains 10% of the HP of the enemy that attacked last turn.","Quita el 10% de la vida del enemigo que atacó en el último turno."],"Sombra do Universo":["Shadow of the Universe","Sombra del Universo"],"Desfere em todos os inimigos um crítico devastador de doze vezes o ataque base.":["Unleashes on all enemies a devastating critical of twelve times the base attack.","Asesta a todos los enemigos un crítico devastador de doce veces el ataque base."],"Todas as Sombras Venham a Mim":["All Shadows Come to Me","Que Todas las Sombras Vengan a Mí"],"Dobra uma única vez o número atual de blocos das sombras.":["Doubles the current number of shadow blocks a single time.","Duplica una sola vez el número actual de bloques de las sombras."],"Por Toda a Escuridão":["By All the Darkness","Por Toda la Oscuridad"],"Multiplica o próximo ataque pelo total de blocos das sombras no tabuleiro.":["Multiplies the next attack by the total shadow blocks on the board.","Multiplica el próximo ataque por el total de bloques de las sombras en el tablero."],"Ataque de Raios":["Lightning Strike","Ataque de Rayos"],"Um raio cai no inimigo infligindo 100 de dano.":["A lightning bolt strikes the enemy, dealing 100 damage.","Un rayo cae sobre el enemigo infligiendo 100 de daño."],"Estrondo":["Thunderclap","Estruendo"],"Atordoa todos os inimigos por 1 turno.":["Stuns all enemies for 1 turn.","Aturde a todos los enemigos por 1 turno."],"Campo Magnético":["Magnetic Field","Campo Magnético"],"Coloca um escudo magnético e devolve os ataques recebidos por 3 turnos.":["Deploys a magnetic shield and returns incoming attacks for 3 turns.","Coloca un escudo magnético y devuelve los ataques recibidos por 3 turnos."],"Full Power":["Full Power","Full Power"],"Adiciona 3 esferas de energia ao redor dele; cada esfera dobra seu ataque. Cada uma dura 1 turno.":["Adds 3 energy orbs around him; each orb doubles his attack. Each lasts 1 turn.","Añade 3 esferas de energía a su alrededor; cada esfera duplica su ataque. Cada una dura 1 turno."],"Trovão Fulminante":["Fulminating Thunder","Trueno Fulminante"],"Atinge o inimigo com um raio infligindo 1000 de dano.":["Strikes the enemy with a bolt dealing 1000 damage.","Golpea al enemigo con un rayo infligiendo 1000 de daño."],"Hecatombe":["Hecatomb","Hecatombe"],"Atinge todos os inimigos com 150 de dano para cada peça roxa no tabuleiro e inflige os efeitos de atordoar e eletrocutar.":["Hits all enemies with 150 damage for each purple piece on the board and inflicts stun and electrocute effects.","Golpea a todos los enemigos con 150 de daño por cada pieza morada en el tablero e inflige los efectos de aturdir y electrocutar."],"Furacão":["Hurricane","Huracán"],"Atinge todos os inimigos com 100 de dano.":["Hits all enemies with 100 damage.","Golpea a todos los enemigos con 100 de daño."],"Barreira de Vento":["Wind Barrier","Barrera de Viento"],"Impede os danos por 2 turnos.":["Blocks damage for 2 turns.","Impide el daño por 2 turnos."],"Garras Afiadas":["Sharpened Claws","Garras Afiladas"],"Atinge o inimigo com um dano extra do dobro do ataque.":["Hits the enemy with extra damage of double the attack.","Golpea al enemigo con un daño extra del doble del ataque."],"Furacão Destruidor":["Devastating Hurricane","Huracán Destructor"],"Fúria dos Céus":["Fury of the Skies","Furia de los Cielos"],"2 Harpias se unem a ela, cada uma atacando com 20% do dano.":["2 Harpies join her, each attacking with 20% of her damage.","2 Arpías se unen a ella, cada una atacando con el 20% del daño."],"Fúria Suprema dos Céus":["Supreme Fury of the Skies","Furia Suprema de los Cielos"],"Mais 3 Harpias se unem a ela, cada uma atacando com 20% do dano, totalizando 5.":["3 more Harpies join her, each attacking with 20% of her damage, for a total of 5.","3 Arpías más se unen a ella, cada una atacando con el 20% del daño, para un total de 5."],"Chuva Leve":["Light Rain","Lluvia Ligera"],"Atinge todos os inimigos com 30 de dano em todos os turnos. Dura até eles morrerem.":["Hits all enemies with 30 damage every turn. Lasts until they die.","Golpea a todos los enemigos con 30 de daño en todos los turnos. Dura hasta que mueran."],"Aprendendo Conceitos Volume I":["Learning Concepts Volume I","Aprendiendo Conceptos Volumen I"],"Usa o seu livro para criar 3 power-ups seus.":["Uses his book to create 3 of his power-ups.","Usa su libro para crear 3 potenciadores suyos."],"Visão Comprometida":["Impaired Vision","Visión Comprometida"],"Faz os inimigos errarem o ataque por 3 turnos.":["Makes enemies miss their attacks for 3 turns.","Hace que los enemigos fallen sus ataques por 3 turnos."],"Aprendendo Conceitos Volume II":["Learning Concepts Volume II","Aprendiendo Conceptos Volumen II"],"Usa o seu livro para criar 3 power-ups máximos.":["Uses his book to create 3 maximum power-ups.","Usa su libro para crear 3 potenciadores máximos."],"Chuva Ácida":["Acid Rain","Lluvia Ácida"],"Dá 300 de dano no inimigo, e 30 de dano em todos os turnos.":["Deals 300 damage to the enemy, plus 30 damage every turn.","Causa 300 de daño al enemigo, y 30 de daño en todos los turnos."],"Chuva Torrencial":["Torrential Rain","Lluvia Torrencial"],"Atinge todos os inimigos com 100 de dano em todos os turnos. Dura até eles morrerem.":["Hits all enemies with 100 damage every turn. Lasts until they die.","Golpea a todos los enemigos con 100 de daño en todos los turnos. Dura hasta que mueran."],"Machado de Gelo":["Ice Axe","Hacha de Hielo"],"Inflige 300 de dano no inimigo e 150 em área.":["Deals 300 damage to the enemy and 150 area damage.","Inflige 300 de daño al enemigo y 150 en área."],"Bola de Neve":["Snowball","Bola de Nieve"],"Atordoa o inimigo pela quantidade de turnos equivalente a 1/4 das pedras cinza claras no tabuleiro.":["Stuns the enemy for a number of turns equal to 1/4 of the light gray gems on the board.","Aturde al enemigo por una cantidad de turnos equivalente a 1/4 de las gemas gris claro en el tablero."],"Aurora Austral":["Southern Aurora","Aurora Austral"],"Recupera 500 de vida.":["Restores 500 HP.","Recupera 500 de vida."],"Aurora Boreal":["Northern Lights","Aurora Boreal"],"Inflige 500 de dano no inimigo.":["Deals 500 damage to the enemy.","Inflige 500 de daño al enemigo."],"Geada Branca":["White Frost","Escarcha Blanca"],"Dá 100 de dano em cada inimigo + 20 por cada peça cinza clara no tabuleiro e congela eles por 1 turno.":["Deals 100 damage to each enemy + 20 per light gray piece on the board and freezes them for 1 turn.","Causa 100 de daño a cada enemigo + 20 por cada pieza gris claro en el tablero y los congela por 1 turno."],"Morte Congelada":["Frozen Death","Muerte Congelada"],"Congela totalmente o inimigo por 5 turnos e reduz a vida dele pela metade da atual.":["Fully freezes the enemy for 5 turns and cuts its current HP in half.","Congela totalmente al enemigo por 5 turnos y reduce su vida a la mitad de la actual."],"Benção das Flores de Cerejeira":["Blessing of the Cherry Blossoms","Bendición de las Flores de Cerezo"],"Recupera 100 de vida todas as vezes que for acionada (25%, 50%, 75%, 100%).":["Restores 100 HP every time it triggers (25%, 50%, 75%, 100%).","Recupera 100 de vida cada vez que se activa (25%, 50%, 75%, 100%)."],"Flechas das Flores de Cerejeira":["Arrows of the Cherry Blossoms","Flechas de las Flores de Cerezo"],"Atinge todos os inimigos infligindo o dano do último ataque (25%, 50%, 75%, 100%).":["Hits all enemies dealing the damage of the last attack (25%, 50%, 75%, 100%).","Golpea a todos los enemigos infligiendo el daño del último ataque (25%, 50%, 75%, 100%)."],"Lança das Flores de Cerejeira":["Lance of the Cherry Blossoms","Lanza de las Flores de Cerezo"],"Atinge o inimigo infligindo 3× o dano do último ataque (25%, 50%, 75%, 100%).":["Hits the enemy dealing 3× the damage of the last attack (25%, 50%, 75%, 100%).","Golpea al enemigo infligiendo 3× el daño del último ataque (25%, 50%, 75%, 100%)."],"Clássica":["Classic","Clásica"],"Falange":["Phalanx","Falange"],"Muralha":["Wall","Muralla"],"Coluna Diagonal":["Diagonal Column","Columna Diagonal"],"Ponta de Lança":["Spearhead","Punta de Lanza"],"Escudo":["Shield","Escudo"],"Escolta Real":["Royal Escort","Escolta Real"],"Emboscada":["Ambush","Emboscada"],"Ala Esquerda":["Left Wing","Ala Izquierda"],"Ala Direita":["Right Wing","Ala Derecha"],"Losango":["Diamond","Rombo"],"Estrela do Caos":["Chaos Star","Estrella del Caos"],"Primeira Vitória":["First Victory","Primera Victoria"],"Vença uma fase.":["Win a stage.","Gana una fase."],"Intocável":["Untouchable","Intocable"],"Vença uma fase sem sofrer dano.":["Win a stage without taking damage.","Gana una fase sin recibir daño."],"Mestre do Combo":["Combo Master","Maestro del Combo"],"Alcance um combo ×8.":["Reach an x8 combo.","Alcanza un combo ×8."],"Artífice":["Artificer","Artífice"],"Crie 10 power-ups em uma run.":["Craft 10 power-ups in one run.","Crea 10 potenciadores en una partida."],"Regulador de Ygdria":["Regulator of Ygdria","Regulador de Ygdria"],"Conquiste as 10 fases do Reino dos Humanos.":["Conquer all 10 stages of the Realm of Humans.","Conquista las 10 fases del Reino de los Humanos."],"Perfeccionista":["Perfectionist","Perfeccionista"],"Conquiste 3 estrelas em 5 fases.":["Earn 3 stars on 5 stages.","Consigue 3 estrellas en 5 fases."],"Escalador":["Climber","Escalador"],"Supere o andar 5 da Torre Infinita.":["Clear floor 5 of the Infinite Tower.","Supera el piso 5 de la Torre Infinita."],"Lenda da Torre":["Tower Legend","Leyenda de la Torre"],"Supere o andar 10 da Torre Infinita.":["Clear floor 10 of the Infinite Tower.","Supera el piso 10 de la Torre Infinita."],"Corte Sombria":["Dark Court","Corte Sombría"],"Vença uma fase com Berenice das Sombras e Mardogear juntos.":["Win a stage with Shadow Berenice and Mardogear together.","Gana una fase con Berenice de las Sombras y Mardogear juntos."],"Tesouro Real":["Royal Treasure","Tesoro Real"],"Acumule 500 moedas.":["Hoard 500 coins.","Acumula 500 monedas."],"Ritual Diário":["Daily Ritual","Ritual Diario"],"Conclua um Desafio Diário.":["Complete a Daily Challenge.","Completa un Desafío Diario."],"Veterano":["Veteran","Veterano"],"Alcance o nível de perfil 5.":["Reach profile level 5.","Alcanza el nivel de perfil 5."],"Embaralhamento Extra":["Extra Shuffle","Barajado Extra"],"+1 embaralhamento real na próxima batalha.":["+1 royal shuffle in your next battle.","+1 barajado real en tu próxima batalla."],"Poção Vital":["Vital Potion","Poción Vital"],"Recupera 600 de HP no início da próxima batalha.":["Restores 600 HP at the start of your next battle.","Restaura 600 de vida al inicio de tu próxima batalla."],"Bênção dos Reinos":["Realm Blessing","Bendición de los Reinos"],"Comece a próxima batalha com 2 power-ups no tabuleiro.":["Start your next battle with 2 power-ups on the board.","Comienza tu próxima batalla con 2 potenciadores en el tablero."],"Dano contínuo":["Damage over time","Daño continuo"],"gelo":["ice","hielo"],"pedra":["stone","piedra"],"areia":["sand","arena"],"vinhas":["vines","enredaderas"],"O pântano sussurra... sinto presenças famintas rondando o Portão.":["The swamp whispers... I sense hungry presences circling the Gate.","El pantano susurra... siento presencias hambrientas rondando el Portal."],"Que venham! O fogo de Ignis abrirá alas para todos nós.":["Let them come! The fire of Ignis will clear the way for us all.","¡Que vengan! El fuego de Ignis abrirá camino para todos nosotros."],"Estas pedras guardam memória. A Sentinela desperta — pisem leve.":["These stones hold memory. The Sentinel awakens — tread lightly.","Estas piedras guardan memoria. La Centinela despierta — pisen con cuidado."],"A floresta esconde olhos entre as copas. Fiquem próximos de mim.":["The forest hides eyes among the treetops. Stay close to me.","El bosque esconde ojos entre las copas. Manténganse cerca de mí."],"O tempo pesa neste corredor... os espectros odeiam os vivos.":["Time weighs heavy in this corridor... the specters hate the living.","El tiempo pesa en este pasillo... los espectros odian a los vivos."],"O Trono está além destas chamas. O Dragão Carmesim nos aguarda!":["The Throne lies beyond these flames. The Crimson Dragon awaits us!","El Trono está más allá de estas llamas. ¡El Dragón Carmesí nos espera!"],"Dragões também sangram. Deixem a escuridão ir à frente.":["Dragons bleed too. Let the darkness lead the way.","Los dragones también sangran. Dejen que la oscuridad vaya al frente."],"Minha terra natal... as dunas dançam comigo. Colham as esferas que o vento trouxer.":["My homeland... the dunes dance with me. Gather the spheres the wind brings.","Mi tierra natal... las dunas bailan conmigo. Recojan las esferas que traiga el viento."],"Este abismo me pertence. Sobrevivam ao que vem — eu cuido do resto.":["This abyss belongs to me. Survive what is coming — I will handle the rest.","Este abismo me pertenece. Sobrevivan a lo que viene — yo me encargo del resto."],"Um trono sombrio? Que o céu ruja: a HECATOMBE espera por eles.":["A dark throne? Let the sky roar: the HECATOMB awaits them.","¿Un trono sombrío? Que el cielo ruja: la HECATOMBE los espera."],"E quando o trovão passar... apenas o gelo permanecerá.":["And when the thunder passes... only the ice will remain.","Y cuando pase el trueno... solo el hielo permanecerá."],"Poção Vital (+600 HP)":["Vital Potion (+600 HP)","Poción Vital (+600 HP)"],"Bomba de Cor":["Color Bomb","Bomba de Color"],"Embrulhado":["Wrapped","Envuelto"],"Listrado":["Striped","Rayado"],"Chuva":["Rain","Lluvia"],"Eletrocutado":["Electrocuted","Electrocutado"],"Incinerar":["Incinerate","Incinerar"],"Slime de Cerejeira":["Cherry Blossom Slime","Slime de Cerezo"],"Lobo Raivoso":["Rabid Wolf","Lobo Rabioso"],"Soldado 1":["Soldier 1","Soldado 1"],"Soldado 2":["Soldier 2","Soldado 2"],"Capitão dos Soldados":["Captain of the Soldiers","Capitán de los Soldados"],"Vulto Sombrio":["Dark Shade","Sombra Oscura"],"Espectro Sombrio":["Dark Specter","Espectro Sombrío"],"Cavaleiro Morto-Vivo":["Undead Knight","Caballero No Muerto"],"Soldado da Biblioteca 1":["Library Soldier 1","Soldado de la Biblioteca 1"],"Soldado da Biblioteca 2":["Library Soldier 2","Soldado de la Biblioteca 2"],"Soldado da Biblioteca 3":["Library Soldier 3","Soldado de la Biblioteca 3"],"Soldado de Infantaria":["Infantry Soldier","Soldado de Infantería"],"Soldado de Cavalaria":["Cavalry Soldier","Soldado de Caballería"],"Comandante dos Soldados":["Commander of the Soldiers","Comandante de los Soldados"],"Soldado do Trono Real":["Royal Throne Soldier","Soldado del Trono Real"],"Terra dos Reguladores de Ygdria":["Land of the Regulators of Ygdria","Tierra de los Reguladores de Ygdria"],"Cidade das Cerejeiras":["City of Cherry Blossoms","Ciudad de los Cerezos"],"Catedral de Ygdria":["Cathedral of Ygdria","Catedral de Ygdria"],"Palácio dos Reguladores":["Palace of the Regulators","Palacio de los Reguladores"],"Academia Real de Magia e Combate":["Royal Academy of Magic and Combat","Academia Real de Magia y Combate"],"Mercado Central dos Reinos":["Central Market of the Realms","Mercado Central de los Reinos"],"Praça das Doze Essências":["Square of the Twelve Essences","Plaza de las Doce Esencias"],"Biblioteca da Eternidade":["Library of Eternity","Biblioteca de la Eternidad"],"Muralha dos Heróis":["Wall of Heroes","Muralla de los Héroes"],"Lendária Torre de Acesso à Eternidade":["Legendary Tower of Access to Eternity","Legendaria Torre de Acceso a la Eternidad"],"Castelo da Coroa Humana":["Castle of the Human Crown","Castillo de la Corona Humana"],"Capital de Ygdria":["Capital of Ygdria","Capital de Ygdria"],"Onde a fé encontrou a magia":["Where faith met magic","Donde la fe encontró la magia"],"A ordem acima de tudo":["Order above all","El orden por encima de todo"],"Onde nascem os magos-cavaleiros":["Where mage-knights are born","Donde nacen los magos caballeros"],"Tudo tem um preço":["Everything has a price","Todo tiene un precio"],"Doze pilares, doze reinos":["Twelve pillars, twelve realms","Doce pilares, doce reinos"],"Todo saber, um só silêncio":["All knowledge, a single silence","Todo el saber, un solo silencio"],"Eles ainda vigiam":["They still keep watch","Ellos aún vigilan"],"O céu é a porta":["The sky is the door","El cielo es la puerta"],"O trono espera seu verdadeiro rei":["The throne awaits its true king","El trono espera a su verdadero rey"],"4× carta 1★":["4× 1★ card","4× carta 1★"],"4× carta 2★":["4× 2★ card","4× carta 2★"],"Minha capital... as cerejeiras choram pétalas. Algo corrompeu a guarda da cidade.":["My capital... the cherry trees weep petals. Something has corrupted the city guard.","Mi capital... los cerezos lloran pétalos. Algo corrompió a la guardia de la ciudad."],"Este lugar já foi sagrado. Os vitrais ainda cantam... mas há aço entre os bancos.":["This place was once sacred. The stained glass still sings... but there is steel among the pews.","Este lugar fue sagrado. Los vitrales aún cantan... pero hay acero entre los bancos."],"Os Reguladores mantinham o equilíbrio entre os reinos. Quem os dobrou?":["The Regulators kept the balance between the realms. Who bent them?","Los Reguladores mantenían el equilibrio entre los reinos. ¿Quién los doblegó?"],"Ha! Estudei aqui... e fui expulso. Hora de mostrar aos instrutores o que aprendi sozinho.":["Ha! I studied here... and got expelled. Time to show the instructors what I learned on my own.","¡Ja! Estudié aquí... y me expulsaron. Hora de mostrarles a los instructores lo que aprendí por mi cuenta."],"Conheço mercados assim — e emboscadas também. Três lâminas nos esperam no fim desta rua.":["I know markets like this — and ambushes too. Three blades await us at the end of this street.","Conozco mercados así — y también emboscadas. Tres hojas nos esperan al final de esta calle."],"Vultos entre os pilares... e um riso que não é humano. Ele acha que sombras são um jogo.":["Shades among the pillars... and a laugh that is not human. He thinks shadows are a game.","Sombras entre los pilares... y una risa que no es humana. Él cree que las sombras son un juego."],"Séculos de conhecimento vigiados por soldados... e por ela. Bernyce não empresta livros.":["Centuries of knowledge guarded by soldiers... and by her. Bernyce does not lend books.","Siglos de conocimiento vigilados por soldados... y por ella. Bernyce no presta libros."],"Infantaria, cavalaria, comando... e no topo da muralha, Kalander. Esta pedra vai tremer.":["Infantry, cavalry, command... and atop the wall, Kalander. This stone is going to shake.","Infantería, caballería, mando... y en lo alto de la muralla, Kalander. Esta piedra va a temblar."],"Esta torre toca a Eternidade... e Julius desceu dela. Sinto o véu se rasgar.":["This tower touches Eternity... and Julius came down from it. I can feel the veil tearing.","Esta torre toca la Eternidad... y Julius descendió de ella. Siento cómo se rasga el velo."],"O castelo da minha linhagem. Todos os campeões dele nos aguardam... e Julius por trás de tudo.":["The castle of my lineage. All of its champions await us... and Julius behind it all.","El castillo de mi linaje. Todos sus campeones nos aguardan... y Julius detrás de todo."],"Cinco cartas contra nós? Ótimo. Sempre quis um baralho em chamas.":["Five cards against us? Great. I always wanted a burning deck.","¿Cinco cartas contra nosotros? Genial. Siempre quise una baraja en llamas."],"Cedric, Elizier e Roland":["Cedric, Elizier and Roland","Cedric, Elizier y Roland"],"Rei Mago":["Mage King","Rey Mago"],"Rainha Maga":["Mage Queen","Reina Maga"],"Cavaleiro Mago":["Mage Knight","Caballero Mago"],"Cavaleira Maga":["Mage Dame","Dama Maga"],"Narrador":["Narrator","Narrador"],"The Joker · Bobo da Corte":["The Joker · Court Jester","The Joker · Bufón de la Corte"],"O Herói da Nação · Cavaleiro Mago":["The Hero of the Nation · Mage Knight","El Héroe de la Nación · Caballero Mago"],"Rainha dos Reguladores · Rainha Maga":["Queen of the Regulators · Mage Queen","Reina de los Reguladores · Reina Maga"],"O Cavaleiro do Além · Cavaleiro Mago":["The Knight from Beyond · Mage Knight","El Caballero del Más Allá · Caballero Mago"],"SUPER RARO":["SUPER RARE","SÚPER RARO"],"ULTRA RARO":["ULTRA RARE","ULTRA RARO"],"O maior truque não é enganar o inimigo... é conquistar sua confiança.":["The greatest trick is not fooling the enemy... it is winning their trust.","El mayor truco no es engañar al enemigo... es ganarse su confianza."],"Uma rainha governa um reino... uma mãe protege uma geração.":["A queen rules a kingdom... a mother protects a generation.","Una reina gobierna un reino... una madre protege una generación."],"Minhas sombras devoram o passado... e reescrevem a história!":["My shadows devour the past... and rewrite history!","¡Mis sombras devoran el pasado... y reescriben la historia!"],"Ás de Copas":["Ace of Hearts","As de Copas"],"A cada 5 turnos, cria 1 gema rosa de coração vermelho; se você estourá-la, recebe 5% da sua vida atual de dano.":["Every 5 turns, creates 1 pink gem with a red heart; if you pop it, you take 5% of your current HP as damage.","Cada 5 turnos, crea 1 gema rosa con corazón rojo; si la revientas, recibes 5% de tu vida actual como daño."],"Golpe Cruzado":["Cross Slash","Golpe Cruzado"],"A cada 4 turnos, suas lâminas gêmeas cortam um X no tabuleiro: as esferas das diagonais são removidas sem conceder energia.":["Every 4 turns, his twin blades slash an X across the board: the diagonal orbs are removed without granting energy.","Cada 4 turnos, sus espadas gemelas cortan una X en el tablero: las esferas de las diagonales se eliminan sin otorgar energía."],"Regulação Real":["Royal Regulation","Regulación Real"],"A cada 4 turnos, remove TODOS os power-ups do tabuleiro e recupera 80 de vida por cada um removido.":["Every 4 turns, removes ALL power-ups from the board and heals 80 HP for each one removed.","Cada 4 turnos, elimina TODOS los potenciadores del tablero y recupera 80 de vida por cada uno."],"Tempo Sombrio":["Dark Time","Tiempo Sombrío"],"A cada 30 segundos no relógio, corrompe uma gema com uma sombra: ela não pode ser movida nem removida. Se todas forem corrompidas, você perde!":["Every 30 seconds on the clock, corrupts a gem with shadow: it cannot be moved or removed. If all gems are corrupted, you lose!","Cada 30 segundos de reloj, corrompe una gema con sombra: no puede moverse ni eliminarse. ¡Si todas son corrompidas, pierdes!"],"Truque de Cartas":["Card Trick","Truco de Cartas"],"Cria 1 power-up aleatório no tabuleiro (25%, 75%).":["Creates 1 random power-up on the board (25%, 75%).","Crea 1 potenciador aleatorio en el tablero (25%, 75%)."],"Chamariz":["Decoy","Señuelo"],"Depois de ativar, se seu HP chegar a 0 você não perde: o HP volta para 100 (25%... 50%, 100%).":["After activating, if your HP reaches 0 you do not lose: HP returns to 100 (50%, 100%).","Tras activarla, si tu HP llega a 0 no pierdes: el HP vuelve a 100 (50%, 100%)."],"Corte Duplo":["Double Slash","Corte Doble"],"Duplica o ataque dele até o final do turno (25%, 75%; não acumula no mesmo turno).":["Doubles his attack until the end of the turn (25%, 75%; does not stack in the same turn).","Duplica su ataque hasta el final del turno (25%, 75%; no se acumula en el mismo turno)."],"O Herói da Nação":["The Hero of the Nation","El Héroe de la Nación"],"Reduz os danos recebidos em 20% pela missão toda; acumula até 2× (50%, 100%).":["Reduces damage taken by 20% for the whole mission; stacks up to 2× (50%, 100%).","Reduce el daño recibido en 20% durante toda la misión; se acumula hasta 2× (50%, 100%)."],"Regulação Total":["Total Regulation","Regulación Total"],"Os inimigos ficam 2 turnos sem atacar (25%, 75%).":["Enemies cannot attack for 2 turns (25%, 75%).","Los enemigos no atacan durante 2 turnos (25%, 75%)."],"Ímpeto da Rainha":["Queen's Fury","Ímpetu de la Reina"],"Os inimigos recebem 20% de dano extra até o fim da missão; acumula sempre que ativar (50%, 100%).":["Enemies take 20% extra damage until the end of the mission; stacks every activation (50%, 100%).","Los enemigos reciben 20% de daño extra hasta el fin de la misión; se acumula con cada activación (50%, 100%)."],"Corte Sombrio":["Shadow Slash","Corte Sombrío"],"Inflige 20% da vida atual do inimigo e causa cegueira por 1 turno (25%).":["Deals 20% of the enemy's current HP and blinds it for 1 turn (25%).","Inflige 20% de la vida actual del enemigo y lo ciega por 1 turno (25%)."],"Para que Serve esse Relógio":["What Is this Clock For","Para qué Sirve este Reloj"],"Paralisa o tempo do inimigo: ele não ataca mais até sua vida chegar a 25% (50%).":["Freezes the enemy's time: it cannot attack until its HP drops to 25% (50%).","Paraliza el tiempo del enemigo: no ataca hasta que su vida llegue al 25% (50%)."],"Sombras Devoradoras":["Devouring Shadows","Sombras Devoradoras"],"Sempre que o inimigo atacar, todos os inimigos perdem 5% da vida total (75%).":["Whenever the enemy attacks, all enemies lose 5% of their total HP (75%).","Cada vez que el enemigo ataca, todos los enemigos pierden 5% de su vida total (75%)."],"Lâmina das Sombras Dimensional I":["Dimensional Shadow Blade I","Hoja de las Sombras Dimensional I"],"Atinge todos os inimigos com 10% da vida e as missões futuras com 8%, 6%, 4%, 2%, 0% consecutivamente. Acumulativa (100%).":["Hits all enemies for 10% of their HP and future missions for 8%, 6%, 4%, 2%, 0% consecutively. Stacks (100%).","Golpea a todos los enemigos con 10% de su vida y a las misiones futuras con 8%, 6%, 4%, 2%, 0% consecutivamente. Acumulable (100%)."],"sombra":["shadow","sombra"],"copas":["hearts","copas"]};
+I18N_DICT['VERSÃO 9.3']=['VERSION 9.3','VERSIÓN 9.3'];
 /* L(): traduz strings de DADOS (habilidades, fases, inimigos, loja...) na renderização.
    Chave = string PT canônica dos objetos; valor = [EN, ES]. Fora do dicionário: retorna como veio. */
 function L(str){ if(lang==='pt'||!str) return str; const e=I18N_DICT[str]; return e ? (lang==='en'?e[0]:(e[1]||e[0])) : str; }
@@ -3013,7 +3045,7 @@ const STATIC_I18N=[
   ['#startBtn','Iniciar a Aventura!','Begin the Adventure!','¡Iniciar la Aventura!'],
   ['#autoTeamBtn','Equipe sugerida','Suggested team','Equipo sugerido'],
   ["#continueBtn .menu-label","Continuar <small class=\"menu-hint\" id=\"continueHint\">Sem progresso salvo</small>","Continue <small class=\"menu-hint\" id=\"continueHint\">No saved progress</small>","Continuar <small class=\"menu-hint\" id=\"continueHint\">Sin progreso guardado</small>"],
-  ["#menuVersion","VERSÃO 9.1 · DEMO OFICIAL MOBILE","VERSION 9.1 · OFFICIAL MOBILE DEMO","VERSIÓN 9.1 · DEMO OFICIAL MÓVIL"],
+  ["#menuVersion","VERSÃO 9.3 · DEMO OFICIAL MOBILE","VERSION 9.3 · OFFICIAL MOBILE DEMO","VERSIÓN 9.3 · DEMO OFICIAL MÓVIL"],
   ["#selectBackBtn","← Voltar","← Back","← Volver"],
   ["#selectScreen .screen-eyebrow","Formação do grupo","Party setup","Formación del grupo"],
   ["#selectScreen .screen-title","Formação da Equipe","Team Formation","Formación del Equipo"],
@@ -3051,10 +3083,20 @@ const STATIC_I18N=[
   ["#rankNote","🏆 Ranking Global: será ativado junto com o servidor. Seu nome de usuário já está reservado localmente.","🏆 Global Ranking: activates together with the server. Your username is already reserved locally.","🏆 Ranking Global: se activará junto con el servidor. Tu nombre de usuario ya está reservado localmente."],
   ["#accountLoginBtn","Entrar / Criar conta","Sign in / Create account","Entrar / Crear cuenta"],
   ["#logoutBtn","Sair da conta","Sign out","Cerrar sesión"],
-  ["#optionsScreen .option-row:nth-child(2) > span","Volume geral","Master volume","Volumen general"],
-  ["#optionsScreen .option-row:nth-child(3) > span","Dificuldade","Difficulty","Dificultad"],
-  ["#optionsScreen .option-row:nth-child(4) > span","Idioma / Language","Language / Idioma","Idioma / Language"],
-  ["#optionsScreen .option-row:nth-child(5) > span","Progresso","Progress","Progreso"],
+  ["#optMasterVolumeLabel","Volume geral","Master volume","Volumen general"],
+  ["#optMusicVolumeLabel","Volume da música","Music volume","Volumen de la música"],
+  ["#optSfxVolumeLabel","Efeitos sonoros","Sound effects","Efectos de sonido"],
+  ["#optDifficultyLabel","Dificuldade","Difficulty","Dificultad"],
+  ["#optLanguageLabel","Idioma / Language","Language / Idioma","Idioma / Language"],
+  ["#optProgressLabel","Progresso","Progress","Progreso"],
+  ["#optQualityLabel","Qualidade gráfica","Graphics quality","Calidad gráfica"],
+  ["#optContrastLabel","Alto contraste","High contrast","Alto contraste"],
+  ["#optLargeTextLabel","Texto maior","Larger text","Texto más grande"],
+  ["#optFlashesLabel","Reduzir flashes","Reduce flashes","Reducir destellos"],
+  ["#qualitySelect option[value=\"auto\"]","Automática","Automatic","Automática"],
+  ["#qualitySelect option[value=\"high\"]","Alta","High","Alta"],
+  ["#qualitySelect option[value=\"medium\"]","Média","Medium","Media"],
+  ["#qualitySelect option[value=\"economy\"]","Econômica","Economy","Económica"],
   ["#diffGroup [data-diff=\"facil\"]","Fácil","Easy","Fácil"],
   ["#diffGroup [data-diff=\"normal\"]","Normal","Normal","Normal"],
   ["#diffGroup [data-diff=\"dificil\"]","Difícil","Hard","Difícil"],
@@ -3599,7 +3641,7 @@ function handleTapSelect(r,c){
 }
 
 function trySwap(from,to){
-  if(busy || gamePaused || stageTransitioning || playerHP<=0) return;
+  if(!canAcceptPlayerInput()) return;
   if(!missionStartMs) startMissionTimer();
   if(board[from.r]?.[from.c]===-4||board[to.r]?.[to.c]===-4){
     renderBoard(); sfxInvalid(); haptic([18,30,18]);
@@ -3615,7 +3657,7 @@ function trySwap(from,to){
     swapCells(from,to); renderBoard(); sfxInvalid(); haptic([18,30,18]);
     setBattleStatus(T('Troca inválida: forme uma linha com pelo menos três esferas.','Invalid swap: line up at least three spheres.','Intercambio inválido: forma una línea con al menos tres esferas.'));
   } else {
-    busy=true; comboStep=0; lastSwap={from:{...from},to:{...to}}; forcedResolution=powerCombo; renderBoard(); haptic(powerCombo?[28,18,45]:16);
+    busy=true; setBattlePhase('resolving'); comboStep=0; lastSwap={from:{...from},to:{...to}}; forcedResolution=powerCombo; renderBoard(); haptic(powerCombo?[28,18,45]:16);
     setBattleStatus(powerCombo ? powerCombo.label : T(`${matches.length} esferas conectadas. Ataque em preparação!`,`${matches.length} spheres connected. Attack incoming!`,`${matches.length} esferas conectadas. ¡Ataque en preparación!`));
     setTimeout(()=>resolveMatches(),120);
   }
@@ -3860,6 +3902,7 @@ function finishRoomIfCleared(reason=T('Todos os inimigos foram derrotados.','All
   if(board.some(row=>row.some(v=>v===-1))){ collapseAndRefill(); renderBoard(); }
   roomClearScheduled=true;
   busy=true;
+  setBattlePhase('transition');
   comboStep=0;
   selected=null;
   forcedResolution=null;
@@ -3873,6 +3916,7 @@ async function launchPendingRoomPassives(){
   const epoch=combatEpoch;
   const queued=pendingRoomPassives.splice(0);
   busy=true;
+  setBattlePhase('heroes');
   setBattleStatus(T('A energia preservada da sala anterior desperta no início do combate.','The energy preserved from the previous room awakens as combat begins.','La energía conservada de la sala anterior despierta al inicio del combate.'),'support');
   for(let i=0;i<queued.length;i++){
     if(epoch!==combatEpoch) return;
@@ -3885,7 +3929,7 @@ async function launchPendingRoomPassives(){
       return;
     }
   }
-  if(epoch===combatEpoch) busy=false;
+  if(epoch===combatEpoch){ busy=false; setBattlePhase('idle'); }
 }
 
 async function resolveMatches(){
@@ -3950,6 +3994,7 @@ async function resolveMatches(){
   if(epoch!==combatEpoch) return;
 
   const multiplier = 1 + 0.25*(comboStep-1);
+  setBattlePhase('heroes');
   const buffMult = atkBuffTurns>0 ? (1+atkBuffMult) : 1;
 
   for(const colorIdxStr of Object.keys(colorCounts)){
@@ -4684,6 +4729,7 @@ function afterPlayerTurn(){
   if(checkStageObjective()) return;
   if(atkBuffTurns>0) atkBuffTurns--;
   renderStatusTray();
+  setBattlePhase('enemies');
   setTimeout(()=>tickDots(), 300);
 }
 
@@ -4749,6 +4795,7 @@ function handlePlayerDefeat(){
 }
 
 function enemyCounterAttack(){
+  setBattlePhase('enemies');
   if(playerHP<=0){ busy=false; return; }
   /* Difícil/Pesadelo: TODOS os inimigos vivos atacam, um de cada vez, após a sua jogada */
   const fila = allEnemiesAttackMode()
@@ -4759,6 +4806,7 @@ function enemyCounterAttack(){
     advanceTimedDefense();
     saveProgress();
     busy = false;
+    if(!stageTransitioning&&playerHP>0) setBattlePhase('idle');
     if(finishRoomIfCleared(T('O contra-ataque defensivo derrotou o último inimigo.','The defensive counterattack defeated the last enemy.','El contraataque defensivo derrotó al último enemigo.'))) return;
     if(playerHP<=0) handlePlayerDefeat();
   };
@@ -4904,6 +4952,7 @@ function onStageCleared(){
   stopMissionTimer();
   stageTransitioning = true;
   busy = true;
+  setBattlePhase('transition');
   combatEpoch++;
   sfxVictory();
   if(worldRun.active){
@@ -5339,7 +5388,7 @@ function showMainMenu(){
   towerMode=false;
   setAutoBattle(false);
   togglePhotoMode(false);
-  closeAllPanels(); stopMusic(); busy=false;
+  closeAllPanels(); stopMusic(); busy=false; setBattlePhase('idle');
   document.getElementById('mainMenu').style.display='flex';
   document.getElementById('selectScreen').style.display='none';
   document.getElementById('gameScreen').style.display='none';
@@ -5347,7 +5396,7 @@ function showMainMenu(){
   sceneBgEl.dataset.screen='menu'; refreshContinueButton();
 }
 function showSelection(){
-  closeAllPanels(); stopMusic(); busy=false;
+  closeAllPanels(); stopMusic(); busy=false; setBattlePhase('idle');
   document.getElementById('mainMenu').style.display='none';
   document.getElementById('gameScreen').style.display='none';
   document.getElementById('selectScreen').style.display='flex';
@@ -5509,10 +5558,21 @@ function openPanel(id){
 function applySettings(){
   document.body.classList.toggle('reduce-motion',reducedMotion);
   document.body.classList.toggle('motion-enabled',!reducedMotion);
+  document.body.classList.toggle('high-contrast',highContrast);
+  document.body.classList.toggle('large-text',largeText);
+  document.body.classList.toggle('reduce-flashes',reduceFlashes);
+  document.body.classList.remove('quality-high','quality-medium','quality-economy');
+  document.body.classList.add('quality-'+resolvedGraphicsQuality());
   document.getElementById('volumeRange').value=Math.round(masterVolume*100);
+  document.getElementById('musicVolumeRange').value=Math.round(musicVolume*100);
+  document.getElementById('sfxVolumeRange').value=Math.round(sfxVolume*100);
+  document.getElementById('qualitySelect').value=graphicsQuality;
   document.getElementById('reduceMotionToggle').checked=reducedMotion;
   document.getElementById('particlesToggle').checked=particlesEnabled;
   document.getElementById('hapticsToggle').checked=hapticsEnabled;
+  document.getElementById('highContrastToggle').checked=highContrast;
+  document.getElementById('largeTextToggle').checked=largeText;
+  document.getElementById('reduceFlashesToggle').checked=reduceFlashes;
   document.getElementById('muteBtn').textContent=musicMuted?'🔇':'🔊';
 }
 
@@ -5539,7 +5599,7 @@ document.getElementById('autoActivesToggle')?.addEventListener('click',()=>{
   sfxSelect();
 });
 document.getElementById('restoreDefaultsBtn')?.addEventListener('click',()=>{
-  ['12r_shake','12r_autoactives','12r_difficulty','12r_lang_set'].forEach(k=>localStorage.removeItem(k));
+  ['12r_shake','12r_autoactives','12r_difficulty','12r_lang_set','12r_volume','12r_music_volume','12r_sfx_volume','12r_quality','12r_high_contrast','12r_large_text','12r_reduce_flashes','12r_motion','12r_particles','12r_haptics'].forEach(k=>localStorage.removeItem(k));
   setBattleStatus?.(T('Padrões restaurados. Recarregue o jogo.','Defaults restored. Reload the game.','Valores restaurados. Recarga el juego.'));
   location.reload();
 });
@@ -5611,15 +5671,21 @@ document.querySelectorAll('[data-close]').forEach(btn=>{
 document.querySelectorAll('.pro-overlay').forEach(panel=>{
   panel.addEventListener('click',e=>{ if(e.target===panel && panel.id!=='pauseScreen')panel.classList.remove('show'); });
 });
-document.getElementById('pauseBtn').addEventListener('click',()=>{ gamePaused=true; pauseMissionClock(); stopMusic(); openPanel('pauseScreen'); });
-document.getElementById('resumeBtn').addEventListener('click',()=>{ gamePaused=false; resumeMissionClock(); document.getElementById('pauseScreen').classList.remove('show'); if(!musicMuted)playStageMusic(stageIndex); });
-document.getElementById('pauseOptionsBtn').addEventListener('click',()=>{ gamePaused=false; resumeMissionClock(); document.getElementById('pauseScreen').classList.remove('show'); openPanel('optionsScreen'); });
+document.getElementById('pauseBtn').addEventListener('click',()=>{ gamePaused=true; setBattlePhase('paused'); pauseMissionClock(); stopMusic(); openPanel('pauseScreen'); });
+document.getElementById('resumeBtn').addEventListener('click',()=>{ gamePaused=false; setBattlePhase(busy?'resolving':'idle'); resumeMissionClock(); document.getElementById('pauseScreen').classList.remove('show'); if(!musicMuted)playStageMusic(stageIndex); });
+document.getElementById('pauseOptionsBtn').addEventListener('click',()=>{ openPanel('optionsScreen'); });
 document.getElementById('restartStageBtn').addEventListener('click',()=>{ document.getElementById('pauseScreen').classList.remove('show'); restartCurrentStage(); });
 document.getElementById('returnMenuBtn').addEventListener('click',showMainMenu);
 document.getElementById('volumeRange').addEventListener('input',e=>{ masterVolume=Number(e.target.value)/100; localStorage.setItem('12r_volume',String(e.target.value)); });
+document.getElementById('musicVolumeRange').addEventListener('input',e=>{ musicVolume=Number(e.target.value)/100; localStorage.setItem('12r_music_volume',String(e.target.value)); });
+document.getElementById('sfxVolumeRange').addEventListener('input',e=>{ sfxVolume=Number(e.target.value)/100; localStorage.setItem('12r_sfx_volume',String(e.target.value)); sfxSelect(); });
+document.getElementById('qualitySelect').addEventListener('change',e=>{ graphicsQuality=e.target.value; localStorage.setItem('12r_quality',graphicsQuality); applySettings(); });
 document.getElementById('reduceMotionToggle').addEventListener('change',e=>{ reducedMotion=e.target.checked; localStorage.setItem('12r_motion',reducedMotion?'reduced':'full'); applySettings(); });
 document.getElementById('particlesToggle').addEventListener('change',e=>{ particlesEnabled=e.target.checked; localStorage.setItem('12r_particles',String(particlesEnabled)); });
 document.getElementById('hapticsToggle').addEventListener('change',e=>{ hapticsEnabled=e.target.checked; localStorage.setItem('12r_haptics',String(hapticsEnabled)); });
+document.getElementById('highContrastToggle').addEventListener('change',e=>{ highContrast=e.target.checked; localStorage.setItem('12r_high_contrast',highContrast?'1':'0'); applySettings(); });
+document.getElementById('largeTextToggle').addEventListener('change',e=>{ largeText=e.target.checked; localStorage.setItem('12r_large_text',largeText?'1':'0'); applySettings(); });
+document.getElementById('reduceFlashesToggle').addEventListener('change',e=>{ reduceFlashes=e.target.checked; localStorage.setItem('12r_reduce_flashes',reduceFlashes?'1':'0'); applySettings(); });
 document.getElementById('resetProgressBtn').addEventListener('click',()=>{
   if(!confirm(T('Apagar o progresso do Reino dos Humanos?','Erase Human Realm progress?','¿Borrar el progreso del Reino de los Humanos?')))return;
   localStorage.removeItem('12r_world_humanos'); localStorage.removeItem('12r_save'); localStorage.removeItem('12r_unlocked');
@@ -5630,23 +5696,34 @@ document.addEventListener('keydown',e=>{
   if(document.getElementById('cardModal').classList.contains('show')){closeCardModalFn();return;}
   const open=[...document.querySelectorAll('.pro-overlay.show')].pop();
   if(open && open.id!=='pauseScreen'){open.classList.remove('show');return;}
-  if(document.getElementById('gameScreen').style.display==='flex'){ gamePaused=true; pauseMissionClock(); openPanel('pauseScreen'); }
+  if(document.getElementById('gameScreen').style.display==='flex'){ gamePaused=true; setBattlePhase('paused'); pauseMissionClock(); openPanel('pauseScreen'); }
 });
 document.addEventListener('visibilitychange',()=>{
   if(document.hidden && document.getElementById('gameScreen').style.display==='flex'){
-    gamePaused=true; pauseMissionClock();
+    gamePaused=true; setBattlePhase('paused'); pauseMissionClock();
     stopMusic();
     openPanel('pauseScreen');
   }
 });
 function preloadOfficialAssets(){
-  const urls=[
+  const all=[...new Set([
     ...KINGDOMS.flatMap(k=>[k.cardThumb||k.img,k.sprite]),
     ...DUNGEON.flatMap(stage=>stage.enemies.map(enemy=>enemy.sprite))
-  ];
-  return Promise.allSettled([...new Set(urls)].map(src=>new Promise((resolve,reject)=>{
-    const image=new Image(); image.onload=resolve; image.onerror=reject; image.src=src;
-  }))).then(()=>document.body.classList.add('assets-ready'));
+  ].filter(Boolean))];
+  const limit=V93.quality?.preload?.[resolvedGraphicsQuality()]||16;
+  const priority=[...new Set([
+    ...chosenIds.flatMap(i=>[KINGDOMS[i]?.cardThumb||KINGDOMS[i]?.img,KINGDOMS[i]?.sprite]),
+    ...all
+  ].filter(Boolean))];
+  const load=src=>new Promise(resolve=>{ const image=new Image(); image.onload=resolve; image.onerror=resolve; image.decoding='async'; image.src=src; });
+  const critical=priority.slice(0,limit);
+  const remaining=priority.slice(limit);
+  return Promise.allSettled(critical.map(load)).then(()=>{
+    document.body.classList.add('assets-ready');
+    if(resolvedGraphicsQuality()==='economy'||navigator.connection?.saveData) return;
+    const idle=window.requestIdleCallback||((cb)=>setTimeout(cb,700));
+    idle(()=>remaining.forEach((src,i)=>setTimeout(()=>load(src),i*80)),{timeout:3000});
+  });
 }
 preloadOfficialAssets();
 if(['127.0.0.1','localhost'].includes(location.hostname)){
@@ -5654,7 +5731,7 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
     snapshot:()=>({
       stageIndex,playerHP,enemyHP:enemies.map(e=>e.hp),heroProgress:{...heroProgress},
       statuses:{playerShield,enemyBlindTurns,reflectTurns,invulnerableTurns,lifestealCharges,lastDragonRitual,incinerateActive,incinerateStacks,musicMoodMode},
-      busy,stageTransitioning
+      busy,stageTransitioning,battlePhase,canAcceptPlayerInput:canAcceptPlayerInput(),graphicsQuality:resolvedGraphicsQuality(),version:APP_VERSION
     }),
     grantEnergy:(heroIdx,amount=100)=>{
       heroProgress[heroIdx]=Math.max(0,Math.min(100,amount));
@@ -5667,9 +5744,12 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
       if(!ability) throw new Error('Ability tier not found');
       triggerAbility(heroIdx,ability);
       return ability.name;
-    }
+    },
+    setQuality:(value)=>{ if(!V93.quality?.values?.includes(value)) throw new Error('Invalid quality'); graphicsQuality=value; applySettings(); return resolvedGraphicsQuality(); },
+    setPhase:(value)=>{ setBattlePhase(value); return battlePhase; }
   };
 }
+setBattlePhase('idle');
 applySettings();
 renderSelectGrid();
 refreshContinueButton();
@@ -6384,6 +6464,12 @@ async function runSmokeTest(){
     ok('falas de entrada dos inimigos', Object.keys(ENEMY_LINES).length>=23 && typeof enemyLineFor==='function');
     ok('inimigos sem espelhamento invertido', enemies.every(e2=>!e2.flip));
     ok('moedas e XP de perfil operantes', typeof coins==='number'&&typeof profileLevel()==='number');
+    /* v9.3 · contratos de estabilidade, apresentação e acessibilidade */
+    ok('v9.3 usa configuração central dos 12 reinos', APP_VERSION==='v9.3' && V93.realms?.length===12);
+    ok('coordenador de fases da batalha', typeof canAcceptPlayerInput==='function' && BATTLE_PHASES.has('idle') && BATTLE_PHASES.has('enemies') && BATTLE_PHASES.has('paused'));
+    ok('áudio separado em música e efeitos', !!document.getElementById('musicVolumeRange') && !!document.getElementById('sfxVolumeRange'));
+    ok('4 perfis de qualidade gráfica', V93.quality?.values?.length===4 && !!document.getElementById('qualitySelect'));
+    ok('3 recursos de acessibilidade', ['highContrastToggle','largeTextToggle','reduceFlashesToggle'].every(id=>!!document.getElementById(id)));
     worldRun.active=false;
   }catch(e){
     results.push({name:'exceção: '+e.message, pass:false});

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<script data-gate>if(sessionStorage.getItem('ygdria_gate')!=='ok')location.replace('./index.html');</script>
+<script data-gate>(function(){const local=['127.0.0.1','localhost'].includes(location.hostname);const qa=new URLSearchParams(location.search).has('qa');if(!(local&&qa)&&sessionStorage.getItem('ygdria_gate')!=='ok')location.replace('./index.html');})();</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>12 Reinos · Crônicas de Ygdria</title>
@@ -9,7 +9,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
 <link rel="apple-touch-icon" href="assets/icon.svg">
-<link rel="stylesheet" href="styles-v9.1.css?v=spritehud2">
+<link rel="stylesheet" href="styles-v9.3.css?v=9.3.0">
 </head>
 <body>
 <div class="scene-bg" data-screen="menu"></div>
@@ -35,7 +35,7 @@
     </div>
     <button class="account-chip" id="accountChip" type="button">🎭 Convidado</button>
     <div class="coin-badge" id="coinBadge">🪙 0</div>
-    <div class="menu-footer" id="menuVersion">VERSÃO 9.1 · DEMO OFICIAL MOBILE</div>
+    <div class="menu-footer" id="menuVersion">VERSÃO 9.3 · DEMO OFICIAL MOBILE</div>
   </div>
 </div>
 
@@ -85,6 +85,7 @@
         <button class="icon-btn battle-tools-toggle" id="battleToolsToggle" type="button" aria-label="Abrir ferramentas táticas" aria-expanded="false">⚙</button>
         <div class="mission-timer" id="missionTimer" aria-label="Tempo de missão">⏱ 00:00</div>
       </div>
+      <div class="battle-phase-chip" id="battlePhaseChip" aria-live="polite">Sua jogada</div>
     </header>
 
     <div class="battle-tools-panel" id="battleToolsPanel" aria-hidden="true">
@@ -222,12 +223,16 @@
 <div class="pro-overlay" id="optionsScreen" role="dialog" aria-modal="true" aria-labelledby="optionsTitle">
   <div class="pro-dialog small">
     <div class="dialog-header"><h2 class="dialog-title" id="optionsTitle">Opções</h2><button class="ghost-btn" data-close="optionsScreen">Fechar</button></div>
-    <label class="option-row"><span>Volume geral</span><input id="volumeRange" type="range" min="0" max="100" value="70"></label>
-    <div class="option-row"><span>Dificuldade</span><div class="diff-group" id="diffGroup"><button class="battle-tool" data-diff="facil" type="button">Fácil</button><button class="battle-tool" data-diff="normal" type="button">Normal</button><button class="battle-tool" data-diff="dificil" type="button">Difícil</button><button class="battle-tool" data-diff="pesadelo" type="button">Pesadelo</button></div></div>
-    <div class="option-row"><span>Idioma / Language</span><div class="diff-group" id="langGroup"><button class="battle-tool" data-lang="pt" type="button">🇧🇷 PT</button><button class="battle-tool" data-lang="en" type="button">🇺🇸 EN</button><button class="battle-tool" data-lang="es" type="button">🇪🇸 ES</button></div></div>
-    <div class="option-row"><span>Progresso</span><div class="diff-group"><button class="battle-tool" id="exportSaveBtn" type="button">Exportar</button><button class="battle-tool" id="importSaveBtn" type="button">Importar</button></div></div>
+    <div class="option-section">🔊 Áudio</div>
+    <label class="option-row"><span id="optMasterVolumeLabel">Volume geral</span><input id="volumeRange" type="range" min="0" max="100" value="70"></label>
+    <label class="option-row"><span id="optMusicVolumeLabel">Volume da música</span><input id="musicVolumeRange" type="range" min="0" max="100" value="65"></label>
+    <label class="option-row"><span id="optSfxVolumeLabel">Efeitos sonoros</span><input id="sfxVolumeRange" type="range" min="0" max="100" value="85"></label>
+    <div class="option-row"><span id="optDifficultyLabel">Dificuldade</span><div class="diff-group" id="diffGroup"><button class="battle-tool" data-diff="facil" type="button">Fácil</button><button class="battle-tool" data-diff="normal" type="button">Normal</button><button class="battle-tool" data-diff="dificil" type="button">Difícil</button><button class="battle-tool" data-diff="pesadelo" type="button">Pesadelo</button></div></div>
+    <div class="option-row"><span id="optLanguageLabel">Idioma / Language</span><div class="diff-group" id="langGroup"><button class="battle-tool" data-lang="pt" type="button">🇧🇷 PT</button><button class="battle-tool" data-lang="en" type="button">🇺🇸 EN</button><button class="battle-tool" data-lang="es" type="button">🇪🇸 ES</button></div></div>
+    <div class="option-row"><span id="optProgressLabel">Progresso</span><div class="diff-group"><button class="battle-tool" id="exportSaveBtn" type="button">Exportar</button><button class="battle-tool" id="importSaveBtn" type="button">Importar</button></div></div>
     <textarea id="saveCode" class="save-code" rows="3" placeholder="Exportar: gera e copia o código aqui. Importar: cole o código e toque em Importar."></textarea>
     <div class="option-section" id="vizSectionTitle">👁 Visualização</div>
+    <label class="option-row"><span id="optQualityLabel">Qualidade gráfica</span><select id="qualitySelect" class="option-select"><option value="auto">Automática</option><option value="high">Alta</option><option value="medium">Média</option><option value="economy">Econômica</option></select></label>
     <div class="option-row"><span id="vizHeroLabel">Nome dos heróis</span><button class="battle-tool" id="vizHeroNames" type="button">Embaixo</button></div>
     <div class="option-row"><span id="vizEnemyLabel">Nome dos inimigos</span><button class="battle-tool" id="vizEnemyNames" type="button">Embaixo</button></div>
     <div class="option-row"><span id="vizDmgLabel">Números de dano</span><button class="battle-tool" id="vizDmg" type="button">Mostrar</button></div>
@@ -236,6 +241,10 @@
     <label class="option-row"><span id="optReduceLabel">Reduzir animações</span><input class="switch" id="reduceMotionToggle" type="checkbox"></label>
     <label class="option-row"><span id="optParticlesLabel">Partículas de batalha</span><input class="switch" id="particlesToggle" type="checkbox" checked></label>
     <label class="option-row"><span id="optHapticsLabel">Vibração em dispositivos móveis</span><input class="switch" id="hapticsToggle" type="checkbox" checked></label>
+    <div class="option-section">♿ Acessibilidade</div>
+    <label class="option-row"><span id="optContrastLabel">Alto contraste</span><input class="switch" id="highContrastToggle" type="checkbox"></label>
+    <label class="option-row"><span id="optLargeTextLabel">Texto maior</span><input class="switch" id="largeTextToggle" type="checkbox"></label>
+    <label class="option-row"><span id="optFlashesLabel">Reduzir flashes</span><input class="switch" id="reduceFlashesToggle" type="checkbox"></label>
     <div class="option-row"><span>Tremor de tela</span><button class="battle-tool" id="shakeToggle" type="button">Ligado</button></div>
     <div class="option-row"><span>Auto-ativas (na auto-batalha)</span><button class="battle-tool" id="autoActivesToggle" type="button">Desligado</button></div>
     <button class="ghost-btn" id="restoreDefaultsBtn" style="width:100%;margin-top:10px;">Restaurar padrões</button>
@@ -394,7 +403,8 @@
   </div>
 </div>
 <script>window.addEventListener('error',function(e){(window.__bootErrors=window.__bootErrors||[]).push({m:String(e.message).slice(0,200),l:e.lineno,c:e.colno})});</script>
-<script src="game-v9.1.js?v=spritehud2" defer></script>
+<script src="v9.3-config.js?v=9.3.0"></script>
+<script src="game-v9.3.js?v=9.3.0" defer></script>
 
 </body>
 </html>
