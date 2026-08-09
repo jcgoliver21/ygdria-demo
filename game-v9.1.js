@@ -932,6 +932,7 @@ let lastSwap = null;
 let forcedResolution = null;
 let selected = null;
 let busy = false;
+let gamePaused = false;
 let comboStep = 0;
 let stageIndex = 0;
 let enemies = [];
@@ -954,6 +955,9 @@ let atkBuffMult = 1;
 let manualTarget = null;
 let lastDamageDealt = 0;
 let heroLastDamage = {};
+let lastEnemyAttacker = null;
+let stageTookDamage = false;
+let survivorStageStartHP = 0;
 let nextAttackMult = {};
 let enemyBlindTurns = 0;
 let shieldTurns = 0;
@@ -967,6 +971,7 @@ let battleHistorySeq = 0;
 let qaRitualTriggered = false;
 let incinerateActive = false;
 let incinerateStacks = 0;
+let incineratePhaseKey = null;
 let enemyVulnerableTurns = 0;
 let enemyVulnerableMult = 1;
 let stoneArmorTurns = 0;
@@ -1085,7 +1090,7 @@ function unlockAch(id){
 function checkAchievements(ctx){
   if(ctx==='stage'){
     unlockAch('first-win');
-    if(playerHP>=PLAYER_MAX_HP) unlockAch('no-damage');
+    if(!stageTookDamage) unlockAch('no-damage');
     if(runStats.maxCombo>=8) unlockAch('combo8');
     if(runStats.powerUps>=10) unlockAch('powerup10');
     const ids=ACTIVE.map(i=>KINGDOMS[i].id);
@@ -1374,6 +1379,17 @@ const stageObjectiveEl = document.getElementById('stageObjective');
 const hpStatusIconEl = document.getElementById('hpStatusIcon');
 const battleHistoryListEl = document.getElementById('battleHistoryList');
 
+/* Cabeçalho compacto: mantém missão/relógio na primeira linha e objetivo,
+   recorde e controles na segunda, sem alterar os IDs usados pelos eventos. */
+function organizeMissionHeader(){
+  const top=document.querySelector('.mission-topbar');
+  const metrics=document.querySelector('.mission-metrics');
+  const actions=document.querySelector('.mission-actions');
+  const timer=document.getElementById('missionTimer');
+  if(top&&metrics&&actions&&timer){ metrics.appendChild(actions); top.appendChild(timer); }
+}
+organizeMissionHeader();
+
 boardEl.style.gridTemplateColumns = `repeat(${SIZE}, 1fr)`;
 boardEl.style.gridTemplateRows = `repeat(${SIZE}, 1fr)`;
 
@@ -1455,7 +1471,15 @@ function renderStatusTray(){
   if(enemyVulnerableTurns>0) chips.push(['negative',T('Defesa rompida','Defense broken','Defensa rota')+' · '+enemyVulnerableTurns+'t']);
   if(incinerateActive) chips.push(['negative',T('Incinerar +','Incinerate +','Incinerar +')+incinerateStacks]);
   if(enemyDots.length) chips.push(['negative',L(enemyDots[0].label||'Dano contínuo')+' · '+Math.max(...enemyDots.map(d=>d.turns))+'t']);
-  statusTrayEl.innerHTML = chips.map(([kind,label])=>'<span class="status-chip '+kind+'">'+label+'</span>').join('');
+  const detail=(label)=>{
+    const s=String(label).toLowerCase();
+    if(/cegueira|blind|ceguera/.test(s)) return T('PrÃ³ximo ataque inimigo falha.','The next enemy attack misses.','El prÃ³ximo ataque enemigo falla.');
+    if(/defesa rompida|defense broken|defensa rota/.test(s)) return T('Inimigos recebem dano aumentado.','Enemies take increased damage.','Los enemigos reciben daÃ±o aumentado.');
+    if(/incinerar|incinerate/.test(s)) return T('Ataques acumulam dano contÃ­nuo por 3 turnos.','Attacks add damage-over-time for 3 turns.','Los ataques aÃ±aden daÃ±o continuo por 3 turnos.');
+    if(/dano contÃ­nuo|damage over time/.test(s)) return T('Dano aplicado no fim de cada turno.','Damage is applied at the end of each turn.','DaÃ±o aplicado al final de cada turno.');
+    return '';
+  };
+  statusTrayEl.innerHTML = chips.map(([kind,label])=>'<span class="status-chip '+kind+'"><b>'+label+'</b>'+(detail(label)?'<small>'+detail(label)+'</small>':'')+'</span>').join('');
   syncHpStateClasses();
 }
 function scopeSvg(svg,scope){
@@ -1590,7 +1614,7 @@ function renderPartyArena(){
         <div class="avatar-circle" id="party-${k.id}-avatar" data-hero-id="${k.id}" data-action="idle">${avatarContent}</div>
       </div>`;
     const nomeHtml=vizPrefs.heroNames==='off'?'':`
-      <div class="unit-name${vizPrefs.heroNames==='top'?' name-top':''}"><span class="unit-gem" style="--ug:${gemC};--ug-l:${gemL};--ug-d:${gemD}" aria-hidden="true"></span>${k.nome.split(',')[0]}</div>`;
+       <div class="unit-name${vizPrefs.heroNames==='top'?' name-top':''}"><span class="unit-gem" style="--ug:${gemC};--ug-l:${gemL};--ug-d:${gemD}" aria-hidden="true"></span>${L(k.nome)}</div>`;
     unit.innerHTML = (vizPrefs.heroNames==='top'?nomeHtml+stageHtml:stageHtml+nomeHtml)+`
       <div class="charge-outer"><div class="charge-inner" id="charge-${k.id}" style="width:0%"></div></div>
       <div class="charge-text" id="chargeText-${k.id}">0/100</div>
@@ -1731,7 +1755,8 @@ function openAbilityPicker(idx){
 
 function useQueuedActive(idx,a){
   questEvent('active');
-  if(busy || !abilityCanBeUsed(a)) return;
+  if(busy || gamePaused || !abilityCanBeUsed(a)) return;
+  if(!missionStartMs) startMissionTimer();
   const queue=heroActiveQueue[idx]||[];
   const queueIndex=queue.indexOf(a);
   if(queueIndex<0) return;
@@ -1745,7 +1770,7 @@ function useQueuedActive(idx,a){
   haptic([30,25,55]);
   window.setTimeout(()=>{
     if(!roomClearScheduled&&!stageTransitioning) busy=false;
-  },900);
+  },1200);
 }
 
 function renderStageProgress(){
@@ -1840,7 +1865,7 @@ function applyFormationSlot(unit,slot,width){
     const {top,bot}=groundBand();
     const aH=arenaBox.clientHeight, rH=rowEl.clientHeight;
     /* v9.2: personagens mais ASSENTADOS no piso (gap menor = todos descem) */
-    const gap=8, uiFeet=20*s;
+    const gap=18, uiFeet=20*s;
     const yMax=Math.max(4,(((1-top)*aH-gap-uiFeet)/rH)*100);
     const yMin=Math.max(0,(((1-bot)*aH-gap)/rH)*100);
     const prof=Math.max(0,Math.min(1,y/46));
@@ -1904,7 +1929,7 @@ function findBestMove(){
     const a={r,c},b={r:nr,c:nc};
     if(board[r][c]===-4||board[nr][nc]===-4) continue;
     const powerA=powerUps[cellKey(r,c)],powerB=powerUps[cellKey(nr,nc)];
-    if(powerA||powerB) return [a,b];
+    if(powerA?.type==='colorBomb'||powerB?.type==='colorBomb'||(powerA&&powerB)) return [a,b];
     swapCells(a,b);
     const valid=findMatches().length>0;
     swapCells(a,b);
@@ -2060,7 +2085,7 @@ function renderEnemies(){
   enemies.forEach((e, idx)=>{
     const unit = document.createElement('div');
     const isBoss=e.isBoss===true || idx===enemies.length-1;
-    unit.className = 'unit' + (e.hp<=0 ? ' dead' : (idx===activeIdx ? ' target' : '')) + (selectable && e.hp>0 ? ' selectable' : '') + (isBoss?' boss-unit':'') + (e.isCard?' enemy-card-unit':'');
+    unit.className = 'unit enemy-unit' + (e.hp<=0 ? ' dead' : (idx===activeIdx ? ' target' : '')) + (selectable && e.hp>0 ? ' selectable' : '') + (isBoss?' boss-unit':'') + (e.isCard?' enemy-card-unit':'');
     unit.id = 'enemy-'+idx;
     const palette=enemyAuraPalette(e);
     unit.style.setProperty('--aura-inner',palette[0]);
@@ -2072,7 +2097,7 @@ function renderEnemies(){
         <div class="target-arrow"></div>
         <div class="unit-ground-shadow"></div>
         <div class="avatar-circle" id="enemyPortrait-${idx}">
-          <img class="enemy-sprite-image${e.flip?' flip':''}" src="${e.sprite}" alt="${L(e.name)}"${e.tint?` style="filter:${e.tint}"`:''}>
+          <img class="enemy-sprite-image${(e.flip||e.isCard)?' flip':''}" src="${e.sprite}" alt="${L(e.name)}"${e.tint?` style="filter:${e.tint}"`:''}>
           <span class="enemy-intent" aria-label="${T(`Próximo ataque: aproximadamente ${e.atk} de dano`,`Next attack: about ${e.atk} damage`,`Próximo ataque: aproximadamente ${e.atk} de daño`)}">⚔ ${e.atk}</span>
         </div>
       </div>`;
@@ -2170,6 +2195,10 @@ function computeBattleGemColors(){
   battleGemColors={};
   const fams={};
   ACTIVE.forEach(i=>{
+    /* Cada carta começa sempre com a gema do próprio reino/personagem.
+       A escada de cores só é aplicada quando houver repetição do reino. */
+    const own=realmOrb(KINGDOMS[i]?.id);
+    if(own) battleGemColors[i]={...own};
     const fam=KINGDOMS[i].iconId||KINGDOMS[i].id;
     (fams[fam]=fams[fam]||[]).push(i);
   });
@@ -2184,7 +2213,7 @@ function computeBattleGemColors(){
       if(!cores) return;
       battleGemColors[i]={...cores};
       /* Gema com cor emprestada leva o SÍMBOLO na cor do reino de origem */
-      if(doador!==fam && lead) battleGemColors[i].icon=lead.color;
+       if(doador!==fam && lead) battleGemColors[i].icon=fam==='sombras'?'#050308':lead.color;
     });
   });
 }
@@ -2419,13 +2448,13 @@ function setAutoBattle(on){
   clearInterval(autoBattleTimer); autoBattleTimer=null;
   if(on){
     autoBattleTimer=setInterval(()=>{
-      if(!autoBattle||busy||playerHP<=0||document.hidden) return;
+      if(!autoBattle||busy||gamePaused||playerHP<=0||document.hidden) return;
       if(!document.body.classList.contains('game-active')) return;
       /* auto-ativas: dispara a primeira ativa carregada antes de jogar */
       if(autoActives){
         for(const hi of ACTIVE){
           const fila=heroActiveQueue[hi]||[];
-          if(fila.length){ useQueuedActive(hi,fila[0]); break; }
+          if(fila.length){ useQueuedActive(hi,fila[0]); return; }
         }
       }
       const mv=findBestMove();
@@ -2519,7 +2548,7 @@ function teamCode(ids){ return '12R-'+ids.map(i=>KINGDOMS[i]?.id).join('.'); }
 function parseTeamCode(txt){
   const m=String(txt||'').trim().match(/^12R-(.+)$/i); if(!m) return null;
   const ids=m[1].split('.').map(idn=>KINGDOMS.findIndex(k=>k.id===idn.trim().toLowerCase())).filter(i=>i>=0);
-  return ids.length===4?ids:null;
+  return ids.length===4 && new Set(ids).size===4?ids:null;
 }
 function renderTeamSlots(){
   const box=document.getElementById('teamSlots'); if(!box) return;
@@ -2560,17 +2589,31 @@ function faseBest(){ try{ return JSON.parse(localStorage.getItem('12r_fase_best'
 function faseTime(){ try{ return JSON.parse(localStorage.getItem('12r_fase_time')||'{}'); }catch(e){ return {}; } }
 /* ⏱ Timer da missão: conta desde a entrada; é a base oficial para habilidades de
    tempo real e para os rankings de missão/fase. */
-let missionStartMs=0, missionTimerInt=null;
-function missionElapsed(){ return missionStartMs?Math.floor((Date.now()-missionStartMs)/1000):0; }
+let missionStartMs=0, missionTimerInt=null, missionPausedAt=0, missionPausedTotal=0;
+function missionElapsed(){
+  if(!missionStartMs) return 0;
+  const pausedNow=missionPausedAt?Date.now()-missionPausedAt:0;
+  return Math.max(0,Math.floor((Date.now()-missionStartMs-missionPausedTotal-pausedNow)/1000));
+}
 function fmtTempo(s){ return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
-function startMissionTimer(){
-  missionStartMs=Date.now();
+function startMissionTimer(reset=true){
+  if(reset){ missionStartMs=Date.now(); missionPausedAt=0; missionPausedTotal=0; }
   clearInterval(missionTimerInt);
   const tick=()=>{ const el=document.getElementById('missionTimer'); if(el) el.textContent='⏱ '+fmtTempo(missionElapsed()); };
   tick();
   missionTimerInt=setInterval(tick,1000);
 }
 function stopMissionTimer(){ clearInterval(missionTimerInt); missionTimerInt=null; }
+function pauseMissionClock(){
+  if(!missionStartMs || missionPausedAt) return;
+  missionPausedAt=Date.now(); stopMissionTimer();
+}
+function resumeMissionClock(){
+  if(!missionPausedAt) return;
+  missionPausedTotal += Date.now()-missionPausedAt;
+  missionPausedAt=0;
+  if(missionStartMs) startMissionTimer(false);
+}
 /* 👁 Preferências de VISUALIZAÇÃO (menu Opções → Visualização) */
 let vizPrefs={heroNames:'bottom',enemyNames:'bottom',dmg:true,dps:true,timer:true};
 try{ vizPrefs={...vizPrefs,...JSON.parse(localStorage.getItem('12r_viz')||'{}')}; }catch(e){}
@@ -2605,6 +2648,8 @@ function loadStage(idx){
   roomClearScheduled = false;
   selected = null;
   stageIndex = idx;
+  if(towerMode && difficulty==='pesadelo' && playerHP>0) survivorStageStartHP=playerHP;
+  gamePaused = false;
   computeBattleGemColors();
   hiddenGems={};
   boardRenderCache=null; /* nova fase = render completo do tabuleiro */
@@ -2621,12 +2666,16 @@ function loadStage(idx){
     return {...e, hp, atk, maxHp:hp};
   });
   playerShield = 0; enemyDots = []; enemyStunTurns = 0; atkBuffTurns = 0; atkBuffMult = 1;
+  lastEnemyAttacker = null;
+  stageTookDamage = false;
+  golemAllies = 0;
   damageReductionStacks = 0; queenFuryStacks = 0; chamarizCharges = 0; sombrasDevoradorasOn = false;
   clearInterval(tempoSombrioTimer); tempoSombrioTimer = null;
   document.getElementById('sombraHud')?.remove();
   enemyBlindTurns = 0; shieldTurns = 0; reflectTurns = 0; invulnerableTurns = 0;
   lifestealCharges = 0; lifestealMult = 0; lastDragonRitual = {before:0,after:0,converted:0};
-  incinerateActive = false; incinerateStacks = 0;
+  const phaseKey=worldRun.active?`humanos-${worldRun.fase}`:(towerMode?`tower-${towerFloor}`:`stage-${idx}`);
+  if(incineratePhaseKey!==phaseKey){ incinerateActive=false; incinerateStacks=0; incineratePhaseKey=phaseKey; }
   enemyVulnerableTurns = 0; enemyVulnerableMult = 1;
   stoneArmorTurns = 0;
   manualTarget = null; lastDamageDealt = 0; heroLastDamage = {}; nextAttackMult = {};
@@ -2681,7 +2730,7 @@ function loadStage(idx){
   updateBattleToolLabels();
   renderStatusTray();
   stageTurns=0; stageCollected=0;
-  startMissionTimer();
+  missionStartMs=0; missionPausedAt=0; missionPausedTotal=0; stopMissionTimer();
   /* FÁCIL: o tabuleiro (power-ups e blocos) continua da missão anterior da fase */
   const manterTabuleiro = carryBoardNext && difficulty==='facil' && worldRun.active &&
     worldRun.nivel>1 && Array.isArray(board) && board.length===SIZE;
@@ -2833,13 +2882,13 @@ function hitAdjacentObstacles(cells){
     const [r,c]=key.split('_').map(Number);
     const gemEl=boardEl.querySelector(`.gem[data-r="${r}"][data-c="${c}"]`);
     if(meta.hits<=0){
-      delete obstaclesMeta[key];
+      if(obstaclesMeta[key]?.type!=='sombra') delete obstaclesMeta[key];
       board[r][c]=-1;
       if(gemEl) gemEl.classList.add('matched');
       if(meta.type==='copas'){
         /* Ás de Copas estourado: 5% da vida ATUAL de dano */
         const danoCopas=Math.max(1,Math.round(playerHP*0.05));
-        playerHP=Math.max(0,playerHP-danoCopas); updatePlayerHP();
+        playerHP=Math.max(0,playerHP-danoCopas); if(danoCopas>0) stageTookDamage=true; updatePlayerHP();
         showFloatDamage(danoCopas,'playerHpAnchor',true);
         setBattleStatus(T(`❤ O Ás de Copas explodiu! Você perdeu ${danoCopas} de vida.`,`❤ The Ace of Hearts burst! You lost ${danoCopas} HP.`,`❤ ¡El As de Copas estalló! Perdiste ${danoCopas} de vida.`),'damage');
         if(playerHP<=0) setTimeout(()=>handlePlayerDefeat(),300);
@@ -3504,6 +3553,8 @@ function handleTapSelect(r,c){
 }
 
 function trySwap(from,to){
+  if(busy || gamePaused || stageTransitioning || playerHP<=0) return;
+  if(!missionStartMs) startMissionTimer();
   if(board[from.r]?.[from.c]===-4||board[to.r]?.[to.c]===-4){
     renderBoard(); sfxInvalid(); haptic([18,30,18]);
     setBattleStatus(T('Blocos de gelo e pedra não podem ser movidos: quebre-os com combinações vizinhas.','Ice and stone blocks cannot be moved: break them with adjacent matches.','Los bloques de hielo y piedra no se pueden mover: rómpelos con combinaciones vecinas.'));
@@ -3714,6 +3765,7 @@ function hasValidMoves(){
       for(const [dr,dc] of [[0,1],[1,0]]){
         const nr=r+dr,nc=c+dc;
         if(nr>=SIZE||nc>=SIZE) continue;
+        if(board[r][c]===-4||board[nr][nc]===-4) continue;
         const powerHere=powerUps[cellKey(r,c)],powerThere=powerUps[cellKey(nr,nc)];
         if(powerHere?.type==='colorBomb'||powerThere?.type==='colorBomb'||(powerHere&&powerThere)) return true;
         swapCells({r,c},{r:nr,c:nc});
@@ -3759,6 +3811,7 @@ function queuePassivesForNextRoom(idx,abilities){
 
 function finishRoomIfCleared(reason=T('Todos os inimigos foram derrotados.','All enemies have been defeated.','Todos los enemigos fueron derrotados.')){
   if(!allEnemiesDefeated() || roomClearScheduled || stageTransitioning) return false;
+  if(board.some(row=>row.some(v=>v===-1))){ collapseAndRefill(); renderBoard(); }
   roomClearScheduled=true;
   busy=true;
   comboStep=0;
@@ -3799,7 +3852,7 @@ async function resolveMatches(){
   if(matches.length===0){
     if(allEnemiesDefeated()){ finishRoomIfCleared(); return; }
     if(!hasValidMoves()) shuffleBoard();
-    busy=false; afterPlayerTurn(); return;
+    afterPlayerTurn(); return;
   }
   const targetColor=matches.map(cell=>board[cell.r][cell.c]).find(color=>color>=0)??ACTIVE[0];
   const createdPlans=forced?[]:planCreatedPowerUps(groups);
@@ -3820,6 +3873,7 @@ async function resolveMatches(){
   }
 
   const colorCounts = {};
+  let boardRefilledEarly = false;
   matches.forEach(m=>{
     const color = board[m.r][m.c];
     if(color>=0) colorCounts[color]=(colorCounts[color]||0)+1;
@@ -3834,14 +3888,19 @@ async function resolveMatches(){
     } else {
       board[m.r][m.c]=-1;
       delete powerUps[key];
-      delete obstaclesMeta[key];
+      if(obstaclesMeta[key]?.type!=='sombra') delete obstaclesMeta[key];
     }
   });
   hitAdjacentObstacles(matches);
   stageCollected+=Object.values(colorCounts).reduce((a,b)=>a+b,0);
   coachAdvanceOnMatch();
 
-  await wait(420);
+  await wait(220);
+  if(epoch!==combatEpoch) return;
+  collapseAndRefill();
+  renderBoard();
+  boardRefilledEarly = true;
+  await wait(120);
   if(epoch!==combatEpoch) return;
 
   const multiplier = 1 + 0.25*(comboStep-1);
@@ -3905,7 +3964,7 @@ async function resolveMatches(){
   }
 
   if(allEnemiesDefeated()){ finishRoomIfCleared(); return; }
-  collapseAndRefill();
+  if(!boardRefilledEarly) collapseAndRefill();
   renderBoard();
   await wait(380);
   if(epoch===combatEpoch) resolveMatches();
@@ -4331,7 +4390,7 @@ function triggerAbility(idx, a, options={}){
     case 'paralisiaTempo': { const ti=currentTargetIndex(); if(ti>=0){ enemies[ti].timeStopped=true; setBattleStatus(T(`O tempo de ${L(enemies[ti].name)} foi paralisado!`,`${L(enemies[ti].name)}'s time has been frozen!`,`¡El tiempo de ${L(enemies[ti].name)} fue paralizado!`)); } break; }
     case 'sombrasDevoradoras': sombrasDevoradorasOn=true; break;
     case 'laminaDimensional': {
-      enemies.forEach((e2,i2)=>{ if(e2.hp>0) applyDamageToEnemy(Math.max(1,Math.round(e2.maxHp*0.10)),0,i2); });
+      enemies.forEach((e2,i2)=>{ if(e2.hp>0) applyDamageToEnemy(Math.max(1,Math.round(e2.maxHp*0.10)),idx,i2); });
       pendingDimensional.push([8,6,4,2]);
       setBattleStatus(T('As sombras dimensionais avançam sobre as próximas missões...','Dimensional shadows advance upon the coming missions...','Las sombras dimensionales avanzan sobre las próximas misiones...'));
       break;
@@ -4346,7 +4405,7 @@ function triggerAbility(idx, a, options={}){
       setBattleStatus(T(`Os inimigos receberão ${enemyVulnerableMult}× de dano por ${enemyVulnerableTurns} turno(s).`,`Enemies will take ${enemyVulnerableMult}× damage for ${enemyVulnerableTurns} turn(s).`,`Los enemigos recibirán ${enemyVulnerableMult}× de daño durante ${enemyVulnerableTurns} turno(s).`),'support');
       break;
     case 'damageTargetPercent': {
-      const alvo=currentTargetIndex();
+      const alvo=lastEnemyAttacker!==null && enemies[lastEnemyAttacker]?.hp>0 ? lastEnemyAttacker : currentTargetIndex();
       if(alvo>=0&&enemies[alvo]&&enemies[alvo].hp>0) applyDamageToEnemy(Math.max(1,Math.round(enemies[alvo].maxHp*(a.valor||.1))),idx,alvo);
       break;
     }
@@ -4470,7 +4529,11 @@ function addDot(dmgPerTurn, turns, targetIdx=currentTargetIndex(), label=T('Dano
   enemyDots.push({dmgPerTurn, turns, targetIdx, label});
   renderStatusTray();
 }
-function addBuff(mult, turns){ atkBuffMult = mult; atkBuffTurns = turns; }
+function addBuff(mult, turns){
+  const numeric=Number(mult)||0;
+  atkBuffMult = numeric>1 ? numeric-1 : numeric;
+  atkBuffTurns = turns;
+}
 
 function showCombo(step){
   comboTextEl.textContent = `COMBO x${step}`;
@@ -4510,7 +4573,8 @@ function applyDamageToEnemy(dmg, colorIdx, targetIdxOverride){
   const idx = (targetIdxOverride!==undefined && targetIdxOverride!==null) ? targetIdxOverride : currentTargetIndex();
   if(idx===-1 || !enemies[idx] || enemies[idx].hp<=0) return;
   const enemy = enemies[idx];
-  const finalDamage=Math.max(0,Math.round(dmg*(enemyVulnerableTurns>0?enemyVulnerableMult:1)*(1+0.2*queenFuryStacks)));
+  const attemptedDamage=Math.max(0,Math.round(dmg*(enemyVulnerableTurns>0?enemyVulnerableMult:1)*(1+0.2*queenFuryStacks)));
+  const finalDamage=Math.min(enemy.hp,attemptedDamage);
   if(incinerateActive && colorIdx!==null && colorIdx!==undefined && targetIdxOverride===undefined){
     incinerateStacks += 50;
     addDot(incinerateStacks,3,idx,T('Incinerar','Incinerate','Incinerar'));
@@ -4606,6 +4670,7 @@ function advanceTimedDefense(){
 }
 
 function handlePlayerDefeat(){
+  stopMissionTimer();
   /* 💧 Lágrima da Eternidade: renasce UMA vez com 50% da vida */
   if(eternalReviveCharges>0){
     eternalReviveCharges--;
@@ -4676,6 +4741,7 @@ function enemyCounterAttack(){
     if(playerHP<=0 || passo>=fila.length){ encerrar(); return; }
     const idx=fila[passo++];
     const enemy=enemies[idx];
+    lastEnemyAttacker = idx;
     if(!enemy || enemy.hp<=0){ proximo(); return; }
     if(enemy.timeStopped && enemy.hp>enemy.maxHp*0.25){
       setBattleStatus(T(`${L(enemy.name)} está com o tempo paralisado e não pode atacar.`,`${L(enemy.name)} is frozen in time and cannot attack.`,`${L(enemy.name)} tiene el tiempo paralizado y no puede atacar.`));
@@ -4714,6 +4780,7 @@ function enemyCounterAttack(){
       if(absorbed>0) pulseHpEffect('shield',900);
     }
     playerHP = Math.max(0, playerHP - dmg);
+    if(dmg>0) stageTookDamage=true;
     updatePlayerHP();
     if(dmg>0) pulseHpEffect('damage',800);
     if(dmg>0&&partyArenaEl){ partyArenaEl.classList.remove('party-hurt'); void partyArenaEl.offsetWidth; partyArenaEl.classList.add('party-hurt');
@@ -4788,6 +4855,7 @@ function launchVictoryConfetti(){
 
 function onStageCleared(){
   if(stageTransitioning) return;
+  stopMissionTimer();
   stageTransitioning = true;
   busy = true;
   combatEpoch++;
@@ -4906,9 +4974,12 @@ function onStageCleared(){
     }
     if(IS_DAILY_RUN && towerFloor>5){
       /* Desafio Diário concluído: 5 andares vencidos */
-      grantCoins(150); grantXp(60);
-      localStorage.setItem('12r_daily',JSON.stringify({date:todayKey(),combo:runStats.maxCombo}));
-      checkAchievements('daily');
+      let dailyRecord={}; try{ dailyRecord=JSON.parse(localStorage.getItem('12r_daily')||'{}'); }catch(e){}
+      if(dailyRecord.date!==todayKey()){
+        grantCoins(150); grantXp(60);
+        localStorage.setItem('12r_daily',JSON.stringify({date:todayKey(),combo:runStats.maxCombo}));
+        checkAchievements('daily');
+      }
       const shareBtn=document.getElementById('shareDailyBtn');
       if(shareBtn) shareBtn.style.display='inline-block';
       const gt=document.getElementById('grandClearTitle'), gx=document.getElementById('grandClearText');
@@ -4962,6 +5033,8 @@ function hideOverlay(id){ document.getElementById(id).classList.remove('show'); 
 
 function resetGame(){
   resetRunStats();
+  pendingDimensional=[];
+  incineratePhaseKey=null; incinerateActive=false; incinerateStacks=0;
   playerHP = PLAYER_MAX_HP; updatePlayerHP();
   ['stageClearOverlay','dungeonClearOverlay','defeatOverlay'].forEach(hideOverlay);
   selected=null; busy=false; comboStep=0;
@@ -4973,7 +5046,9 @@ function resetGame(){
 }
 
 function restartCurrentStage(){
-  playerHP = PLAYER_MAX_HP; updatePlayerHP();
+  const survivorHP = towerMode && difficulty==='pesadelo' ? Math.max(1,Math.min(PLAYER_MAX_HP,survivorStageStartHP||playerHP||1)) : PLAYER_MAX_HP;
+  playerHP = survivorHP; updatePlayerHP();
+  pendingDimensional=[];
   ['stageClearOverlay','dungeonClearOverlay','defeatOverlay'].forEach(hideOverlay);
   selected=null; busy=false; comboStep=0;
   heroProgress = {}; firedTiers = {}; heroReady = {}; heroActiveQueue = {};
@@ -5010,7 +5085,7 @@ function renderSelectGrid(){
     membros.sort((a,b)=>(b.stars||0)-(a.stars||0)); /* maior raridade primeiro */
     const lider=KINGDOMS.find(k=>k.id===deckId);
     const section=document.createElement('div');
-    section.className='select-deck-section'+(selectDeckOpen[deckId]?' open':'');
+    section.className='select-deck-section deck-'+deckId+(selectDeckOpen[deckId]?' open':'');
     const escolhidasNoDeck=membros.filter(k=>chosenIds.includes(KINGDOMS.indexOf(k))).length;
     const header=document.createElement('div');
     header.className='select-deck-header';
@@ -5186,7 +5261,10 @@ function closeAllPanels(){
 }
 function showMainMenu(){
   armTapGuard();
+  gamePaused=false;
   clearInterval(tempoSombrioTimer); tempoSombrioTimer=null;
+  pendingDimensional=[];
+  incineratePhaseKey=null; incinerateActive=false; incinerateStacks=0;
   stopMissionTimer();
   skipStory(); /* diálogos de missão nunca sobrevivem à volta ao menu */
   /* Torre força Pesadelo: devolve a dificuldade escolhida pelo jogador ao sair */
@@ -5212,6 +5290,8 @@ function showSelection(){
 function beginGame(startAt=0,restoredHP=null){
   armTapGuard();
   resetRunStats();
+  pendingDimensional=[];
+  incineratePhaseKey=null; incinerateActive=false; incinerateStacks=0;
   if(chosenIds.length!==4) return;
   ensureAudio();
   ACTIVE = [...chosenIds];
@@ -5262,7 +5342,7 @@ function renderGallery(){
     const lider=KINGDOMS.find(k=>k.id===deckId);
     const emBreve=deckId==='humanos'?Object.values(HUMANOS_CARDS).filter(c=>c.isCard):[];
     const section=document.createElement('div');
-    section.className='deck-section'+(galleryDeckOpen[deckId]?' open':'');
+    section.className='deck-section deck-'+deckId+(galleryDeckOpen[deckId]?' open':'');
     section.innerHTML=`<div class="deck-header" role="button" tabindex="0" aria-expanded="${galleryDeckOpen[deckId]?'true':'false'}" style="--realm:${lider?.color||'#d4af5a'}">
       <span class="deck-icon"><svg viewBox="0 0 24 24">${KINGDOM_ICON[deckId]||''}</svg></span>
       <b>${nomesDeck[deckId]||L(lider?.reino||deckId)}</b>
@@ -5445,9 +5525,9 @@ document.querySelectorAll('[data-close]').forEach(btn=>{
 document.querySelectorAll('.pro-overlay').forEach(panel=>{
   panel.addEventListener('click',e=>{ if(e.target===panel && panel.id!=='pauseScreen')panel.classList.remove('show'); });
 });
-document.getElementById('pauseBtn').addEventListener('click',()=>{ stopMusic(); openPanel('pauseScreen'); });
-document.getElementById('resumeBtn').addEventListener('click',()=>{ document.getElementById('pauseScreen').classList.remove('show'); if(!musicMuted)playStageMusic(stageIndex); });
-document.getElementById('pauseOptionsBtn').addEventListener('click',()=>{ document.getElementById('pauseScreen').classList.remove('show'); openPanel('optionsScreen'); });
+document.getElementById('pauseBtn').addEventListener('click',()=>{ gamePaused=true; pauseMissionClock(); stopMusic(); openPanel('pauseScreen'); });
+document.getElementById('resumeBtn').addEventListener('click',()=>{ gamePaused=false; resumeMissionClock(); document.getElementById('pauseScreen').classList.remove('show'); if(!musicMuted)playStageMusic(stageIndex); });
+document.getElementById('pauseOptionsBtn').addEventListener('click',()=>{ gamePaused=false; resumeMissionClock(); document.getElementById('pauseScreen').classList.remove('show'); openPanel('optionsScreen'); });
 document.getElementById('restartStageBtn').addEventListener('click',()=>{ document.getElementById('pauseScreen').classList.remove('show'); restartCurrentStage(); });
 document.getElementById('returnMenuBtn').addEventListener('click',showMainMenu);
 document.getElementById('volumeRange').addEventListener('input',e=>{ masterVolume=Number(e.target.value)/100; localStorage.setItem('12r_volume',String(e.target.value)); });
@@ -5464,10 +5544,11 @@ document.addEventListener('keydown',e=>{
   if(document.getElementById('cardModal').classList.contains('show')){closeCardModalFn();return;}
   const open=[...document.querySelectorAll('.pro-overlay.show')].pop();
   if(open && open.id!=='pauseScreen'){open.classList.remove('show');return;}
-  if(document.getElementById('gameScreen').style.display==='flex')openPanel('pauseScreen');
+  if(document.getElementById('gameScreen').style.display==='flex'){ gamePaused=true; pauseMissionClock(); openPanel('pauseScreen'); }
 });
 document.addEventListener('visibilitychange',()=>{
   if(document.hidden && document.getElementById('gameScreen').style.display==='flex'){
+    gamePaused=true; pauseMissionClock();
     stopMusic();
     openPanel('pauseScreen');
   }
@@ -5870,6 +5951,7 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
   }));
   applyLanguage();
   checkLoginReward();
+  if(IS_DAILY_RUN && difficulty!=='pesadelo'){ towerPrevDifficulty=difficulty; difficulty='pesadelo'; applyDifficultyUI(); }
   if(IS_DAILY_RUN){ towerMode=true; towerFloor=1; worldRun.active=false; pendingStage=0; showSelection(); } /* Diário = torre seeded de 5 andares */
   updateCoinBadge();
 
