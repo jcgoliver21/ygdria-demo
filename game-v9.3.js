@@ -5780,7 +5780,14 @@ setBattlePhase('idle');
 applySettings();
 renderSelectGrid();
 refreshContinueButton();
+const optionsPanelAtBoot=document.getElementById('optionsScreen');
+const reopenOptionsAfterBoot=optionsPanelAtBoot?.dataset.pendingBootOpen==='1';
 showMainMenu({guard:false});
+document.body.dataset.gameReady='1';
+if(reopenOptionsAfterBoot){
+  delete optionsPanelAtBoot.dataset.pendingBootOpen;
+  openPanel('optionsScreen');
+}
 if(['127.0.0.1','localhost'].includes(location.hostname)&&new URLSearchParams(location.search).get('qa')==='tapguard') armTapGuard(5000);
 
 /* ============================================================
