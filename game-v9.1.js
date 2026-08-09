@@ -1529,15 +1529,20 @@ const HERO_ACTIONS = Object.freeze({
   hit:    { frames:3, duration:300, loop:false }
 });
 const MAX_ACTIVE_FX = 28;
+const heroFacingOverrides = new Set();
+
+function heroIsFlipped(k){
+  return Boolean(k.heroFlip) !== heroFacingOverrides.has(k.id);
+}
 
 function spriteMarkup(k, action='idle'){
   const spec = k.sprites?.[action];
   if(spec?.src){
     const meta = {...HERO_ACTIONS[action], ...spec};
     const steps = Math.max(1, Number(meta.frames||1)-1);
-    return `<div class="hero-sprite-sheet" aria-hidden="true" style="--sprite-url:url('${meta.src}');--sprite-frames:${Math.max(1,Number(meta.frames||1))};--sprite-steps:${steps};--sprite-duration:${Number(meta.duration||520)}ms"></div>`;
+    return `<div class="hero-sprite-sheet${heroIsFlipped(k)?' flip':''}" aria-hidden="true" style="--sprite-url:url('${meta.src}');--sprite-frames:${Math.max(1,Number(meta.frames||1))};--sprite-steps:${steps};--sprite-duration:${Number(meta.duration||520)}ms"></div>`;
   }
-  if(k.sprite) return `<img class="hero-sprite-image${k.heroFlip?' flip':''}" src="${k.sprite}" alt="${L(k.nome)}">`;
+  if(k.sprite) return `<img class="hero-sprite-image${heroIsFlipped(k)?' flip':''}" src="${k.sprite}" alt="${L(k.nome)}">`;
   return scopeSvg(CHIBI_SVG[k.id],k.id);
 }
 
@@ -1633,7 +1638,7 @@ function renderPartyArena(){
     const ag = battleGemColors[idx];
     const gemC=ag?ag.c:(k.orbColor||k.color), gemL=ag?ag.l:(k.orbColorLight||k.colorLight), gemD=ag?ag.d:(k.orbColorDark||k.colorDark);
     const unit = document.createElement('div');
-    unit.className = 'unit hero-unit rarity-'+(k.stars||0);
+    unit.className = 'unit hero-unit rarity-'+(k.stars||0)+(k.id.endsWith('-jovem')?' hero-young':'');
     unit.id = 'party-'+k.id;
     unit.style.setProperty('--realm',k.color);
     unit.style.setProperty('--aura-inner',k.color);
@@ -1657,7 +1662,7 @@ function renderPartyArena(){
     avatarEl.style.cursor = 'pointer';
     avatarEl.setAttribute('role','button');
     avatarEl.setAttribute('tabindex','0');
-    avatarEl.setAttribute('aria-label',T(`${L(k.nome)}: abrir habilidades ativas carregadas`,`${L(k.nome)}: open charged active abilities`,`${L(k.nome)}: abrir habilidades activas cargadas`));
+    avatarEl.setAttribute('aria-label',T(`${L(k.nome)}: espelhar personagem; se houver habilidade carregada, abrir a seleção`,`${L(k.nome)}: mirror character; if an ability is charged, open its selection`,`${L(k.nome)}: espejar personaje; si hay una habilidad cargada, abrir la selección`));
     avatarEl.addEventListener('click', ()=>onHeroAvatarClick(idx));
     avatarEl.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); onHeroAvatarClick(idx); } });
   });
@@ -1747,8 +1752,15 @@ function updateHeroProgressUI(idx){
 }
 
 function onHeroAvatarClick(idx){
-  if(!heroReady[idx] || busy) return;
-  openAbilityPicker(idx);
+  if(busy) return;
+  const k=KINGDOMS[idx];
+  if(!k) return;
+  if(heroFacingOverrides.has(k.id)) heroFacingOverrides.delete(k.id);
+  else heroFacingOverrides.add(k.id);
+  const avatar=document.getElementById('party-'+k.id+'-avatar');
+  if(avatar) avatar.innerHTML=spriteMarkup(k,avatar.dataset.action||'idle');
+  if(heroReady[idx]) openAbilityPicker(idx);
+  else setBattleStatus(T(`${L(k.nome)} mudou o lado para o qual está olhando.`,`${L(k.nome)} changed the direction they are facing.`,`${L(k.nome)} cambió el lado hacia el que mira.`),'system');
 }
 
 function abilityCanBeUsed(a){

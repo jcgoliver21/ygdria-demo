@@ -2945,6 +2945,35 @@ body.viz-timer-off .mission-timer{ display:none!important; }
   height:26px!important;
   min-width:26px!important;
 }
+
+/* Escala visual comum: Roland é a referência dos adultos; jovens ficam
+   discretamente menores, sempre ancorados pelos pés. */
+body.game-active .hero-sprite-image{
+  width:auto!important;
+  height:100%!important;
+  max-width:none!important;
+  max-height:100%!important;
+  object-position:50% 100%!important;
+}
+body.game-active .hero-unit.hero-young .hero-sprite-image{
+  height:88%!important;
+  max-height:88%!important;
+}
+.hero-sprite-sheet.flip{transform:scaleX(-1);transform-origin:50% 100%}
+
+/* A segunda linha do HUD usa toda a largura: objetivo e recorde à esquerda,
+   controles agrupados no extremo direito. */
+.mission-metrics{
+  width:100%!important;
+  justify-content:flex-start!important;
+}
+.mission-metrics .stage-objective{order:1!important}
+.mission-metrics .combo-record{order:2!important}
+.mission-metrics .mission-actions{
+  order:3!important;
+  margin-left:auto!important;
+  justify-content:flex-end!important;
+}
 .battle-tools-close{
   grid-column:1/-1!important;
   justify-self:end!important;
