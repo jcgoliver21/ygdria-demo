@@ -10,6 +10,7 @@
 - Acessibilidade ampliada: alto contraste, texto maior e redução de flashes.
 - Interface, botões, superfícies e HUD padronizados para celular e desktop.
 - Pré-carregamento progressivo de imagens para reduzir uso de memória e dados móveis.
+- Correção v9.3.1: o botão Opções responde já no primeiro toque após a abertura do menu.
 
 ## Compatibilidade
 

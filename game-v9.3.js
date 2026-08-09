@@ -5375,8 +5375,10 @@ function closeAllPanels(){
   document.querySelectorAll('.pro-overlay.show').forEach(el=>el.classList.remove('show'));
   document.getElementById('cardModal').classList.remove('show');
 }
-function showMainMenu(){
-  armTapGuard();
+function showMainMenu(options={}){
+  /* Na inicialização não existe toque anterior para vazar. Armar o bloqueio aqui
+     fazia o primeiro toque rápido em Opções ser descartado no celular. */
+  if(options?.guard!==false) armTapGuard();
   gamePaused=false;
   clearInterval(tempoSombrioTimer); tempoSombrioTimer=null;
   pendingDimensional=[];
@@ -5753,7 +5755,7 @@ setBattlePhase('idle');
 applySettings();
 renderSelectGrid();
 refreshContinueButton();
-showMainMenu();
+showMainMenu({guard:false});
 
 /* ============================================================
    v9.1 · MUNDOS — Reino dos Humanos (Terra dos Reguladores de Ygdria)
