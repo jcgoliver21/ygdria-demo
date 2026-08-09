@@ -9,7 +9,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
 <link rel="apple-touch-icon" href="assets/icon.svg">
-<link rel="stylesheet" href="styles-v9.3.css?v=9.3.2">
+<link rel="stylesheet" href="styles-v9.3.css?v=9.3.3">
 </head>
 <body>
 <div class="scene-bg" data-screen="menu"></div>
@@ -30,7 +30,7 @@
       <button class="menu-btn" id="towerBtn"><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 21v-8.2L7 11.6V6.4h2.2v1.8h1.6V6.4h2.4v1.8h1.6V6.4H17v5.2l-1.6 1.2V21h-2.6v-3.4a.8.8 0 10-1.6 0V21zM11 2.2h2l1 2.4h-4z"/></svg></span><span class="menu-label">Torre de Acesso à Eternidade <small class="menu-hint" id="towerHint">(Torre Infinita) · Survivor no Pesadelo</small></span><span>›</span></button>
       <button class="menu-btn" id="shopBtn"><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="6.1" fill="#1a1226" opacity=".35"/><path d="M12 7.4l1.2 2.5 2.7.4-2 1.9.5 2.7-2.4-1.3-2.4 1.3.5-2.7-2-1.9 2.7-.4z" fill="#1a1226" opacity=".6"/></svg></span><span class="menu-label">Loja <small class="menu-hint">Consumíveis de batalha</small></span><span>›</span></button>
       <button class="menu-btn" id="achBtn"><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.4 2.4h7.2L13.4 9h-2.8zM7 2.4h1.2L10 8.2a6 6 0 00-2.5 1.4zm10 0h-1.2L14 8.2a6 6 0 012.5 1.4zM12 9.6a5.5 5.5 0 105.5 5.5A5.5 5.5 0 0012 9.6zm0 2.3l1 2 2.2.3-1.6 1.5.4 2.2-2-1.1-2 1.1.4-2.2-1.6-1.5 2.2-.3z"/></svg></span><span class="menu-label">Conquistas</span><span>›</span></button>
-      <button class="menu-btn" id="optionsBtn"><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><g><rect x="10.9" y="2" width="2.2" height="3.6" rx=".9"/><rect x="10.9" y="2" width="2.2" height="3.6" rx=".9" transform="rotate(45 12 12)"/><rect x="10.9" y="2" width="2.2" height="3.6" rx=".9" transform="rotate(90 12 12)"/><rect x="10.9" y="2" width="2.2" height="3.6" rx=".9" transform="rotate(135 12 12)"/><rect x="10.9" y="2" width="2.2" height="3.6" rx=".9" transform="rotate(180 12 12)"/><rect x="10.9" y="2" width="2.2" height="3.6" rx=".9" transform="rotate(225 12 12)"/><rect x="10.9" y="2" width="2.2" height="3.6" rx=".9" transform="rotate(270 12 12)"/><rect x="10.9" y="2" width="2.2" height="3.6" rx=".9" transform="rotate(315 12 12)"/><circle cx="12" cy="12" r="5.4"/><circle cx="12" cy="12" r="2.3" fill="#1a1226" opacity=".55"/></g></svg></span><span class="menu-label">Opções</span><span>›</span></button>
+      <button class="menu-btn" id="optionsBtn" type="button" data-tap-guard-bypass><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><g><rect x="10.9" y="2" width="2.2" height="3.6" rx=".9"/><rect x="10.9" y="2" width="2.2" height="3.6" rx=".9" transform="rotate(45 12 12)"/><rect x="10.9" y="2" width="2.2" height="3.6" rx=".9" transform="rotate(90 12 12)"/><rect x="10.9" y="2" width="2.2" height="3.6" rx=".9" transform="rotate(135 12 12)"/><rect x="10.9" y="2" width="2.2" height="3.6" rx=".9" transform="rotate(180 12 12)"/><rect x="10.9" y="2" width="2.2" height="3.6" rx=".9" transform="rotate(225 12 12)"/><rect x="10.9" y="2" width="2.2" height="3.6" rx=".9" transform="rotate(270 12 12)"/><rect x="10.9" y="2" width="2.2" height="3.6" rx=".9" transform="rotate(315 12 12)"/><circle cx="12" cy="12" r="5.4"/><circle cx="12" cy="12" r="2.3" fill="#1a1226" opacity=".55"/></g></svg></span><span class="menu-label">Opções</span><span>›</span></button>
       <button class="menu-btn" id="helpBtn"><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5.4C10.2 4 7.8 3.4 4 3.4v14.4c3.8 0 6.2.6 8 2 1.8-1.4 4.2-2 8-2V3.4c-3.8 0-6.2.6-8 2zm-1 12.2c-1.5-.7-3.3-1-5.6-1.1V5.1c2.3.1 4.1.5 5.6 1.2zm7.6-1.1c-2.3.1-4.1.4-5.6 1.1V6.3c1.5-.7 3.3-1.1 5.6-1.2z"/></svg></span><span class="menu-label">Como jogar</span><span>›</span></button>
     </div>
     <button class="account-chip" id="accountChip" type="button">🎭 Convidado</button>
@@ -274,7 +274,7 @@
     <h2 class="dialog-title" id="pauseTitle" style="margin-bottom:16px;">Jogo pausado</h2>
     <div class="menu-actions">
       <button class="menu-btn primary" id="resumeBtn"><span class="menu-icon">▶</span><span class="menu-label">Continuar batalha</span></button>
-      <button class="menu-btn" id="pauseOptionsBtn"><span class="menu-icon">⚙</span><span class="menu-label">Opções</span></button>
+      <button class="menu-btn" id="pauseOptionsBtn" type="button" data-tap-guard-bypass><span class="menu-icon">⚙</span><span class="menu-label">Opções</span></button>
       <button class="menu-btn" id="restartStageBtn"><span class="menu-icon">↻</span><span class="menu-label">Reiniciar fase</span></button>
       <button class="menu-btn" id="photoModeBtn"><span class="menu-icon">📷</span><span class="menu-label">Modo foto</span></button>
       <button class="menu-btn" id="returnMenuBtn"><span class="menu-icon">⌂</span><span class="menu-label">Menu principal</span></button>
@@ -406,8 +406,8 @@
   </div>
 </div>
 <script>window.addEventListener('error',function(e){(window.__bootErrors=window.__bootErrors||[]).push({m:String(e.message).slice(0,200),l:e.lineno,c:e.colno})});</script>
-<script src="v9.3-config.js?v=9.3.2"></script>
-<script src="game-v9.3.js?v=9.3.2" defer></script>
+<script src="v9.3-config.js?v=9.3.3"></script>
+<script src="game-v9.3.js?v=9.3.3" defer></script>
 
 </body>
 </html>

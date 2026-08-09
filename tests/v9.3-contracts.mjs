@@ -14,14 +14,14 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v9.3',()=>{
-  assert.match(html,/styles-v9\.3\.css\?v=9\.3\.2/);
-  assert.match(html,/v9\.3-config\.js\?v=9\.3\.2/);
-  assert.match(html,/game-v9\.3\.js\?v=9\.3\.2/);
+  assert.match(html,/styles-v9\.3\.css\?v=9\.3\.3/);
+  assert.match(html,/v9\.3-config\.js\?v=9\.3\.3/);
+  assert.match(html,/game-v9\.3\.js\?v=9\.3\.3/);
   assert.doesNotMatch(html+sw,/game-v9\.1|styles-v9\.1|spritehud2/);
 });
 
 check('cache offline da v9.3 é isolado',()=>{
-  assert.match(sw,/12r-v9\.3\.2/);
+  assert.match(sw,/12r-v9\.3\.3/);
   for(const file of ['play.html','styles-v9.3.css','v9.3-config.js','game-v9.3.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -80,6 +80,10 @@ check('IDs do HTML são únicos',()=>{
 check('menu inicial não bloqueia o primeiro toque',()=>{
   assert.match(game,/showMainMenu\(\{guard:false\}\);/);
   assert.match(game,/if\(options\?\.guard!==false\) armTapGuard\(\);/);
+  assert.match(game,/closest\('\[data-tap-guard-bypass\]'\)/);
+  for(const id of ['optionsBtn','pauseOptionsBtn']) assert.match(html,new RegExp(`id="${id}"[^>]+data-tap-guard-bypass`));
+  assert.match(game,/armTapGuard:\(duration=2000\)=>\{ armTapGuard\(duration\);/);
+  assert.match(game,/get\('qa'\)==='tapguard'\) armTapGuard\(5000\)/);
 });
 
 console.log(`v9.3 contracts: ${checks.length} verificações aprovadas`);

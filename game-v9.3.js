@@ -2518,9 +2518,10 @@ function execStageAbility(e, sa){
 /* Escudo anti tap-through: após trocas de tela, ignora cliques por 350ms para o
    toque que iniciou a transição não "vazar" no botão que aparece por baixo. */
 let tapGuardUntil=0;
-function armTapGuard(){ tapGuardUntil=performance.now()+350; }
+function armTapGuard(duration=350){ tapGuardUntil=performance.now()+Math.max(0,duration); }
 document.addEventListener('click',e=>{
-  if(performance.now()<tapGuardUntil){ e.stopPropagation(); e.preventDefault(); }
+  const bypass=e.target instanceof Element&&e.target.closest('[data-tap-guard-bypass]');
+  if(performance.now()<tapGuardUntil&&!bypass){ e.stopPropagation(); e.preventDefault(); }
 },true);
 
 /* ===== v9.1 · FUNCIONALIDADES NOVAS ===== */
@@ -5758,6 +5759,7 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
       statuses:{playerShield,enemyBlindTurns,reflectTurns,invulnerableTurns,lifestealCharges,lastDragonRitual,incinerateActive,incinerateStacks,musicMoodMode},
       busy,stageTransitioning,battlePhase,canAcceptPlayerInput:canAcceptPlayerInput(),graphicsQuality:resolvedGraphicsQuality(),version:APP_VERSION
     }),
+    armTapGuard:(duration=2000)=>{ armTapGuard(duration); return performance.now()<tapGuardUntil; },
     grantEnergy:(heroIdx,amount=100)=>{
       heroProgress[heroIdx]=Math.max(0,Math.min(100,amount));
       heroReady[heroIdx]=heroProgress[heroIdx]>=100;
@@ -5779,6 +5781,7 @@ applySettings();
 renderSelectGrid();
 refreshContinueButton();
 showMainMenu({guard:false});
+if(['127.0.0.1','localhost'].includes(location.hostname)&&new URLSearchParams(location.search).get('qa')==='tapguard') armTapGuard(5000);
 
 /* ============================================================
    v9.1 · MUNDOS — Reino dos Humanos (Terra dos Reguladores de Ygdria)
@@ -6534,6 +6537,6 @@ if(new URLSearchParams(location.search).get('qa')==='smoke'){
 /* v9.1 · PWA: registra o service worker (apenas em http/https) */
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
+    navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(reg=>reg.update()).catch(() => {});
   });
 }
