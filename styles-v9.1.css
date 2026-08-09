@@ -2904,3 +2904,122 @@ body.viz-timer-off .mission-timer{ display:none!important; }
   display:block!important;
   white-space:nowrap!important;
 }
+
+/* HUD: objetivo, recorde e controles compartilham uma única linha e altura. */
+.mission-metrics{
+  display:flex!important;
+  align-items:center!important;
+  gap:4px!important;
+  min-width:0!important;
+}
+.mission-metrics .stage-objective,
+.mission-metrics .combo-record{
+  display:flex!important;
+  align-items:center!important;
+  height:26px!important;
+  min-height:26px!important;
+  padding:2px 6px!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  white-space:nowrap!important;
+}
+.mission-metrics .stage-objective{
+  flex:0 1 auto!important;
+  justify-content:flex-start!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.mission-metrics .combo-record{
+  flex:0 0 auto!important;
+  justify-content:flex-start!important;
+}
+.mission-metrics .mission-actions{
+  flex:0 0 auto!important;
+  height:26px!important;
+  margin-left:auto!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+}
+.mission-actions .icon-btn{
+  width:26px!important;
+  height:26px!important;
+  min-width:26px!important;
+}
+.battle-tools-close{
+  grid-column:1/-1!important;
+  justify-self:end!important;
+  width:auto!important;
+  min-width:72px!important;
+  color:#ffd9df!important;
+  border-color:rgba(255,120,145,.58)!important;
+  background:rgba(80,12,30,.72)!important;
+}
+
+/* Personagens do Jogo: coleção em colunas e ampliação pelo modal. */
+.characters-game-grid{
+  grid-template-columns:repeat(auto-fill,minmax(98px,1fr))!important;
+  gap:8px!important;
+}
+.character-game-card{
+  display:block!important;
+  min-height:0!important;
+  padding:6px!important;
+  cursor:pointer!important;
+  text-align:center!important;
+}
+.character-game-card .gallery-thumb-wrap{
+  width:100%!important;
+  height:118px!important;
+  aspect-ratio:auto!important;
+  margin:0!important;
+  grid-row:auto!important;
+  background:radial-gradient(circle at 50% 35%,rgba(255,255,255,.11),rgba(5,3,10,.78));
+}
+.character-game-card .gallery-thumb-wrap img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+}
+.character-game-card b,
+.character-game-card small{
+  display:block!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+}
+.character-game-card b{margin-top:5px!important;font-size:8px!important;line-height:1.15!important}
+.character-game-card small{margin-top:2px!important;font-size:6.5px!important;line-height:1.15!important}
+.character-expand{
+  position:absolute;
+  right:4px;
+  bottom:4px;
+  width:22px;
+  height:22px;
+  display:grid;
+  place-items:center;
+  border-radius:7px;
+  color:#fff4cf;
+  background:rgba(8,5,14,.76);
+  border:1px solid rgba(235,205,125,.55);
+}
+.card-modal.character-view .card-modal-inner{
+  grid-template-columns:1fr!important;
+  width:min(96vw,760px)!important;
+}
+.card-modal.character-view .card-modal-inner img{
+  height:min(82dvh,760px)!important;
+  object-fit:contain!important;
+}
+.card-modal.character-view .card-detail-copy{align-self:start!important}
+.card-modal.character-view .card-modal-name,
+.card-modal.character-view .card-modal-classe{text-align:center!important}
+
+@media (max-width:520px){
+  .mission-metrics{gap:3px!important}
+  .mission-metrics .stage-objective,
+  .mission-metrics .combo-record{height:25px!important;min-height:25px!important;padding:2px 4px!important}
+  .mission-metrics .mission-actions{height:25px!important}
+  .mission-actions .icon-btn{width:25px!important;height:25px!important;min-width:25px!important}
+  .characters-game-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important}
+  .character-game-card .gallery-thumb-wrap{height:104px!important}
+}

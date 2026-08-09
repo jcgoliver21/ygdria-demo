@@ -239,6 +239,39 @@ const KINGDOMS = [
       {kind:'passive',gems:25, every:true, name:'Lança das Flores de Cerejeira', tipo:'damageFromLast', mult:3, desc:'Atinge o inimigo infligindo 3× o dano do último ataque (25%, 50%, 75%, 100%).'}
     ]
   },
+  /* ---- Jovens aprendizes oficiais ---- */
+  {
+    id:'berenice-jovem', iconId:'humanos', deck:'humanos', nome:'Berenice (Jovem)', reino:'Reino dos Humanos', classe:'A Herdeira da Eternidade · Aprendiz',
+    color:'#ff6fa5', colorLight:'#ffd7e8', colorDark:'#7c1f4b', gem:'gemPink', atk:2,
+    img:'assets/cards/berenice-jovem-card.webp', cardThumb:'assets/cards/berenice-jovem-card.webp',
+    sprite:'assets/characters/runtime-v7/berenice-jovem/single-1.webp', heroFlip:true, fxTheme:'chronal', rarity:'NORMAL', stars:1,
+    frase:'Um dia dominarei o tempo... e ninguém esquecerá meu nome.',
+    abilities:[]
+  },
+  {
+    id:'galateia-jovem', iconId:'luz', deck:'luz', nome:'Galatéia (Jovem)', reino:'Reino da Luz', classe:'A Futura Rainha de Ygdria · Aprendiz',
+    color:'#eef2f8', colorLight:'#ffffff', colorDark:'#78869b', gem:'gemDiamond', atk:2,
+    img:'assets/cards/galateia-jovem-card.webp', cardThumb:'assets/cards/galateia-jovem-card.webp',
+    sprite:'assets/characters/runtime-v7/galateia-jovem/single-1.webp', fxTheme:'radiant', rarity:'NORMAL', stars:1,
+    frase:'Um dia, minha luz alcançará todo este mundo.',
+    abilities:[]
+  },
+  {
+    id:'adriel-jovem', iconId:'humanos', deck:'humanos', nome:'Adriel (Jovem)', reino:'Reino dos Humanos', classe:'O Aprendiz de Cavaleiro · Aprendiz',
+    color:'#ff6fa5', colorLight:'#ffd7e8', colorDark:'#7c1f4b', gem:'gemPink', atk:2,
+    img:'assets/cards/adriel-jovem-card.webp', cardThumb:'assets/cards/adriel-jovem-card.webp',
+    sprite:'assets/characters/runtime-v7/adriel-jovem/single-1.webp', heroFlip:true, fxTheme:'rose', rarity:'NORMAL', stars:1,
+    frase:'Um dia me tornarei o cavaleiro mais forte de toda Ygdria.',
+    abilities:[]
+  },
+  {
+    id:'acqua-jovem', iconId:'agua', deck:'agua', nome:'Acqua (Jovem)', reino:'Reino da Água', classe:'A Pequena Voz dos Oceanos · Aprendiz',
+    color:'#174ea6', colorLight:'#91d5ff', colorDark:'#071b4d', gem:'gemSapphire', atk:2,
+    img:'assets/cards/acqua-jovem-card.webp', cardThumb:'assets/cards/acqua-jovem-card.webp',
+    sprite:'assets/characters/runtime-v7/acqua-jovem/single-1.webp', fxTheme:'tidal', rarity:'NORMAL', stars:1,
+    frase:'Um dia minha voz será ouvida por toda Ygdria.',
+    abilities:[]
+  },
   /* ---- Nova leva oficial: Jules, Kalander, Bernyce (Rosa) e Julius (Sombras) ---- */
   {
     id:'jules', iconId:'humanos', deck:'humanos', nome:'Jules', reino:'Reino dos Humanos', classe:'The Joker · Bobo da Corte',
@@ -1060,7 +1093,7 @@ const ACHIEVEMENTS=[
   {id:'combo8', nome:'Mestre do Combo', desc:'Alcance um combo ×8.', icon:'🔥', en:{nome:'Combo Master', desc:'Reach an x8 combo.'}},
   {id:'powerup10', nome:'Artífice', desc:'Crie 10 power-ups em uma run.', icon:'💠', en:{nome:'Artificer', desc:'Craft 10 power-ups in one run.'}},
   {id:'colecionador', nome:'Colecionador', desc:'Veja as 20 cartas na galeria.', icon:'🎴', en:{nome:'Collector', desc:'View all 20 cards in the gallery.'}},
-  {id:'bestia10', nome:'Caçador de Ygdria', desc:'Registre 10 inimigos no bestiário.', icon:'🏹', en:{nome:'Hunter of Ygdria', desc:'Record 10 enemies in the bestiary.'}},
+  {id:'bestia10', nome:'Caçador de Ygdria', desc:'Encontre 10 personagens do jogo.', icon:'🏹', en:{nome:'Hunter of Ygdria', desc:'Encounter 10 game characters.'}},
   {id:'streak3', nome:'Fiel à Coroa', desc:'Entre no jogo 3 dias seguidos.', icon:'📅', en:{nome:'Loyal to the Crown', desc:'Log in 3 days in a row.'}},
   {id:'lenda', nome:'Lenda de Ygdria', desc:'Complete o Desafio dos Chefes.', icon:'🏆', en:{nome:'Legend of Ygdria', desc:'Complete the Boss Challenge.'}},
   {id:'dungeon', nome:'Regulador de Ygdria', desc:'Conquiste as 10 fases do Reino dos Humanos.', icon:'👑', en:{nome:'Regulator of Ygdria', desc:'Conquer all 10 stages of the Human Realm.'}},
@@ -2195,11 +2228,11 @@ function computeBattleGemColors(){
   battleGemColors={};
   const fams={};
   ACTIVE.forEach(i=>{
-    /* Cada carta começa sempre com a gema do próprio reino/personagem.
-       A escada de cores só é aplicada quando houver repetição do reino. */
-    const own=realmOrb(KINGDOMS[i]?.id);
-    if(own) battleGemColors[i]={...own};
     const fam=KINGDOMS[i].iconId||KINGDOMS[i].id;
+    /* Cada carta começa sempre com a gema-base do próprio reino.
+       A escada de cores só é aplicada quando houver repetição do reino. */
+    const own=realmOrb(fam);
+    if(own) battleGemColors[i]={...own};
     (fams[fam]=fams[fam]||[]).push(i);
   });
   Object.entries(fams).forEach(([fam,idxs])=>{
@@ -2978,6 +3011,7 @@ const STATIC_I18N=[
   ["#stageObjective","Objetivo: derrote todos os inimigos","Objective: defeat all enemies","Objetivo: derrota a todos los enemigos"],
   ["#comboRecord","RECORDE ×0","BEST ×0","RÉCORD ×0"],
   ["#cycleTargetTool","🎯 Próximo alvo","🎯 Next target","🎯 Siguiente objetivo"],
+  ["#battleToolsClose","✕ Fechar","✕ Close","✕ Cerrar"],
   ["#hintTool","✦ Sugerir jogada","✦ Suggest move","✦ Sugerir jugada"],
   ["#gridTool","◇ Grade tática","◇ Tactical grid","◇ Cuadrícula táctica"],
   ["#fullscreenTool","⛶ Tela cheia","⛶ Fullscreen","⛶ Pantalla completa"],
@@ -5157,6 +5191,8 @@ function toggleHero(idx){
 function openCardModal(idx){
   window.__modalIdx=idx;
   const k = KINGDOMS[idx];
+  document.getElementById('cardModal').classList.remove('character-view');
+  document.getElementById('shareCardBtn').style.display='block';
   try{ const v=JSON.parse(localStorage.getItem('12r_seen')||'[]'); if(!v.includes(k.id)){ v.push(k.id); localStorage.setItem('12r_seen',JSON.stringify(v)); } }catch(e){}
   { const mi=document.getElementById('cardModalImg'); mi.onerror=()=>{ mi.onerror=null; mi.src=k.img; }; mi.src=IMGL(k.img); }
   document.getElementById('cardModalImg').alt = L(k.nome);
@@ -5188,9 +5224,28 @@ function openCardModal(idx){
   document.getElementById('closeCardModal').focus();
 }
 
+function openCharacterModal(src,nome,detalhe){
+  window.__modalIdx=null;
+  const modal=document.getElementById('cardModal');
+  modal.classList.add('character-view');
+  const img=document.getElementById('cardModalImg');
+  img.onerror=null;
+  img.src=src;
+  img.alt=nome;
+  document.getElementById('cardModalName').textContent=nome;
+  document.getElementById('cardModalClasse').textContent=detalhe||'';
+  document.getElementById('cardModalAbilities').innerHTML='';
+  document.getElementById('shareCardBtn').style.display='none';
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden','false');
+  document.getElementById('closeCardModal').focus();
+}
+
 function closeCardModalFn(){
-  document.getElementById('cardModal').classList.remove('show');
-  document.getElementById('cardModal').setAttribute('aria-hidden','true');
+  const modal=document.getElementById('cardModal');
+  modal.classList.remove('show','character-view');
+  modal.setAttribute('aria-hidden','true');
+  document.getElementById('shareCardBtn').style.display='block';
 }
 document.getElementById('closeCardModal').addEventListener('click', closeCardModalFn);
 document.getElementById('cardModal').addEventListener('click', (e)=>{
@@ -5386,30 +5441,48 @@ function renderGallery(){
     section.appendChild(dgrid);
     grid.appendChild(section);
   });
-  /* F2 · Bestiário: inimigos derrotados de Ygdria */
+  /* Personagens do Jogo: jogáveis e inimigos registrados, com visualização ampliada. */
   const best=bestiary();
-  const nomes=Object.keys(best);
-  if(nomes.length){
-    const bsec=document.createElement('div');
-    bsec.className='deck-section'+(galleryDeckOpen.__best?' open':'');
-    bsec.innerHTML=`<div class="deck-header" role="button" tabindex="0" style="--realm:#9a6a3a">
-      <span class="deck-icon"><svg viewBox="0 0 24 24"><path d="M12 2 2 7v10l10 5 10-5V7Z" fill="#fff" fill-opacity=".9"/></svg></span>
-      <b>${T('Bestiário de Ygdria','Bestiary of Ygdria','Bestiario de Ygdria')}</b>
-      <small>${nomes.length} ${T('derrotados','defeated','derrotados')}</small><span class="deck-caret" aria-hidden="true">▸</span></div>`;
-    const bh=bsec.querySelector('.deck-header');
-    bh.addEventListener('click',()=>{ galleryDeckOpen.__best=!galleryDeckOpen.__best; bsec.classList.toggle('open',!!galleryDeckOpen.__best); });
-    const bgrid=document.createElement('div');
-    bgrid.className='deck-grid';
-    nomes.forEach(nm=>{
-      const spr=Object.values(HUMANOS_ETYPES).find(t=>t.n===nm)?.sprite||Object.values(HUMANOS_CARDS).find(c=>c.nome===nm)?.sprite;
-      const bc=document.createElement('div');
-      bc.className='gallery-card beast-card';
-      bc.innerHTML=`<div class="gallery-thumb-wrap">${spr?`<img src="${spr}" alt="${L(nm)}" loading="lazy">`:'<span style="font-size:34px">👹</span>'}</div><b>${L(nm)}</b><small>${T('derrotado','defeated','derrotado')} ×${best[nm]}</small>`;
-      bgrid.appendChild(bc);
-    });
-    bsec.appendChild(bgrid);
-    grid.appendChild(bsec);
-  }
+  const personagens=KINGDOMS.map(k=>({
+    nome:L(k.nome),
+    spr:k.sprite||k.cardThumb||k.img,
+    detalhe:L(k.reino)+' · '+T('Jogável','Playable','Jugable')
+  }));
+  const nomesJogaveis=new Set(KINGDOMS.map(k=>L(k.nome)));
+  Object.keys(best).forEach(nm=>{
+    if(nomesJogaveis.has(L(nm))) return;
+    const spr=Object.values(HUMANOS_ETYPES).find(t=>t.n===nm)?.sprite||Object.values(HUMANOS_CARDS).find(c=>c.nome===nm)?.sprite;
+    personagens.push({nome:L(nm),spr,detalhe:T('Encontrado','Encountered','Encontrado')+' ×'+best[nm]});
+  });
+  const bsec=document.createElement('div');
+  bsec.className='deck-section characters-game-section'+(galleryDeckOpen.__characters?' open':'');
+  bsec.innerHTML=`<div class="deck-header" role="button" tabindex="0" aria-expanded="${galleryDeckOpen.__characters?'true':'false'}" style="--realm:#9a6a3a">
+    <span class="deck-icon"><svg viewBox="0 0 24 24"><path d="M12 2 2 7v10l10 5 10-5V7Z" fill="#fff" fill-opacity=".9"/></svg></span>
+    <b>${T('Personagens do Jogo','Game Characters','Personajes del Juego')}</b>
+    <small>${personagens.length} ${T('personagens','characters','personajes')}</small><span class="deck-caret" aria-hidden="true">▸</span></div>`;
+  const bh=bsec.querySelector('.deck-header');
+  const alternarPersonagens=()=>{
+    galleryDeckOpen.__characters=!galleryDeckOpen.__characters;
+    bsec.classList.toggle('open',!!galleryDeckOpen.__characters);
+    bh.setAttribute('aria-expanded',galleryDeckOpen.__characters?'true':'false');
+  };
+  bh.addEventListener('click',alternarPersonagens);
+  bh.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();alternarPersonagens();} });
+  const bgrid=document.createElement('div');
+  bgrid.className='deck-grid characters-game-grid';
+  personagens.forEach(personagem=>{
+    const bc=document.createElement('div');
+    bc.className='gallery-card beast-card character-game-card';
+    bc.setAttribute('role','button');
+    bc.setAttribute('tabindex','0');
+    bc.innerHTML=`<div class="gallery-thumb-wrap">${personagem.spr?`<img src="${personagem.spr}" alt="${personagem.nome}" loading="lazy">`:'<span style="font-size:34px">👤</span>'}<span class="character-expand" aria-hidden="true">⛶</span></div><b>${personagem.nome}</b><small>${personagem.detalhe}</small>`;
+    const ampliar=()=>{ if(personagem.spr) openCharacterModal(personagem.spr,personagem.nome,personagem.detalhe); };
+    bc.addEventListener('click',ampliar);
+    bc.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();ampliar();} });
+    bgrid.appendChild(bc);
+  });
+  bsec.appendChild(bgrid);
+  grid.appendChild(bsec);
 }
 const STAGE_ART=["assets/bg/bg-08.png","assets/bg/bg-09.png","assets/bg/bg-10.png","assets/bg/bg-11.png"];
 /* v9.1: jornada da masmorra removida (fases demo sairam do jogo) */
@@ -5464,6 +5537,7 @@ document.getElementById('selectGalleryBtn').addEventListener('click',()=>openPan
 document.getElementById('optionsBtn').addEventListener('click',()=>openPanel('optionsScreen'));
 document.getElementById('helpBtn').addEventListener('click',()=>openPanel('helpScreen'));
 document.getElementById('battleToolsToggle').addEventListener('click',()=>toggleBattleTools());
+document.getElementById('battleToolsClose').addEventListener('click',()=>toggleBattleTools(false));
 document.getElementById('cycleTargetTool').addEventListener('click',cycleBattleTarget);
 document.getElementById('autoTargetTool').addEventListener('click',toggleAutoTarget);
 document.getElementById('speedTool').addEventListener('click',cycleBattleSpeed);
@@ -6228,6 +6302,10 @@ async function runSmokeTest(){
   try{
     localStorage.setItem('12r_tutorial','1');
     ok('12 heróis divinos + cartas jogáveis', KINGDOMS.filter(k=>k.rarity==='DIVINA').length===12 && KINGDOMS.length>=16);
+    ok('4 jovens aprendizes com cartas e chibis', ['berenice-jovem','galateia-jovem','adriel-jovem','acqua-jovem'].every(id=>{
+      const k=KINGDOMS.find(card=>card.id===id);
+      return k&&k.rarity==='NORMAL'&&k.stars===1&&k.atk===2&&k.img&&k.sprite;
+    }));
     /* Tabela oficial de estrelas: 1★=0P/0A 2★=1P/0A 3★=2P/0A 4★=3P/0A 5★=3P/1A 6★=3P/2A 7★=3P/3A */
     const STAR_KIT={1:[0,0],2:[1,0],3:[2,0],4:[3,0],5:[3,1],6:[3,2],7:[3,3]};
     ok('contrato de habilidades por estrelas', KINGDOMS.every(k=>{
@@ -6267,6 +6345,22 @@ async function runSmokeTest(){
     ok('fórmula de HP 50/30/15', DIFFICULTY_MULTS.facil.hpFactor===50 && DIFFICULTY_MULTS.normal.hpFactor===30 && DIFFICULTY_MULTS.pesadelo.hpFactor===15);
     /* 12 escadas cíclicas de cores aliadas: cada reino inicia a própria rotação de 4 */
     ok('12 alianças cíclicas de gemas', Object.keys(ALLIED_ORDER).length===12 && Object.entries(ALLIED_ORDER).every(([id,seq])=>seq.length===4&&seq[0]===id&&seq.every(r=>KINGDOMS.some(k=>k.id===r))));
+    ok('gemas usam a cor-base do reino e só mudam com repetição',(()=>{
+      const original=[...ACTIVE];
+      const jovem=KINGDOMS.findIndex(k=>k.id==='berenice-jovem');
+      const adriel=KINGDOMS.findIndex(k=>k.id==='adriel-jovem');
+      const acqua=KINGDOMS.findIndex(k=>k.id==='acqua-jovem');
+      const fogo=KINGDOMS.findIndex(k=>k.id==='fogo');
+      ACTIVE=[jovem,acqua,fogo,KINGDOMS.findIndex(k=>k.id==='gelo')];
+      computeBattleGemColors();
+      const solo=battleGemColors[jovem]?.c===realmOrb('humanos')?.c && battleGemColors[acqua]?.c===realmOrb('agua')?.c;
+      ACTIVE=[jovem,adriel,acqua,fogo];
+      computeBattleGemColors();
+      const repetida=battleGemColors[jovem]?.c===realmOrb('humanos')?.c && battleGemColors[adriel]?.c===realmOrb('luz')?.c && battleGemColors[adriel]?.icon===KINGDOMS.find(k=>k.id==='humanos')?.color;
+      ACTIVE=original;
+      computeBattleGemColors();
+      return solo&&repetida;
+    })());
     /* v9.2 · contratos novos */
     ok('dificuldade Difícil (4 níveis)', !!DIFFICULTY_MULTS.dificil && DIFFICULTY_MULTS.dificil.hpFactor===30 && typeof allEnemiesAttackMode==='function');
     ok('3 grandes alianças nomeadas', ALLIANCES.length===3 && ALLIANCES.every(a=>a.membros.length===4) && ALLIANCES[0].nome.includes('Lago') && ALLIANCES[1].nome.includes('Dragão') && ALLIANCES[2].nome.includes('Barion'));
