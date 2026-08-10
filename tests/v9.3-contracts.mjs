@@ -14,9 +14,9 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v9.3',()=>{
-  assert.match(html,/styles-v9\.3\.css\?v=9\.3\.15/);
-  assert.match(html,/v9\.3-config\.js\?v=9\.3\.15/);
-  assert.match(html,/game-v9\.3\.js\?v=9\.3\.15/);
+  assert.match(html,/styles-v9\.3\.css\?v=9\.3\.16/);
+  assert.match(html,/v9\.3-config\.js\?v=9\.3\.16/);
+  assert.match(html,/game-v9\.3\.js\?v=9\.3\.16/);
   assert.doesNotMatch(html+sw,/game-v9\.1|styles-v9\.1|spritehud2/);
 });
 
@@ -79,7 +79,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v9.3.js?v=9.3.15');
+  const deferredGame=html.indexOf('game-v9.3.js?v=9.3.16');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);

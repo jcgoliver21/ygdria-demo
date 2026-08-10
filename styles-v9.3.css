@@ -1490,7 +1490,7 @@ body.game-active .unit{
   filter:drop-shadow(0 10px 8px rgba(0,0,0,.62));
 }
 body.game-active .party-row .unit{--slot-w:122px}
-body.game-active .enemy-row .unit{--slot-w:116px}
+body.game-active .enemy-row .unit{--slot-w:132px}
 body.game-active .unit-stage{
   height:114px!important;
   overflow:visible!important;

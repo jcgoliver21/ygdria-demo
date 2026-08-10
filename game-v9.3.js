@@ -1401,10 +1401,10 @@ const ENEMY_FORMATIONS = {
 };
 const SCENE_ENEMY_FORMATIONS = [
   {1:[{x:81,y:8,s:1.22,z:44}]},
-  {2:[{x:72,y:39,s:.92,z:22},{x:87,y:5,s:1.16,z:44}]},
-  {2:[{x:70,y:40,s:.9,z:21},{x:87,y:3,s:1.17,z:45}]},
-  {3:[{x:61,y:40,s:.78,z:19},{x:91,y:34,s:.82,z:25},{x:77,y:22,s:1.02,z:38}]},
-  {3:[{x:60,y:40,s:.76,z:19},{x:92,y:34,s:.8,z:25},{x:78,y:22,s:1.06,z:38}]}
+  {2:[{x:64,y:39,s:.96,z:22},{x:90,y:24,s:1.12,z:44}]},
+  {2:[{x:62,y:40,s:.94,z:21},{x:90,y:24,s:1.14,z:45}]},
+  {3:[{x:54,y:40,s:.9,z:19},{x:75,y:34,s:.94,z:25},{x:92,y:24,s:1.08,z:38}]},
+  {3:[{x:54,y:40,s:.88,z:19},{x:75,y:34,s:.92,z:25},{x:92,y:24,s:1.12,z:38}]}
 ];
 
 const seedText = new URLSearchParams(location.search).get('seed') || String(Date.now());
@@ -1919,11 +1919,11 @@ function applyBattleFormation(){
     if(isBoss&&!enemy?.isCard) slot.s*=1.16;
     /* Grupos ficam mais separados horizontalmente e em profundidades distintas;
        isso evita que nomes, barras e sprites ocupem a mesma área. */
-    if(enemies.length>=3){ slot.x=Math.max(58,Math.min(94,slot.x+(i%2?2:-2))); slot.y+=i<2?2:0; }
+    if(enemies.length>=3){ slot.x=Math.max(50,Math.min(94,slot.x)); }
     /* O chefe fica sempre em segundo plano; assim nome/vida não encostam na
        barra de informações e os demais inimigos conservam leitura própria. */
     if(isBoss&&enemies.length>1){ slot.y=Math.max(20,slot.y); slot.z+=6; }
-    applyFormationSlot(unit,slot,enemy?.isCard?100:(isBoss?100:88));
+    applyFormationSlot(unit,slot,enemy?.isCard?112:(isBoss?116:112));
   });
 }
 
@@ -1965,6 +1965,7 @@ function applyFormationSlot(unit,slot,width){
     const yMin=Math.max(0,(((1-bot)*aH-gap)/rH)*100);
     const prof=Math.max(0,Math.min(1,y/46));
     yFin=yMin+prof*Math.max(0,yMax-yMin);
+    if(enemySlot) yFin=Math.max(0,yFin-8); /* mantém ~10px até o HUD inferior */
   }
   unit.style.setProperty('--slot-x',x+'%');
   unit.style.setProperty('--slot-y',yFin+'%');
@@ -6754,9 +6755,12 @@ if(new URLSearchParams(location.search).get('qa')==='smoke'){
 }
 
 /* v9.1 · PWA: registra o service worker (apenas em http/https) */
+/* O jogo não mantém cache offline durante a fase de desenvolvimento. Removemos
+   workers/cache antigos para que cada publicação seja carregada diretamente. */
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(reg=>reg.update()).catch(() => {});
+    navigator.serviceWorker.getRegistrations().then(regs=>regs.forEach(reg=>reg.unregister())).catch(()=>{});
+    if(window.caches) caches.keys().then(keys=>keys.forEach(key=>caches.delete(key))).catch(()=>{});
   });
 }
 function openMissionReplay(faseIdx){
