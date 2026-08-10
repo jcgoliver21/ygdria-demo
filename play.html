@@ -28,7 +28,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
 <link rel="apple-touch-icon" href="assets/icon.svg">
-<link rel="stylesheet" href="styles-v9.3.css?v=9.3.13">
+<link rel="stylesheet" href="styles-v9.3.css?v=9.3.14">
 </head>
 <body>
 <div class="scene-bg" data-screen="menu"></div>
@@ -196,6 +196,17 @@
     <div class="world-head" id="worldHead"></div>
     <div class="world-map" id="worldMap"></div>
     <p class="account-note" id="worldNote">Cada fase tem 5 níveis — o 5º guarda o CHEFE. Vença o chefe para desbloquear a próxima fase. Os demais reinos serão revelados em breve.</p>
+  </div>
+</div>
+<div class="pro-overlay" id="missionReplayScreen" role="dialog" aria-modal="true" aria-labelledby="missionReplayTitle">
+  <div class="pro-dialog replay-dialog">
+    <div class="dialog-header"><h2 class="dialog-title" id="missionReplayTitle">Fase concluída</h2><button class="ghost-btn" data-close="missionReplayScreen">Fechar</button></div>
+    <p class="account-note" id="missionReplayNote">Escolha como deseja jogar esta fase novamente.</p>
+    <div class="replay-options">
+      <button class="overlay-btn replay-option" id="replayStoryBtn" type="button"><b>↻ Jogar novamente</b><small>Repetir com a história e a equipe da campanha.</small></button>
+      <button class="overlay-btn replay-option" id="replayFreeBtn" type="button"><b>✦ Jogar livre</b><small>Usar qualquer carta, sem roteiro obrigatório.</small></button>
+      <button class="overlay-btn replay-option" id="replayHardBtn" type="button"><b>◆ História em dificuldade acima</b><small id="replayHardHint">Repetir a história no próximo grau.</small></button>
+    </div>
   </div>
 </div>
 <div class="pro-overlay" id="accountScreen" role="dialog" aria-modal="true" aria-labelledby="accountTitle">
@@ -425,8 +436,8 @@
   </div>
 </div>
 <script>window.addEventListener('error',function(e){(window.__bootErrors=window.__bootErrors||[]).push({m:String(e.message).slice(0,200),l:e.lineno,c:e.colno})});</script>
-<script src="v9.3-config.js?v=9.3.13"></script>
-<script src="game-v9.3.js?v=9.3.13" defer></script>
+<script src="v9.3-config.js?v=9.3.14"></script>
+<script src="game-v9.3.js?v=9.3.14" defer></script>
 
 </body>
 </html>

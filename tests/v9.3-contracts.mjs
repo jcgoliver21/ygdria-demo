@@ -14,14 +14,14 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v9.3',()=>{
-  assert.match(html,/styles-v9\.3\.css\?v=9\.3\.13/);
-  assert.match(html,/v9\.3-config\.js\?v=9\.3\.13/);
-  assert.match(html,/game-v9\.3\.js\?v=9\.3\.13/);
+  assert.match(html,/styles-v9\.3\.css\?v=9\.3\.14/);
+  assert.match(html,/v9\.3-config\.js\?v=9\.3\.14/);
+  assert.match(html,/game-v9\.3\.js\?v=9\.3\.14/);
   assert.doesNotMatch(html+sw,/game-v9\.1|styles-v9\.1|spritehud2/);
 });
 
 check('cache offline da v9.3 é isolado',()=>{
-  assert.match(sw,/12r-v9\.3\.13/);
+  assert.match(sw,/12r-v9\.3\.14/);
   for(const file of ['play.html','styles-v9.3.css','v9.3-config.js','game-v9.3.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -79,7 +79,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v9.3.js?v=9.3.13');
+  const deferredGame=html.indexOf('game-v9.3.js?v=9.3.14');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
@@ -95,6 +95,15 @@ check('menu inicial não bloqueia o primeiro toque',()=>{
   assert.match(game,/get\('qa'\)==='tapguard'\) armTapGuard\(5000\)/);
   assert.match(css,/#optionsScreen\s*\{\s*z-index:520;\s*\}/);
   assert.match(game,/pauseOptionsBtn'\)\.addEventListener\('click',\(\)=>\{ openPanel\('optionsScreen'\); \}\)/);
+});
+
+check('campanha só conclui a fase no setor final e oferece replay',()=>{
+  assert.match(game,/if\(worldRun\.nivel===5\) markStoryPhaseDone\(worldRun\.fase\)/);
+  assert.match(game,/function openMissionReplay\(faseIdx\)/);
+  assert.match(html,/id="replayStoryBtn"/);
+  assert.match(html,/id="replayFreeBtn"/);
+  assert.match(html,/id="replayHardBtn"/);
+  assert.match(game,/starsByDifficulty/);
 });
 
 console.log(`v9.3 contracts: ${checks.length} verificações aprovadas`);

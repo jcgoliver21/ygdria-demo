@@ -3303,7 +3303,7 @@ function maybeShowStory(idx){
   /* v9.3.7 · roteiro oficial do Reino dos Humanos. A primeira entrada usa
      as falas escritas para a missão; repetições mantêm apenas a apresentação
      dos inimigos e uma fala do herói que não pertence ao roteiro. */
-  if(worldRun.active){
+  if(worldRun.active&&worldRun.storyMode!==false){
     const roteiro=HUMAN_STORY?.[worldRun.fase]?.missions?.[worldRun.nivel-1];
     if(roteiro){
       const primeira=!storyMissionDone(worldRun.fase,worldRun.nivel);
@@ -5076,7 +5076,7 @@ function onStageCleared(){
   if(worldRun.active){
     const world=WORLDS[0];
     const fase=world.fases[worldRun.fase];
-    markStoryMissionDone(worldRun.fase,worldRun.nivel);
+    if(worldRun.nivel===5) markStoryPhaseDone(worldRun.fase);
     if(worldRun.nivel<5){
       questEvent('win');
       worldRun.turnosFase=(worldRun.turnosFase||0)+stageTurns;
@@ -5117,7 +5117,10 @@ function onStageCleared(){
     const prog=worldProg('humanos');
     const ratio=playerHP/PLAYER_MAX_HP;
     const stars=ratio>=.7?3:ratio>=.4?2:1;
-    if((prog.stars[worldRun.fase]||0)<stars) prog.stars[worldRun.fase]=stars;
+    prog.starsByDifficulty=prog.starsByDifficulty||{};
+    prog.starsByDifficulty[difficulty]=prog.starsByDifficulty[difficulty]||{};
+    if((prog.starsByDifficulty[difficulty][worldRun.fase]||0)<stars) prog.starsByDifficulty[difficulty][worldRun.fase]=stars;
+    prog.stars[worldRun.fase]=Math.max(prog.stars[worldRun.fase]||0,stars);
     prog.unlocked=Math.max(prog.unlocked,Math.min(world.fases.length-1,worldRun.fase+1));
     saveWorldProg('humanos',prog);
     grantCoins(coinsVitoria(20+worldRun.fase*5));
@@ -5135,13 +5138,14 @@ function onStageCleared(){
       if(gx) gx.textContent=T('A Terra dos Reguladores de Ygdria está livre. Os próximos reinos aguardam...','The Land of the Regulators of Ygdria is free. The next realms await...','La Tierra de los Reguladores está libre. Los próximos reinos esperan...');
       renderBattleReport('victoryReport');
       launchVictoryConfetti();
+      const showFinalStory=worldRun.storyMode!==false;
       worldRun.active=false;
-      showStorySequence([{name:'Narrador',t:HUMAN_STORY[worldRun.fase]?.after||''}]);
+      if(showFinalStory) showStorySequence([{name:'Narrador',t:HUMAN_STORY[worldRun.fase]?.after||''}]);
       setTimeout(()=>showOverlay('dungeonClearOverlay'),5200);
       return;
     }
     document.getElementById('stageClearText').textContent=`${L(fase.chefe)} ${T('derrotado(a)!','defeated!','¡derrotado(a)!')} ${L(fase.nome)} ${T('conquistada!','conquered!','conquistada!')}${ups.length?' '+ups.join(' '):''}`;
-    if(HUMAN_STORY[worldRun.fase]?.after) showStorySequence([{name:'Narrador',t:HUMAN_STORY[worldRun.fase].after}]);
+    if(worldRun.storyMode!==false&&HUMAN_STORY[worldRun.fase]?.after) showStorySequence([{name:'Narrador',t:HUMAN_STORY[worldRun.fase].after}]);
     showOverlay('stageClearOverlay');
     setTimeout(()=>{
       hideOverlay('stageClearOverlay');
@@ -5710,6 +5714,9 @@ function applySettings(){
 startBtnEl.addEventListener('click',()=>beginGame(pendingStage));
 document.getElementById('playBtn').addEventListener('click',()=>{ towerMode=false; worldRun.active=false; pendingStage=0; openMapScreen(); });
 document.getElementById('continueBtn').addEventListener('click',()=>{ const prog=worldProg('humanos'); startWorldFase(Math.min(prog.unlocked, WORLDS[0].fases.length-1)); });
+document.getElementById('replayStoryBtn')?.addEventListener('click',()=>{ if(pendingReplayPhase!==null) startWorldFase(pendingReplayPhase,{storyMode:true}); });
+document.getElementById('replayFreeBtn')?.addEventListener('click',()=>{ if(pendingReplayPhase!==null) startWorldFase(pendingReplayPhase,{storyMode:false}); });
+document.getElementById('replayHardBtn')?.addEventListener('click',()=>{ if(pendingReplayPhase!==null&&difficulty!=='pesadelo') startWorldFase(pendingReplayPhase,{storyMode:true,difficulty:nextDifficulty(difficulty)}); });
 document.getElementById('bossRushBtn')?.addEventListener('click',()=>{
   /* v9.2: o Desafio dos Chefes agora passa pelo MAPA DE YGDRIA — cada reino
      conquistado libera o seu próprio desafio */
@@ -6019,10 +6026,16 @@ const STORY_RULES=HUMAN_STORY.map((s)=>({allowed:s.allowed,fixed:s.fixed}));
    concluíram missões enquanto as cenas estavam bloqueadas pelo tutorial. */
 const STORY_CAMPAIGN_VERSION='9.3.10';
 function storyMissionKey(f,n){ return `12r_story_${STORY_CAMPAIGN_VERSION}_humanos_${f+1}_${n}`; }
-function storyMissionDone(f,n){ return localStorage.getItem(storyMissionKey(f,n))==='1'; }
+function storyPhaseKey(f){ return `12r_story_phase_${STORY_CAMPAIGN_VERSION}_humanos_${f+1}`; }
+function storyPhaseDone(f){ return localStorage.getItem(storyPhaseKey(f))==='1'; }
+function storyMissionDone(f,n){
+  if(worldRun?.storyMode===true) return false;
+  return storyPhaseDone(f);
+}
 function markStoryMissionDone(f,n){ localStorage.setItem(storyMissionKey(f,n),'1'); }
+function markStoryPhaseDone(f){ localStorage.setItem(storyPhaseKey(f),'1'); }
 function prepareStorySelection(){
-  if(!worldRun.active) return;
+  if(!worldRun.active||worldRun.storyMode===false) return;
   const rule=STORY_RULES[worldRun.fase];
   if(!rule||storyMissionDone(worldRun.fase,worldRun.nivel)) return;
   const allowedIdx=rule.allowed.map(id=>KINGDOMS.findIndex(k=>k.id===id)).filter(i=>i>=0);
@@ -6034,7 +6047,7 @@ function prepareStorySelection(){
 function storySelectionAllowed(idx){
   /* renderSelectGrid() é executado no boot, antes da declaração de worldRun
      e do roteiro de campanha; nessa etapa todo o roster deve permanecer ativo. */
-  if(typeof worldRun==='undefined'||!worldRun.active||typeof STORY_RULES==='undefined') return true;
+  if(typeof worldRun==='undefined'||!worldRun.active||worldRun.storyMode===false||typeof STORY_RULES==='undefined') return true;
   const rule=STORY_RULES[worldRun.fase];
   if(!rule||storyMissionDone(worldRun.fase,worldRun.nivel)) return true;
   return rule.allowed.includes(KINGDOMS[idx]?.id);
@@ -6128,8 +6141,14 @@ function showMapTip(text){
 }
 
 function worldProg(worldId){
-  try{ return JSON.parse(localStorage.getItem('12r_world_'+worldId)||'{"unlocked":0,"stars":{}}'); }
-  catch(e){ return {unlocked:0,stars:{}}; }
+  try{
+    const value=JSON.parse(localStorage.getItem('12r_world_'+worldId)||'{"unlocked":0,"stars":{}}');
+    value.unlocked=Number.isFinite(value.unlocked)?value.unlocked:0;
+    value.stars=value.stars||{};
+    value.starsByDifficulty=value.starsByDifficulty||{};
+    for(const d of ['facil','normal','dificil','pesadelo']) value.starsByDifficulty[d]=value.starsByDifficulty[d]||{};
+    return value;
+  }catch(e){ return {unlocked:0,stars:{},starsByDifficulty:{facil:{},normal:{},dificil:{},pesadelo:{}}}; }
 }
 function saveWorldProg(worldId,prog){ localStorage.setItem('12r_world_'+worldId,JSON.stringify(prog)); }
 function buildWorldLevel(){
@@ -6174,13 +6193,20 @@ function buildWorldLevel(){
     dial:n===1?fase.dial:null
   };
 }
-function startWorldFase(faseIdx){
+let pendingReplayPhase=null;
+const DIFFICULTY_ORDER=['facil','normal','dificil','pesadelo'];
+const DIFFICULTY_RANKS={facil:'Bronze',normal:'Prata',dificil:'Ouro',pesadelo:'Cristal'};
+function nextDifficulty(value){ const i=DIFFICULTY_ORDER.indexOf(value); return DIFFICULTY_ORDER[Math.min(DIFFICULTY_ORDER.length-1,Math.max(0,i+1))]||'normal'; }
+function difficultyLabel(value){ return {facil:'Fácil',normal:'Normal',dificil:'Difícil',pesadelo:'Pesadelo'}[value]||'Normal'; }
+function startWorldFase(faseIdx,options={}){
   armTapGuard();
   const prog=worldProg('humanos');
   if(faseIdx>prog.unlocked){ sfxInvalid(); return; }
-  worldRun={active:true,fase:faseIdx,nivel:1};
+  worldRun={active:true,fase:faseIdx,nivel:1,storyMode:options.storyMode!==false};
+  if(options.difficulty){ difficulty=options.difficulty; localStorage.setItem('12r_difficulty',difficulty); applyDifficultyUI(); }
   towerMode=false;
   closeAllPanels();
+  pendingReplayPhase=null;
   closeMapScreen();
   pendingStage=0;
   showSelection(); // o jogador escolhe a equipe e toca em "Iniciar a Aventura!"
@@ -6201,6 +6227,7 @@ function renderWorldMap(){
   world.fases.forEach((fase,idx)=>{
     const locked=idx>prog.unlocked;
     const stars=prog.stars[idx]||0;
+    const rankHtml=DIFFICULTY_ORDER.map(d=>`<small class="fase-rank rank-${d}">${DIFFICULTY_RANKS[d]} ${'★'.repeat(prog.starsByDifficulty?.[d]?.[idx]||0)}${'☆'.repeat(3-(prog.starsByDifficulty?.[d]?.[idx]||0))}</small>`).join('');
     const node=document.createElement('button');
     node.className='fase-node'+(locked?' locked':'');
     node.style.setProperty('--fase-c', (KINGDOMS.find(k=>k.id===world.id)||{}).color||'#d4af5a');
@@ -6211,7 +6238,7 @@ function renderWorldMap(){
       ${fase.rec?`<small class="fase-rec">🎴 ${T('Recomendado','Recommended','Recomendado')}: ${L(fase.rec)}</small>`:''}
       ${fb[idx]?`<small class="fase-best">⏱ ${T('Recorde','Record','Récord')}: ${fb[idx]} ${T('turnos','turns','turnos')}${ft[idx]?` · 🕐 ${fmtTempo(ft[idx])}`:''}</small>`:''}
       ${!locked?`<span class="fase-diffs" role="group" aria-label="${T('Dificuldade','Difficulty','Dificultad')}"><i data-d="facil" class="${difficulty==='facil'?'on':''}">F</i><i data-d="normal" class="${difficulty==='normal'?'on':''}">N</i><i data-d="dificil" class="${difficulty==='dificil'?'on':''}">D</i><i data-d="pesadelo" class="${difficulty==='pesadelo'?'on':''}">P</i></span>`:''}
-      <em>${locked?'🔒 '+T('Bloqueada','Locked','Bloqueada'):(stars?'★'.repeat(stars)+'☆'.repeat(3-stars):T('5 missões · chefe no final','5 missions · boss at the end','5 misiones · jefe al final'))}</em></span>`;
+      <div class="fase-ranks">${locked?'':rankHtml}</div><em>${locked?'🔒 '+T('Bloqueada','Locked','Bloqueada'):(stars?'★'.repeat(stars)+'☆'.repeat(3-stars):T('5 missões · chefe no final','5 missions · boss at the end','5 misiones · jefe al final'))}</em></span>`;
     node.querySelectorAll('.fase-diffs i').forEach(pill=>pill.addEventListener('click',ev=>{
       ev.stopPropagation();
       difficulty=pill.dataset.d;
@@ -6219,7 +6246,7 @@ function renderWorldMap(){
       node.querySelectorAll('.fase-diffs i').forEach(x=>x.classList.toggle('on',x===pill));
       sfxSelect();
     }));
-    node.addEventListener('click',()=>startWorldFase(idx));
+    node.addEventListener('click',()=>storyPhaseDone(idx)?openMissionReplay(idx):startWorldFase(idx));
     map.appendChild(node);
   });
 }
@@ -6710,4 +6737,15 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(reg=>reg.update()).catch(() => {});
   });
+}
+function openMissionReplay(faseIdx){
+  pendingReplayPhase=faseIdx;
+  const next=nextDifficulty(difficulty);
+  const hard=document.getElementById('replayHardBtn');
+  const hint=document.getElementById('replayHardHint');
+  if(hard) hard.disabled=difficulty==='pesadelo';
+  if(hint) hint.textContent=difficulty==='pesadelo'
+    ? 'Você já está na dificuldade máxima.'
+    : `Repetir a história em ${difficultyLabel(next)}.`;
+  openPanel('missionReplayScreen');
 }
