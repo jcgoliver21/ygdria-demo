@@ -3272,6 +3272,21 @@ function enemyLineFor(e){
 function maybeShowStory(idx){
   if(coachStep>=0&&coachStep<COACH_STEPS_I18N.pt.length) return;
   const seq=[];
+  /* v9.3.7 · roteiro oficial do Reino dos Humanos. A primeira entrada usa
+     as falas escritas para a missão; repetições mantêm apenas a apresentação
+     dos inimigos e uma fala do herói que não pertence ao roteiro. */
+  if(worldRun.active){
+    const roteiro=HUMAN_STORY?.[worldRun.fase]?.missions?.[worldRun.nivel-1];
+    if(roteiro){
+      const primeira=!storyMissionDone(worldRun.fase,worldRun.nivel);
+      if(worldRun.nivel===1 && primeira) seq.push({name:'Narrador',t:HUMAN_STORY[worldRun.fase].before});
+      if(primeira && roteiro.length) roteiro.forEach(s=>seq.push(s));
+      if(seq.length){ storyQueue=[...seq]; renderStoryStep(); return; }
+      const regra=STORY_RULES[worldRun.fase];
+      const extra=ACTIVE.map(i=>KINGDOMS[i]).find(k=>k&&!regra?.allowed.includes(k.id));
+      if(extra) seq.push({h:extra.id,t:extra.frase||`${L(extra.nome)} está pronto para ajudar.`});
+    }
+  }
   /* Heróis: SÓ os personagens escalados na fase têm diálogo (1ª missão da fase) */
   if(worldRun.active&&activeStageData?.dial){
     activeStageData.dial.forEach(d=>{
@@ -3294,7 +3309,9 @@ function maybeShowStory(idx){
 function renderStoryStep(){
   const layer=document.getElementById('storyLayer');
   if(!layer) return;
-  if(!storyQueue.length){ layer.classList.remove('show'); return; }
+  if(!storyQueue.length){ layer.classList.remove('show','cinematic'); layer.style.removeProperty('--story-bg'); return; }
+  layer.classList.add('cinematic');
+  if(activeStageData?.bgUrl) layer.style.setProperty('--story-bg',`url("${activeStageData.bgUrl}")`);
   const step=storyQueue[0];
   if(step.h){
     const k=KINGDOMS.find(kk=>kk.id===step.h);
@@ -3314,7 +3331,12 @@ function advanceStory(){
   else document.getElementById('storyLayer')?.classList.remove('show');
   sfxSelect();
 }
-function skipStory(){ storyQueue=[]; document.getElementById('storyLayer')?.classList.remove('show'); }
+function skipStory(){ storyQueue=[]; document.getElementById('storyLayer')?.classList.remove('show','cinematic'); }
+function showStorySequence(seq){
+  if(!seq?.length) return;
+  storyQueue=[...seq];
+  renderStoryStep();
+}
 
 /* v9.1 · Perfil: estatísticas de vida do jogador */
 let profile={wins:0,losses:0,damage:0,maxCombo:0,powerUps:0,heroUse:{}};
@@ -4982,6 +5004,7 @@ function onStageCleared(){
   if(worldRun.active){
     const world=WORLDS[0];
     const fase=world.fases[worldRun.fase];
+    markStoryMissionDone(worldRun.fase,worldRun.nivel);
     if(worldRun.nivel<5){
       questEvent('win');
       worldRun.turnosFase=(worldRun.turnosFase||0)+stageTurns;
@@ -5041,10 +5064,12 @@ function onStageCleared(){
       renderBattleReport('victoryReport');
       launchVictoryConfetti();
       worldRun.active=false;
-      showOverlay('dungeonClearOverlay');
+      showStorySequence([{name:'Narrador',t:HUMAN_STORY[worldRun.fase]?.after||''}]);
+      setTimeout(()=>showOverlay('dungeonClearOverlay'),5200);
       return;
     }
     document.getElementById('stageClearText').textContent=`${L(fase.chefe)} ${T('derrotado(a)!','defeated!','¡derrotado(a)!')} ${L(fase.nome)} ${T('conquistada!','conquered!','conquistada!')}${ups.length?' '+ups.join(' '):''}`;
+    if(HUMAN_STORY[worldRun.fase]?.after) showStorySequence([{name:'Narrador',t:HUMAN_STORY[worldRun.fase].after}]);
     showOverlay('stageClearOverlay');
     setTimeout(()=>{
       hideOverlay('stageClearOverlay');
@@ -5222,7 +5247,9 @@ function renderSelectGrid(){
     membros.forEach(k=>{
       const idx=KINGDOMS.indexOf(k);
       const card = document.createElement('div');
-      card.className = 'select-card' + (chosenIds.includes(idx) ? ' chosen' : '');
+      const permitido=storySelectionAllowed(idx);
+      card.className = 'select-card' + (chosenIds.includes(idx) ? ' chosen' : '') + (!permitido?' story-disabled':'');
+      card.setAttribute('aria-disabled',permitido?'false':'true');
       card.style.setProperty('--realm',k.color);
       card.style.setProperty('--realm-light',k.colorLight);
       card.style.setProperty('--realm-dark',k.colorDark);
@@ -5261,6 +5288,11 @@ function renderSelectGrid(){
 }
 
 function toggleHero(idx){
+  if(!storySelectionAllowed(idx)){
+    setBattleStatus(T('Este personagem entra nesta missão apenas depois da primeira conclusão.','This character unlocks for this mission after its first clear.','Este personaje se desbloquea para esta misión tras completarla.'),'system');
+    sfxInvalid();
+    return;
+  }
   if(chosenIds.includes(idx)){
     chosenIds=chosenIds.filter(id=>id!==idx);
   }else if(chosenIds.length<4){
@@ -5422,6 +5454,7 @@ function showMainMenu(options={}){
   sceneBgEl.dataset.screen='menu'; refreshContinueButton();
 }
 function showSelection(){
+  prepareStorySelection();
   closeAllPanels(); stopMusic(); busy=false; setBattlePhase('idle');
   document.getElementById('mainMenu').style.display='none';
   document.getElementById('gameScreen').style.display='none';
@@ -5872,9 +5905,63 @@ const WORLDS=[{
       missoes:[['vulto','espectro'],['morto'],['vulto','espectro','morto'],['jules'],['julius']] },
     { nome:'Castelo da Coroa Humana', rec:'4× carta 2★', sub:'O trono espera seu verdadeiro rei', bg:'assets/bg/humanos/fase-10.jpg', chefe:'Julius',
       dial:[{h:'humanos',t:'O castelo da minha linhagem. Todos os campeões dele nos aguardam... e Julius por trás de tudo.'},{h:'fogo',t:'Cinco cartas contra nós? Ótimo. Sempre quis um baralho em chamas.'}],
-      missoes:[['trono'],['cedric','elizier','roland'],['kalander','cedric','elizier','roland'],['kalander','bernyce'],['julius']] }
+      missoes:[['trono'],['cedric','jules'],['kalander','cedric','jules'],['kalander','bernyce'],['julius']] }
   ]
 }];
+
+/* v9.3.7 · Roteiro canônico da primeira parte. As frases foram revisadas
+   para concordância e ficam centralizadas aqui para facilitar a expansão. */
+const HUMAN_STORY=(()=>{
+  const n=(name,t)=>({name,t});
+  const h=(id,t)=>({h:id,t});
+  const M=(before,missions,after,allowed,fixed)=>({before,missions,after,allowed,fixed});
+  const A=['adriel-jovem','berenice-jovem','galateia-jovem','acqua-jovem'];
+  const B=['adriel-jovem','berenice-jovem','galateia-jovem','gareth'];
+  const C=['adriel-jovem','berenice-jovem','galateia-jovem','acqua-jovem','gareth'];
+  return [
+    M('Às margens da Cidade das Cerejeiras, Berenice, Galatéia e Acqua brincavam quando um slime e lobos ferozes surgiram. Um jovem com uma espada de madeira apareceu para protegê-las.',[
+      [h('adriel-jovem','Fiquem atrás de mim. Vou protegê-las.'),h('berenice-jovem','Nós também sabemos lutar!')],[],[],[n('Soldado 1','O que está fazendo? Fique longe das princesas!')],[h('adriel-jovem','Esta é minha chance de mostrar que posso me tornar um cavaleiro!'),n('Gareth','Só se me derrotar primeiro, moleque!')]],'Depois de derrotar Gareth, Adriel e as meninas se esconderam na Catedral de Ygdria.',A,A),
+    M('O capitão dos soldados chamou as crianças para fora da Catedral: aquele lugar era sagrado. Adriel, tomado pelo desejo de se tornar cavaleiro, desafiou todos os soldados.',[
+      [n('Soldado 2','Você nunca será um cavaleiro!'),h('adriel-jovem','Venham para cima!')],[n('Capitão dos Soldados','Mostre-me do que é capaz; quem sabe você se torna meu subordinado!')],[n('Soldado 2','Deixe-me ter uma revanche, capitão.')],[n('Capitão dos Soldados','Peguem-no!')],[n('Cedric','Que confusão é essa diante da Catedral sagrada? Terei de punir essas crianças malcriadas!'),h('adriel-jovem','Pode vir, velhote!')]],'Adriel derrotou Cedric à força e deixou todos os soldados boquiabertos.',A,A),
+    M('As crianças pareciam se divertir, mas guardas e cavaleiros foram mobilizados no Palácio dos Reguladores, onde as decisões dos doze reinos eram tomadas pela Rainha Bernyce — que estava ausente.',[
+      [n('Soldado 1','Capturem esse fedelho!')],[n('Capitão dos Soldados','Desta vez você será executado.')],[h('adriel-jovem','Derrotarei todos vocês e me tornarei um cavaleiro.')],[n('Capitão dos Soldados','Chamem reforços!')],[n('Elizier','Tolos, foram derrotados por uma criança! Vou mostrar como se faz!')]],'Uma flecha feriu o braço de Adriel. Impressionada com a audácia do jovem, Elizier o levou para a Academia Real de Magia e Combate.',A,A),
+    M('Ao final da tarde, Acqua retornou para o grande Lago de Ygdria. Adriel treinaria com Berenice e Galatéia; Gareth também decidiu evoluir depois de perder para o jovem.',[
+      [n('Soldado 2','Vou me conter um pouco. Pode vir com tudo!'),h('adriel-jovem','Não pegue leve.')],[n('Capitão dos Soldados','Você tem potencial, garoto.')],[n('Soldado 1','Agora verá meu verdadeiro poder!')],[h('adriel-jovem','Vocês são mais fortes do que pensei, mas vou conseguir.')],[n('Roland','Muito bem, jovenzinho. Quero ver do que é capaz contra um cavaleiro de verdade!')]],'Após o treinamento, todos descansaram no alojamento e as crianças foram para o castelo.',B,B),
+    M('Adriel, Gareth, Berenice e Galatéia foram ao Mercado Central dos Reinos e acabaram cercados pelos soldados.',[
+      [n('Soldado 1','Hora do treinamento final...'),h('adriel-jovem','O quê? Aqui, no meio do mercado?!')],[n('Capitão dos Soldados','O inimigo não escolhe lugar para atacar...'),h('berenice-jovem','Deixe comigo. Eu cuido deles!')],[h('galateia-jovem','Estamos bem mais fortes.')],[n('Gareth','Tragam os mais fortes do reino... glup.')],[n('Roland','Vocês que pediram...'),h('adriel-jovem','Para que foi abrir a boca, Gareth?')]],'Depois do treinamento surpresa, todos fizeram uma refeição nos arredores do mercado. Adriel estava feliz com seu progresso.',B,B),
+    M('Depois do treinamento pesado, os jovens foram à Praça das Doze Essências. Uma névoa sombria cobriu a praça sem que percebessem o mal que se aproximava.',[
+      [h('berenice-jovem','Que frio... por que escureceu de repente?'),h('galateia-jovem','Um fantasma!'),n('Vulto Sombrio','Huahuahuahua...')],[n('Espectro Sombrio','Vocês não são páreo para nós!'),h('adriel-jovem','Vamos dar conta deste também.')],[n('Gareth','Está vindo mais...')],[n('Cavaleiro Morto-Vivo','Todos vocês morrerão!')],[h('berenice-jovem','Oba... é o Jules, nosso bobo da corte. Ele vai nos ajudar.'),n('Jules','Princesa tola... não estou aqui por vocês!')]],'Jules derrotou os jovens, mas fugiu quando a névoa se dissipou. Eles correram em busca de ajuda e entraram na Biblioteca da Eternidade.',B,B),
+    M('Ao chegarem à Biblioteca da Eternidade, os jovens foram barrados pelos soldados. Berenice precisava falar com sua mãe, mas ninguém permitia a entrada.',[
+      [h('berenice-jovem','Rápido, deixem-nos passar! Preciso ver minha mãe!'),n('Soldado da Biblioteca 1','Vocês precisam ser repreendidos; não pensem que somos aqueles soldadinhos da cidade.')],[h('adriel-jovem','Se não saírem da frente, vamos derrubar geral!')],[n('Soldado da Biblioteca 3','Prendam-nos!')],[n('Cedric','O que está acontecendo aqui? Que confusão é essa?')],[h('berenice-jovem','Mamãe!'),n('Bernyce','Você precisa se comportar como a futura rainha maga!')]],'Berenice explicou que Jules os havia atacado. A rainha, apreensiva, levou-os até Kalander, que sugeriu treiná-los.',B,B),
+    M('Alguns dias se passaram. Kalander, o cavaleiro mais poderoso do Reino dos Humanos, treinava os jovens enquanto Bernyce voltava ao castelo em busca de respostas. Acqua retornou para brincar e acabou entrando no treinamento.',[
+      [n('Soldado de Infantaria','Preparem-se: agora o treino sobe de nível.')],[h('adriel-jovem','É impossível... ele tem um cavalo!')],[n('Comandante dos Soldados','Mostrem todo o seu potencial!')],[h('galateia-jovem','Vamos unir nossos ataques!')],[n('Kalander','Muito bem. Se me fizerem sair do lugar, vocês vencem!')]],'Depois de mais um dia de treinamento, os jovens fizeram Kalander sair do lugar usando uma estratégia inteligente. Kalander riu: “Hahahaha... esses pirralhos!”.',C,A),
+    M('Os jovens caminhavam felizes pela cidade depois de serem aceitos por Kalander. De repente, tudo escureceu e uma névoa gélida tomou conta do local.',[
+      [n('Espectro Sombrio','Agora vocês não escapam!'),h('galateia-jovem','De novo, não!')],[h('berenice-jovem','Vamos dar uma surra nesse puro osso.')],[h('adriel-jovem','Podem vir todos de uma vez!')],[n('Jules','Desta vez vou cumprir minha missão.'),h('adriel-jovem','Somos mais fortes do que antes, seu palhaço!')],[n('???','Berenice! Venha comigo...'),h('berenice-jovem','Quem é você?'),n('???','Seu pai quer vê-la.')]],'Julius derrotou todos. Roland e Elizier chegaram a tempo, mas Berenice foi levada. Um soldado levou Galatéia e Acqua para seus reinos; Adriel partiu com Gareth e os cavaleiros para avisar a Rainha.',C,A),
+    M('Ao chegarem ao castelo, os soldados já sabiam do ocorrido e acusaram o grupo de arquitetar o sequestro da princesa. Jules havia articulado tudo — e uma batalha começou.',[
+      [n('Soldado do Trono Real','Serão todos executados!')],[n('Roland','Cedric, afaste-se. Jules é o inimigo!'),n('Cedric','Roland! E pensar que seu pai também foi um cavaleiro.')],[n('Jules','Libertem a princesa, desertores!'),n('Kalander','Não acredito... eu confiei e treinei vocês!')],[n('Bernyce','Devolvam minha filha!!!'),h('adriel-jovem','Rainha! Jules é o culpado, mas há outro inimigo também.')],[n('Julius','Morram todos! Corte Sombrio!'),h('adriel-jovem','Rainha! Kalander!')]],'Julius venceu e matou os defensores. Gareth sacrificou-se para salvar Adriel; Cedric o envolveu em magia e o teletransportou para longe. Assim termina a primeira parte: o que acontecerá com Adriel, onde está Berenice e quem é Julius?', ['adriel-jovem','gareth','roland','elizier'],['adriel-jovem','gareth','roland','elizier'])
+  ].map((x,i)=>({...x,index:i}));
+})();
+
+const STORY_RULES=HUMAN_STORY.map((s)=>({allowed:s.allowed,fixed:s.fixed}));
+function storyMissionKey(f,n){ return `12r_story_humanos_${f+1}_${n}`; }
+function storyMissionDone(f,n){ return localStorage.getItem(storyMissionKey(f,n))==='1'; }
+function markStoryMissionDone(f,n){ localStorage.setItem(storyMissionKey(f,n),'1'); }
+function prepareStorySelection(){
+  if(!worldRun.active) return;
+  const rule=STORY_RULES[worldRun.fase];
+  if(!rule||storyMissionDone(worldRun.fase,worldRun.nivel)) return;
+  const allowedIdx=rule.allowed.map(id=>KINGDOMS.findIndex(k=>k.id===id)).filter(i=>i>=0);
+  const fixedIdx=rule.fixed.map(id=>KINGDOMS.findIndex(k=>k.id===id)).filter(i=>i>=0);
+  chosenIds=chosenIds.filter(i=>allowedIdx.includes(i));
+  fixedIdx.forEach(i=>{ if(!chosenIds.includes(i)&&chosenIds.length<4) chosenIds.push(i); });
+  if(rule.fixed.length===4) chosenIds=fixedIdx;
+}
+function storySelectionAllowed(idx){
+  if(!worldRun.active) return true;
+  const rule=STORY_RULES[worldRun.fase];
+  if(!rule||storyMissionDone(worldRun.fase,worldRun.nivel)) return true;
+  return rule.allowed.includes(KINGDOMS[idx]?.id);
+}
 /* v9.1 · Mapa de Ygdria: 12 reinos traçados; só o Reino dos Humanos liberado */
 /* Pins à ESQUERDA do nome pintado de cada reino, centrados na altura do título */
 const REALMS_MAP=[

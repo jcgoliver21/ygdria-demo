@@ -22,3 +22,8 @@
 - O progresso local existente é mantido.
 - O link público principal passa a servir exclusivamente a v9.3.
 - A v9.2 permanece recuperável pelo histórico Git, sem rota pública de jogo.
+## v9.3.7
+- Roteiro da primeira parte do Reino dos Humanos centralizado por fase e missão, com revisão de texto, falas de entrada e epílogos.
+- Modo história restringe os personagens da primeira entrada de cada fase; após a conclusão, a fase volta a aceitar qualquer equipe.
+- Cenas de história usam o cenário da missão, música da cena e transição visual do texto.
+- Atualizadas as composições da Fase 10: Cedric + Jules e Kalander + Cedric + Jules.

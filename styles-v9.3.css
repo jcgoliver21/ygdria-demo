@@ -2252,6 +2252,9 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
 /* v9.1 · Diálogos de história */
 .story-layer{ position:fixed; inset:0; z-index:310; display:none; background:rgba(4,2,8,.45); cursor:pointer; }
 .story-layer.show{ display:flex; align-items:flex-end; justify-content:center; padding:0 10px calc(16px + env(safe-area-inset-bottom)); }
+.story-layer.cinematic{ background-image:linear-gradient(180deg,rgba(5,2,12,.2),rgba(5,2,12,.82)),var(--story-bg); background-position:center; background-size:cover; }
+.story-layer.cinematic .story-box{ animation:storyCinematicIn .55s ease both; }
+@keyframes storyCinematicIn{ from{opacity:0;transform:translateY(34px)} to{opacity:1;transform:none} }
 .story-box{ display:flex; align-items:center; gap:12px; width:min(96vw,460px); position:relative;
   background:linear-gradient(160deg,#241a38,#0d0912); border:2px solid var(--gold); border-radius:16px;
   padding:12px 14px; box-shadow:0 -6px 30px rgba(0,0,0,.65),0 0 24px rgba(212,175,90,.28);
@@ -2263,6 +2266,10 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
 .story-copy p{ margin:4px 0 2px; font-size:12.5px; line-height:1.45; color:#f2e8d0; }
 .story-hint{ font-size:9px; opacity:.55; letter-spacing:.6px; }
 .story-skip{ position:absolute; top:-34px; right:0; }
+.story-layer.show .story-copy p{ animation:storyTextRise .55s ease both; }
+@keyframes storyTextRise{ from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+.select-card.story-disabled{ opacity:.28; filter:grayscale(.85); cursor:not-allowed; position:relative; }
+.select-card.story-disabled::after{ content:'BLOQUEADO NO MODO HISTÓRIA'; position:absolute; inset:auto 4px 5px; text-align:center; font-size:7px; letter-spacing:.4px; color:#ffd98b; }
 /* v9.1 · Perfil */
 .profile-stats{ display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:8px; margin-bottom:14px; }
 .pstat{ background:rgba(8,5,14,.72); border:1px solid rgba(212,175,90,.25); border-radius:10px; padding:8px 10px; }
