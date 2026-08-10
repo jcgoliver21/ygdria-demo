@@ -5957,7 +5957,9 @@ function prepareStorySelection(){
   if(rule.fixed.length===4) chosenIds=fixedIdx;
 }
 function storySelectionAllowed(idx){
-  if(!worldRun.active) return true;
+  /* renderSelectGrid() é executado no boot, antes da declaração de worldRun
+     e do roteiro de campanha; nessa etapa todo o roster deve permanecer ativo. */
+  if(typeof worldRun==='undefined'||!worldRun.active||typeof STORY_RULES==='undefined') return true;
   const rule=STORY_RULES[worldRun.fase];
   if(!rule||storyMissionDone(worldRun.fase,worldRun.nivel)) return true;
   return rule.allowed.includes(KINGDOMS[idx]?.id);
