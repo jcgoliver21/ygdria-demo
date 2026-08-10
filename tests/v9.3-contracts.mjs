@@ -79,7 +79,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v9.3.js?v=9.3.7');
+  const deferredGame=html.indexOf('game-v9.3.js?v=9.3.8');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
