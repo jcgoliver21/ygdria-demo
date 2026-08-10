@@ -1917,7 +1917,10 @@ function applyBattleFormation(){
     const slot={...(enemySlots[i]||enemySlots[enemySlots.length-1])};
     const isBoss=enemy?.isBoss===true || i===enemies.length-1;
     if(isBoss&&!enemy?.isCard) slot.s*=1.16;
-    applyFormationSlot(unit,slot,enemy?.isCard?112:(isBoss?122:108));
+    /* Grupos ficam mais separados horizontalmente e em profundidades distintas;
+       isso evita que nomes, barras e sprites ocupem a mesma área. */
+    if(enemies.length>=3){ slot.x=Math.max(62,Math.min(94,slot.x+(i%2?3:-3))); slot.y+=i<2?6:-2; }
+    applyFormationSlot(unit,slot,enemy?.isCard?104:(isBoss?112:98));
   });
 }
 
@@ -2183,7 +2186,7 @@ function renderEnemies(){
         <div class="target-arrow"></div>
         <div class="unit-ground-shadow"></div>
         <div class="avatar-circle" id="enemyPortrait-${idx}">
-          <img class="enemy-sprite-image${(e.flip||e.isCard)?' flip':''}" src="${e.sprite}" alt="${L(e.name)}"${e.tint?` style="filter:${e.tint}"`:''}>
+          <img class="enemy-sprite-image${(e.flip||e.isCard)?' flip':''}${e.etype==='soldado2'?' soldado2-clean':''}" src="${e.sprite}" alt="${L(e.name)}"${e.tint?` style="filter:${e.tint}"`:''}>
           <span class="enemy-intent" aria-label="${T(`Próximo ataque: aproximadamente ${e.atk} de dano`,`Next attack: about ${e.atk} damage`,`Próximo ataque: aproximadamente ${e.atk} de daño`)}">⚔ ${e.atk}</span>
         </div>
       </div>`;
@@ -2354,6 +2357,7 @@ function saHealEnemy(e, amount){
   if(txt) txt.textContent=`${e.hp} / ${e.maxHp}`;
 }
 function saAnnounce(e, sa){
+  explainMechanicOnce('stage-'+sa.nome,`${L(sa.nome)}: ${L(sa.desc||'efeito especial de fase')}`);
   const i=enemies.indexOf(e);
   setBattleStatus(T(`⚔ ${L(e.name)} usou ${L(sa.nome)}!`,`⚔ ${L(e.name)} used ${L(sa.nome)}!`,`⚔ ¡${L(e.name)} usó ${L(sa.nome)}!`), 'damage');
   showFloatDamage(0,'enemy-'+i,false);
@@ -2702,8 +2706,17 @@ function resumeMissionClock(){
   if(missionStartMs) startMissionTimer(false);
 }
 /* 👁 Preferências de VISUALIZAÇÃO (menu Opções → Visualização) */
-let vizPrefs={heroNames:'bottom',enemyNames:'bottom',dmg:true,dps:true,timer:true,turnInfo:true,topHud:'solid',infoBar:'transparent'};
+/* Preferências padrão da apresentação de batalha: HUD superior discreto,
+   heróis sem etiquetas e inimigos identificados abaixo do sprite. */
+let vizPrefs={heroNames:'off',enemyNames:'bottom',dmg:true,dps:true,timer:true,turnInfo:true,topHud:'transparent',infoBar:'transparent'};
 try{ vizPrefs={...vizPrefs,...JSON.parse(localStorage.getItem('12r_viz')||'{}')}; }catch(e){}
+/* Migração de defaults visuais da campanha: aplica uma única vez para que
+   versões anteriores não reintroduzam HUD sólido e nomes de heróis. */
+if(localStorage.getItem('12r_viz_defaults')!=='9.3.9'){
+  vizPrefs.heroNames='off'; vizPrefs.enemyNames='bottom'; vizPrefs.topHud='transparent'; vizPrefs.infoBar='transparent';
+  localStorage.setItem('12r_viz_defaults','9.3.9');
+  localStorage.setItem('12r_viz',JSON.stringify(vizPrefs));
+}
 if(!['solid','transparent','off'].includes(vizPrefs.topHud)) vizPrefs.topHud='solid';
 if(!['solid','transparent','off'].includes(vizPrefs.infoBar)) vizPrefs.infoBar='transparent';
 function saveViz(){ localStorage.setItem('12r_viz',JSON.stringify(vizPrefs)); applyVizSettings(); }
@@ -2832,6 +2845,7 @@ function loadStage(idx){
     worldRun.nivel>1 && Array.isArray(board) && board.length===SIZE;
   carryBoardNext=false;
   if(manterTabuleiro){
+    if(findMatches().length>0) sanitizeBoardWithoutMatches();
     if(!hasValidMoves()) shuffleBoard(false);
     renderBoard();
   }else{
@@ -2840,7 +2854,7 @@ function loadStage(idx){
     renderBoard();
   }
   consumeInventoryOnBattleStart();
-  if(stageIndex===0&&!towerMode) startCoach();
+  if(worldRun.active&&worldRun.fase===0&&worldRun.nivel===1&&!towerMode) startCoach();
   maybeShowStory(idx);
   playStageMusic(stageData.scene);
   const introTitle=worldRun.active?L(stageData.title.split(' · ')[1]||stageData.title):towerMode?L(stageData.title):T(`Fase ${idx+1}`,`Stage ${idx+1}`,`Fase ${idx+1}`);
@@ -2960,6 +2974,8 @@ function placeObstacles(spec){
     delete powerUps[cellKey(cell.r,cell.c)];
     obstaclesMeta[cellKey(cell.r,cell.c)]={type,hits:type==='stone'?2:1};
   });
+  const labels={ice:'Blocos de gelo têm 1 resistência e quebram com combinações vizinhas.',stone:'Blocos de pedra têm 2 resistências; use combinações ou power-ups ao lado deles.'};
+  [...new Set(wanted)].forEach(type=>explainMechanicOnce('obstacle-'+type,labels[type]||'Obstáculo: faça combinações vizinhas para removê-lo.'));
 }
 function hitAdjacentObstacles(cells){
   const hitKeys=new Set();
@@ -3425,21 +3441,33 @@ function importSave(){
 const COACH_STEPS_I18N={
   pt:[
     {text:'Bem-vindo aos 12 Reinos! Arraste uma esfera para trocar com a vizinha e formar uma linha de 3 do mesmo reino.', auto:'match'},
-    {text:'Cada combinação enche a aura dos heróis. Aos 25%, 50% e 75% eles disparam passivas automáticas!'},
-    {text:'Combine 4 ou mais esferas para criar power-ups: listrados varrem linhas, embrulhados explodem em área.'},
-    {text:'Aura 100%: o herói brilha — toque nele para lançar a ULTIMATE. Boa sorte, guardião!'}
+    {text:'Quando houver mais de um inimigo, toque nele para mirar. O próximo ataque será direcionado ao alvo marcado.'},
+    {text:'Toque no retrato de um herói para espelhá-lo e mudar o lado para o qual ele está virado.'},
+    {text:'Use o botão de formação nas ferramentas táticas para alternar a disposição dos quatro heróis.'},
+    {text:'Cada combinação enche a aura. Aos 25%, 50% e 75% os heróis disparam passivas automáticas.'},
+    {text:'Combine 4 ou mais esferas para criar power-ups: listrados varrem linhas, embrulhados explodem em área e Prismas Reais limpam cores.'},
+    {text:'Com aura em 100%, toque no herói iluminado para lançar a habilidade especial.'},
+    {text:'Quando um bloco, uma armadilha ou um efeito de fase aparecer pela primeira vez, a mensagem explicará como ele funciona.'}
   ],
   en:[
     {text:'Welcome to the 12 Realms! Drag a sphere to swap with its neighbor and line up 3 of the same realm.', auto:'match'},
-    {text:'Every match charges your heroes\' aura. At 25%, 50% and 75% they unleash automatic passives!'},
-    {text:'Match 4+ spheres to craft power-ups: striped ones sweep lines, wrapped ones explode in an area.'},
-    {text:'Aura at 100%: the hero glows — tap them to cast the ULTIMATE. Good luck, guardian!'}
+    {text:'When there is more than one enemy, tap one to aim. The next attack goes to the marked target.'},
+    {text:'Tap a hero portrait to mirror the character and change which way they face.'},
+    {text:'Use the formation button in tactical tools to change the four heroes’ arrangement.'},
+    {text:'Every match charges aura. At 25%, 50% and 75% heroes trigger automatic passives.'},
+    {text:'Match 4+ spheres to craft power-ups: striped sweep lines, wrapped explode areas and Royal Prisms clear colors.'},
+    {text:'At 100% aura, tap the glowing hero to cast their special ability.'},
+    {text:'When a block, trap or stage effect appears for the first time, a message explains how it works.'}
   ],
   es:[
     {text:'¡Bienvenido a los 12 Reinos! Arrastra una esfera para intercambiarla y alinear 3 del mismo reino.', auto:'match'},
-    {text:'Cada combinación carga el aura de tus héroes. ¡Al 25%, 50% y 75% lanzan pasivas automáticas!'},
-    {text:'Combina 4+ esferas para crear potenciadores: los rayados barren líneas, los envueltos explotan en área.'},
-    {text:'Aura al 100%: el héroe brilla — tócalo para lanzar la ULTIMATE. ¡Buena suerte, guardián!'}
+    {text:'Cuando haya más de un enemigo, toca uno para apuntar. El próximo ataque irá al objetivo marcado.'},
+    {text:'Toca el retrato de un héroe para espejarlo y cambiar hacia dónde mira.'},
+    {text:'Usa el botón de formación de las herramientas tácticas para cambiar la disposición de los héroes.'},
+    {text:'Cada combinación carga el aura. Al 25%, 50% y 75% los héroes activan pasivas automáticas.'},
+    {text:'Combina 4+ esferas para crear potenciadores: rayados barren líneas, envueltos explotan áreas y Prismas Reales limpian colores.'},
+    {text:'Con aura al 100%, toca al héroe iluminado para lanzar su habilidad especial.'},
+    {text:'Cuando aparezca por primera vez un bloque, una trampa o un efecto de fase, un mensaje explicará su funcionamiento.'}
   ]
 };
 const COACH_STEPS=COACH_STEPS_I18N.pt;
@@ -3463,6 +3491,11 @@ function startCoach(){
   if(localStorage.getItem('12r_tutorial')||towerMode||IS_DAILY_RUN) return;
   coachStep=0;
   renderCoach();
+}
+function explainMechanicOnce(key,text){
+  if(!worldRun.active||worldRun.fase===undefined||localStorage.getItem('12r_mechanic_'+key)) return;
+  localStorage.setItem('12r_mechanic_'+key,'1');
+  setBattleStatus(T('Tutorial: ','Tutorial: ','Tutorial: ')+text,'system');
 }
 function coachAdvanceOnMatch(){
   if(coachStep===0&&COACH_STEPS[0].auto==='match'){ coachStep=1; renderCoach(); }
@@ -3507,6 +3540,29 @@ function createBoard(){
   }
   if(applyPowerupQAFixture()) return;
   if(!hasValidMoves()) shuffleBoard(false);
+}
+
+/* Repreenche apenas as células livres sem permitir linhas prontas. Usado ao
+   atravessar missões na dificuldade Fácil, quando o tabuleiro é preservado. */
+function sanitizeBoardWithoutMatches(){
+  const open=[];
+  for(let r=0;r<SIZE;r++) for(let c=0;c<SIZE;c++) if(board[r][c]>=0) open.push({r,c});
+  for(let pass=0;pass<8;pass++){
+    for(const cell of open){
+      const choices=ACTIVE.length?ACTIVE:[0];
+      let color=choices[Math.floor(gameRandom()*choices.length)];
+      let guard=0;
+      while(guard++<12){
+        const left=cell.c>=2&&board[cell.r][cell.c-1]===color&&board[cell.r][cell.c-2]===color;
+        const up=cell.r>=2&&board[cell.r-1][cell.c]===color&&board[cell.r-2][cell.c]===color;
+        if(!left&&!up) break;
+        color=choices[Math.floor(gameRandom()*choices.length)];
+      }
+      board[cell.r][cell.c]=color;
+    }
+    if(findMatches().length===0) return;
+  }
+  createBoard();
 }
 
 /* v9.1 anti-flicker: renderBoard DIFERENCIAL — só reconstrói células cujo conteúdo
@@ -4396,6 +4452,7 @@ function doubleRedGemsOnce(){
 
 function triggerAbility(idx, a, options={}){
   const k = KINGDOMS[idx];
+  explainMechanicOnce('ability-'+a.name,`${L(a.name)}: ${L(a.desc||'habilidade especial do personagem')}`);
   const isPassive=a.kind==='passive';
   showAbilityBanner(k, a, isPassive);
   if(isPassive) triggerHeroAttackAnim(idx); else triggerHeroCastAnim(idx);

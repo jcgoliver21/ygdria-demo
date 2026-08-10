@@ -1099,7 +1099,9 @@
     color:#fff8df!important; background:rgba(4,2,9,.72); font-size:8.2px!important; line-height:1.2!important;
     font-weight:800; letter-spacing:.25px!important; text-shadow:0 1px 2px #000,0 0 4px #000!important;
   }
-  .enemy-row .unit-name{ color:#ffe4d8!important; font-size:8.6px!important; }
+.enemy-row .unit-name{ color:#ffe4d8!important; font-size:8.6px!important; }
+.enemy-row .unit-name{ white-space:normal!important; min-height:1.2em; overflow-wrap:anywhere; }
+.enemy-sprite-image.soldado2-clean{ clip-path:inset(0 5px 0 5px); }
   .charge-text,.unit-hp-text{
     color:#fff!important; font-size:6.8px!important; line-height:1.15!important; font-weight:700;
     text-shadow:0 1px 2px #000,0 0 4px #000!important;
