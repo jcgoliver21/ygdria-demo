@@ -1101,7 +1101,11 @@
   }
 .enemy-row .unit-name{ color:#ffe4d8!important; font-size:8.6px!important; }
 .enemy-row .unit-name{ white-space:normal!important; min-height:1.2em; overflow-wrap:anywhere; }
-.enemy-sprite-image.soldado2-clean{ clip-path:inset(0 5px 0 5px); }
+.enemy-sprite-image.soldado2-clean{
+  clip-path:inset(0 9px 0 9px);
+  -webkit-mask-image:linear-gradient(90deg,transparent 0 8px,#000 10px calc(100% - 10px),transparent calc(100% - 8px));
+  mask-image:linear-gradient(90deg,transparent 0 8px,#000 10px calc(100% - 10px),transparent calc(100% - 8px));
+}
   .charge-text,.unit-hp-text{
     color:#fff!important; font-size:6.8px!important; line-height:1.15!important; font-weight:700;
     text-shadow:0 1px 2px #000,0 0 4px #000!important;

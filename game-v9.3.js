@@ -1403,8 +1403,8 @@ const SCENE_ENEMY_FORMATIONS = [
   {1:[{x:81,y:8,s:1.22,z:44}]},
   {2:[{x:72,y:39,s:.92,z:22},{x:87,y:5,s:1.16,z:44}]},
   {2:[{x:70,y:40,s:.9,z:21},{x:87,y:3,s:1.17,z:45}]},
-  {3:[{x:68,y:43,s:.82,z:19},{x:90,y:30,s:.91,z:28},{x:79,y:0,s:1.18,z:46}]},
-  {3:[{x:67,y:44,s:.8,z:18},{x:91,y:34,s:.86,z:24},{x:81,y:0,s:1.28,z:48}]}
+  {3:[{x:61,y:40,s:.78,z:19},{x:91,y:34,s:.82,z:25},{x:77,y:22,s:1.02,z:38}]},
+  {3:[{x:60,y:40,s:.76,z:19},{x:92,y:34,s:.8,z:25},{x:78,y:22,s:1.06,z:38}]}
 ];
 
 const seedText = new URLSearchParams(location.search).get('seed') || String(Date.now());
@@ -1919,8 +1919,11 @@ function applyBattleFormation(){
     if(isBoss&&!enemy?.isCard) slot.s*=1.16;
     /* Grupos ficam mais separados horizontalmente e em profundidades distintas;
        isso evita que nomes, barras e sprites ocupem a mesma área. */
-    if(enemies.length>=3){ slot.x=Math.max(62,Math.min(94,slot.x+(i%2?3:-3))); slot.y+=i<2?6:-2; }
-    applyFormationSlot(unit,slot,enemy?.isCard?104:(isBoss?112:98));
+    if(enemies.length>=3){ slot.x=Math.max(58,Math.min(94,slot.x+(i%2?2:-2))); slot.y+=i<2?2:0; }
+    /* O chefe fica sempre em segundo plano; assim nome/vida não encostam na
+       barra de informações e os demais inimigos conservam leitura própria. */
+    if(isBoss&&enemies.length>1){ slot.y=Math.max(20,slot.y); slot.z+=6; }
+    applyFormationSlot(unit,slot,enemy?.isCard?100:(isBoss?100:88));
   });
 }
 
