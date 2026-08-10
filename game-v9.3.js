@@ -3288,6 +3288,16 @@ function enemyLineFor(e){
   if(k?.frase) return L(k.frase);
   return T('Vocês não deveriam ter vindo até aqui...','You should not have come here...','No deberían haber venido hasta aquí...');
 }
+function storySpeakerSprite(name){
+  const wanted=String(name||'').trim();
+  if(!wanted) return '';
+  const activeEnemy=(enemies||[]).find(e=>e?.name===wanted&&e.sprite);
+  if(activeEnemy?.sprite) return activeEnemy.sprite;
+  const enemyType=Object.values(HUMANOS_ETYPES||{}).find(t=>t?.n===wanted&&t.sprite);
+  if(enemyType?.sprite) return enemyType.sprite;
+  const enemyCard=Object.values(HUMANOS_CARDS||{}).find(c=>c?.nome===wanted&&c.sprite);
+  return enemyCard?.sprite||'';
+}
 function maybeShowStory(idx){
   const seq=[];
   /* v9.3.7 · roteiro oficial do Reino dos Humanos. A primeira entrada usa
@@ -3298,7 +3308,10 @@ function maybeShowStory(idx){
     if(roteiro){
       const primeira=!storyMissionDone(worldRun.fase,worldRun.nivel);
       if(worldRun.nivel===1 && primeira) seq.push({name:'Narrador',t:HUMAN_STORY[worldRun.fase].before});
-      if(primeira && roteiro.length) roteiro.forEach(s=>seq.push(s));
+      if(primeira && roteiro.length) roteiro.forEach(s=>{
+        if(s?.h) seq.push(s);
+        else seq.push({...s,sprite:s?.sprite||storySpeakerSprite(s?.name)});
+      });
       if(seq.length){ storyQueue=[...seq]; renderStoryStep(); return; }
       const regra=STORY_RULES[worldRun.fase];
       const extra=ACTIVE.map(i=>KINGDOMS[i]).find(k=>k&&!regra?.allowed.includes(k.id));
