@@ -2844,6 +2844,9 @@ body.viz-timer-off .mission-timer{ display:none!important; }
   min-height:0!important;
   padding:5px 7px!important;
 }
+.victory-rank{ margin:0 0 6px; color:#e8ca78; font-size:11px; letter-spacing:.8px; }
+.report-ranking-title{ margin:7px 0 4px; color:#d7ba72; font-size:9px; letter-spacing:1px; text-transform:uppercase; }
+.rr-rank{ width:22px; flex:0 0 22px; text-align:center; font-size:10px; }
 .mission-identity{grid-area:identity!important;min-width:0!important}
 .mission-timer{grid-area:timer!important;align-self:center!important;white-space:nowrap!important;font-size:10px!important;letter-spacing:1px!important}
 .mission-metrics{grid-area:metrics!important;display:grid!important;grid-template-columns:minmax(0,1fr) auto auto!important;align-items:center!important;gap:5px!important;min-width:0!important}

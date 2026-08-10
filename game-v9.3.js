@@ -1942,10 +1942,13 @@ function applyFormationSlot(unit,slot,width){
   if(!unit||!slot) return;
   /* Ajuste fino mobile: comprime a formação para nenhuma unidade/nome sair da tela */
   const estreito=window.innerWidth<=600;
-  const x=estreito?Math.max(15,Math.min(85, 50+(slot.x-50)*0.72)):slot.x;
+  const enemySlot=unit.classList.contains('enemy-unit');
+  const x=estreito
+    ? (enemySlot?Math.max(8,Math.min(92,slot.x)):Math.max(15,Math.min(85,50+(slot.x-50)*0.72)))
+    : slot.x;
   const y=estreito?50+(slot.y-50)*0.9:slot.y;
   const s=estreito?slot.s*0.8:slot.s;
-  const w=estreito?Math.round(width*0.84):width;
+  const w=estreito?Math.round(width*(enemySlot?0.78:0.84)):width;
   /* ATERRISSAGEM: re-mapeia a profundidade (y 0..46) para a banda de chão da arte da
      fase — todos os pés (heróis, inimigos, golens, harpias) pisam no piso pintado.
      bottom% = ((1-F)·alturaArena − gap − UI sob os pés) / alturaRow  (cover = 100% da
@@ -3359,12 +3362,24 @@ function renderStoryStep(){
 function advanceStory(){
   storyQueue.shift();
   if(storyQueue.length) renderStoryStep();
-  else document.getElementById('storyLayer')?.classList.remove('show');
+  else finishStorySequence();
   sfxSelect();
 }
-function skipStory(){ storyQueue=[]; document.getElementById('storyLayer')?.classList.remove('show','cinematic'); }
-function showStorySequence(seq){
-  if(!seq?.length) return;
+let storyDoneCallback=null;
+function finishStorySequence(){
+  storyQueue=[];
+  document.getElementById('storyLayer')?.classList.remove('show','cinematic');
+  const done=storyDoneCallback; storyDoneCallback=null;
+  if(typeof done==='function') done();
+}
+function skipStory(complete=false){
+  const done=storyDoneCallback; storyDoneCallback=null;
+  storyQueue=[]; document.getElementById('storyLayer')?.classList.remove('show','cinematic');
+  if(complete&&typeof done==='function') done();
+}
+function showStorySequence(seq,onDone=null){
+  storyDoneCallback=typeof onDone==='function'?onDone:null;
+  if(!seq?.length){ finishStorySequence(); return; }
   storyQueue=[...seq];
   renderStoryStep();
 }
@@ -5045,7 +5060,8 @@ function renderBattleReport(elId){
   const top=entries[0]; const mvp=KINGDOMS[top.idx]; const maxD=top.dmg||1;
   el.innerHTML=`
     <div class="report-mvp"><img src="${mvp.cardThumb||mvp.img}" alt="${L(mvp.nome)}"><div><small>${T('MVP DA BATALHA','BATTLE MVP','MVP DE LA BATALLA')}</small><strong>${L(mvp.nome)}</strong><span>${top.dmg} ${T('de dano total','total damage','de daño total')}</span></div></div>
-    <div class="report-rows">${entries.map(e=>{const k=KINGDOMS[e.idx];return `<div class="report-row"><span class="rr-name">${L(k.nome)}</span><div class="rr-bar"><i style="width:${Math.max(6,Math.round(e.dmg/maxD*100))}%;background:${k.color}"></i></div><span class="rr-val">${e.dmg}</span></div>`;}).join('')}</div>
+    <div class="report-ranking-title">${T('Ranking das cartas usadas','Cards used ranking','Ranking de cartas usadas')}</div>
+    <div class="report-rows">${entries.map((e,rank)=>{const k=KINGDOMS[e.idx];const medal=['🥇','🥈','🥉'][rank]||`${rank+1}º`;return `<div class="report-row"><span class="rr-rank">${medal}</span><span class="rr-name">${L(k.nome)}</span><div class="rr-bar"><i style="width:${Math.max(6,Math.round(e.dmg/maxD*100))}%;background:${k.color}"></i></div><span class="rr-val">${e.dmg}</span></div>`;}).join('')}</div>
     <div class="report-meta">${T('Maior combo','Best combo','Mayor combo')} ×${runStats.maxCombo} · ${T('Power-ups criados:','Power-ups created:','Power-ups creados:')} ${runStats.powerUps}</div>`;
 }
 function launchVictoryConfetti(){
@@ -5127,8 +5143,12 @@ function onStageCleared(){
     const ups=grantXp((30+worldRun.fase*10)*(xpDoubleRun?2:1));
     checkAchievements('stage');
     flushRunToProfile(true);
-    const starsEl=document.getElementById('stageStars');
+      const starsEl=document.getElementById('stageStars');
     if(starsEl) starsEl.innerHTML=[1,2,3].map(x=>`<span class="star${x<=stars?' on':''}" style="--i:${x}">★</span>`).join('');
+    const victoryStars=document.getElementById('victoryStars');
+    if(victoryStars) victoryStars.innerHTML=[1,2,3].map(x=>`<span class="star${x<=stars?' on':''}" style="--i:${x}">★</span>`).join('');
+    const victoryRank=document.getElementById('victoryRank');
+    if(victoryRank) victoryRank.textContent=`${DIFFICULTY_RANKS[difficulty]||'Prata'} · ${difficultyLabel(difficulty)} · ${stars}/3`;
     if(worldRun.fase===world.fases.length-1){
       /* Fase 10 vencida — Reino dos Humanos conquistado */
       grantCoins(coinsVitoria(150)); grantXp(100*(xpDoubleRun?2:1));
@@ -5140,8 +5160,9 @@ function onStageCleared(){
       launchVictoryConfetti();
       const showFinalStory=worldRun.storyMode!==false;
       worldRun.active=false;
-      if(showFinalStory) showStorySequence([{name:'Narrador',t:HUMAN_STORY[worldRun.fase]?.after||''}]);
-      setTimeout(()=>showOverlay('dungeonClearOverlay'),5200);
+      const finishFinale=()=>showOverlay('dungeonClearOverlay');
+      if(showFinalStory) showStorySequence([{name:'Narrador',t:HUMAN_STORY[worldRun.fase]?.after||''}],finishFinale);
+      else finishFinale();
       return;
     }
     document.getElementById('stageClearText').textContent=`${L(fase.chefe)} ${T('derrotado(a)!','defeated!','¡derrotado(a)!')} ${L(fase.nome)} ${T('conquistada!','conquered!','conquistada!')}${ups.length?' '+ups.join(' '):''}`;
@@ -6336,7 +6357,7 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
   document.getElementById('achBtn')?.addEventListener('click',()=>openPanel('achScreen'));
   document.getElementById('coachNext')?.addEventListener('click',()=>{ coachStep++; renderCoach(); sfxSelect(); });
   document.getElementById('storyLayer')?.addEventListener('click',(e)=>{ if(e.target.id!=='storySkip') advanceStory(); });
-  document.getElementById('storySkip')?.addEventListener('click',skipStory);
+  document.getElementById('storySkip')?.addEventListener('click',()=>skipStory(true));
   document.getElementById('shareDailyBtn')?.addEventListener('click',async(e)=>{
     await copyTextToClipboard(buildDailyShareText());
     e.target.textContent=T('✓ Copiado! Cole no grupo','✓ Copied! Paste it anywhere','✓ ¡Copiado! Pégalo donde quieras');
