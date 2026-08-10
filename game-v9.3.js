@@ -3286,7 +3286,6 @@ function enemyLineFor(e){
   return T('Vocês não deveriam ter vindo até aqui...','You should not have come here...','No deberían haber venido hasta aquí...');
 }
 function maybeShowStory(idx){
-  if(coachStep>=0&&coachStep<COACH_STEPS_I18N.pt.length) return;
   const seq=[];
   /* v9.3.7 · roteiro oficial do Reino dos Humanos. A primeira entrada usa
      as falas escritas para a missão; repetições mantêm apenas a apresentação
@@ -6000,7 +5999,10 @@ const HUMAN_STORY=(()=>{
 })();
 
 const STORY_RULES=HUMAN_STORY.map((s)=>({allowed:s.allowed,fixed:s.fixed}));
-function storyMissionKey(f,n){ return `12r_story_humanos_${f+1}_${n}`; }
+/* A revisão 9.3.10 reabre a campanha narrativa uma vez para perfis que
+   concluíram missões enquanto as cenas estavam bloqueadas pelo tutorial. */
+const STORY_CAMPAIGN_VERSION='9.3.10';
+function storyMissionKey(f,n){ return `12r_story_${STORY_CAMPAIGN_VERSION}_humanos_${f+1}_${n}`; }
 function storyMissionDone(f,n){ return localStorage.getItem(storyMissionKey(f,n))==='1'; }
 function markStoryMissionDone(f,n){ localStorage.setItem(storyMissionKey(f,n),'1'); }
 function prepareStorySelection(){

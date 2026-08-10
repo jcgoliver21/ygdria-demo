@@ -1,7 +1,7 @@
 /* 12 Reinos — service worker
    Núcleo (html/js/css/manifest): network-first com fallback ao cache (offline).
    Assets pesados (imagens): cache-first com atualização em segundo plano. */
-const CACHE = '12r-v9.3.9';
+const CACHE = '12r-v9.3.10';
 const CORE = [
   './play.html',
   './styles-v9.3.css',
