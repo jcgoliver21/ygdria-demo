@@ -187,6 +187,7 @@
   .unit.target .target-arrow{ display:block; animation:arrowBounce .9s ease-in-out infinite; }
   @keyframes arrowBounce{ 0%,100%{ transform:translateX(-50%) translateY(0); } 50%{ transform:translateX(-50%) translateY(5px); } }
   .unit.ready .avatar-circle{ animation:readyGlow 1.1s ease-in-out infinite; cursor:pointer; }
+  .hero-unit.ready .avatar-circle{ box-shadow:0 0 0 2px var(--realm,#ffe38a),0 0 20px 8px rgba(255,220,120,.9),0 4px 8px rgba(0,0,0,.6); }
   @keyframes readyGlow{
     0%,100%{ box-shadow:0 0 6px 2px rgba(255,220,120,.7), 0 4px 8px rgba(0,0,0,.6); }
     50%{ box-shadow:0 0 18px 7px rgba(255,220,120,.95), 0 4px 8px rgba(0,0,0,.6); }

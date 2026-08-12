@@ -711,6 +711,8 @@ let sfxBus = null;
 let musicGeneration = 0;
 let musicBarIndex = 0;
 let musicMoodMode = 0;
+let musicBossLayer = false;
+let musicFinalBoss = false;
 const activeMusicNodes = new Set();
 
 function ensureAudio(){
@@ -885,7 +887,7 @@ function getMusicIntensity(){
   if(!enemies.length) return .45;
   const enemyRatio=enemies.reduce((sum,e)=>sum+Math.max(0,e.hp),0)/Math.max(1,enemies.reduce((sum,e)=>sum+e.maxHp,0));
   const playerRatio=playerHP/PLAYER_MAX_HP;
-  const bossBoost=stageIndex===DUNGEON.length-1?.22:0;
+  const bossBoost=musicBossLayer?(musicFinalBoss?.32:.2):0;
   return Math.max(.35,Math.min(1,.45+(1-enemyRatio)*.22+(1-playerRatio)*.2+bossBoost));
 }
 
@@ -930,18 +932,25 @@ function scheduleMusicBar(sceneIdx,generation){
     }
     [0,1.5,2,3.5].forEach(position=>musicTone(midiToFreq(track.root+24+chordNotes[2]),beat*.18,'sine',.012,start+position*beat,.006));
   }
+  if(musicBossLayer && !track.boss){
+    [0,1,2,3].forEach(i=>musicTone(midiToFreq(track.root+19+(i%2?7:0)),beat*.3,'sine',.014,start+i*beat,.02));
+    if(musicFinalBoss) [0,1.5,2.5,3.5].forEach(p=>musicTone(midiToFreq(track.root+31),beat*.22,'triangle',.012,start+p*beat,.01));
+  }
   musicBarIndex++;
   musicTimer=setTimeout(()=>scheduleMusicBar(sceneIdx,generation),Math.max(120,barDuration*1000-90));
 }
 
 function playStageMusic(sceneIdx){
   stopMusic();
-  currentTrack=sceneIdx;
+  const isBoss=Boolean(worldRun?.active && worldRun.nivel===5);
+  musicBossLayer=isBoss;
+  musicFinalBoss=Boolean(isBoss && worldRun.fase===WORLDS[0].fases.length-1);
+  currentTrack=musicFinalBoss?4:Math.min(3,sceneIdx);
   if(musicMuted) return;
   ensureAudio();
   musicBarIndex=0;
   const generation=musicGeneration;
-  scheduleMusicBar(sceneIdx,generation);
+  scheduleMusicBar(currentTrack,generation);
 }
 function stopMusic(){
   musicGeneration++;
@@ -977,6 +986,31 @@ const BATTLE_PHASES=new Set(V93.battle?.phases||['idle','resolving','heroes','en
 let battlePhase=V93.battle?.defaultPhase||'idle';
 function phaseLabel(phase){
   return ({idle:T('Sua jogada','Your move','Tu jugada'),resolving:T('Resolvendo combinação','Resolving match','Resolviendo combinación'),heroes:T('Ataque dos heróis','Heroes attacking','Ataque de héroes'),enemies:T('Turno inimigo','Enemy turn','Turno enemigo'),transition:T('Transição','Transition','Transición'),paused:T('Pausado','Paused','Pausado')})[phase]||phase;
+}
+const COMBAT_ATTACK_SFX={
+  luz(){ chord([1046,1318,1568],.14,'sine',.075); noiseBurst({dur:.18,vol:.045,filter:'highpass',freq:5200}); },
+  humanos(){ beep(392,.08,'triangle',.08); beep(587,.12,'triangle',.075,.07); beep(784,.16,'sine',.07,.14); },
+  agua(){ noiseBurst({dur:.18,vol:.09,filter:'bandpass',freq:1200,freqEnd:500}); beep(1480,.07,'sine',.08,.12); beep(1900,.05,'sine',.055,.2); },
+  fogo(){ noiseBurst({dur:.24,vol:.12,filter:'lowpass',freq:1900,freqEnd:320}); beep(110,.12,'sawtooth',.06); },
+  natureza(){ beep(523,.12,'triangle',.08); beep(659,.12,'triangle',.07,.09); noiseBurst({dur:.16,vol:.05,filter:'bandpass',freq:1700}); },
+  terra(){ beep(92,.18,'sine',.1); noiseBurst({dur:.2,vol:.1,filter:'lowpass',freq:260,freqEnd:70}); },
+  areia(){ noiseBurst({dur:.28,vol:.1,filter:'highpass',freq:1800,freqEnd:900,attack:.05}); beep(330,.1,'triangle',.06,.16); },
+  sombras(){ beep(110,.22,'sawtooth',.07); noiseBurst({dur:.25,vol:.07,filter:'lowpass',freq:430,freqEnd:100,attack:.08}); },
+  raio(){ noiseBurst({dur:.045,vol:.18,filter:'highpass',freq:1800}); beep(1650,.12,'square',.065,.05); },
+  vento(){ noiseBurst({dur:.32,vol:.1,filter:'bandpass',freq:500,q:2,freqEnd:1800,attack:.08}); },
+  chuvas(){ noiseBurst({dur:.26,vol:.1,filter:'bandpass',freq:2800,q:.8,attack:.04}); beep(260,.16,'sine',.055,.1); },
+  gelo(){ chord([1318,1760,2093],.16,'sine',.07); noiseBurst({dur:.16,vol:.045,filter:'highpass',freq:6000}); }
+};
+const BEAST_ATTACK_SFX={
+  lobo(){ noiseBurst({dur:.16,vol:.16,filter:'bandpass',freq:900,freqEnd:260,attack:.01}); beep(120,.18,'sawtooth',.06); },
+  slime(){ noiseBurst({dur:.28,vol:.13,filter:'lowpass',freq:480,freqEnd:90,attack:.04}); },
+  soldado(){ beep(220,.1,'triangle',.07); beep(165,.16,'triangle',.06,.1); },
+  default(){ noiseBurst({dur:.15,vol:.11,filter:'lowpass',freq:700,freqEnd:160}); }
+};
+function sfxCombatAttack(id,side='hero'){
+  const key=String(id||'').toLowerCase();
+  if(side==='enemy') return BEAST_ATTACK_SFX[key.includes('lobo')?'lobo':key.includes('slime')?'slime':key.includes('soldado')?'soldado':'default']();
+  (COMBAT_ATTACK_SFX[key]||COMBAT_ATTACK_SFX.humanos)();
 }
 function setBattlePhase(next){
   if(!BATTLE_PHASES.has(next)) return;
@@ -1795,12 +1829,12 @@ function onHeroAvatarClick(idx){
   if(!canAcceptPlayerInput()) return;
   const k=KINGDOMS[idx];
   if(!k) return;
+  if(heroReady[idx]) { openAbilityPicker(idx); return; }
   if(heroFacingOverrides.has(k.id)) heroFacingOverrides.delete(k.id);
   else heroFacingOverrides.add(k.id);
   const avatar=document.getElementById('party-'+k.id+'-avatar');
   if(avatar) avatar.innerHTML=spriteMarkup(k,avatar.dataset.action||'idle');
-  if(heroReady[idx]) openAbilityPicker(idx);
-  else setBattleStatus(T(`${L(k.nome)} mudou o lado para o qual está olhando.`,`${L(k.nome)} changed the direction they are facing.`,`${L(k.nome)} cambió el lado hacia el que mira.`),'system');
+  setBattleStatus(T(`${L(k.nome)} mudou o lado para o qual está olhando.`,`${L(k.nome)} changed the direction they are facing.`,`${L(k.nome)} cambió el lado hacia el que mira.`),'system');
 }
 
 function abilityCanBeUsed(a){
@@ -1948,7 +1982,7 @@ function applyFormationSlot(unit,slot,width){
     : slot.x;
   const y=estreito?50+(slot.y-50)*0.9:slot.y;
   const s=estreito?slot.s*0.8:slot.s;
-  const w=estreito?Math.round(width*(enemySlot?0.78:0.84)):width;
+  const w=estreito?Math.round(width*(enemySlot?0.9:0.84)):width;
   /* ATERRISSAGEM: re-mapeia a profundidade (y 0..46) para a banda de chão da arte da
      fase — todos os pés (heróis, inimigos, golens, harpias) pisam no piso pintado.
      bottom% = ((1-F)·alturaArena − gap − UI sob os pés) / alturaRow  (cover = 100% da
@@ -1965,7 +1999,7 @@ function applyFormationSlot(unit,slot,width){
     const yMin=Math.max(0,(((1-bot)*aH-gap)/rH)*100);
     const prof=Math.max(0,Math.min(1,y/46));
     yFin=yMin+prof*Math.max(0,yMax-yMin);
-    if(enemySlot) yFin=Math.max(0,yFin-8); /* mantém ~10px até o HUD inferior */
+    if(enemySlot) yFin=Math.max(0,yFin-3); /* sobe o grupo e mantém distância do HUD */
   }
   unit.style.setProperty('--slot-x',x+'%');
   unit.style.setProperty('--slot-y',yFin+'%');
@@ -4813,7 +4847,7 @@ function applyDamageToEnemy(dmg, colorIdx, targetIdxOverride){
     { const kD=KINGDOMS[colorIdx]; const elD=kD&&document.getElementById('dps-'+kD.id);
       if(elD) elD.textContent='⚔ '+runStats.damage[colorIdx]; }
   }
-  sfxHit();
+  sfxCombatAttack(colorIdx!==null&&colorIdx!==undefined?(KINGDOMS[colorIdx]?.iconId||KINGDOMS[colorIdx]?.id):'humanos','hero');
   const bar = document.getElementById('enemyHpBar-'+idx);
   const txt = document.getElementById('enemyHpText-'+idx);
   if(bar) bar.style.width = Math.max(0,enemy.hp/enemy.maxHp*100)+'%';
@@ -5013,7 +5047,7 @@ function enemyCounterAttack(){
     if(dmg>0) pulseHpEffect('damage',800);
     if(dmg>0&&partyArenaEl){ partyArenaEl.classList.remove('party-hurt'); void partyArenaEl.offsetWidth; partyArenaEl.classList.add('party-hurt');
       window.setTimeout(()=>partyArenaEl.classList.remove('party-hurt'),480); }
-    sfxPlayerHit();
+    sfxCombatAttack(enemy.etype||enemy.id||enemy.name,'enemy');
     haptic([25,20,25]);
     if(dmg>0) setBattleStatus(T(`${L(enemy.name)} contra-atacou e causou ${dmg} de dano.`,`${L(enemy.name)} counterattacked for ${dmg} damage.`,`${L(enemy.name)} contraatacó y causó ${dmg} de daño.`));
     /* anti-flicker: o tremor fica no palco da batalha, não no body inteiro */
