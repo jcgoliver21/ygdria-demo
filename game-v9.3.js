@@ -262,6 +262,7 @@ const KINGDOMS = [
     color:'#ff6fa5', colorLight:'#ffd7e8', colorDark:'#7c1f4b', gem:'gemPink', atk:2,
     img:'assets/cards/adriel-jovem-card.webp', cardThumb:'assets/cards/adriel-jovem-card.webp',
     sprite:'assets/characters/runtime-v7/adriel-jovem/single-1.webp', heroFlip:true, fxTheme:'rose', rarity:'NORMAL', stars:1,
+    sprites:{idle:{src:'assets/characters/runtime-v7/adriel-jovem/idle-strip.png',frames:4,duration:1800,loop:true}},
     frase:'Um dia me tornarei o cavaleiro mais forte de toda Ygdria.',
     abilities:[]
   },
@@ -1614,7 +1615,7 @@ function spriteMarkup(k, action='idle'){
   if(spec?.src){
     const meta = {...HERO_ACTIONS[action], ...spec};
     const steps = Math.max(1, Number(meta.frames||1)-1);
-    return `<div class="hero-sprite-sheet${heroIsFlipped(k)?' flip':''}" aria-hidden="true" style="--sprite-url:url('${meta.src}');--sprite-frames:${Math.max(1,Number(meta.frames||1))};--sprite-steps:${steps};--sprite-duration:${Number(meta.duration||520)}ms"></div>`;
+    return `<div class="hero-sprite-sheet${meta.loop?' loop':''}${heroIsFlipped(k)?' flip':''}" aria-hidden="true" style="--sprite-url:url('${meta.src}');--sprite-frames:${Math.max(1,Number(meta.frames||1))};--sprite-steps:${steps};--sprite-duration:${Number(meta.duration||520)}ms"></div>`;
   }
   if(k.sprite) return `<img class="hero-sprite-image${heroIsFlipped(k)?' flip':''}" src="${k.sprite}" alt="${L(k.nome)}">`;
   return scopeSvg(CHIBI_SVG[k.id],k.id);
@@ -5079,6 +5080,7 @@ function updatePlayerHP(){
 
 /* v9 · Estatísticas da run, estrelas e celebração */
 let runStats={damage:{},maxCombo:0,powerUps:0};
+let victoryExitToMap=false;
 function resetRunStats(){ runStats={damage:{},maxCombo:0,powerUps:0,starsEarned:0,_flushedDamage:0,_flushedPU:0}; }
 function getStars(){ try{ return JSON.parse(localStorage.getItem('12r_stars')||'{}'); }catch(e){ return {}; } }
 function recordStars(stageIdx){
@@ -5191,27 +5193,34 @@ function onStageCleared(){
       const gt=document.getElementById('grandClearTitle'), gx=document.getElementById('grandClearText');
       if(gt) gt.textContent=T('Reino dos Humanos Conquistado!','Human Realm Conquered!','¡Reino de los Humanos Conquistado!');
       if(gx) gx.textContent=T('A Terra dos Reguladores de Ygdria está livre. Os próximos reinos aguardam...','The Land of the Regulators of Ygdria is free. The next realms await...','La Tierra de los Reguladores está libre. Los próximos reinos esperan...');
-      renderBattleReport('victoryReport');
-      launchVictoryConfetti();
       const showFinalStory=worldRun.storyMode!==false;
+      const finaleFase=worldRun.fase;
       worldRun.active=false;
-      const finishFinale=()=>showOverlay('dungeonClearOverlay');
-      if(showFinalStory) showStorySequence([{name:'Narrador',t:HUMAN_STORY[worldRun.fase]?.after||''}],finishFinale);
+      const finishFinale=()=>{
+        victoryExitToMap=true;
+        renderBattleReport('victoryReport');
+        launchVictoryConfetti();
+        showOverlay('dungeonClearOverlay');
+      };
+      if(showFinalStory) showStorySequence([{name:'Narrador',t:HUMAN_STORY[finaleFase]?.after||''}],finishFinale);
       else finishFinale();
       return;
     }
-    document.getElementById('stageClearText').textContent=`${L(fase.chefe)} ${T('derrotado(a)!','defeated!','¡derrotado(a)!')} ${L(fase.nome)} ${T('conquistada!','conquered!','conquistada!')}${ups.length?' '+ups.join(' '):''}`;
-    if(worldRun.storyMode!==false&&HUMAN_STORY[worldRun.fase]?.after) showStorySequence([{name:'Narrador',t:HUMAN_STORY[worldRun.fase].after}]);
-    showOverlay('stageClearOverlay');
-    setTimeout(()=>{
-      hideOverlay('stageClearOverlay');
+    const completedFase=worldRun.fase;
+    const finishMissionReport=()=>{
+      const gt=document.getElementById('grandClearTitle'), gx=document.getElementById('grandClearText');
+      if(gt) gt.textContent=T('Missão Concluída!','Mission Complete!','¡Misión Completada!');
+      if(gx) gx.textContent=`${L(fase.chefe)} ${T('derrotado(a)!','defeated!','¡derrotado(a)!')} ${L(fase.nome)} ${T('conquistada!','conquered!','conquistada!')}${ups.length?' '+ups.join(' '):''}`;
+      renderBattleReport('victoryReport');
+      launchVictoryConfetti();
+      victoryExitToMap=true;
+      showOverlay('dungeonClearOverlay');
       worldRun.active=false;
-      showMainMenu();
-      openMapScreen();
-      renderWorldMap();
-      openPanel('worldScreen');
       busy=false;
-    },2400);
+    };
+    const finalStory=worldRun.storyMode!==false&&HUMAN_STORY[completedFase]?.after;
+    if(finalStory) showStorySequence([{name:'Narrador',t:HUMAN_STORY[completedFase].after}],finishMissionReport);
+    else finishMissionReport();
     return;
   }
   if(bossRushMode){
@@ -5335,7 +5344,15 @@ function restartCurrentStage(){
 document.getElementById('muteBtn').addEventListener('click', toggleMusic);
 document.getElementById('resetBtn').addEventListener('click', resetGame);
 document.getElementById('retryBtn').addEventListener('click', restartCurrentStage);
-document.getElementById('playAgainBtn').addEventListener('click', resetGame);
+document.getElementById('playAgainBtn').addEventListener('click',()=>{
+  if(!victoryExitToMap){ resetGame(); return; }
+  victoryExitToMap=false;
+  hideOverlay('dungeonClearOverlay');
+  showMainMenu();
+  openMapScreen();
+  renderWorldMap();
+  openPanel('worldScreen');
+});
 
 // ---------- HERO SELECT SCREEN ----------
 const qaPreset = new URLSearchParams(location.search).get('qa');

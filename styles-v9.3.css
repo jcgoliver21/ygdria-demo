@@ -806,6 +806,7 @@
     position:fixed; inset:0; z-index:500; display:none; align-items:center; justify-content:center;
     background:rgba(4,2,8,.9); padding:16px; backdrop-filter:blur(10px);
   }
+  .avatar-circle .hero-sprite-sheet.loop{ animation-iteration-count:infinite; }
   /* Opções pode ser aberto sobre a pausa. Como pauseScreen vem depois no HTML,
      ambos com o mesmo z-index deixavam Opções invisível até tocar em Continuar. */
   #optionsScreen{ z-index:520; }
