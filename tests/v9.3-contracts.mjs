@@ -14,14 +14,14 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v9.3',()=>{
-  assert.match(html,/styles-v9\.3\.css\?v=9\.3\.18/);
-  assert.match(html,/v9\.3-config\.js\?v=9\.3\.18/);
-  assert.match(html,/game-v9\.3\.js\?v=9\.3\.18/);
+  assert.match(html,/styles-v9\.3\.css\?v=9\.3\.19/);
+  assert.match(html,/v9\.3-config\.js\?v=9\.3\.19/);
+  assert.match(html,/game-v9\.3\.js\?v=9\.3\.19/);
   assert.doesNotMatch(html+sw,/game-v9\.1|styles-v9\.1|spritehud2/);
 });
 
 check('cache offline da v9.3 é isolado',()=>{
-  assert.match(sw,/12r-v9\.3\.18/);
+  assert.match(sw,/12r-v9\.3\.19/);
   for(const file of ['play.html','styles-v9.3.css','v9.3-config.js','game-v9.3.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -79,7 +79,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v9.3.js?v=9.3.18');
+  const deferredGame=html.indexOf('game-v9.3.js?v=9.3.19');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
@@ -116,10 +116,6 @@ check('final da fase aguarda a história e mostra classificação',()=>{
   assert.match(game,/Ranking das cartas usadas/);
 });
 
-check('Adriel jovem possui animaÃ§Ã£o idle em spritesheet',()=>{
-  assert.match(game,/adriel-jovem\/idle-strip\.png',frames:4,duration:1800,loop:true/);
-  assert.match(css,/\.hero-sprite-sheet\.loop\{ animation-iteration-count:infinite; \}/);
-});
 
 console.log(`v9.3 contracts: ${checks.length} verificações aprovadas`);
 checks.forEach((name,index)=>console.log(`${index+1}. ${name}`));

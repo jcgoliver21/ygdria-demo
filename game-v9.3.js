@@ -262,7 +262,6 @@ const KINGDOMS = [
     color:'#ff6fa5', colorLight:'#ffd7e8', colorDark:'#7c1f4b', gem:'gemPink', atk:2,
     img:'assets/cards/adriel-jovem-card.webp', cardThumb:'assets/cards/adriel-jovem-card.webp',
     sprite:'assets/characters/runtime-v7/adriel-jovem/single-1.webp', heroFlip:true, fxTheme:'rose', rarity:'NORMAL', stars:1,
-    sprites:{idle:{src:'assets/characters/runtime-v7/adriel-jovem/idle-strip.png',frames:4,duration:1800,loop:true}},
     frase:'Um dia me tornarei o cavaleiro mais forte de toda Ygdria.',
     abilities:[]
   },
@@ -1615,7 +1614,7 @@ function spriteMarkup(k, action='idle'){
   if(spec?.src){
     const meta = {...HERO_ACTIONS[action], ...spec};
     const steps = Math.max(1, Number(meta.frames||1)-1);
-    return `<div class="hero-sprite-sheet${meta.loop?' loop':''}${heroIsFlipped(k)?' flip':''}" aria-hidden="true" style="--sprite-url:url('${meta.src}');--sprite-frames:${Math.max(1,Number(meta.frames||1))};--sprite-steps:${steps};--sprite-duration:${Number(meta.duration||520)}ms"></div>`;
+    return `<div class="hero-sprite-sheet${heroIsFlipped(k)?' flip':''}" aria-hidden="true" style="--sprite-url:url('${meta.src}');--sprite-frames:${Math.max(1,Number(meta.frames||1))};--sprite-steps:${steps};--sprite-duration:${Number(meta.duration||520)}ms"></div>`;
   }
   if(k.sprite) return `<img class="hero-sprite-image${heroIsFlipped(k)?' flip':''}" src="${k.sprite}" alt="${L(k.nome)}">`;
   return scopeSvg(CHIBI_SVG[k.id],k.id);
