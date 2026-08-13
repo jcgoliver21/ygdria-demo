@@ -3224,8 +3224,8 @@ body.quality-economy .unit-ground-shadow,body.quality-economy .arena-floor{filte
 /* v10.0.1 · Leitura de combate: escala anterior restaurada e a energia ativa
    nasce do corpo, em vez de desenhar uma moldura quadrada ao redor do avatar. */
 body.game-active .party-row .hero-sprite-sheet,
-body.game-active .enemy-row .enemy-character-sheet{transform-origin:50% 100%}
-body.game-active .hero-unit.hero-young .hero-sprite-sheet{--sprite-scale:1}
+body.game-active .enemy-row .enemy-character-sheet{scale:1.18;transform-origin:50% 100%}
+body.game-active .hero-unit.hero-young .hero-sprite-sheet{scale:1.11}
 body.game-active .party-row .unit-stage{height:clamp(118px,20vh,148px)!important}
 body.game-active .enemy-row .unit-stage{height:clamp(112px,18vh,142px)!important}
 @media (max-width:600px){
