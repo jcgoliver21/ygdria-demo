@@ -1504,24 +1504,35 @@ const TOWER_RANK_REWARDS=[
   ['🏅 Top 10','800 🪙'],
   ['🎖 Top 100','300 🪙']
 ];
+function towerStoryOrder(){
+  const ordem=[], vistos=new Set();
+  (WORLDS||[]).forEach(world=>world.fases.forEach(fase=>fase.missoes.forEach(missao=>missao.forEach(key=>{
+    if(vistos.has(key)) return;
+    const card=HUMANOS_CARDS[key], type=HUMANOS_ETYPES[key];
+    if(!card&&!type) return;
+    vistos.add(key);
+    ordem.push(card?{name:card.name,hp:card.hp,atk:card.atk,sprite:card.sprite,cardId:key,isCard:true}:{name:type.name,hp:type.hp,atk:type.atk,sprite:type.sprite,etype:key,flip:Boolean(type.flip)});
+  }))));
+  return ordem;
+}
 function buildTowerStage(floor){
-  const ordem=KINGDOMS; /* ordem de aparição no jogo */
+  const ordem=towerStoryOrder(); /* chronology from story stages */
   const n=ordem.length;
   const ciclo=Math.floor((floor-1)/n);
-  const k=ordem[(floor-1)%n];
-  const base=HUMANOS_CARDS[k.id]||null;
-  const hpBase=base?Math.round(base.hp*1.4):((k.atk||12)*16+120);
-  const atkBase=base?base.atk:Math.max(6,Math.round((k.atk||12)*0.9));
+  const k=ordem[(floor-1)%n]||{name:'Sentinela',hp:200,atk:20,sprite:GOLEM_SPRITE};
+  const hpBase=Math.round((k.hp||200)*1.4);
+  const atkBase=Math.max(6,Number(k.atk||20));
   const escala=Math.pow(1.35,ciclo)*(1+((floor-1)%n)*0.03);
   const hp=Math.round(hpBase*escala), atk=Math.round(atkBase*escala);
   return {
     title:`${T('Torre de Acesso à Eternidade','Tower of Access to Eternity','Torre de Acceso a la Eternidad')} · ${T('Andar','Floor','Piso')} ${floor}${ciclo>0?` · ${T('Ciclo','Cycle','Ciclo')} ${ciclo+1}`:''}`,
     scene:4,
     bgUrl:'assets/bg/humanos/fase-09.jpg', /* cenário: Lendária Torre de Acesso à Eternidade */
-    enemies:[{name:k.nome, hp, atk, maxHp:hp, sprite:k.sprite, cardId:k.id, isBoss:((floor-1)%n)===n-1}]
+    enemies:[{...k, hp, atk, maxHp:hp, isBoss:((floor-1)%n)===n-1}]
   };
 }
 const GOLEM_SPRITE = 'assets/enemies/stone-sentinel/single-1.png';
+const SUMMON_ANIMATIONS={golem:{src:'assets/summons/golem/attack-2x3.png',rows:3,cols:2,frames:6,idle:[0,5],attack:[0,1,2,3,4,5],duration:640},harpy:{src:'assets/summons/harpy/attack-2x3.png',rows:2,cols:3,frames:6,idle:[0,5],attack:[0,1,2,3,4,5],duration:560}};
 let autoTargetMode = false;
 let battleSpeedIndex = 0;
 let royalShuffles = 1;
@@ -2132,14 +2143,15 @@ function renderGolemUnits(spawned=false){
     unit.innerHTML=`
       <div class="unit-stage">
         <div class="unit-ground-shadow"></div>
-        <div class="avatar-circle" aria-hidden="true">
-          <img class="enemy-sprite-image summon-sprite" src="${GOLEM_SPRITE}" alt="${T(`Golem aliado ${i+1}`,`Ally golem ${i+1}`,`Gólem aliado ${i+1}`)}">
+        <div class="avatar-circle summon-avatar" aria-hidden="true" data-summon="golem">
+          ${summonSpriteMarkup('golem')}
         </div>
       </div>
       <div class="unit-name">${T('Golem','Golem','Gólem')} ${i+1}</div>
       <div class="golem-badge">½ ${T('DANO','DMG','DAÑO')}</div>
     `;
     partyArenaEl.appendChild(unit);
+    animateSummonAvatar(unit.querySelector('.avatar-circle'),'golem','idle');
   }
   applyBattleFormation();
   if(spawned){
@@ -2149,8 +2161,7 @@ function renderGolemUnits(spawned=false){
 
 function renderHarpyUnits(spawned=false){
   partyArenaEl.querySelectorAll('.harpy-unit').forEach(unit=>unit.remove());
-  const soph=KINGDOMS.find(kk=>kk.id==='vento');
-  if(soph){
+  {
     for(let i=0;i<harpyAllies;i++){
       const unit=document.createElement('div');
       unit.className='unit summon-unit harpy-unit'+(spawned?' golem-spawned':'');
@@ -2164,14 +2175,15 @@ function renderHarpyUnits(spawned=false){
       unit.innerHTML=`
         <div class="unit-stage">
           <div class="unit-ground-shadow"></div>
-          <div class="avatar-circle" aria-hidden="true">
-            <img class="enemy-sprite-image summon-sprite" src="${soph.sprite}" alt="${T(`Harpia aliada ${i+1}`,`Ally harpy ${i+1}`,`Arpía aliada ${i+1}`)}">
+        <div class="avatar-circle summon-avatar" aria-hidden="true" data-summon="harpy">
+          ${summonSpriteMarkup('harpy')}
           </div>
         </div>
         <div class="unit-name">${T('Harpia','Harpy','Arpía')} ${i+1}</div>
         <div class="golem-badge">20% ${T('DANO','DMG','DAÑO')}</div>
       `;
       partyArenaEl.appendChild(unit);
+      animateSummonAvatar(unit.querySelector('.avatar-circle'),'harpy','idle');
     }
   }
   applyBattleFormation();
@@ -2212,6 +2224,16 @@ function onHeroAvatarClick(idx){
   }
   setBattleStatus(T(`${L(k.nome)} mudou o lado para o qual está olhando.`,`${L(k.nome)} changed the direction they are facing.`,`${L(k.nome)} cambió el lado hacia el que mira.`),'system');
 }
+
+function summonSpriteMarkup(kind){ const m=SUMMON_ANIMATIONS[kind]; return `<div class="hero-sprite-sheet grid-sheet summon-sprite-sheet" aria-hidden="true" style="--sprite-url:url('${m.src}');--sprite-cols:${m.cols};--sprite-rows:${m.rows};--sprite-bg-x:0%;--sprite-bg-y:0%;--sprite-scale:1"></div>`; }
+function animateSummonAvatar(avatar,kind,action='idle'){
+  const m=SUMMON_ANIMATIONS[kind]; if(!avatar||!m) return; stopHeroAnimation(avatar); avatar.dataset.action=action;
+  const sheet=avatar.querySelector('.summon-sprite-sheet'); if(!sheet||reducedMotion) return;
+  const seq=m[action]||m.idle, state={paused:false,lastTick:null,elapsed:0}; avatar.__heroAnimationState=state; const step=Math.max(80,Math.round(m.duration/seq.length));
+  const paint=f=>{const c=f%m.cols,r=Math.floor(f/m.cols);sheet.style.setProperty('--sprite-bg-x',`${c*(m.cols===1?0:100/(m.cols-1))}%`);sheet.style.setProperty('--sprite-bg-y',`${r*(m.rows===1?0:100/(m.rows-1))}%`);};
+  const tick=now=>{if(state.paused||gamePaused||battlePhase==='paused'){state.lastTick=now;avatar.__actionFrameRaf=requestAnimationFrame(tick);return;}if(state.lastTick===null)state.lastTick=now;state.elapsed+=now-state.lastTick;state.lastTick=now;paint(seq[Math.floor(state.elapsed/step)%seq.length]);if(action!=='idle'&&state.elapsed>=m.duration){animateSummonAvatar(avatar,kind,'idle');return;}avatar.__actionFrameRaf=requestAnimationFrame(tick);}; paint(seq[0]);avatar.__actionFrameRaf=requestAnimationFrame(tick);
+}
+function playSummonAction(kind,action='attack'){partyArenaEl?.querySelectorAll(`.summon-unit[data-summon="${kind}"] .avatar-circle`).forEach(a=>animateSummonAvatar(a,kind,action));}
 
 function abilityCanBeUsed(a){
   if(a.requiresGolems && golemAllies<a.requiresGolems) return false;
@@ -3285,7 +3307,7 @@ function loadStage(idx){
   playerShield = 0; enemyDots = []; enemyStunTurns = 0; atkBuffTurns = 0; atkBuffMult = 1;
   lastEnemyAttacker = null;
   stageTookDamage = false;
-  golemAllies = 0;
+  /* Summons persist through every room of the current mission. */
   damageReductionStacks = 0; queenFuryStacks = 0; chamarizCharges = 0; sombrasDevoradorasOn = false;
   cancelTempoSombrio();
   document.getElementById('sombraHud')?.remove();
@@ -3305,7 +3327,7 @@ function loadStage(idx){
     }catch(e){}
   }
   /* Julius · Lâmina Dimensional: as sombras acumuladas ferem os inimigos desta missão */
-  if(worldRun.active && pendingDimensional.length){
+  if((worldRun.active||towerMode||bossRushMode) && pendingDimensional.length){
     let somaPct=0;
     pendingDimensional.forEach(fila=>{ const v=fila.shift(); if(v) somaPct+=v; });
     pendingDimensional=pendingDimensional.filter(f=>f.length);
@@ -4757,12 +4779,14 @@ async function resolveMatches(){
     applyDamageToEnemy(dmg, colorIdx);
     if(KINGDOMS[colorIdx].id==='terra'&&golemAllies>0&&allEnemiesDefeated()===false){
       const golemDamage=Math.round(dmg*.5*golemAllies);
+      playSummonAction('golem','attack');
       applyDamageToEnemy(golemDamage,colorIdx);
       setBattleStatus(T(`${golemAllies} golens replicaram ${golemDamage} de dano para Kallendra.`,`${golemAllies} golems echoed ${golemDamage} damage for Kallendra.`,`${golemAllies} gólems replicaron ${golemDamage} de daño para Kallendra.`),'damage');
     }
     if(KINGDOMS[colorIdx].id==='vento'&&harpyAllies>0&&allEnemiesDefeated()===false){
       const harpyDamage=Math.round(dmg*.2*harpyAllies);
       if(harpyDamage>0){
+        playSummonAction('harpy','attack');
         applyDamageToEnemy(harpyDamage,colorIdx);
         setBattleStatus(T(`${harpyAllies} harpia(s) replicaram ${harpyDamage} de dano para Sophitia.`,`${harpyAllies} harpy(ies) echoed ${harpyDamage} damage for Sophitia.`,`${harpyAllies} arpía(s) replicaron ${harpyDamage} de daño para Sophitia.`),'damage');
       }
@@ -5541,6 +5565,11 @@ function handlePlayerDefeat(){
     towerRecordMonthly(towerFloor-1);
     const best=Math.max(Number(localStorage.getItem('12r_tower_best')||0),towerFloor-1);
     localStorage.setItem('12r_tower_best',String(best));
+  }
+  if(towerMode&&!dailyRunMode){
+    finalizeDefeat();
+    scheduleCombat(()=>{ showMainMenu({guard:false}); window.renderTowerScreen?.(); openPanel('towerScreen'); },430);
+    return;
   }
   finalizeDefeat();
 }
@@ -7242,6 +7271,7 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
         +'<small style="opacity:.7">'+T('O ranking global e a entrega dos prêmios serão ativados junto com o servidor.','Global ranking and prize delivery activate with the server.','El ranking global se activa con el servidor.')+'</small></div>';
     }
   }
+  window.renderTowerScreen=renderTowerScreen;
   document.getElementById('towerBtn')?.addEventListener('click',()=>{ renderTowerScreen(); openPanel('towerScreen'); sfxSelect(); });
   document.getElementById('towerStartBtn')?.addEventListener('click',()=>{
     document.getElementById('towerScreen')?.classList.remove('show');
