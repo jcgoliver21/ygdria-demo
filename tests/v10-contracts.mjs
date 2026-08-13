@@ -16,15 +16,15 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=10\.0\.4/);
-  assert.match(html,/v10-config\.js\?v=10\.0\.4/);
-  assert.match(html,/v10-animations\.js\?v=10\.0\.4/);
-  assert.match(html,/game-v10\.js\?v=10\.0\.4/);
+  assert.match(html,/styles-v10\.css\?v=10\.0\.5/);
+  assert.match(html,/v10-config\.js\?v=10\.0\.5/);
+  assert.match(html,/v10-animations\.js\?v=10\.0\.5/);
+  assert.match(html,/game-v10\.js\?v=10\.0\.5/);
   assert.doesNotMatch(html,/game-v9|styles-v9|v9\.3-config/);
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v10\.0\.4/);
+  assert.match(sw,/12r-v10\.0\.5/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -101,6 +101,23 @@ check('Torre usa cada encontro da campanha e invocações não bloqueiam heróis
   assert.match(game,/summonGolems\(el\)/);
 });
 
+check('animações corporais não usam crescer ou encolher',()=>{
+  const keyframeBody=name=>{
+    const start=css.indexOf(`@keyframes ${name}{`);
+    assert.ok(start>=0,`${name} ausente`);
+    const brace=css.indexOf('{',start);
+    let depth=0;
+    for(let i=brace;i<css.length;i++){
+      if(css[i]==='{') depth++;
+      if(css[i]==='}'&&--depth===0) return css.slice(brace+1,i);
+    }
+    throw new Error(`${name} sem fechamento`);
+  };
+  for(const keyframe of ['lungeAttack','lungeAttack9','castRise9','idleBreath','idleBreathFlip','enemySway','enemySwayFlip','enemyIdleStance','enemyWeaponAction','enemySpellGesture','enemyImpactRecoil','golemSpawn']){
+    assert.doesNotMatch(keyframeBody(keyframe),/scale\(/,`${keyframe} não pode escalar o personagem`);
+  }
+});
+
 check('IDs do HTML são únicos',()=>{
   const ids=[...html.matchAll(/\sid="([^"]+)"/g)].map(match=>match[1]);
   const duplicates=ids.filter((id,index)=>ids.indexOf(id)!==index);
@@ -109,7 +126,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=10.0.4');
+  const deferredGame=html.indexOf('game-v10.js?v=10.0.5');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);

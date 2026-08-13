@@ -3271,7 +3271,7 @@ body.game-active .enemy-row .unit-stage{height:clamp(112px,18vh,142px)!important
 .unit.ready .unit-charge-aura::before,.enemy-unit.charging .unit-charge-aura::before{animation:bodyAuraFlame .82s ease-in-out infinite alternate}
 .unit.ready .unit-charge-aura::after,.enemy-unit.charging .unit-charge-aura::after{animation:bodyAuraSparks 1.8s linear infinite}
 .enemy-unit.charging .unit-charge-aura{--aura-inner:#da78ff;--aura-inner-light:#ffe3ff;--aura-outer:#8e4cff}
-@keyframes bodyAuraEmanate{0%,100%{transform:translateX(-50%) scale(.7,.56);filter:blur(.2px);opacity:.72}50%{transform:translateX(-50%) scale(1.06,1.1);filter:blur(.55px);opacity:1}}
+@keyframes bodyAuraEmanate{0%,100%{transform:translateX(-50%);filter:blur(.2px);opacity:.72}50%{transform:translateX(-50%) translateY(-3px);filter:blur(.55px);opacity:1}}
 @keyframes bodyAuraFlame{from{clip-path:polygon(50% 8%,59% 23%,72% 25%,66% 45%,85% 58%,67% 77%,73% 100%,27% 100%,33% 77%,15% 58%,34% 45%,28% 25%,41% 23%)}to{clip-path:polygon(50% 0,63% 20%,75% 34%,70% 48%,91% 64%,68% 79%,77% 100%,23% 100%,32% 79%,9% 64%,30% 48%,25% 34%,37% 20%)}}
 @keyframes bodyAuraSparks{to{background-position:0 -66px,0 -58px,0 -44px}}
 
