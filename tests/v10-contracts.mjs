@@ -16,15 +16,15 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=10\.0\.3/);
-  assert.match(html,/v10-config\.js\?v=10\.0\.3/);
-  assert.match(html,/v10-animations\.js\?v=10\.0\.3/);
-  assert.match(html,/game-v10\.js\?v=10\.0\.3/);
+  assert.match(html,/styles-v10\.css\?v=10\.0\.4/);
+  assert.match(html,/v10-config\.js\?v=10\.0\.4/);
+  assert.match(html,/v10-animations\.js\?v=10\.0\.4/);
+  assert.match(html,/game-v10\.js\?v=10\.0\.4/);
   assert.doesNotMatch(html,/game-v9|styles-v9|v9\.3-config/);
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v10\.0\.3/);
+  assert.match(sw,/12r-v10\.0\.4/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -91,6 +91,16 @@ check('inimigos usam animação por ação e aura corporal sem moldura',()=>{
   for(const selector of ['.unit-charge-aura','.unit.ready .avatar-circle{animation:none!important;box-shadow:none!important;cursor:pointer}','@keyframes bodyAuraEmanate','.enemy-static-avatar[data-action="attack"]']) assert.ok(css.includes(selector),selector+' ausente');
 });
 
+check('Torre usa cada encontro da campanha e invocações não bloqueiam heróis',()=>{
+  assert.match(game,/One floor per actual encounter/);
+  assert.doesNotMatch(game,/vistos\.has\(key\)/);
+  assert.match(css,/\.summon-unit\{pointer-events:none!important;\}/);
+  assert.match(game,/SPECIAL_ABILITY_BUILDERS/);
+  assert.match(game,/summonHarpies\(el\)/);
+  assert.match(game,/sc-talon-sweep/);
+  assert.match(game,/summonGolems\(el\)/);
+});
+
 check('IDs do HTML são únicos',()=>{
   const ids=[...html.matchAll(/\sid="([^"]+)"/g)].map(match=>match[1]);
   const duplicates=ids.filter((id,index)=>ids.indexOf(id)!==index);
@@ -99,7 +109,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=10.0.3');
+  const deferredGame=html.indexOf('game-v10.js?v=10.0.4');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);

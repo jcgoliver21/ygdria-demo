@@ -168,10 +168,10 @@
 
   .unit.attacking .avatar-circle{ animation:lungeAttack .55s ease; z-index:6; }
   @keyframes lungeAttack{
-    0%{ transform:translate(0,0) scale(1); }
-    30%{ transform:translate(0,-16px) scale(1.18) rotate(-3deg); }
-    55%{ transform:translate(0,-18px) scale(1.25) rotate(3deg); }
-    100%{ transform:translate(0,0) scale(1); }
+    0%{ transform:translate(0,0) rotate(0); }
+    30%{ transform:translate(-3px,4px) rotate(-3deg); }
+    55%{ transform:translate(8px,-10px) rotate(3deg); }
+    100%{ transform:translate(0,0) rotate(0); }
   }
   .unit.hit .avatar-circle{ animation:hitShake .35s ease; }
   @keyframes hitShake{
@@ -742,7 +742,7 @@
     opacity:0; animation:scRain .9s linear .18s both; }
   @keyframes scRain{ 0%{opacity:0; background-position:0 -60px;} 20%{opacity:.95;} 80%{opacity:.95; background-position:0 40px;} 100%{opacity:0; background-position:0 70px;} }
   /* GELO: estacas de gelo irrompem + floco de neve floresce */
-  .sc-icespike{ left:calc(var(--tx) + var(--ix,0px) - 8px); top:calc(var(--ty) - 34px); width:16px; height:44px;
+.sc-icespike{ left:calc(var(--tx) + var(--ix,0px) - 8px); top:calc(var(--ty) - 34px); width:16px; height:44px;
     transform-origin:50% 100%;
     background:linear-gradient(180deg,#ffffff,#cfe0ee 45%,#7e9ab5 95%);
     clip-path:polygon(50% 0,86% 72%,70% 100%,30% 100%,14% 72%);
@@ -754,6 +754,16 @@
     opacity:0; filter:drop-shadow(0 0 14px #cfe4f5);
     animation:scFrost .7s ease-out .42s both; }
   @keyframes scFrost{ 0%{opacity:0; transform:scale(.2) rotate(0);} 30%{opacity:.95;} 100%{opacity:0; transform:scale(1.25) rotate(40deg);} }
+  .sc-staff-rune{left:calc(var(--sx) - 28px);top:calc(var(--sy) - 42px);width:56px;height:56px;border:2px solid #e7bd68;border-radius:50%;box-shadow:0 0 18px #f5d997,inset 0 0 15px rgba(202,141,51,.7);opacity:0;animation:scStaffRune 1.05s ease-out both}
+  .sc-terra-rune::before{content:'✦';position:absolute;inset:0;display:grid;place-items:center;color:#fff0b8;font-size:29px;text-shadow:0 0 12px #e6a34a}
+  @keyframes scStaffRune{0%{opacity:0;transform:rotate(-18deg)}25%{opacity:1}100%{opacity:0;transform:rotate(110deg)}}
+  .sc-feather-flock{left:calc(var(--sx) - 12px);top:calc(var(--sy) - 16px);width:18px;height:9px;border-radius:100% 0 100% 0;background:linear-gradient(135deg,#fff,#aee4ff 55%,transparent 58%);filter:drop-shadow(0 0 6px #d9f6ff);opacity:0;animation:scFeatherFlight .95s ease-out var(--d) both}
+  .sc-feather-flock::before,.sc-feather-flock::after{content:'';position:absolute;width:15px;height:7px;border-radius:100% 0 100% 0;background:inherit;left:-15px;top:8px;transform:rotate(35deg)}.sc-feather-flock::after{left:14px;top:-7px;transform:rotate(-35deg)}
+  @keyframes scFeatherFlight{0%{opacity:0;transform:translate(0,0) rotate(-35deg)}18%{opacity:1}100%{opacity:0;transform:translate(var(--ddx),var(--ddy)) rotate(210deg)}}
+  .sc-talon-sweep{left:calc(var(--tx) - 28px);top:calc(var(--ty) - 22px);width:56px;height:40px;border:3px solid #d8f4ff;border-left-color:transparent;border-bottom-color:transparent;border-radius:55% 45% 55% 45%;opacity:0;filter:drop-shadow(0 0 9px #a8e1ff);animation:scTalonSweep .72s ease-out .36s both}
+  @keyframes scTalonSweep{0%{opacity:0;transform:rotate(-65deg)}28%{opacity:1}100%{opacity:0;transform:rotate(75deg)}}
+  .sc-stone-shard{left:calc(var(--sx) - 8px);top:calc(var(--sy) - 10px);width:16px;height:16px;background:linear-gradient(135deg,#fff0b5,#9a5c22 48%,#3c220f);clip-path:polygon(50% 0,100% 40%,70% 100%,10% 78%,0 30%);opacity:0;filter:drop-shadow(0 0 7px #e8ad52);animation:scShardArc .86s cubic-bezier(.2,.75,.35,1) var(--d) both}
+  @keyframes scShardArc{0%{opacity:0;transform:translate(0,0) rotate(0)}25%{opacity:1}100%{opacity:0;transform:translate(var(--ddx),calc(var(--ddy) - 18px)) rotate(260deg)}}
   .impact-ring{
     position:absolute; width:26px; height:26px; border:3px solid currentColor; border-radius:50%;
     transform:translate(var(--tx),var(--ty)) scale(.2); opacity:0; animation:impactRing .62s .55s ease-out forwards;
@@ -2029,9 +2039,9 @@ body.game-active .battle-row::after{
   .combat-console .mini-thumb{width:28px!important}
 }
 
-  .golem-unit{pointer-events:none!important;}
-  .golem-unit .unit-stage{height:92px!important;}
-  .golem-unit .avatar-circle{width:62px!important;height:74px!important;}
+  .summon-unit{pointer-events:none!important;}
+  .golem-unit .unit-stage,.harpy-unit .unit-stage{height:72px!important;}
+  .golem-unit .avatar-circle,.harpy-unit .avatar-circle{width:48px!important;height:58px!important;}
   .golem-unit .summon-sprite{object-position:50% 100%;filter:drop-shadow(0 7px 4px rgba(0,0,0,.9)) saturate(.85) sepia(.18) contrast(1.08)!important;}
   .golem-unit .unit-ground-shadow{width:62px!important;height:16px!important;}
   .golem-unit .unit-name{font-size:7px!important;color:#f0bd78;text-shadow:0 1px 2px #000;}
@@ -2039,7 +2049,7 @@ body.game-active .battle-row::after{
   .golem-summon-cast{animation:golemSummonCast .9s ease-in-out;}
   @keyframes golemSummonCast{0%,100%{filter:none;}35%{filter:brightness(1.5) drop-shadow(0 0 13px #f0bd78);}70%{filter:brightness(1.2) drop-shadow(0 0 7px #ffe0a1);}}
   .golem-spawned .avatar-circle{animation:golemSpawn .72s cubic-bezier(.2,.9,.25,1.2);}
-  @keyframes golemSpawn{0%{opacity:0;transform:translateY(22px) scale(.25);filter:brightness(2.2) saturate(1.3);}55%{opacity:1;transform:translateY(-6px) scale(1.14);filter:brightness(1.35) saturate(1.15) drop-shadow(0 0 14px #f0bd78);}100%{opacity:1;transform:translateY(0) scale(1);filter:none;}}
+  @keyframes golemSpawn{0%{opacity:0;transform:translateY(22px);filter:brightness(2.2) saturate(1.3);}55%{opacity:1;transform:translateY(-6px);filter:brightness(1.35) saturate(1.15) drop-shadow(0 0 14px #f0bd78);}100%{opacity:1;transform:translateY(0);filter:none;}}
 
 /* ============================================================
    v9 · ELEGANCE PASS — design tokens + tasteful polish
@@ -2144,19 +2154,18 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
 /* v9.2 anti-flicker: SEM animação de filter/brightness (re-rasterizava o sprite
    a cada frame no celular e a tela "piscava") — só transform, que é composto na GPU */
 @keyframes lungeAttack9{
-  0%{ transform:translate(0,0) scale(1); }
-  18%{ transform:translate(0,6px) scale(1.06,.9); }
-  38%{ transform:translate(0,-22px) scale(.94,1.16) rotate(-4deg); }
-  52%{ transform:translate(0,-24px) scale(1.28,1.18) rotate(3deg); }
-  70%{ transform:translate(0,-6px) scale(1.04); }
-  100%{ transform:translate(0,0) scale(1); }
+  0%{ transform:translate(0,0) rotate(0); }
+  24%{ transform:translate(-4px,4px) rotate(-3deg); }
+  56%{ transform:translate(10px,-8px) rotate(4deg); }
+  78%{ transform:translate(3px,-2px) rotate(1deg); }
+  100%{ transform:translate(0,0) rotate(0); }
 }
 .unit.casting .avatar-circle{ animation:castRise9 .9s cubic-bezier(.3,.7,.3,1); z-index:6; }
 @keyframes castRise9{
-  0%{ transform:translateY(0) scale(1); }
-  30%{ transform:translateY(-14px) scale(1.08); }
-  60%{ transform:translateY(-16px) scale(1.12); }
-  100%{ transform:translateY(0) scale(1); }
+  0%{ transform:translateY(0) rotate(0); }
+  32%{ transform:translateY(-8px) rotate(-3deg); }
+  62%{ transform:translateY(-10px) rotate(3deg); }
+  100%{ transform:translateY(0) rotate(0); }
 }
 #partyArena.party-hurt .unit:not(.golem-unit) .avatar-circle{ animation:partyFlinch9 .42s ease; }
 @keyframes partyFlinch9{
@@ -2333,7 +2342,7 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
 .hero-sprite-image{ animation:idleBreath 3.2s ease-in-out infinite; transform-origin:50% 100%; }
 .unit:nth-child(2n) .hero-sprite-image{ animation-duration:3.7s; animation-delay:.45s; }
 .unit:nth-child(3n) .hero-sprite-image{ animation-duration:2.9s; animation-delay:.9s; }
-@keyframes idleBreath{ 0%,100%{ transform:translateY(0) scale(1); } 50%{ transform:translateY(-3px) scale(1.016,1.034); } }
+@keyframes idleBreath{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-3px); } }
 .enemy-sprite-image{ animation:enemySway 4.2s ease-in-out infinite; transform-origin:50% 100%; }
 .enemy-row .unit:nth-child(2n) .enemy-sprite-image{ animation-duration:4.8s; animation-delay:.6s; }
 .enemy-row .unit:nth-child(3n) .enemy-sprite-image{ animation-duration:3.6s; animation-delay:1.1s; }
@@ -2449,7 +2458,7 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
 @keyframes enemySwayFlip{ 0%,100%{ transform:scaleX(-1) rotate(1.2deg) translateY(0); } 50%{ transform:scaleX(-1) rotate(-1.2deg) translateY(-2.5px); } }
 /* Heróis-carta cuja arte olha para a esquerda: espelhados para encarar o centro */
 .hero-sprite-image.flip{ animation-name:idleBreathFlip; transform:scaleX(-1); }
-@keyframes idleBreathFlip{ 0%,100%{ transform:scaleX(-1) translateY(0) scale(1); } 50%{ transform:scaleX(-1) translateY(-3px) scale(1.016,1.034); } }
+@keyframes idleBreathFlip{ 0%,100%{ transform:scaleX(-1) translateY(0); } 50%{ transform:scaleX(-1) translateY(-3px); } }
 /* v9.1 · Galeria em decks por reino */
 #galleryGrid{ display:block!important; }
 .deck-section{ margin-bottom:22px; }

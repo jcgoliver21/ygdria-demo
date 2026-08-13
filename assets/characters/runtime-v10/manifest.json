@@ -1,8 +1,8 @@
 {
   "version": 10,
-  "generatedAt": "2026-08-13T05:23:45.843Z",
+  "generatedAt": "2026-08-13T19:40:12.934Z",
   "totalSheets": 120,
-  "totalBytes": 22316899,
+  "totalBytes": 22582211,
   "displayScales": {
     "luz": 1.0221,
     "humanos": 1.0237,
@@ -410,11 +410,11 @@
         "duration": 840,
         "format": "sheet",
         "src": "assets/characters/runtime-v10/terra/cast-3x2.png",
-        "bytes": 180684,
+        "bytes": 348925,
         "width": 768,
         "height": 512,
         "displayScale": 1.1198,
-        "sha256": "c901068e767e08aa94537e01ad05601ec9ccfe61627a8756c9016b0e8d2a410e"
+        "sha256": "0012884c19caec72689f3d290402dc8c0dd12e7d44eebf839a813d2bfb0800b0"
       },
       "hit": {
         "frames": 4,
@@ -604,11 +604,11 @@
         "duration": 720,
         "format": "sheet",
         "src": "assets/characters/runtime-v10/raio/attack-3x2.png",
-        "bytes": 161086,
+        "bytes": 207562,
         "width": 768,
         "height": 512,
         "displayScale": 0.9808,
-        "sha256": "aab3fe18f1bb437fb4980720729e015880691da22eb024de8ceb9a2362de4f88"
+        "sha256": "70e9aa4207cad6153a3c6c28556bbd31d0946ca9a0c1e4cc0f7d3bb2b3f6079e"
       },
       "cast": {
         "frames": 6,
@@ -673,11 +673,11 @@
         "duration": 720,
         "format": "sheet",
         "src": "assets/characters/runtime-v10/vento/attack-3x2.png",
-        "bytes": 195442,
+        "bytes": 246037,
         "width": 768,
         "height": 512,
         "displayScale": 0.9451,
-        "sha256": "5ee5dcc8264d1f1db9ac74f24643245c649e20f79f0a1df7fb4b59ed30ae8efe"
+        "sha256": "39f26ca9b460f563d8a58e2f9fe421b7de89edbfa0ae49af0f0b8cc447467a49"
       },
       "cast": {
         "frames": 6,

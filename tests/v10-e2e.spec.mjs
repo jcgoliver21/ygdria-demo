@@ -753,7 +753,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.3');
+  expect(registration.caches).toContain('12r-v10.0.4');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -802,6 +802,18 @@ test('rerender da equipe preserva golens e harpias',async({page})=>{
   const refreshed=await page.evaluate(()=>window.__12rQA.refreshParty());
   expect(initial).toEqual({golemAllies:2,harpyAllies:2,golems:2,harpies:2});
   expect(refreshed).toEqual(initial);
+  expect(errors).toEqual([]);
+});
+
+test('invocações menores não interceptam o toque dos heróis',async({page})=>{
+  const errors=await boot(page);
+  await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); window.__12rQA.setSummons(2,2); });
+  const summons=await page.evaluate(()=>[...document.querySelectorAll('.summon-unit')].map(unit=>({
+    pointer:getComputedStyle(unit).pointerEvents,
+    width:Math.round(unit.querySelector('.avatar-circle').getBoundingClientRect().width)
+  })));
+  expect(summons).toHaveLength(4);
+  expect(summons.every(s=>s.pointer==='none'&&s.width<=48)).toBe(true);
   expect(errors).toEqual([]);
 });
 

@@ -1505,12 +1505,12 @@ const TOWER_RANK_REWARDS=[
   ['🎖 Top 100','300 🪙']
 ];
 function towerStoryOrder(){
-  const ordem=[], vistos=new Set();
+  /* One floor per actual encounter. Repeated enemies remain repeated so a
+     chapter's final boss stays at its true campaign position. */
+  const ordem=[];
   (WORLDS||[]).forEach(world=>world.fases.forEach(fase=>fase.missoes.forEach(missao=>missao.forEach(key=>{
-    if(vistos.has(key)) return;
     const card=HUMANOS_CARDS[key], type=HUMANOS_ETYPES[key];
     if(!card&&!type) return;
-    vistos.add(key);
     ordem.push(card?{name:card.name,hp:card.hp,atk:card.atk,sprite:card.sprite,cardId:key,isCard:true}:{name:type.name,hp:type.hp,atk:type.atk,sprite:type.sprite,etype:key,flip:Boolean(type.flip)});
   }))));
   return ordem;
@@ -2331,17 +2331,17 @@ function applyBattleFormation(){
   heroUnits.forEach((unit,i)=>applyFormationSlot(unit,heroSlots[i]||heroSlots[heroSlots.length-1],112));
   const barbaraIdx=ACTIVE.findIndex(idx=>KINGDOMS[idx]?.id==='terra');
   const barbaraSlot=heroSlots[barbaraIdx]||heroSlots[0]||{x:30,y:35,s:1,z:20};
-  const golemOffsets=[{x:-8,y:4,s:.64},{x:8,y:2,s:.68},{x:-13,y:7,s:.58},{x:13,y:6,s:.6}];
+  const golemOffsets=[{x:-8,y:5,s:.48},{x:8,y:4,s:.5},{x:-13,y:8,s:.44},{x:13,y:8,s:.44}];
   [...partyArenaEl.querySelectorAll('.golem-unit')].forEach((unit,i)=>{
     const offset=golemOffsets[i%golemOffsets.length];
-    applyFormationSlot(unit,{x:Math.max(4,Math.min(96,barbaraSlot.x+offset.x)),y:barbaraSlot.y+offset.y,s:offset.s,z:barbaraSlot.z+2+i},72);
+    applyFormationSlot(unit,{x:Math.max(4,Math.min(96,barbaraSlot.x+offset.x)),y:barbaraSlot.y+offset.y,s:offset.s,z:barbaraSlot.z-5+i},54);
   });
   const sophIdx=ACTIVE.findIndex(idx=>KINGDOMS[idx]?.id==='vento');
   const sophSlot=heroSlots[sophIdx]||heroSlots[0]||{x:70,y:30,s:1,z:20};
-  const harpyOffsets=[{x:-9,y:-6,s:.5},{x:9,y:-7,s:.52},{x:-14,y:2,s:.46},{x:14,y:1,s:.48},{x:0,y:-11,s:.44}];
+  const harpyOffsets=[{x:-10,y:-5,s:.36},{x:10,y:-6,s:.38},{x:-15,y:3,s:.34},{x:15,y:3,s:.34},{x:0,y:-10,s:.32}];
   [...partyArenaEl.querySelectorAll('.harpy-unit')].forEach((unit,i)=>{
     const offset=harpyOffsets[i%harpyOffsets.length];
-    applyFormationSlot(unit,{x:Math.max(4,Math.min(96,sophSlot.x+offset.x)),y:sophSlot.y+offset.y,s:offset.s,z:sophSlot.z+2+i},64);
+    applyFormationSlot(unit,{x:Math.max(4,Math.min(96,sophSlot.x+offset.x)),y:sophSlot.y+offset.y,s:offset.s,z:sophSlot.z-5+i},48);
   });
   const enemySlots=SCENE_ENEMY_FORMATIONS[stageIndex]?.[enemies.length]||ENEMY_FORMATIONS[Math.min(4,Math.max(1,enemies.length))]||ENEMY_FORMATIONS[1];
   [...enemyArenaEl.children].forEach((unit,i)=>{
@@ -4889,6 +4889,12 @@ const SPECIAL_CAST_BUILDERS={
   chuvas(el){ el.innerHTML='<div class="sc-raincloud"></div><div class="sc-rainfall"></div>'; },
   gelo(el){ el.innerHTML='<div class="sc-icespike" style="--ix:-20px;--d:0s"></div><div class="sc-icespike" style="--ix:0px;--d:.12s"></div><div class="sc-icespike" style="--ix:20px;--d:.24s"></div><div class="sc-frostburst"></div>'; }
 };
+const SPECIAL_ABILITY_BUILDERS={
+  summonGolems(el){ el.innerHTML='<div class="sc-staff-rune sc-terra-rune"></div><div class="sc-boulder" style="--bx:-20px;--d:0ms"></div><div class="sc-boulder" style="--bx:0px;--d:140ms"></div><div class="sc-boulder" style="--bx:20px;--d:280ms"></div><div class="sc-dust-wave"></div>'; },
+  summonHarpies(el){ el.innerHTML='<div class="sc-feather-flock" style="--d:0ms"></div><div class="sc-feather-flock" style="--d:150ms"></div><div class="sc-talon-sweep"></div>'; },
+  sacrificeGolems(el){ el.innerHTML='<div class="sc-staff-rune sc-terra-rune"></div><div class="sc-stone-shard" style="--d:0ms"></div><div class="sc-stone-shard" style="--d:110ms"></div><div class="sc-stone-shard" style="--d:220ms"></div>'; },
+  laminaDimensional(el){ el.innerHTML='<div class="sc-void-vortex"></div><div class="sc-shadow-claw" style="--d:.18s"></div><div class="sc-shadow-claw" style="--d:.36s"></div><div class="sc-shadow-claw" style="--d:.54s"></div>'; }
+};
 
 function launchSpecialFx(idx,a){
   if(!particlesEnabled) return;
@@ -4899,14 +4905,6 @@ function launchSpecialFx(idx,a){
   const source = document.getElementById('party-'+k.id+'-avatar');
   const defensive = ['cura','escudo','escudoAtordoa','escudoCura','buff','curaBuff','healPercent','shieldTurns','reflectTurns','invulnerableTurns','lifestealCharges','activateAllUltimates','stoneArmor'].includes(a.tipo);
   const boardEffect = ['doubleRedOnce','spawnPowerUps'].includes(a.tipo);
-  if(a.tipo==='summonGolems'){
-    if(source){
-      source.classList.remove('golem-summon-cast'); void source.offsetWidth; source.classList.add('golem-summon-cast');
-      scheduleCombat(()=>source.classList.remove('golem-summon-cast'),900);
-      spawnCombatFx('telegraph',source,k.colorLight,900);
-    }
-    return;
-  }
   const targetIdx = currentTargetIndex();
   const target = boardEffect ? boardEl : (defensive ? document.getElementById('playerHpAnchor') : document.getElementById('enemy-'+targetIdx));
   if(!layer||!source||!target) return;
@@ -4923,7 +4921,7 @@ function launchSpecialFx(idx,a){
   ring.className='impact-ring fx-'+realmFx;
   ring.dataset.fx='impact';
   ring.style.color=k.colorLight; ring.style.setProperty('--tx',tx+'px'); ring.style.setProperty('--ty',ty+'px');
-  const builder=SPECIAL_CAST_BUILDERS[realmFx];
+  const builder=SPECIAL_ABILITY_BUILDERS[a.tipo]||SPECIAL_CAST_BUILDERS[realmFx];
   let castEl;
   if(builder){
     castEl=document.createElement('div');
