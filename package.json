@@ -1,0 +1,21 @@
+{
+  "name": "ygdria-demo",
+  "version": "10.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node --check game-v10.js && node --check v10-config.js && node --check v10-animations.js && node --check sw.js",
+    "test:contracts": "node tests/v10-contracts.mjs",
+    "test:assets": "node tests/v10-assets.mjs",
+    "test:e2e": "playwright test --config=playwright.config.mjs",
+    "test:e2e:production": "playwright test --config=playwright.config.mjs --grep @production",
+    "test": "pnpm run check && pnpm run test:contracts && pnpm run test:assets"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@11.19.0"
+}

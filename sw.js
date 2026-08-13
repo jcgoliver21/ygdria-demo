@@ -1,12 +1,14 @@
 /* 12 Reinos — service worker
    Núcleo (html/js/css/manifest): network-first com fallback ao cache (offline).
    Assets pesados (imagens): cache-first com atualização em segundo plano. */
-const CACHE = '12r-v9.3.23';
+const CACHE = '12r-v10.0.0';
 const CORE = [
+  './index.html',
   './play.html',
-  './styles-v9.3.css',
-  './v9.3-config.js',
-  './game-v9.3.js',
+  './styles-v10.css',
+  './v10-config.js',
+  './v10-animations.js',
+  './game-v10.js',
   './manifest.webmanifest',
   './assets/icon.svg'
 ];
@@ -18,7 +20,9 @@ self.addEventListener('install', (e) => {
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      /* CacheStorage é compartilhado por toda a origem. No GitHub Pages, apagar
+         todas as chaves também removeria caches de outros projetos do autor. */
+      .then((keys) => Promise.all(keys.filter((k) => k.startsWith('12r-') && k !== CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
@@ -38,7 +42,13 @@ self.addEventListener('fetch', (e) => {
       fetch(e.request).then((res) => {
         if (res.ok) { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(e.request, copy)); }
         return res;
-      }).catch(() => caches.match(e.request))
+      }).catch(async() => {
+        /* O HTML usa ?v=... para cache-busting. O núcleo pré-cacheado não tem
+           query string, então o fallback offline precisa ignorá-la. */
+        const exact=await caches.match(e.request,{ignoreSearch:true});
+        if(exact || e.request.mode !== 'navigate') return exact;
+        return caches.match(url.pathname.endsWith('/play.html')?'./play.html':'./index.html');
+      })
     );
   } else {
     // assets: cache-first com refresh em segundo plano

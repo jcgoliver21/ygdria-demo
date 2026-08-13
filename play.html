@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<meta charset="UTF-8">
 <script data-gate>(function(){const local=['127.0.0.1','localhost'].includes(location.hostname);const qa=new URLSearchParams(location.search).has('qa');if(!(local&&qa)&&sessionStorage.getItem('ygdria_gate')!=='ok')location.replace('./index.html');})();</script>
 <script data-early-options>(function(){
   function optionsPanel(){ return document.getElementById('optionsScreen'); }
@@ -21,7 +22,6 @@
     }
   },true);
 })();</script>
-<meta charset="UTF-8">
 <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
 <meta http-equiv="Pragma" content="no-cache">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -30,7 +30,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
 <link rel="apple-touch-icon" href="assets/icon.svg">
-<link rel="stylesheet" href="styles-v9.3.css?v=9.3.23">
+<link rel="stylesheet" href="styles-v10.css?v=10.0.0">
 </head>
 <body>
 <div class="scene-bg" data-screen="menu"></div>
@@ -56,7 +56,7 @@
     </div>
     <button class="account-chip" id="accountChip" type="button">🎭 Convidado</button>
     <div class="coin-badge" id="coinBadge">🪙 0</div>
-    <div class="menu-footer" id="menuVersion">VERSÃO 9.3 · DEMO OFICIAL MOBILE</div>
+    <div class="menu-footer" id="menuVersion">VERSÃO 10 · DEMO OFICIAL MOBILE</div>
   </div>
 </div>
 
@@ -120,6 +120,8 @@
       <button class="battle-tool" id="shuffleTool" type="button">⟳ Embaralhar (1)</button>
       <button class="battle-tool" id="gridTool" type="button">◇ Grade tática</button>
       <button class="battle-tool" id="formationTool" type="button">♟ Formação</button>
+      <button class="battle-tool" id="restartTool" type="button">↻ Reiniciar fase</button>
+      <button class="battle-tool" id="swapTool" type="button">⇄ Trocar heróis</button>
       <button class="battle-tool" id="fullscreenTool" type="button">⛶ Tela cheia</button>
     </div>
 
@@ -142,7 +144,7 @@
     <div class="vertical-hp" id="playerHpAnchor" aria-label="HP do grupo">
       <div class="hp-label">HP</div>
       <div class="hp-status-icon" id="hpStatusIcon" aria-hidden="true">♥</div>
-      <div class="hp-outer" role="progressbar" aria-label="Pontos de vida" aria-valuemin="0" aria-valuemax="4000">
+      <div class="hp-outer" id="playerHpProgress" role="progressbar" aria-label="Pontos de vida" aria-valuemin="0" aria-valuemax="4000" aria-valuenow="4000">
         <div class="hp-inner" id="playerHpBar"></div>
       </div>
       <div class="hp-values">
@@ -341,6 +343,16 @@
       <div class="card-modal-name" id="cardModalName"></div>
       <div class="card-modal-classe" id="cardModalClasse"></div>
       <div id="cardModalAbilities"></div>
+      <section class="motion-showcase" id="motionShowcase" aria-labelledby="motionShowcaseTitle" hidden>
+        <div class="motion-showcase-head">
+          <strong id="motionShowcaseTitle">Vitrine de movimentos</strong>
+          <span>v10 · animação 2.5D</span>
+        </div>
+        <div class="motion-showcase-stage">
+          <div class="motion-showcase-avatar" id="motionShowcaseAvatar" aria-live="polite"></div>
+        </div>
+        <div class="motion-showcase-actions" id="motionShowcaseActions"></div>
+      </section>
       <button class="overlay-btn" id="shareCardBtn" type="button" style="margin:10px auto 4px;display:block;">📤 Copiar carta</button>
     </div>
   </div>
@@ -384,7 +396,7 @@
     <div class="login-divider"><span id="loginOu">ou entre com sua conta</span></div>
     <form id="loginForm" class="login-form">
       <input id="loginEmail" type="email" placeholder="seu@email.com" autocomplete="username">
-      <input id="loginPass" type="password" placeholder="senha" autocomplete="current-password">
+      <input id="loginPass" type="password" placeholder="senha (mín. 8 caracteres)" autocomplete="current-password" minlength="8" maxlength="256" required>
       <button class="overlay-btn" id="loginSubmit" type="submit">Entrar / Criar conta</button>
       <div class="err" id="loginError"></div>
     </form>
@@ -440,8 +452,9 @@
   </div>
 </div>
 <script>window.addEventListener('error',function(e){(window.__bootErrors=window.__bootErrors||[]).push({m:String(e.message).slice(0,200),l:e.lineno,c:e.colno})});</script>
-<script src="v9.3-config.js?v=9.3.23"></script>
-<script src="game-v9.3.js?v=9.3.23" defer></script>
+<script src="v10-config.js?v=10.0.0"></script>
+<script src="v10-animations.js?v=10.0.0"></script>
+<script src="game-v10.js?v=10.0.0" defer></script>
 
 </body>
 </html>

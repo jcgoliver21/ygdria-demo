@@ -1,8 +1,8 @@
 {
   "name": "12 Reinos — Crônicas de Ygdria",
   "short_name": "12 Reinos",
-  "description": "RPG match-3 dos 12 Reinos. Demo oficial.",
-  "start_url": "./play.html",
+  "description": "RPG match-3 dos 12 Reinos. Versão 10 oficial com personagens animados.",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
