@@ -150,6677 +150,200 @@ const KINGDOMS = [
     id:'vento', nome:'Sophitia', reino:'Reino do Vento', classe:'A Rainha Harpia ¬∑ Rainha Maga',
     color:'#6cb8e8', colorLight:'#e6f7ff', colorDark:'#1d5a80', gem:'gemAero', atk:20,
     orbColor:'#5cc3f7', orbColorLight:'#eaf9ff', orbColorDark:'#155a85',
-    img:'assets/cards/sophitia-card.png', cardThumb:'assets/cards/sophitia-card.png',
-    sprite:'assets/characters/runtime-v6/sophitia/single-1.png', fxTheme:'gale', rarity:'DIVINA', stars:7,
-    stageAbility:{nome:'Rajada de Lafesia', cd:4, tipo:'deslizarLinha', desc:'A cada 4 turnos, uma linha desliza em c√≠rculo e power-ups na linha s√£o levados pelo vento.'},
-    abilities:[
-      {kind:'passive',gems:15, name:'Furac√£o', tipo:'damageAllFixed', valor:100, desc:'Atinge todos os inimigos com 100 de dano.'},
-      {kind:'passive',gems:25, name:'Barreira de Vento', tipo:'invulnerableTurns', turnos:2, desc:'Impede os danos por 2 turnos.'},
-      {kind:'passive',gems:45, name:'Garras Afiadas', tipo:'critBase', mult:2, desc:'Atinge o inimigo com um dano extra do dobro do ataque.'},
-      {kind:'active',gems:60, name:'Furac√£o Destruidor', tipo:'damageAllFixed', valor:300, desc:'Atinge todos os inimigos com 300 de dano.'},
-      {kind:'active',gems:75, name:'F√∫ria dos C√©us', tipo:'summonHarpies', quantidade:2, desc:'2 Harpias se unem a ela, cada uma atacando com 20% do dano.'},
-      {kind:'active',gems:100, name:'F√∫ria Suprema dos C√©us', tipo:'summonHarpies', quantidade:3, desc:'Mais 3 Harpias se unem a ela, cada uma atacando com 20% do dano, totalizando 5.'}
-    ]
-  },
-  {
-    id:'chuvas', nome:'Regnar', reino:'Reino das Chuvas', classe:'Senhor das Chuvas Torrenciais ¬∑ Rei Mago',
-    color:'#5a6472', colorLight:'#b8c4d4', colorDark:'#14181f', gem:'gemStormstone', atk:20,
-    orbColor:'#6e7a88', orbColorLight:'#c4cfdb', orbColorDark:'#2a313b',
-    img:'assets/cards/regnar-card.png', cardThumb:'assets/cards/regnar-card.png',
-    sprite:'assets/characters/runtime-v6/regnar/single-1.png', heroFlip:true, fxTheme:'deluge', rarity:'DIVINA', stars:7,
-    stageAbility:{nome:'Manto de Chuva', cd:4, tipo:'encharcar', mult:0.5, desc:'A cada 4 turnos, encharca as armas: o pr√≥ximo ataque de cada her√≥i causa metade do dano.'},
-    abilities:[
-      {kind:'passive',gems:15, name:'Chuva Leve', tipo:'dotAll', valor:30, turnos:999, desc:'Atinge todos os inimigos com 30 de dano em todos os turnos. Dura at√© eles morrerem.'},
-      {kind:'passive',gems:25, name:'Aprendendo Conceitos Volume I', tipo:'spawnPowerUps', quantidade:3, desc:'Usa o seu livro para criar 3 power-ups seus.'},
-      {kind:'passive',gems:45, name:'Vis√£o Comprometida', tipo:'blind', turnos:3, desc:'Faz os inimigos errarem o ataque por 3 turnos.'},
-      {kind:'active',gems:60, name:'Aprendendo Conceitos Volume II', tipo:'spawnColorBombs', quantidade:3, desc:'Usa o seu livro para criar 3 power-ups m√°ximos.'},
-      {kind:'active',gems:75, name:'Chuva √Åcida', tipo:'danoDot', valor:300, dot:30, turnos:999, desc:'D√° 300 de dano no inimigo, e 30 de dano em todos os turnos.'},
-      {kind:'active',gems:100, name:'Chuva Torrencial', tipo:'dotAll', valor:100, turnos:999, desc:'Atinge todos os inimigos com 100 de dano em todos os turnos. Dura at√© eles morrerem.'}
-    ]
-  },
-  {
-    id:'gelo', nome:'Blizzardo', reino:'Reino do Gelo', classe:'O Abomin√°vel Rei das Neves ¬∑ Rei Mago',
-    color:'#9fb8cc', colorLight:'#ffffff', colorDark:'#4c5c6e', gem:'gemGlacial', atk:20,
-    orbColor:'#9cc0dc', orbColorLight:'#d6ebf9', orbColorDark:'#4c6a82',
-    img:'assets/cards/blizzardo-card.png', cardThumb:'assets/cards/blizzardo-card.png',
-    sprite:'assets/characters/runtime-v6/blizzardo/single-1.png', fxTheme:'frost', rarity:'DIVINA', stars:7,
-    stageAbility:{nome:'Nevasca de Artyka', cd:4, tipo:'criarObstaculos', obst:'ice', qtd:3, hits:1, reforcado:1, desc:'A cada 4 turnos, congela 3 esferas ‚Äî uma delas com gelo refor√ßado.'},
-    abilities:[
-      {kind:'passive',gems:15, name:'Machado de Gelo', tipo:'danoArea', valor:300, area:150, desc:'Inflige 300 de dano no inimigo e 150 em √°rea.'},
-      {kind:'passive',gems:25, name:'Bola de Neve', tipo:'stunPerRealmGem', divisor:4, desc:'Atordoa o inimigo pela quantidade de turnos equivalente a 1/4 das pedras cinza claras no tabuleiro.'},
-      {kind:'passive',gems:45, name:'Aurora Austral', tipo:'healFixed', valor:500, desc:'Recupera 500 de vida.'},
-      {kind:'active',gems:60, name:'Aurora Boreal', tipo:'dano', valor:500, desc:'Inflige 500 de dano no inimigo.'},
-      {kind:'active',gems:75, name:'Geada Branca', tipo:'freezeBlast', valor:100, porGema:20, turnos:1, desc:'D√° 100 de dano em cada inimigo + 20 por cada pe√ßa cinza clara no tabuleiro e congela eles por 1 turno.'},
-      {kind:'active',gems:100, name:'Morte Congelada', tipo:'freezeExecute', turnos:5, desc:'Congela totalmente o inimigo por 5 turnos e reduz a vida dele pela metade da atual.'}
-    ]
-  },
-  /* ---- Cartas jog√°veis do Reino Rosa (deck dos Humanos) ‚Äî 1-2‚òÖ ---- */
-  /* Habilidades transcritas das ARTES OFICIAIS das cartas ‚Äî n√£o inventar.
-     Regra de estrelas: 1‚òÖ=0P/0A ¬∑ 2‚òÖ=1P/0A ¬∑ 3‚òÖ=2P ¬∑ 4‚òÖ=3P ¬∑ 5‚òÖ=3P/1A ¬∑ 6‚òÖ=3P/2A ¬∑ 7‚òÖ=3P/3A.
-     Passivas de carta usam every:true = disparam a cada `gems`% de energia (25/50/75/100). */
-  {
-    id:'gareth', iconId:'humanos', deck:'humanos', nome:'Gareth', reino:'Reino dos Humanos', classe:'Sentinela da Capital ¬∑ Soldado',
-    color:'#e08aa0', colorLight:'#ffd7e2', colorDark:'#6e2438', gem:'gemRose', atk:2,
-    img:'assets/cards/enemies/gareth-card.png', cardThumb:'assets/cards/enemies/gareth-card.png',
-    sprite:'assets/enemies/humanos/gareth.png', heroFlip:true, fxTheme:'rose', rarity:'NORMAL', stars:1,
-    frase:'Toda grande vit√≥ria come√ßa com um simples soldado.',
-    stageAbility:{nome:'Troca de Guarda', cd:6, tipo:'trocarCores', qtd:3, desc:'A cada 6 turnos, 3 esferas aleat√≥rias trocam de cor.'},
-    abilities:[]
-  },
-  {
-    id:'cedric', iconId:'humanos', deck:'humanos', nome:'Cedric', reino:'Reino dos Humanos', classe:'O Mago Nobre ¬∑ Mago',
-    color:'#8fa6c9', colorLight:'#dbe8fa', colorDark:'#26364e', gem:'gemSteel', atk:4,
-    img:'assets/cards/enemies/cedric-card.png', cardThumb:'assets/cards/enemies/cedric-card.png',
-    sprite:'assets/enemies/humanos/cedric.png', heroFlip:true, fxTheme:'steel', rarity:'RARO', stars:2,
-    frase:'Cada feiti√ßo escrito hoje ser√° uma lenda amanh√£.',
-    stageAbility:{nome:'Selo Arcano', cd:5, tipo:'selarPowerUp', cura:60, desc:'A cada 5 turnos, sela 1 power-up do tabuleiro; sem power-up, recupera 60 de vida.'},
-    abilities:[
-      {kind:'passive',gems:25, every:true, name:'Ben√ß√£o das Flores de Cerejeira', tipo:'healFixed', valor:100, desc:'Recupera 100 de vida todas as vezes que for acionada (25%, 50%, 75%, 100%).'}
-    ]
-  },
-  {
-    id:'elizier', iconId:'humanos', deck:'humanos', nome:'Elizier', reino:'Reino dos Humanos', classe:'Olhos da Coroa ¬∑ Arqueira',
-    color:'#d98a5c', colorLight:'#ffe0c4', colorDark:'#5e2a10', gem:'gemEmber', atk:4,
-    img:'assets/cards/enemies/elizier-card.png', cardThumb:'assets/cards/enemies/elizier-card.png',
-    sprite:'assets/enemies/humanos/elizier.png', heroFlip:true, fxTheme:'ember', rarity:'RARO', stars:2,
-    frase:'Nenhum inimigo escapa do olhar da Coroa.',
-    stageAbility:{nome:'Flecha Certeira', cd:5, tipo:'drenarMaisCarregado', valor:12, desc:'A cada 5 turnos, o her√≥i mais carregado perde 12 de energia.'},
-    abilities:[
-      {kind:'passive',gems:25, every:true, name:'Flechas das Flores de Cerejeira', tipo:'danoTodos', desc:'Atinge todos os inimigos infligindo o dano do √∫ltimo ataque (25%, 50%, 75%, 100%).'}
-    ]
-  },
-  {
-    id:'roland', iconId:'humanos', deck:'humanos', nome:'Roland', reino:'Reino dos Humanos', classe:'Escudo Real de Bernyce ¬∑ Cavaleiro',
-    color:'#7ec9a1', colorLight:'#d8f5e6', colorDark:'#1e4a34', gem:'gemJade', atk:4,
-    img:'assets/cards/enemies/roland-card.png', cardThumb:'assets/cards/enemies/roland-card.png',
-    sprite:'assets/enemies/humanos/roland.png', heroFlip:true, fxTheme:'jade', rarity:'RARO', stars:2,
-    frase:'Minha Lan√ßa protege o reino antes da minha pr√≥pria vida.',
-    stageAbility:{nome:'Basti√£o de Lan√ßas', cd:5, tipo:'criarObstaculos', obst:'stone', qtd:1, hits:2, desc:'A cada 5 turnos, finca um bloqueio de pedra no tabuleiro.'},
-    abilities:[
-      {kind:'passive',gems:25, every:true, name:'Lan√ßa das Flores de Cerejeira', tipo:'damageFromLast', mult:3, desc:'Atinge o inimigo infligindo 3√ó o dano do √∫ltimo ataque (25%, 50%, 75%, 100%).'}
-    ]
-  },
-  /* ---- Jovens aprendizes oficiais ---- */
-  {
-    id:'berenice-jovem', iconId:'humanos', deck:'humanos', nome:'Berenice (Jovem)', reino:'Reino dos Humanos', classe:'A Herdeira da Eternidade ¬∑ Aprendiz',
-    color:'#ff6fa5', colorLight:'#ffd7e8', colorDark:'#7c1f4b', gem:'gemPink', atk:2,
-    img:'assets/cards/berenice-jovem-card.webp', cardThumb:'assets/cards/berenice-jovem-card.webp',
-    sprite:'assets/characters/runtime-v7/berenice-jovem/single-1.webp', heroFlip:true, fxTheme:'chronal', rarity:'NORMAL', stars:1,
-    frase:'Um dia dominarei o tempo... e ningu√©m esquecer√° meu nome.',
-    abilities:[]
-  },
-  {
-    id:'galateia-jovem', iconId:'luz', deck:'luz', nome:'Galat√©ia (Jovem)', reino:'Reino da Luz', classe:'A Futura Rainha de Ygdria ¬∑ Aprendiz',
-    color:'#eef2f8', colorLight:'#ffffff', colorDark:'#78869b', gem:'gemDiamond', atk:2,
-    img:'assets/cards/galateia-jovem-card.webp', cardThumb:'assets/cards/galateia-jovem-card.webp',
-    sprite:'assets/characters/runtime-v7/galateia-jovem/single-1.webp', fxTheme:'radiant', rarity:'NORMAL', stars:1,
-    frase:'Um dia, minha luz alcan√ßar√° todo este mundo.',
-    abilities:[]
-  },
-  {
-    id:'adriel-jovem', iconId:'humanos', deck:'humanos', nome:'Adriel (Jovem)', reino:'Reino dos Humanos', classe:'O Aprendiz de Cavaleiro ¬∑ Aprendiz',
-    color:'#ff6fa5', colorLight:'#ffd7e8', colorDark:'#7c1f4b', gem:'gemPink', atk:2,
-    img:'assets/cards/adriel-jovem-card.webp', cardThumb:'assets/cards/adriel-jovem-card.webp',
-    sprite:'assets/characters/runtime-v7/adriel-jovem/single-1.webp', heroFlip:true, fxTheme:'rose', rarity:'NORMAL', stars:1,
-    frase:'Um dia me tornarei o cavaleiro mais forte de toda Ygdria.',
-    abilities:[]
-  },
-  {
-    id:'acqua-jovem', iconId:'agua', deck:'agua', nome:'Acqua (Jovem)', reino:'Reino da √Ågua', classe:'A Pequena Voz dos Oceanos ¬∑ Aprendiz',
-    color:'#174ea6', colorLight:'#91d5ff', colorDark:'#071b4d', gem:'gemSapphire', atk:2,
-    img:'assets/cards/acqua-jovem-card.webp', cardThumb:'assets/cards/acqua-jovem-card.webp',
-    sprite:'assets/characters/runtime-v7/acqua-jovem/single-1.webp', fxTheme:'tidal', rarity:'NORMAL', stars:1,
-    frase:'Um dia minha voz ser√° ouvida por toda Ygdria.',
-    abilities:[]
-  },
-  /* ---- Nova leva oficial: Jules, Kalander, Bernyce (Rosa) e Julius (Sombras) ---- */
-  {
-    id:'jules', iconId:'humanos', deck:'humanos', nome:'Jules', reino:'Reino dos Humanos', classe:'The Joker ¬∑ Bobo da Corte',
-    color:'#e8557f', colorLight:'#ffc9dc', colorDark:'#7c1638', gem:'gemJoker', atk:6,
-    img:'assets/cards/enemies/jules-card.png', cardThumb:'assets/cards/enemies/jules-card.png',
-    sprite:'assets/enemies/humanos/jules.png', heroFlip:true, fxTheme:'rose', rarity:'SUPER RARO', stars:3,
-    frase:'O maior truque n√£o √© enganar o inimigo... √© conquistar sua confian√ßa.',
-    stageAbility:{nome:'√Ås de Copas', cd:5, tipo:'asDeCopas', desc:'A cada 5 turnos, cria 1 gema rosa de cora√ß√£o vermelho; se voc√™ estour√°-la, recebe 5% da sua vida atual de dano.'},
-    abilities:[
-      {kind:'passive', at:[25,75], name:'Truque de Cartas', tipo:'spawnPowerUps', quantidade:1, desc:'Cria 1 power-up aleat√≥rio no tabuleiro (25%, 75%).'},
-      {kind:'passive', at:[50,100], name:'Chamariz', tipo:'chamariz', desc:'Depois de ativar, se seu HP chegar a 0 voc√™ n√£o perde: o HP volta para 100 (25%... 50%, 100%).'}
-    ]
-  },
-  {
-    id:'kalander', iconId:'humanos', deck:'humanos', nome:'Kalander', reino:'Reino dos Humanos', classe:'O Her√≥i da Na√ß√£o ¬∑ Cavaleiro Mago',
-    color:'#d97fa6', colorLight:'#ffd9e9', colorDark:'#6e2447', gem:'gemHero', atk:6,
-    img:'assets/cards/enemies/kalander-card.png', cardThumb:'assets/cards/enemies/kalander-card.png',
-    sprite:'assets/enemies/humanos/kalander.png', heroFlip:true, fxTheme:'rose', rarity:'SUPER RARO', stars:3,
-    frase:'Uma rainha governa um reino... uma m√£e protege uma gera√ß√£o.',
-    stageAbility:{nome:'Golpe Cruzado', cd:4, tipo:'cortarX', desc:'A cada 4 turnos, suas l√¢minas g√™meas cortam um X no tabuleiro: as esferas das diagonais s√£o removidas sem conceder energia.'},
-    abilities:[
-      {kind:'passive', at:[25,75], name:'Corte Duplo', tipo:'corteDuplo', desc:'Duplica o ataque dele at√© o final do turno (25%, 75%; n√£o acumula no mesmo turno).'},
-      {kind:'passive', at:[50,100], name:'O Her√≥i da Na√ß√£o', tipo:'reducaoDano', valor:0.2, desc:'Reduz os danos recebidos em 20% pela miss√£o toda; acumula at√© 2√ó (50%, 100%).'}
-    ]
-  },
-  {
-    id:'bernyce', iconId:'humanos', deck:'humanos', nome:'Bernyce', reino:'Reino dos Humanos', classe:'Rainha dos Reguladores ¬∑ Rainha Maga',
-    color:'#e77fb2', colorLight:'#ffd4ec', colorDark:'#77175a', gem:'gemQueen', atk:6,
-    img:'assets/cards/enemies/bernyce-card.png', cardThumb:'assets/cards/enemies/bernyce-card.png',
-    sprite:'assets/enemies/humanos/bernyce.png', heroFlip:true, fxTheme:'rose', rarity:'SUPER RARO', stars:3,
-    frase:'Uma rainha governa um reino... uma m√£e protege uma gera√ß√£o.',
-    stageAbility:{nome:'Regula√ß√£o Real', cd:4, tipo:'regulacaoReal', cura:80, desc:'A cada 4 turnos, remove TODOS os power-ups do tabuleiro e recupera 80 de vida por cada um removido.'},
-    abilities:[
-      {kind:'passive', at:[25,75], name:'Regula√ß√£o Total', tipo:'atordoa', valor:2, desc:'Os inimigos ficam 2 turnos sem atacar (25%, 75%).'},
-      {kind:'passive', at:[50,100], name:'√çmpeto da Rainha', tipo:'impetoRainha', valor:0.2, desc:'Os inimigos recebem 20% de dano extra at√© o fim da miss√£o; acumula sempre que ativar (50%, 100%).'}
-    ]
-  },
-  {
-    id:'julius', iconId:'sombras', deck:'sombras', nome:'Julius', reino:'Reino das Sombras', classe:'O Cavaleiro do Al√©m ¬∑ Cavaleiro Mago',
-    color:'#6b5a8c', colorLight:'#cbb8ff', colorDark:'#241b38', gem:'gemBeyond', atk:8,
-    orbColor:'#1b1426', orbColorLight:'#8a7a9e', orbColorDark:'#050308',
-    img:'assets/cards/enemies/julius-card.png', cardThumb:'assets/cards/enemies/julius-card.png',
-    sprite:'assets/enemies/humanos/julius.png', heroFlip:true, fxTheme:'shadow', rarity:'ULTRA RARO', stars:4, artKit:true,
-    frase:'Minhas sombras devoram o passado... e reescrevem a hist√≥ria!',
-    stageAbility:{nome:'Tempo Sombrio', cd:0, tempoReal:30, tipo:'tempoSombrio', desc:'A cada 30 segundos no rel√≥gio, corrompe uma gema com uma sombra: ela n√£o pode ser movida nem removida. Se todas forem corrompidas, voc√™ perde!'},
-    abilities:[
-      {kind:'passive', at:[25], name:'Corte Sombrio', tipo:'percentAtualCega', pct:0.2, desc:'Inflige 20% da vida atual do inimigo e causa cegueira por 1 turno (25%).'},
-      {kind:'passive', at:[50], name:'Para que Serve esse Rel√≥gio', tipo:'paralisiaTempo', desc:'Paralisa o tempo do inimigo: ele n√£o ataca mais at√© sua vida chegar a 25% (50%).'},
-      {kind:'passive', at:[75], name:'Sombras Devoradoras', tipo:'sombrasDevoradoras', pct:0.05, desc:'Sempre que o inimigo atacar, todos os inimigos perdem 5% da vida total (75%).'},
-      {kind:'active', gems:100, name:'L√¢mina das Sombras Dimensional I', tipo:'laminaDimensional', desc:'Atinge todos os inimigos com 10% da vida e as miss√µes futuras com 8%, 6%, 4%, 2%, 0% consecutivamente. Acumulativa (100%).'}
-    ]
-  }
-];
-
-const CHIBI_SVG = {
-  fogo: `<svg viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <radialGradient id="skinG" cx="35%" cy="30%" r="75%">
-      <stop offset="0%" stop-color="#fff0e0"/><stop offset="100%" stop-color="#f2c9a3"/>
-    </radialGradient>
-    <linearGradient id="outfitG" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#7a1420"/><stop offset="100%" stop-color="#2e0810"/>
-    </linearGradient>
-    <radialGradient id="orbG" cx="40%" cy="30%" r="70%">
-      <stop offset="0%" stop-color="#ffffff"/><stop offset="55%" stop-color="#ff6b4a"/><stop offset="100%" stop-color="#2e0810"/>
-    </radialGradient>
-  </defs>
-
-  <ellipse cx="50" cy="144" rx="26" ry="6" fill="#000" opacity="0.28"/>
-
-  <path d="M30 82 Q50 76 70 82 L84 138 Q50 150 16 138 Z" fill="#2e0810" opacity="0.9" stroke="#000" stroke-opacity="0.3" stroke-width="1.5"/>
-
-  <!-- staff -->
-  <rect x="78" y="70" width="4" height="60" rx="2" fill="#6b4a2a"/>
-  <circle cx="80" cy="66" r="9" fill="url(#orbG)" stroke="#2e0810" stroke-width="1.5"/>
-
-  <!-- legs/boots -->
-  <rect x="38" y="118" width="10" height="20" rx="4" fill="#2e0810"/>
-  <rect x="52" y="118" width="10" height="20" rx="4" fill="#2e0810"/>
-  <ellipse cx="43" cy="139" rx="8" ry="5" fill="#2a1c12"/>
-  <ellipse cx="57" cy="139" rx="8" ry="5" fill="#2a1c12"/>
-
-  <!-- body/robe -->
-  <path d="M32 92 Q50 82 68 92 L74 128 Q50 138 26 128 Z" fill="url(#outfitG)" stroke="#2e0810" stroke-width="2"/>
-  <path d="M40 92 Q50 100 60 92 L58 108 Q50 114 42 108 Z" fill="#2e0810" opacity="0.55"/>
-
-  <!-- arms -->
-  <ellipse cx="27" cy="106" rx="9" ry="16" fill="url(#outfitG)" stroke="#2e0810" stroke-width="1.5" transform="rotate(-12 27 106)"/>
-  <ellipse cx="73" cy="100" rx="9" ry="17" fill="url(#outfitG)" stroke="#2e0810" stroke-width="1.5" transform="rotate(18 73 100)"/>
-  <circle cx="22" cy="120" r="6.5" fill="#f2c9a3"/>
-  <circle cx="79" cy="86" r="6.5" fill="#f2c9a3"/>
-  
-
-  <!-- head -->
-  <circle cx="50" cy="52" r="34" fill="url(#skinG)" stroke="#00000022" stroke-width="1"/>
-  <path d="M28 38 Q20 8 50 6 Q80 8 72 38 L64 20 L56 34 L50 16 L44 34 L36 20 Z" fill="#c0202e"/>
-                     <path d="M50 6 Q56 2 60 9 Q54 8 51 12Z" fill="#c0202e" opacity="0.85"/>
-  <path d="M32 20 L38 8 L44 18 L50 6 L56 18 L62 8 L68 20 L66 26 L34 26 Z" fill="#f0c94a" stroke="#7a5a10" stroke-width="1.2"/><circle cx="50" cy="10" r="2.4" fill="#ff5a5a"/>
-  <ellipse cx="38" cy="54" rx="4.2" ry="5.5" fill="#241a1a"/>
-  <ellipse cx="62" cy="54" rx="4.2" ry="5.5" fill="#241a1a"/>
-  <circle cx="39.5" cy="52" r="1.4" fill="#fff"/>
-  <circle cx="63.5" cy="52" r="1.4" fill="#fff"/>
-  <path d="M43 66 Q50 71 57 66" stroke="#8a5a4a" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <ellipse cx="32" cy="62" rx="5" ry="3" fill="#ff9a9a" opacity="0.45"/>
-  <ellipse cx="68" cy="62" rx="5" ry="3" fill="#ff9a9a" opacity="0.45"/>
-</svg>`,
-  terra: `<svg viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <radialGradient id="skinG" cx="35%" cy="30%" r="75%">
-      <stop offset="0%" stop-color="#fff0e0"/><stop offset="100%" stop-color="#f2c9a3"/>
-    </radialGradient>
-    <linearGradient id="outfitG" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#c9a24b"/><stop offset="100%" stop-color="#6b4a1e"/>
-    </linearGradient>
-    <radialGradient id="orbG" cx="40%" cy="30%" r="70%">
-      <stop offset="0%" stop-color="#ffffff"/><stop offset="55%" stop-color="#e9c26b"/><stop offset="100%" stop-color="#6b4a1e"/>
-    </radialGradient>
-  </defs>
-
-  <ellipse cx="50" cy="144" rx="26" ry="6" fill="#000" opacity="0.28"/>
-
-  
-
-  <!-- staff -->
-  <rect x="78" y="70" width="4" height="60" rx="2" fill="#6b4a2a"/>
-  <circle cx="80" cy="66" r="9" fill="url(#orbG)" stroke="#6b4a1e" stroke-width="1.5"/>
-
-  <!-- legs/boots -->
-  <rect x="38" y="118" width="10" height="20" rx="4" fill="#6b4a1e"/>
-  <rect x="52" y="118" width="10" height="20" rx="4" fill="#6b4a1e"/>
-  <ellipse cx="43" cy="139" rx="8" ry="5" fill="#2a1c12"/>
-  <ellipse cx="57" cy="139" rx="8" ry="5" fill="#2a1c12"/>
-
-  <!-- body/robe -->
-  <path d="M32 92 Q50 82 68 92 L74 128 Q50 138 26 128 Z" fill="url(#outfitG)" stroke="#6b4a1e" stroke-width="2"/>
-  <path d="M40 92 Q50 100 60 92 L58 108 Q50 114 42 108 Z" fill="#6b4a1e" opacity="0.55"/>
-
-  <!-- arms -->
-  <ellipse cx="27" cy="106" rx="9" ry="16" fill="url(#outfitG)" stroke="#6b4a1e" stroke-width="1.5" transform="rotate(-12 27 106)"/>
-  <ellipse cx="73" cy="100" rx="9" ry="17" fill="url(#outfitG)" stroke="#6b4a1e" stroke-width="1.5" transform="rotate(18 73 100)"/>
-  <circle cx="22" cy="120" r="6.5" fill="#f2c9a3"/>
-  <circle cx="79" cy="86" r="6.5" fill="#f2c9a3"/>
-  <ellipse cx="30" cy="90" rx="10" ry="7" fill="#6b4a1e" stroke="#00000055" stroke-width="1"/>
-                        <ellipse cx="70" cy="90" rx="10" ry="7" fill="#6b4a1e" stroke="#00000055" stroke-width="1"/>
-
-  <!-- head -->
-  <circle cx="50" cy="52" r="34" fill="url(#skinG)" stroke="#00000022" stroke-width="1"/>
-  <path d="M26 42 Q22 6 50 6 Q78 6 74 42 Q74 20 50 18 Q26 20 26 42Z" fill="#3a2414"/>
-  <rect x="32" y="49" width="14" height="10" rx="4" fill="none" stroke="#2a2a2a" stroke-width="2"/><rect x="54" y="49" width="14" height="10" rx="4" fill="none" stroke="#2a2a2a" stroke-width="2"/><line x1="46" y1="53" x2="54" y2="53" stroke="#2a2a2a" stroke-width="2"/>
-  <ellipse cx="38" cy="54" rx="4.2" ry="5.5" fill="#241a1a"/>
-  <ellipse cx="62" cy="54" rx="4.2" ry="5.5" fill="#241a1a"/>
-  <circle cx="39.5" cy="52" r="1.4" fill="#fff"/>
-  <circle cx="63.5" cy="52" r="1.4" fill="#fff"/>
-  <path d="M43 66 Q50 71 57 66" stroke="#8a5a4a" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <ellipse cx="32" cy="62" rx="5" ry="3" fill="#ff9a9a" opacity="0.45"/>
-  <ellipse cx="68" cy="62" rx="5" ry="3" fill="#ff9a9a" opacity="0.45"/>
-</svg>`,
-  luz: `<svg viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <radialGradient id="skinG" cx="35%" cy="30%" r="75%">
-      <stop offset="0%" stop-color="#fff0e0"/><stop offset="100%" stop-color="#f2c9a3"/>
-    </radialGradient>
-    <linearGradient id="outfitG" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#eef1f6"/><stop offset="100%" stop-color="#a7b0be"/>
-    </linearGradient>
-    <radialGradient id="orbG" cx="40%" cy="30%" r="70%">
-      <stop offset="0%" stop-color="#ffffff"/><stop offset="55%" stop-color="#fff6d6"/><stop offset="100%" stop-color="#a7b0be"/>
-    </radialGradient>
-  </defs>
-
-  <ellipse cx="50" cy="144" rx="26" ry="6" fill="#000" opacity="0.28"/>
-
-  
-
-  <!-- staff -->
-  <rect x="78" y="70" width="4" height="60" rx="2" fill="#6b4a2a"/>
-  <circle cx="80" cy="66" r="9" fill="url(#orbG)" stroke="#a7b0be" stroke-width="1.5"/>
-
-  <!-- legs/boots -->
-  <rect x="38" y="118" width="10" height="20" rx="4" fill="#a7b0be"/>
-  <rect x="52" y="118" width="10" height="20" rx="4" fill="#a7b0be"/>
-  <ellipse cx="43" cy="139" rx="8" ry="5" fill="#2a1c12"/>
-  <ellipse cx="57" cy="139" rx="8" ry="5" fill="#2a1c12"/>
-
-  <!-- body/robe -->
-  <path d="M32 92 Q50 82 68 92 L74 128 Q50 138 26 128 Z" fill="url(#outfitG)" stroke="#a7b0be" stroke-width="2"/>
-  <path d="M40 92 Q50 100 60 92 L58 108 Q50 114 42 108 Z" fill="#a7b0be" opacity="0.55"/>
-
-  <!-- arms -->
-  <ellipse cx="27" cy="106" rx="9" ry="16" fill="url(#outfitG)" stroke="#a7b0be" stroke-width="1.5" transform="rotate(-12 27 106)"/>
-  <ellipse cx="73" cy="100" rx="9" ry="17" fill="url(#outfitG)" stroke="#a7b0be" stroke-width="1.5" transform="rotate(18 73 100)"/>
-  <circle cx="22" cy="120" r="6.5" fill="#f2c9a3"/>
-  <circle cx="79" cy="86" r="6.5" fill="#f2c9a3"/>
-  
-
-  <!-- head -->
-  <circle cx="50" cy="52" r="34" fill="url(#skinG)" stroke="#00000022" stroke-width="1"/>
-  <path d="M24 46 Q18 6 50 5 Q82 6 76 46 L80 92 Q70 78 68 46 Q68 20 50 18 Q32 20 32 46 Q30 78 20 92 Z" fill="#f7f1de"/>
-                     <path d="M32 46 Q50 58 68 46 Q68 20 50 18 Q32 20 32 46Z" fill="#d8cfa8" opacity="0.35"/>
-  <ellipse cx="50" cy="12" rx="17" ry="5" fill="none" stroke="#ffe9a8" stroke-width="3" opacity="0.9"/>
-  <ellipse cx="38" cy="54" rx="4.2" ry="5.5" fill="#241a1a"/>
-  <ellipse cx="62" cy="54" rx="4.2" ry="5.5" fill="#241a1a"/>
-  <circle cx="39.5" cy="52" r="1.4" fill="#fff"/>
-  <circle cx="63.5" cy="52" r="1.4" fill="#fff"/>
-  <path d="M43 66 Q50 71 57 66" stroke="#8a5a4a" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <ellipse cx="32" cy="62" rx="5" ry="3" fill="#ff9a9a" opacity="0.45"/>
-  <ellipse cx="68" cy="62" rx="5" ry="3" fill="#ff9a9a" opacity="0.45"/>
-</svg>`,
-  humanos: `<svg viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <radialGradient id="skinG" cx="35%" cy="30%" r="75%">
-      <stop offset="0%" stop-color="#fff0e0"/><stop offset="100%" stop-color="#f2c9a3"/>
-    </radialGradient>
-    <linearGradient id="outfitG" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#ff6f9f"/><stop offset="100%" stop-color="#7a1f45"/>
-    </linearGradient>
-    <radialGradient id="orbG" cx="40%" cy="30%" r="70%">
-      <stop offset="0%" stop-color="#ffffff"/><stop offset="55%" stop-color="#ffd6e8"/><stop offset="100%" stop-color="#7a1f45"/>
-    </radialGradient>
-  </defs>
-
-  <ellipse cx="50" cy="144" rx="26" ry="6" fill="#000" opacity="0.28"/>
-
-  
-
-  <!-- staff -->
-  <rect x="78" y="70" width="4" height="60" rx="2" fill="#6b4a2a"/>
-  <circle cx="80" cy="66" r="9" fill="url(#orbG)" stroke="#7a1f45" stroke-width="1.5"/>
-
-  <!-- legs/boots -->
-  <rect x="38" y="118" width="10" height="20" rx="4" fill="#7a1f45"/>
-  <rect x="52" y="118" width="10" height="20" rx="4" fill="#7a1f45"/>
-  <ellipse cx="43" cy="139" rx="8" ry="5" fill="#2a1c12"/>
-  <ellipse cx="57" cy="139" rx="8" ry="5" fill="#2a1c12"/>
-
-  <!-- body/robe -->
-  <path d="M32 92 Q50 82 68 92 L74 128 Q50 138 26 128 Z" fill="url(#outfitG)" stroke="#7a1f45" stroke-width="2"/>
-  <path d="M40 92 Q50 100 60 92 L58 108 Q50 114 42 108 Z" fill="#7a1f45" opacity="0.55"/>
-
-  <!-- arms -->
-  <ellipse cx="27" cy="106" rx="9" ry="16" fill="url(#outfitG)" stroke="#7a1f45" stroke-width="1.5" transform="rotate(-12 27 106)"/>
-  <ellipse cx="73" cy="100" rx="9" ry="17" fill="url(#outfitG)" stroke="#7a1f45" stroke-width="1.5" transform="rotate(18 73 100)"/>
-  <circle cx="22" cy="120" r="6.5" fill="#f2c9a3"/>
-  <circle cx="79" cy="86" r="6.5" fill="#f2c9a3"/>
-  
-
-  <!-- head -->
-  <circle cx="50" cy="52" r="34" fill="url(#skinG)" stroke="#00000022" stroke-width="1"/>
-  <path d="M26 42 Q22 6 50 6 Q78 6 74 42 Q74 20 50 18 Q26 20 26 42Z" fill="#c04a78"/>
-  
-  <ellipse cx="38" cy="54" rx="4.2" ry="5.5" fill="#241a1a"/>
-  <ellipse cx="62" cy="54" rx="4.2" ry="5.5" fill="#241a1a"/>
-  <circle cx="39.5" cy="52" r="1.4" fill="#fff"/>
-  <circle cx="63.5" cy="52" r="1.4" fill="#fff"/>
-  <path d="M43 66 Q50 71 57 66" stroke="#8a5a4a" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <ellipse cx="32" cy="62" rx="5" ry="3" fill="#ff9a9a" opacity="0.45"/>
-  <ellipse cx="68" cy="62" rx="5" ry="3" fill="#ff9a9a" opacity="0.45"/>
-</svg>`,
-  sombras: `<svg viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <radialGradient id="skinG" cx="35%" cy="30%" r="75%">
-      <stop offset="0%" stop-color="#fff0e0"/><stop offset="100%" stop-color="#f2c9a3"/>
-    </radialGradient>
-    <linearGradient id="outfitG" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#3a2a4a"/><stop offset="100%" stop-color="#0e0816"/>
-    </linearGradient>
-    <radialGradient id="orbG" cx="40%" cy="30%" r="70%">
-      <stop offset="0%" stop-color="#ffffff"/><stop offset="55%" stop-color="#9a78c0"/><stop offset="100%" stop-color="#0e0816"/>
-    </radialGradient>
-  </defs>
-
-  <ellipse cx="50" cy="144" rx="26" ry="6" fill="#000" opacity="0.28"/>
-
-  
-
-  <!-- staff -->
-  <rect x="78" y="70" width="4" height="60" rx="2" fill="#6b4a2a"/>
-  <circle cx="80" cy="66" r="9" fill="url(#orbG)" stroke="#0e0816" stroke-width="1.5"/>
-
-  <!-- legs/boots -->
-  <rect x="38" y="118" width="10" height="20" rx="4" fill="#0e0816"/>
-  <rect x="52" y="118" width="10" height="20" rx="4" fill="#0e0816"/>
-  <ellipse cx="43" cy="139" rx="8" ry="5" fill="#2a1c12"/>
-  <ellipse cx="57" cy="139" rx="8" ry="5" fill="#2a1c12"/>
-
-  <!-- body/robe -->
-  <path d="M32 92 Q50 82 68 92 L74 128 Q50 138 26 128 Z" fill="url(#outfitG)" stroke="#0e0816" stroke-width="2"/>
-  <path d="M40 92 Q50 100 60 92 L58 108 Q50 114 42 108 Z" fill="#0e0816" opacity="0.55"/>
-
-  <!-- arms -->
-  <ellipse cx="27" cy="106" rx="9" ry="16" fill="url(#outfitG)" stroke="#0e0816" stroke-width="1.5" transform="rotate(-12 27 106)"/>
-  <ellipse cx="73" cy="100" rx="9" ry="17" fill="url(#outfitG)" stroke="#0e0816" stroke-width="1.5" transform="rotate(18 73 100)"/>
-  <circle cx="22" cy="120" r="6.5" fill="#f2c9a3"/>
-  <circle cx="79" cy="86" r="6.5" fill="#f2c9a3"/>
-  
-
-  <!-- head -->
-  <circle cx="50" cy="52" r="34" fill="url(#skinG)" stroke="#00000022" stroke-width="1"/>
-  <path d="M20 50 Q16 2 50 2 Q84 2 80 50 Q80 30 50 26 Q20 30 20 50Z" fill="#160f1e"/>
-                      <path d="M18 48 Q50 34 82 48 L86 62 Q50 48 14 62 Z" fill="#160f1e" opacity="0.85"/>
-  
-  <ellipse cx="38" cy="54" rx="4.2" ry="5.5" fill="#c8a8ff"/>
-  <ellipse cx="62" cy="54" rx="4.2" ry="5.5" fill="#c8a8ff"/>
-  <circle cx="39.5" cy="52" r="1.4" fill="#fff"/>
-  <circle cx="63.5" cy="52" r="1.4" fill="#fff"/>
-  <path d="M43 66 Q50 71 57 66" stroke="#8a5a4a" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <ellipse cx="32" cy="62" rx="5" ry="3" fill="#ff9a9a" opacity="0.45"/>
-  <ellipse cx="68" cy="62" rx="5" ry="3" fill="#ff9a9a" opacity="0.45"/>
-</svg>`,
-  agua: `<svg viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <radialGradient id="skinG" cx="35%" cy="30%" r="75%">
-      <stop offset="0%" stop-color="#fff0e0"/><stop offset="100%" stop-color="#f2c9a3"/>
-    </radialGradient>
-    <linearGradient id="outfitG" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#2f6ec9"/><stop offset="100%" stop-color="#0a1f45"/>
-    </linearGradient>
-    <radialGradient id="orbG" cx="40%" cy="30%" r="70%">
-      <stop offset="0%" stop-color="#ffffff"/><stop offset="55%" stop-color="#bfe0ff"/><stop offset="100%" stop-color="#0a1f45"/>
-    </radialGradient>
-  </defs>
-
-  <ellipse cx="50" cy="144" rx="26" ry="6" fill="#000" opacity="0.28"/>
-
-  
-
-  <!-- staff -->
-  <rect x="78" y="70" width="4" height="60" rx="2" fill="#6b4a2a"/>
-  <circle cx="80" cy="66" r="9" fill="url(#orbG)" stroke="#0a1f45" stroke-width="1.5"/>
-
-  <!-- legs/boots -->
-  <rect x="38" y="118" width="10" height="20" rx="4" fill="#0a1f45"/>
-  <rect x="52" y="118" width="10" height="20" rx="4" fill="#0a1f45"/>
-  <ellipse cx="43" cy="139" rx="8" ry="5" fill="#2a1c12"/>
-  <ellipse cx="57" cy="139" rx="8" ry="5" fill="#2a1c12"/>
-
-  <!-- body/robe -->
-  <path d="M32 92 Q50 82 68 92 L74 128 Q50 138 26 128 Z" fill="url(#outfitG)" stroke="#0a1f45" stroke-width="2"/>
-  <path d="M40 92 Q50 100 60 92 L58 108 Q50 114 42 108 Z" fill="#0a1f45" opacity="0.55"/>
-
-  <!-- arms -->
-  <ellipse cx="27" cy="106" rx="9" ry="16" fill="url(#outfitG)" stroke="#0a1f45" stroke-width="1.5" transform="rotate(-12 27 106)"/>
-  <ellipse cx="73" cy="100" rx="9" ry="17" fill="url(#outfitG)" stroke="#0a1f45" stroke-width="1.5" transform="rotate(18 73 100)"/>
-  <circle cx="22" cy="120" r="6.5" fill="#f2c9a3"/>
-  <circle cx="79" cy="86" r="6.5" fill="#f2c9a3"/>
-  
-
-  <!-- head -->
-  <circle cx="50" cy="52" r="34" fill="url(#skinG)" stroke="#00000022" stroke-width="1"/>
-  <path d="M27 40 Q22 6 50 6 Q78 6 73 40 Q74 18 50 16 Q26 18 27 40Z" fill="#1f5a9c"/>
-                        <path d="M74 34 Q94 44 88 74 Q80 60 70 46Z" fill="#1f5a9c"/>
-                        <path d="M74 34 Q94 44 88 74 Q84 62 76 50Z" fill="#0a1f45" opacity="0.3"/>
-  <path d="M74 30 Q92 34 86 52 Q78 44 70 38Z" fill="#1f5a9c" opacity="0.9"/>
-  <ellipse cx="38" cy="54" rx="4.2" ry="5.5" fill="#241a1a"/>
-  <ellipse cx="62" cy="54" rx="4.2" ry="5.5" fill="#241a1a"/>
-  <circle cx="39.5" cy="52" r="1.4" fill="#fff"/>
-  <circle cx="63.5" cy="52" r="1.4" fill="#fff"/>
-  <path d="M43 66 Q50 71 57 66" stroke="#8a5a4a" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <ellipse cx="32" cy="62" rx="5" ry="3" fill="#ff9a9a" opacity="0.45"/>
-  <ellipse cx="68" cy="62" rx="5" ry="3" fill="#ff9a9a" opacity="0.45"/>
-</svg>`,
-};
-
-const KINGDOM_ICON = {
-  fogo: '<path d="M12 2C10 6 6 8.5 6 13.5a6 6 0 0 0 12 0c0-3.2-1.8-4.4-2.2-6.6-.3 1.8-1.3 2.8-1.3 4.2a1.8 1.8 0 1 1-3.6 0c0-3.4 2.1-4.6 1.1-9.1Z" fill="#fff" fill-opacity="0.92" stroke="#00000055" stroke-width="0.6"/>',
-  natureza: '<path d="M4 13C4 7 9 4 20 4c0 10-3 15-9 15-1.6 0-2.8-.4-3.7-.9 2-1 3.8-2.7 4.9-5.4-2.8 1.8-5.6 1.7-7.5-.2C3.3 11.1 4 12 4 13Z" fill="#fff" fill-opacity="0.92" stroke="#00000055" stroke-width="0.6"/>',
-  terra: '<path d="M2.5 19 8.6 8.2l2.4 4.1L14.4 4 22 19H2.5Zm7.1-2.2h7.8l-3-7-1.9 4.6-1.3-2.2-1.6 4.6Z" fill="#fff" fill-opacity="0.94" stroke="#00000055" stroke-width="0.6"/>',
-  luz: '<path d="M12 2 L14.2 9.8 L22 12 L14.2 14.2 L12 22 L9.8 14.2 L2 12 L9.8 9.8 Z" fill="#fff" fill-opacity="0.95" stroke="#00000055" stroke-width="0.6"/>',
-  humanos: '<path d="M12 21s-7-4.4-9.5-8.6C.5 8 2.6 4 6.6 4c2 0 3.5 1.5 4.5 3 1-1.5 2.6-3 4.6-3 4 0 6.1 4 4.1 8.5C19.3 16.6 12 21 12 21Z" fill="#fff" fill-opacity="0.92" stroke="#00000055" stroke-width="0.6"/>',
-  sombras: '<path d="M15.5 3a9 9 0 1 0 5.9 15.8A7.2 7.2 0 0 1 15.5 3Z" fill="#fff" fill-opacity="0.92" stroke="#00000055" stroke-width="0.6"/>',
-  agua: '<path d="M12 2s6.4 7.4 6.4 12.2A6.4 6.4 0 0 1 5.6 14.2C5.6 9.4 12 2 12 2Z" fill="#fff" fill-opacity="0.92" stroke="#00000055" stroke-width="0.6"/>',
-  areia: '<path d="M12 3 21.8 20H2.2L12 3Z" fill="#fff" fill-opacity="0.94" stroke="#00000055" stroke-width="0.6"/>',
-  raio: '<path d="M13 2 4.5 13.5h5.2L10 22l9.5-12h-5.6L13 2Z" fill="#fff" fill-opacity="0.94" stroke="#00000055" stroke-width="0.6"/>',
-  vento: '<path d="M3 8h11a3 3 0 1 0-3-3M3 13h15a3 3 0 1 1-3 3M3 18h8" stroke="#fff" stroke-opacity="0.95" stroke-width="2.1" fill="none" stroke-linecap="round"/>',
-  chuvas: '<path d="M12 2.6s4.6 5.4 4.6 8.6a4.6 4.6 0 0 1-9.2 0C7.4 8 12 2.6 12 2.6Z" fill="#fff" fill-opacity="0.92"/><path d="M6 18.5l-1.4 3M12.2 18.5l-1.4 3M18.4 18.5l-1.4 3" stroke="#fff" stroke-opacity="0.9" stroke-width="1.8" stroke-linecap="round"/>',
-  gelo: '<path d="M12 2v20M3.8 6.6l16.4 10.8M20.2 6.6 3.8 17.4" stroke="#fff" stroke-opacity="0.95" stroke-width="1.9" fill="none" stroke-linecap="round"/>',
-};
-
-
-
-const DUNGEON = [
-  { title:'Port√£o do P√¢ntano', scene:0, enemies:[
-      {name:'Limo R√∫nico', hp:320, atk:40, sprite:'assets/enemies/slime/single-1.png'}
-    ] },
-  { title:'Sal√£o de Pedra', scene:1, enemies:[
-      {name:'Sentinela de Pedra', hp:380, atk:50, sprite:'assets/enemies/stone-sentinel/single-1.png'},
-      {name:'Golem Ancestral', hp:780, atk:70, sprite:'assets/enemies/stone-sentinel/single-1.png'}
-    ] },
-  { title:'Floresta Sombria', scene:2, enemies:[
-      {name:'Lobo Batedor', hp:600, atk:75, sprite:'assets/enemies/shadow-wolf/single-1.png'},
-      {name:'Lobo Sombrio', hp:1250, atk:105, sprite:'assets/enemies/shadow-wolf/single-1.png'}
-    ] },
-  { title:'Corredor Amaldi√ßoado', scene:3, enemies:[
-      {name:'Espectro Menor', hp:650, atk:90, sprite:'assets/enemies/cursed-wraith/single-1.png'},
-      {name:'Espectro Menor', hp:650, atk:90, sprite:'assets/enemies/cursed-wraith/single-1.png'},
-      {name:'Espectro Uivante', hp:1900, atk:140, sprite:'assets/enemies/cursed-wraith/single-1.png'}
-    ] },
-  { title:'Trono do Drag√£o', scene:4, enemies:[
-      {name:'Servo das Trevas', hp:850, atk:100, sprite:'assets/enemies/cursed-wraith/single-1.png'},
-      {name:'Servo das Trevas', hp:850, atk:100, sprite:'assets/enemies/cursed-wraith/single-1.png'},
-      {name:'Drag√£o Carmesim', hp:4500, atk:230, sprite:'assets/enemies/crimson-dragon/single-1.png'}
-    ] },
-  /* ---- Masmorra 2 ¬∑ fases DEMO (mundos oficiais ser√£o criados depois) ---- */
-  { title:'Dunas de Meriady (DEMO)', scene:1, objective:{type:'collect',count:40}, obstacles:{stone:3}, enemies:[
-      {name:'Chacal das Dunas', hp:1400, atk:150, sprite:'assets/enemies/shadow-wolf/single-1.png', tint:'sepia(.85) saturate(2.4) hue-rotate(-18deg) brightness(1.12)'},
-      {name:'Guardi√£o de Areia', hp:2600, atk:185, sprite:'assets/enemies/stone-sentinel/single-1.png', tint:'sepia(.6) saturate(1.8) brightness(1.15)'}
-    ] },
-  { title:'Abismo das Sombras (DEMO)', scene:3, objective:{type:'survive',turns:8}, obstacles:{ice:4}, enemies:[
-      {name:'Sombra Voraz', hp:1700, atk:170, sprite:'assets/enemies/cursed-wraith/single-1.png', tint:'brightness(.55) saturate(1.6) hue-rotate(40deg) drop-shadow(0 0 10px rgba(125,36,95,.8))'},
-      {name:'Sombra Voraz', hp:1700, atk:170, sprite:'assets/enemies/cursed-wraith/single-1.png', tint:'brightness(.55) saturate(1.6) hue-rotate(40deg) drop-shadow(0 0 10px rgba(125,36,95,.8))'}
-    ] },
-  { title:'Trono Sombrio (DEMO)', scene:4, obstacles:{ice:2,stone:2}, enemies:[
-      {name:'Servo do Vazio', hp:1200, atk:150, sprite:'assets/enemies/cursed-wraith/single-1.png', tint:'brightness(.45) hue-rotate(60deg)'},
-      {name:'Drag√£o das Sombras', hp:5600, atk:270, sprite:'assets/enemies/crimson-dragon/single-1.png', tint:'hue-rotate(230deg) saturate(1.3) brightness(.72) drop-shadow(0 0 14px rgba(125,36,95,.9))'}
-    ] }
-];
-
-/* ---------- ADAPTIVE POLYPHONIC AUDIO ENGINE (Web Audio API) ---------- */
-let actx = null;
-let musicMuted = localStorage.getItem('12r_muted') === 'true';
-let musicTimer = null;
-let currentTrack = -1;
-let masterVolume = Number(localStorage.getItem('12r_volume') ?? 70) / 100;
-let musicVolume = Number(localStorage.getItem('12r_music_volume') ?? V93.audio?.music ?? 65) / 100;
-let sfxVolume = Number(localStorage.getItem('12r_sfx_volume') ?? V93.audio?.sfx ?? 85) / 100;
-let particlesEnabled = localStorage.getItem('12r_particles') !== 'false';
-let hapticsEnabled = localStorage.getItem('12r_haptics') !== 'false';
-let reducedMotion = localStorage.getItem('12r_motion') === 'reduced';
-let graphicsQuality = localStorage.getItem('12r_quality') || 'auto';
-let highContrast = localStorage.getItem('12r_high_contrast') === '1';
-let largeText = localStorage.getItem('12r_large_text') === '1';
-let reduceFlashes = localStorage.getItem('12r_reduce_flashes') === '1';
-let masterBus = null;
-let musicBus = null;
-let sfxBus = null;
-let musicGeneration = 0;
-let musicBarIndex = 0;
-let musicMoodMode = 0;
-let musicBossLayer = false;
-let musicFinalBoss = false;
-const activeMusicNodes = new Set();
-
-function ensureAudio(){
-  if(!actx){
-    try{
-      actx = new (window.AudioContext||window.webkitAudioContext)();
-      masterBus = actx.createGain();
-      const compressor = actx.createDynamicsCompressor();
-      compressor.threshold.value = -18;
-      compressor.knee.value = 18;
-      compressor.ratio.value = 4;
-      compressor.attack.value = .012;
-      compressor.release.value = .28;
-      musicBus = actx.createGain();
-      sfxBus = actx.createGain();
-      musicBus.gain.value = .72;
-      sfxBus.gain.value = .9;
-      musicBus.connect(masterBus);
-      sfxBus.connect(masterBus);
-      masterBus.connect(compressor);
-      compressor.connect(actx.destination);
-    }catch(e){ return null; }
-  }
-  if(actx.state==='suspended') actx.resume();
-  return actx;
-}
-
-function beep(freq, dur, type, vol, delay){
-  const ctx = ensureAudio();
-  if(!ctx || musicMuted) return;
-  const t0 = ctx.currentTime + (delay||0);
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = type||'triangle';
-  osc.frequency.setValueAtTime(freq, t0);
-  gain.gain.setValueAtTime(0.0001, t0);
-  gain.gain.exponentialRampToValueAtTime(Math.max(0.0001,(vol||0.16)*masterVolume*sfxVolume), t0+0.012);
-  gain.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
-  osc.connect(gain); gain.connect(sfxBus||ctx.destination);
-  osc.start(t0); osc.stop(t0+dur+0.03);
-}
-function chord(freqs, dur, type, vol, delay){ freqs.forEach(f=>beep(f,dur,type,vol,delay)); }
-
-function sfxSelect(){ beep(660,0.08,'triangle',0.11); }
-function sfxGemTap(){ beep(880,0.05,'sine',0.08); }
-function sfxInvalid(){ beep(180,0.12,'sawtooth',0.08); }
-function sfxMatch(step){ const base=520+Math.min(step,6)*70; beep(base,0.10,'triangle',0.13); beep(base*1.5,0.09,'sine',0.08,0.05); }
-/* v9.2 ¬∑ Impactos redesenhados: "thump" de ru√≠do filtrado + corpo grave em seno ‚Äî
-   sem as ondas quadradas/serra cruas que soavam √°speras e met√°licas. */
-function sfxHit(){
-  noiseBurst({dur:.16,vol:.2,filter:'lowpass',freq:1100,freqEnd:180,attack:.004});
-  beep(180,0.08,'sine',0.12); beep(120,0.11,'triangle',0.08,0.02);
-}
-function sfxPlayerHit(){
-  noiseBurst({dur:.22,vol:.18,filter:'lowpass',freq:700,freqEnd:120,attack:.006});
-  beep(140,0.13,'sine',0.11); beep(95,0.16,'triangle',0.07,0.03);
-}
-function sfxPassive(){ chord([523,659,784],0.18,'triangle',0.10); }
-function sfxUltimate(){ chord([392,523,659,784,988],0.28,'triangle',0.11); beep(1568,0.22,'sine',0.09,0.14); }
-function sfxHeroSignature(id,isUltimate=false){
-  const signatures={
-    luz:{notes:[784,1175,1568],type:'sine'},
-    humanos:{notes:[659,988,1319],type:'triangle'},
-    agua:{notes:[392,587,784],type:'sine'},
-    fogo:{notes:[196,294,440],type:'sawtooth'},
-    natureza:{notes:[523,659,784],type:'triangle'},
-    terra:{notes:[147,220,330],type:'sawtooth'},
-    areia:{notes:[440,554,659],type:'triangle'},
-    sombras:{notes:[175,262,349],type:'sawtooth'},
-    raio:{notes:[880,1108,1318],type:'sawtooth'},
-    vento:{notes:[587,880,1046],type:'sine'},
-    chuvas:{notes:[220,330,392],type:'triangle'},
-    gelo:{notes:[698,1046,1397],type:'sine'}
-  };
-  const sig=signatures[id]||signatures.luz;
-  sig.notes.forEach((note,i)=>beep(note*(isUltimate?1.18:1),isUltimate?.22:.13,sig.type,isUltimate?.10:.065,i*.055));
-}
-/* v9.1 ¬∑ SFX elementais: cada reino soa como seu elemento (ru√≠do filtrado + osciladores) */
-function noiseBurst({dur=0.3,vol=0.2,delay=0,filter='bandpass',freq=800,q=1,freqEnd=null,attack=0.012}={}){
-  const ctx=ensureAudio();
-  if(!ctx||musicMuted) return;
-  const t0=ctx.currentTime+delay;
-  const len=Math.max(1,Math.floor(ctx.sampleRate*dur));
-  const buf=ctx.createBuffer(1,len,ctx.sampleRate);
-  const data=buf.getChannelData(0);
-  for(let i=0;i<len;i++) data[i]=Math.random()*2-1;
-  const src=ctx.createBufferSource(); src.buffer=buf;
-  const flt=ctx.createBiquadFilter();
-  flt.type=filter; flt.frequency.setValueAtTime(freq,t0); flt.Q.value=q;
-  if(freqEnd) flt.frequency.exponentialRampToValueAtTime(Math.max(40,freqEnd),t0+dur);
-  const g=ctx.createGain();
-  g.gain.setValueAtTime(0.0001,t0);
-  g.gain.linearRampToValueAtTime(Math.max(0.0001,vol*masterVolume*sfxVolume),t0+attack);
-  g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
-  src.connect(flt); flt.connect(g); g.connect(sfxBus||ctx.destination);
-  src.start(t0); src.stop(t0+dur+0.05);
-}
-const ELEMENTAL_SFX={
-  fogo(){ noiseBurst({dur:.5,vol:.3,filter:'lowpass',freq:2200,freqEnd:300}); for(let i=0;i<5;i++) noiseBurst({dur:.05,vol:.12,delay:.08+i*.07,filter:'highpass',freq:2500}); },
-  agua(){ noiseBurst({dur:.35,vol:.28,filter:'bandpass',freq:900,q:1.2,freqEnd:350}); beep(1200,.07,'sine',.09,.18); beep(1550,.06,'sine',.07,.28); },
-  vento(){ noiseBurst({dur:.7,vol:.22,filter:'bandpass',freq:500,q:2,freqEnd:1600,attack:.15}); },
-  raio(){ noiseBurst({dur:.08,vol:.32,filter:'highpass',freq:1500}); noiseBurst({dur:.6,vol:.3,delay:.06,filter:'lowpass',freq:900,freqEnd:120}); },
-  gelo(){ [1568,1976,2349].forEach((f,i)=>beep(f,.14,'sine',.09,i*.06)); noiseBurst({dur:.25,vol:.1,filter:'highpass',freq:5000,attack:.02}); },
-  chuvas(){ noiseBurst({dur:.9,vol:.16,filter:'bandpass',freq:3000,q:.7,attack:.2}); beep(220,.3,'sine',.06,.1); },
-  terra(){ noiseBurst({dur:.5,vol:.3,filter:'lowpass',freq:220,freqEnd:60}); beep(65,.4,'sawtooth',.12,.02); },
-  areia(){ noiseBurst({dur:.55,vol:.2,filter:'highpass',freq:1800,attack:.1}); noiseBurst({dur:.3,vol:.12,delay:.25,filter:'highpass',freq:2600}); },
-  sombras(){ beep(87,.5,'sawtooth',.1); beep(92,.5,'sawtooth',.08,.03); noiseBurst({dur:.6,vol:.12,filter:'lowpass',freq:400,attack:.25}); },
-  luz(){ [784,1046,1318,1568].forEach((f,i)=>beep(f,.12,'sine',.08,i*.05)); noiseBurst({dur:.3,vol:.06,filter:'highpass',freq:6000,attack:.05}); },
-  natureza(){ noiseBurst({dur:.3,vol:.14,filter:'bandpass',freq:1200,q:2}); beep(880,.08,'triangle',.08,.12); beep(1174,.08,'triangle',.07,.2); },
-  humanos(){ beep(1046,.05,'square',.07); beep(784,.05,'square',.06,.12); beep(1568,.2,'sine',.08,.24); }
-};
-function sfxElemental(id){ try{ ELEMENTAL_SFX[id]?.(); }catch(e){} }
-
-/* v9.1 ¬∑ Cut-in cinematogr√°fico de ultimate: a carta do her√≥i cruza a tela */
-function showUltimateCutin(k,a){
-  if(reducedMotion) return;
-  let layer=document.getElementById('cutinLayer');
-  if(!layer){
-    layer=document.createElement('div');
-    layer.id='cutinLayer';
-    layer.className='cutin-layer';
-    document.body.appendChild(layer);
-  }
-  layer.innerHTML=`
-    <div class="cutin-bg"></div>
-    <div class="cutin-card"><img src="${IMGL(k.cardThumb||k.img)}"${IMGF(k.cardThumb||k.img)} alt=""></div>
-    <div class="cutin-name"><span>${L(k.reino)}</span><b>${L(a.name)}</b></div>`;
-  layer.style.setProperty('--cut',k.color);
-  layer.classList.remove('show'); void layer.offsetWidth; layer.classList.add('show');
-  clearTimeout(layer._t);
-  layer._t=setTimeout(()=>layer.classList.remove('show'),1050);
-}
-
-function sfxPowerStriped(){ beep(720,.1,'sawtooth',.1); beep(1080,.14,'sine',.08,.05); }
-function sfxPowerWrapped(){ beep(180,.16,'square',.12); beep(90,.22,'sawtooth',.1,.04); }
-function sfxPowerPrism(){ [523,659,784,1046,1318].forEach((f,i)=>beep(f,.12,'sine',.07,i*.04)); }
-function sfxPowerCreated(){ beep(880,.08,'triangle',.09); beep(1320,.12,'sine',.07,.06); }
-function sfxVictory(){ [523,659,784,1046].forEach((f,i)=>beep(f,0.18,'triangle',0.11,i*0.13)); }
-function sfxDefeat(){ [392,349,311,262].forEach((f,i)=>beep(f,0.24,'sawtooth',0.10,i*0.16)); }
-
-const SOUNDTRACKS = [
-  {bpm:88,root:55,type:'sine',pad:'triangle',progression:[[0,3,7],[5,8,12],[3,7,10],[7,10,14]],motif:[7,10,12,10,7,5,3,5]},
-  {bpm:92,root:52,type:'triangle',pad:'sine',progression:[[0,3,7],[3,7,10],[8,12,15],[5,8,12]],motif:[7,12,10,7,5,7,3,5]},
-  {bpm:84,root:50,type:'sine',pad:'triangle',progression:[[0,3,7],[8,12,15],[5,8,12],[7,10,14]],motif:[12,10,7,5,7,3,5,7]},
-  {bpm:94,root:47,type:'triangle',pad:'sine',progression:[[0,3,7],[5,8,12],[7,10,14],[3,7,10]],motif:[3,7,10,7,12,10,7,5]},
-  {bpm:126,root:45,type:'sawtooth',pad:'triangle',boss:true,progression:[[0,3,7],[8,12,15],[5,8,12],[7,10,14]],motif:[0,7,12,15,14,10,7,19,15,14,12,10,7,5,3,7]}
-];
-function midiToFreq(note){ return 440*Math.pow(2,(note-69)/12); }
-
-function musicTone(freq,duration,type,volume,startTime,attack=.025){
-  const ctx=ensureAudio();
-  if(!ctx||musicMuted||!musicBus) return;
-  const osc=ctx.createOscillator();
-  const gain=ctx.createGain();
-  const filter=ctx.createBiquadFilter();
-  filter.type='lowpass';
-  filter.frequency.value=type==='sawtooth'?1350:2200;
-  osc.type=type||'triangle';
-  osc.frequency.setValueAtTime(freq,startTime);
-  gain.gain.setValueAtTime(.0001,startTime);
-  gain.gain.exponentialRampToValueAtTime(Math.max(.0001,volume*masterVolume*musicVolume),startTime+attack);
-  gain.gain.exponentialRampToValueAtTime(.0001,startTime+duration);
-  osc.connect(filter); filter.connect(gain); gain.connect(musicBus);
-  activeMusicNodes.add(osc);
-  osc.onended=()=>activeMusicNodes.delete(osc);
-  osc.start(startTime); osc.stop(startTime+duration+.04);
-}
-
-function getMusicIntensity(){
-  if(musicMoodMode===1) return .35;
-  if(musicMoodMode===2) return 1;
-  if(!enemies.length) return .45;
-  const enemyRatio=enemies.reduce((sum,e)=>sum+Math.max(0,e.hp),0)/Math.max(1,enemies.reduce((sum,e)=>sum+e.maxHp,0));
-  const playerRatio=playerHP/PLAYER_MAX_HP;
-  const bossBoost=musicBossLayer?(musicFinalBoss?.32:.2):0;
-  return Math.max(.35,Math.min(1,.45+(1-enemyRatio)*.22+(1-playerRatio)*.2+bossBoost));
-}
-
-function scheduleMusicBar(sceneIdx,generation){
-  if(generation!==musicGeneration||musicMuted||currentTrack!==sceneIdx) return;
-  const ctx=ensureAudio();
-  if(!ctx) return;
-  const track=SOUNDTRACKS[sceneIdx]||SOUNDTRACKS[0];
-  const intensity=getMusicIntensity();
-  const beat=60/track.bpm;
-  const barDuration=beat*4;
-  const start=ctx.currentTime+.06;
-  const chordNotes=track.progression[musicBarIndex%track.progression.length];
-  const variation=(musicBarIndex%8>=4)?12:0;
-
-  chordNotes.forEach((interval,voice)=>{
-    musicTone(midiToFreq(track.root+interval),barDuration*.94,track.pad,.018+voice*.002,start,.12);
-  });
-  for(let beatIndex=0;beatIndex<4;beatIndex++){
-    const bassInterval=chordNotes[beatIndex%2===0?0:1]||0;
-    musicTone(midiToFreq(track.root-12+bassInterval),beat*.72,'triangle',.026,start+beatIndex*beat,.018);
-    musicTone(72,beat*.18,'sine',.018*intensity,start+beatIndex*beat,.006);
-  }
-  track.motif.forEach((interval,step)=>{
-    const isRest=((step+musicBarIndex)%7===6)&&intensity<.75;
-    if(isRest) return;
-    const octave=(step%4===3&&intensity>.7)?12:0;
-    musicTone(midiToFreq(track.root+variation+interval+octave),beat*.38,track.type,.017+.012*intensity,start+step*beat/2,.012);
-  });
-  if(intensity>.58){
-    [1,3].forEach(beatIndex=>musicTone(1550,beat*.055,'square',.006*intensity,start+beatIndex*beat,.003));
-  }
-  if(intensity>.82){
-    [0,2].forEach(beatIndex=>musicTone(midiToFreq(track.root+24+chordNotes[2]),beat*.28,'sine',.010,start+beatIndex*beat,.008));
-  }
-  if(track.boss){
-    for(let step=0;step<8;step++){
-      const at=start+step*beat/2;
-      musicTone(midiToFreq(track.root-24+(step%4===3?7:0)),beat*.28,'sawtooth',.022+.012*intensity,at,.005);
-      if(step%2===0) musicTone(54,beat*.12,'triangle',.025*intensity,at,.003);
-      if(step%2===1) musicTone(2100,beat*.045,'square',.008*intensity,at,.002);
-    }
-    [0,1.5,2,3.5].forEach(position=>musicTone(midiToFreq(track.root+24+chordNotes[2]),beat*.18,'sine',.012,start+position*beat,.006));
-  }
-  if(musicBossLayer && !track.boss){
-    [0,1,2,3].forEach(i=>musicTone(midiToFreq(track.root+19+(i%2?7:0)),beat*.3,'sine',.014,start+i*beat,.02));
-    if(musicFinalBoss) [0,1.5,2.5,3.5].forEach(p=>musicTone(midiToFreq(track.root+31),beat*.22,'triangle',.012,start+p*beat,.01));
-  }
-  musicBarIndex++;
-  musicTimer=setTimeout(()=>scheduleMusicBar(sceneIdx,generation),Math.max(120,barDuration*1000-90));
-}
-
-function playStageMusic(sceneIdx){
-  stopMusic();
-  const isBoss=Boolean(worldRun?.active && worldRun.nivel===5);
-  musicBossLayer=isBoss;
-  musicFinalBoss=Boolean(isBoss && worldRun.fase===WORLDS[0].fases.length-1);
-  currentTrack=musicFinalBoss?4:Math.min(3,sceneIdx);
-  if(musicMuted) return;
-  ensureAudio();
-  musicBarIndex=0;
-  const generation=musicGeneration;
-  scheduleMusicBar(currentTrack,generation);
-}
-function stopMusic(){
-  musicGeneration++;
-  if(musicTimer){ clearTimeout(musicTimer); musicTimer=null; }
-  activeMusicNodes.forEach(node=>{ try{ node.stop(); }catch(e){} });
-  activeMusicNodes.clear();
-}
-function toggleMusic(){
-  musicMuted=!musicMuted;
-  localStorage.setItem('12r_muted',musicMuted?'true':'false');
-  const btn=document.getElementById('muteBtn');
-  if(btn) btn.textContent=musicMuted?'üîá':'üîä';
-  if(musicMuted) stopMusic(); else if(currentTrack>=0) playStageMusic(currentTrack);
-}
-function cycleMusicMood(){
-  musicMoodMode=(musicMoodMode+1)%3;
-  updateBattleToolLabels();
-  setBattleStatus(T('Trilha din√¢mica: ','Dynamic soundtrack: ','Banda sonora din√°mica: ')+[T('autom√°tica','automatic','autom√°tica'),T('calma','calm','tranquila'),T('√©pica','epic','√©pica')][musicMoodMode]+'.','system');
-}
-
-const SIZE = 6;
-const BASE_ATK = 12;
-let PLAYER_MAX_HP = 4000; // v9.1: recalculado a cada batalha = fator da dificuldade √ó soma do ataque das 4 cartas
-
-let board = [];
-let powerUps = {};
-let lastSwap = null;
-let forcedResolution = null;
-let selected = null;
-let busy = false;
-let gamePaused = false;
-const BATTLE_PHASES=new Set(V93.battle?.phases||['idle','resolving','heroes','enemies','transition','paused']);
-let battlePhase=V93.battle?.defaultPhase||'idle';
-function phaseLabel(phase){
-  return ({idle:T('Sua jogada','Your move','Tu jugada'),resolving:T('Resolvendo combina√ß√£o','Resolving match','Resolviendo combinaci√≥n'),heroes:T('Ataque dos her√≥is','Heroes attacking','Ataque de h√©roes'),enemies:T('Turno inimigo','Enemy turn','Turno enemigo'),transition:T('Transi√ß√£o','Transition','Transici√≥n'),paused:T('Pausado','Paused','Pausado')})[phase]||phase;
-}
-const COMBAT_ATTACK_SFX={
-  luz(){ chord([1046,1318,1568],.14,'sine',.075); noiseBurst({dur:.18,vol:.045,filter:'highpass',freq:5200}); },
-  humanos(){ beep(392,.08,'triangle',.08); beep(587,.12,'triangle',.075,.07); beep(784,.16,'sine',.07,.14); },
-  agua(){ noiseBurst({dur:.18,vol:.09,filter:'bandpass',freq:1200,freqEnd:500}); beep(1480,.07,'sine',.08,.12); beep(1900,.05,'sine',.055,.2); },
-  fogo(){ noiseBurst({dur:.24,vol:.12,filter:'lowpass',freq:1900,freqEnd:320}); beep(110,.12,'sawtooth',.06); },
-  natureza(){ beep(523,.12,'triangle',.08); beep(659,.12,'triangle',.07,.09); noiseBurst({dur:.16,vol:.05,filter:'bandpass',freq:1700}); },
-  terra(){ beep(92,.18,'sine',.1); noiseBurst({dur:.2,vol:.1,filter:'lowpass',freq:260,freqEnd:70}); },
-  areia(){ noiseBurst({dur:.28,vol:.1,filter:'highpass',freq:1800,freqEnd:900,attack:.05}); beep(330,.1,'triangle',.06,.16); },
-  sombras(){ beep(110,.22,'sawtooth',.07); noiseBurst({dur:.25,vol:.07,filter:'lowpass',freq:430,freqEnd:100,attack:.08}); },
-  raio(){ noiseBurst({dur:.045,vol:.18,filter:'highpass',freq:1800}); beep(1650,.12,'square',.065,.05); },
-  vento(){ noiseBurst({dur:.32,vol:.1,filter:'bandpass',freq:500,q:2,freqEnd:1800,attack:.08}); },
-  chuvas(){ noiseBurst({dur:.26,vol:.1,filter:'bandpass',freq:2800,q:.8,attack:.04}); beep(260,.16,'sine',.055,.1); },
-  gelo(){ chord([1318,1760,2093],.16,'sine',.07); noiseBurst({dur:.16,vol:.045,filter:'highpass',freq:6000}); }
-};
-const BEAST_ATTACK_SFX={
-  lobo(){ noiseBurst({dur:.16,vol:.16,filter:'bandpass',freq:900,freqEnd:260,attack:.01}); beep(120,.18,'sawtooth',.06); },
-  slime(){ noiseBurst({dur:.28,vol:.13,filter:'lowpass',freq:480,freqEnd:90,attack:.04}); },
-  soldado(){ beep(220,.1,'triangle',.07); beep(165,.16,'triangle',.06,.1); },
-  default(){ noiseBurst({dur:.15,vol:.11,filter:'lowpass',freq:700,freqEnd:160}); }
-};
-function sfxCombatAttack(id,side='hero'){
-  const key=String(id||'').toLowerCase();
-  if(side==='enemy') return BEAST_ATTACK_SFX[key.includes('lobo')?'lobo':key.includes('slime')?'slime':key.includes('soldado')?'soldado':'default']();
-  (COMBAT_ATTACK_SFX[key]||COMBAT_ATTACK_SFX.humanos)();
-}
-function setBattlePhase(next){
-  if(!BATTLE_PHASES.has(next)) return;
-  battlePhase=next;
-  document.body.dataset.battlePhase=next;
-  const chip=document.getElementById('battlePhaseChip');
-  if(chip) chip.textContent=phaseLabel(next);
-}
-function canAcceptPlayerInput(){
-  return battlePhase==='idle'&&!busy&&!gamePaused&&!stageTransitioning&&playerHP>0;
-}
-let comboStep = 0;
-let stageIndex = 0;
-let enemies = [];
-let playerHP = PLAYER_MAX_HP;
-let stageTransitioning = false;
-let combatEpoch = 0;
-
-let ACTIVE = [];
-let heroProgress = {};
-let firedTiers = {};
-let heroReady = {};
-let heroActiveQueue = {};
-let pendingRoomPassives = [];
-let roomClearScheduled = false;
-let playerShield = 0;
-let enemyDots = [];
-let enemyStunTurns = 0;
-let atkBuffTurns = 0;
-let atkBuffMult = 1;
-let manualTarget = null;
-let lastDamageDealt = 0;
-let heroLastDamage = {};
-let lastEnemyAttacker = null;
-let stageTookDamage = false;
-let survivorStageStartHP = 0;
-let nextAttackMult = {};
-let enemyBlindTurns = 0;
-let shieldTurns = 0;
-let reflectTurns = 0;
-let invulnerableTurns = 0;
-let lifestealCharges = 0;
-let lifestealMult = 0;
-let lastDragonRitual = {before:0,after:0,converted:0};
-let battleHistory = [];
-let battleHistorySeq = 0;
-let qaRitualTriggered = false;
-let incinerateActive = false;
-let incinerateStacks = 0;
-let incineratePhaseKey = null;
-let enemyVulnerableTurns = 0;
-let enemyVulnerableMult = 1;
-let stoneArmorTurns = 0;
-let stoneArmorReduction = .5;
-let stoneArmorReflect = .5;
-let golemAllies = 0;
-let harpyAllies = 0;   // v9: harpias da Sophitia (m√°x. 5, ecoam 20% do dano dela)
-let heroEmpower = {};  // v9: cargas de Full Power por her√≥i {idx:{left,mult}}
-
-/* v9.1 ¬∑ Dificuldade selecion√°vel */
-/* HP do jogador por dificuldade (regra oficial):
-   F√°cil = 50√ó(soma do ataque das 4 cartas) ¬∑ Normal = 25√ó ¬∑ Pesadelo = 10√ó */
-const DIFFICULTY_MULTS={
-  facil:{hp:.85,atk:.85,hpFactor:50},
-  normal:{hp:1,atk:1,hpFactor:30},
-  dificil:{hp:1,atk:1,hpFactor:30},
-  pesadelo:{hp:1.15,atk:1.15,hpFactor:15}
-};
-/* Regras extras por dificuldade (oficiais):
-   F√ÅCIL ‚Äî blocos e power-ups do tabuleiro continuam de uma miss√£o para a outra at√© o
-   final da fase (o tabuleiro n√£o √© reiniciado entre miss√µes vencidas).
-   NORMAL ‚Äî sem mudan√ßas.
-   DIF√çCIL ‚Äî tudo do Normal + TODOS os inimigos da miss√£o atacam, um de cada vez,
-   ap√≥s a sua jogada.
-   PESADELO ‚Äî idem Dif√≠cil; al√©m disso obst√°culos criados pela fase/inimigos s√£o
-   permanentes e debuffs do tabuleiro n√£o expiram durante a miss√£o. */
-function allEnemiesAttackMode(){ return difficulty==='dificil'||difficulty==='pesadelo'; }
-function persistentObstaclesMode(){ return difficulty==='pesadelo'; }
-let carryBoardNext=false; /* F√°cil: pr√≥xima loadStage mant√©m o tabuleiro atual */
-function computePlayerMaxHP(){
-  const soma=ACTIVE.reduce((acc,i)=>acc+heroAtkFor(i),0)||80;
-  allianceBonus=computeAllianceBonus(ACTIVE);
-  /* F√≥rmula OFICIAL sem piso artificial: F√°cil 50√ó ¬∑ Normal 30√ó ¬∑ Pesadelo 15√ó a soma de ATK
-     (+ b√¥nus de HP quando a equipe inteira √© da mesma alian√ßa) */
-  return Math.max(60,Math.round((DIFFICULTY_MULTS[difficulty]?.hpFactor||25)*soma*(allianceBonus.hp||1)));
-}
-let difficulty=localStorage.getItem('12r_difficulty')||'normal';
-if(!DIFFICULTY_MULTS[difficulty]) difficulty='normal';
-function applyDifficultyUI(){
-  document.querySelectorAll('#diffGroup [data-diff]').forEach(b=>b.classList.toggle('active',b.dataset.diff===difficulty));
-}
-
-/* v9.1 ¬∑ Moedas */
-let coins=Number(localStorage.getItem('12r_coins')||0);
-function grantCoins(n){
-  if(!n) return;
-  coins=Math.max(0,coins+Math.round(n));
-  localStorage.setItem('12r_coins',String(coins));
-  updateCoinBadge();
-}
-function updateCoinBadge(){
-  const el=document.getElementById('coinBadge');
-  if(el) el.textContent=`ü™ô ${coins}`;
-  const el2=document.getElementById('shopCoins');
-  if(el2) el2.textContent=`ü™ô ${coins}`;
-}
-const IS_DAILY_RUN=new URLSearchParams(location.search).get('daily')==='1';
-
-/* v9.1 ¬∑ XP e n√≠vel por her√≥i (Lv 1-10; +2 de ataque por n√≠vel) */
-/* v9.1 ¬∑ XP e n√≠vel de PERFIL (as cartas n√£o sobem de n√≠vel).
-   O n√≠vel do perfil d√° um b√¥nus global sutil: +1 de ataque a cada 3 n√≠veis. */
-let profileXp=Number(localStorage.getItem('12r_pxp')||0);
-try{ // migra√ß√£o: XP antigo por her√≥i vira XP de perfil (uma √∫nica vez)
-  const legado=JSON.parse(localStorage.getItem('12r_xp')||'null');
-  if(legado){
-    profileXp+=Object.values(legado).reduce((a,b)=>a+Number(b||0),0);
-    localStorage.removeItem('12r_xp');
-    localStorage.setItem('12r_pxp',String(profileXp));
-  }
-}catch(e){}
-function profileLevel(){ return Math.min(99, 1+Math.floor(Math.sqrt(profileXp/120))); }
-function profileXpForNext(){ const next=profileLevel()+1; return next>99?null:Math.pow(next-1,2)*120; }
-function heroAtkFor(idx){ const k=KINGDOMS[idx]; return (k.atk||BASE_ATK)+Math.floor((profileLevel()-1)/3); }
-function grantXp(amount){
-  const before=profileLevel();
-  profileXp+=Math.max(0,Math.round(amount*4)); // 4 her√≥is contribu√≠am antes; mant√©m o ritmo
-  localStorage.setItem('12r_pxp',String(profileXp));
-  const after=profileLevel();
-  return after>before?[T(`Perfil subiu para Lv ${after}!`,`Profile reached Lv ${after}!`,`¬°Perfil subi√≥ a Nv ${after}!`)]:[];
-}
-
-/* v9.1 ¬∑ Conquistas */
-const ACHIEVEMENTS=[
-  {id:'first-win', nome:'Primeira Vit√≥ria', desc:'Ven√ßa uma fase.', icon:'üèÜ', en:{nome:'First Victory', desc:'Win a stage.'}},
-  {id:'no-damage', nome:'Intoc√°vel', desc:'Ven√ßa uma fase sem sofrer dano.', icon:'üõ°Ô∏è', en:{nome:'Untouchable', desc:'Win a stage without taking damage.'}},
-  {id:'combo8', nome:'Mestre do Combo', desc:'Alcance um combo √ó8.', icon:'üî•', en:{nome:'Combo Master', desc:'Reach an x8 combo.'}},
-  {id:'powerup10', nome:'Art√≠fice', desc:'Crie 10 power-ups em uma run.', icon:'üí†', en:{nome:'Artificer', desc:'Craft 10 power-ups in one run.'}},
-  {id:'colecionador', nome:'Colecionador', desc:'Veja as 20 cartas na galeria.', icon:'üé¥', en:{nome:'Collector', desc:'View all 20 cards in the gallery.'}},
-  {id:'bestia10', nome:'Ca√ßador de Ygdria', desc:'Encontre 10 personagens do jogo.', icon:'üèπ', en:{nome:'Hunter of Ygdria', desc:'Encounter 10 game characters.'}},
-  {id:'streak3', nome:'Fiel √† Coroa', desc:'Entre no jogo 3 dias seguidos.', icon:'üìÖ', en:{nome:'Loyal to the Crown', desc:'Log in 3 days in a row.'}},
-  {id:'lenda', nome:'Lenda de Ygdria', desc:'Complete o Desafio dos Chefes.', icon:'üèÜ', en:{nome:'Legend of Ygdria', desc:'Complete the Boss Challenge.'}},
-  {id:'dungeon', nome:'Regulador de Ygdria', desc:'Conquiste as 10 fases do Reino dos Humanos.', icon:'üëë', en:{nome:'Regulator of Ygdria', desc:'Conquer all 10 stages of the Human Realm.'}},
-  {id:'stars-all', nome:'Perfeccionista', desc:'Conquiste 3 estrelas em 5 fases.', icon:'‚≠ê', en:{nome:'Perfectionist', desc:'Earn 3 stars on 5 stages.'}},
-  {id:'tower5', nome:'Escalador', desc:'Supere o andar 5 da Torre Infinita.', icon:'üóº', en:{nome:'Climber', desc:'Clear floor 5 of the Infinite Tower.'}},
-  {id:'tower10', nome:'Lenda da Torre', desc:'Supere o andar 10 da Torre Infinita.', icon:'üåå', en:{nome:'Tower Legend', desc:'Clear floor 10 of the Infinite Tower.'}},
-  {id:'dark-court', nome:'Corte Sombria', desc:'Ven√ßa uma fase com Berenice das Sombras e Mardogear juntos.', icon:'üåë', en:{nome:'Dark Court', desc:'Win a stage with Shadow Berenice and Mardogear together.'}},
-  {id:'rich', nome:'Tesouro Real', desc:'Acumule 500 moedas.', icon:'ü™ô', en:{nome:'Royal Treasure', desc:'Hoard 500 coins.'}},
-  {id:'daily', nome:'Ritual Di√°rio', desc:'Conclua um Desafio Di√°rio.', icon:'üìÖ', en:{nome:'Daily Ritual', desc:'Complete a Daily Challenge.'}},
-  {id:'lv5', nome:'Veterano', desc:'Alcance o n√≠vel de perfil 5.', icon:'üìà', en:{nome:'Veteran', desc:'Reach profile level 5.'}, es:{nome:'Veterano', desc:'Alcanza el nivel de perfil 5.'}}
-];
-let unlockedAch={}; try{ unlockedAch=JSON.parse(localStorage.getItem('12r_ach')||'{}'); }catch(e){}
-function unlockAch(id){
-  if(unlockedAch[id]) return;
-  unlockedAch[id]={t:Date.now()};
-  localStorage.setItem('12r_ach',JSON.stringify(unlockedAch));
-  const a=ACHIEVEMENTS.find(x=>x.id===id);
-  if(a){
-    const t=document.createElement('div');
-    t.className='ach-toast';
-    t.innerHTML=`<span class="ach-toast-icon">${a.icon}</span><div><b>${T('Conquista desbloqueada!','Achievement unlocked!','¬°Logro desbloqueado!')}</b><br>${L(a.nome)}</div>`;
-    document.body.appendChild(t);
-    window.setTimeout(()=>t.remove(),3800);
-    sfxPassive();
-  }
-}
-function checkAchievements(ctx){
-  if(ctx==='stage'){
-    unlockAch('first-win');
-    if(!stageTookDamage) unlockAch('no-damage');
-    if(runStats.maxCombo>=8) unlockAch('combo8');
-    if(runStats.powerUps>=10) unlockAch('powerup10');
-    const ids=ACTIVE.map(i=>KINGDOMS[i].id);
-    if(ids.includes('sombras')&&ids.includes('raio')) unlockAch('dark-court');
-    const wstars=worldProg('humanos').stars||{};
-    if(Object.values(wstars).filter(s=>s===3).length>=5) unlockAch('stars-all');
-    if(profileLevel()>=5) unlockAch('lv5');
-  }
-  if(ctx==='world-complete') unlockAch('dungeon');
-  if(ctx==='daily') unlockAch('daily');
-  if(ctx==='tower'){ if(towerFloor>=5) unlockAch('tower5'); if(towerFloor>=10) unlockAch('tower10'); }
-  if(coins>=500) unlockAch('rich');
-  try{
-    if(JSON.parse(localStorage.getItem('12r_seen')||'[]').length>=20) unlockAch('colecionador');
-    if(Object.keys(JSON.parse(localStorage.getItem('12r_bestiary')||'{}')).length>=10) unlockAch('bestia10');
-    if((JSON.parse(localStorage.getItem('12r_login')||'{}').streak||0)>=3) unlockAch('streak3');
-  }catch(e){}
-}
-function renderQuestsPanel(){
-  const el=document.getElementById('profileStats'); if(!el) return;
-  const q=questsState();
-  let html='<div class="quests-box"><b>üìã '+T('Miss√µes de hoje',"Today's quests",'Misiones de hoy')+'</b>';
-  QUESTS_DEF.forEach(d=>{
-    const done=q.done.includes(d.id);
-    const progAtual=Math.min(d.n,q.prog[d.id]||0);
-    html+='<div class="quest-row'+(done?' done':'')+'"><span>'+d.ico+' '+d.nome()+'</span><span>'+(done?'‚úÖ':progAtual+'/'+d.n)+' ¬∑ '+d.premio+'ü™ô</span></div>';
-  });
-  html+='</div>';
-  html+=renderLoginCalendar();
-  let box=document.getElementById('questsPanel');
-  if(!box){ box=document.createElement('div'); box.id='questsPanel'; el.parentElement.insertBefore(box,el); }
-  box.innerHTML=html;
-}
-function renderAchievements(){
-  renderQuestsPanel();
-  renderProfileStats();
-  const grid=document.getElementById('achGrid'); if(!grid) return;
-  grid.innerHTML=ACHIEVEMENTS.map(a=>`
-    <div class="ach-item${unlockedAch[a.id]?' unlocked':''}">
-      <span class="ach-icon">${a.icon}</span>
-      <div><b>${L(a.nome)}</b><small>${L(a.desc)}</small></div>
-      ${unlockedAch[a.id]?'<span class="ach-check">‚úì</span>':'<span class="ach-lock">üîí</span>'}
-    </div>`).join('');
-}
-
-/* v9.2 ¬∑ Loja de consum√≠veis: 20 itens (uso 'auto' = disparam sozinhos ao entrar na
-   batalha; uso 'batalha' = ficam na MOCHILA üéí e o jogador decide a hora de usar). */
-const SHOP_ITEMS=[
-  {id:'shuffle', uso:'auto', nome:'Embaralhamento Extra', desc:'+1 embaralhamento real na pr√≥xima batalha.', preco:60, icon:'‚ü≥', en:{nome:'Extra Shuffle', desc:'+1 royal shuffle in your next battle.'}, es:{nome:'Barajado Extra', desc:'+1 barajado real en tu pr√≥xima batalla.'}},
-  {id:'blessing', uso:'auto', nome:'B√™n√ß√£o dos Reinos', desc:'Comece a pr√≥xima batalha com 2 power-ups no tabuleiro.', preco:110, icon:'üí†', en:{nome:'Realm Blessing', desc:'Start your next battle with 2 power-ups on the board.'}, es:{nome:'Bendici√≥n de los Reinos', desc:'Comienza tu pr√≥xima batalla con 2 potenciadores en el tablero.'}},
-  {id:'banquete', uso:'auto', nome:'Banquete Real', desc:'+20% de HP m√°ximo do grupo durante toda a pr√≥xima batalha.', preco:150, icon:'üçó', en:{nome:'Royal Feast', desc:'+20% max party HP for the whole next battle.'}, es:{nome:'Banquete Real', desc:'+20% de vida m√°xima del grupo durante toda la pr√≥xima batalla.'}},
-  {id:'lagrima', uso:'auto', nome:'L√°grima da Eternidade', desc:'Se o grupo cair na pr√≥xima batalha, renasce UMA vez com 50% da vida.', preco:250, icon:'üíß', en:{nome:'Tear of Eternity', desc:'If your party falls next battle, revive ONCE with 50% HP.'}, es:{nome:'L√°grima de la Eternidad', desc:'Si el grupo cae en la pr√≥xima batalla, revive UNA vez con 50% de vida.'}},
-  {id:'amuleto', uso:'auto', nome:'Amuleto da Fortuna', desc:'Dobra as moedas ganhas nas vit√≥rias da pr√≥xima batalha.', preco:90, icon:'ü™ô', en:{nome:'Fortune Amulet', desc:'Doubles coins earned from wins in your next battle.'}, es:{nome:'Amuleto de la Fortuna', desc:'Duplica las monedas ganadas en tu pr√≥xima batalla.'}},
-  {id:'pergaminho', uso:'auto', nome:'Pergaminho do S√°bio', desc:'Dobra o XP ganho na pr√≥xima batalha.', preco:90, icon:'üìú', en:{nome:'Sage Scroll', desc:'Doubles XP earned in your next battle.'}, es:{nome:'Pergamino del Sabio', desc:'Duplica el XP ganado en tu pr√≥xima batalla.'}},
-  {id:'estandarte', uso:'auto', nome:'Estandarte da Coroa', desc:'+10% de ataque do grupo durante toda a pr√≥xima batalha.', preco:140, icon:'üëë', en:{nome:'Crown Banner', desc:'+10% party attack for the whole next battle.'}, es:{nome:'Estandarte de la Corona', desc:'+10% de ataque del grupo durante toda la pr√≥xima batalla.'}},
-  {id:'potion', uso:'batalha', nome:'Po√ß√£o Vital', desc:'Recupera 600 de vida na hora que voc√™ usar.', preco:90, icon:'üß™', en:{nome:'Vital Potion', desc:'Restores 600 HP when you use it.'}, es:{nome:'Poci√≥n Vital', desc:'Restaura 600 de vida cuando la usas.'}},
-  {id:'vela', uso:'batalha', nome:'Vela da Alma', desc:'Recupera 300 de vida. A cura b√°sica de Ygdria.', preco:60, icon:'üïØ', en:{nome:'Soul Candle', desc:'Restores 300 HP. Ygdria\'s basic heal.'}, es:{nome:'Vela del Alma', desc:'Restaura 300 de vida. La cura b√°sica de Ygdria.'}},
-  {id:'oleo', uso:'batalha', nome:'√ìleo de L√¢minas', desc:'+25% de ataque do grupo por 5 turnos.', preco:120, icon:'üó°', en:{nome:'Blade Oil', desc:'+25% party attack for 5 turns.'}, es:{nome:'Aceite de Hojas', desc:'+25% de ataque del grupo por 5 turnos.'}},
-  {id:'barreira', uso:'batalha', nome:'Barreira R√∫nica', desc:'Ergue um escudo de 500 pontos na hora.', preco:100, icon:'üõ°', en:{nome:'Runic Barrier', desc:'Raises a 500-point shield instantly.'}, es:{nome:'Barrera R√∫nica', desc:'Levanta un escudo de 500 puntos al instante.'}},
-  {id:'ampulheta', uso:'batalha', nome:'Ampulheta de Ygdria', desc:'Congela o tempo: os inimigos perdem o pr√≥ximo ataque.', preco:130, icon:'‚è≥', en:{nome:'Hourglass of Ygdria', desc:'Freezes time: enemies skip their next attack.'}, es:{nome:'Reloj de Arena de Ygdria', desc:'Congela el tiempo: los enemigos pierden su pr√≥ximo ataque.'}},
-  {id:'martelo', uso:'batalha', nome:'Martelo do Tit√£', desc:'Esmaga TODOS os obst√°culos do tabuleiro (menos corrup√ß√µes).', preco:140, icon:'üî®', en:{nome:'Titan Hammer', desc:'Smashes ALL board obstacles (except corruptions).'}, es:{nome:'Martillo del Tit√°n', desc:'Aplasta TODOS los obst√°culos del tablero (menos corrupciones).'}},
-  {id:'prisma', uso:'batalha', nome:'Prisma Selvagem', desc:'Cria 1 Prisma Real (bomba de cor) no tabuleiro.', preco:160, icon:'üåà', en:{nome:'Wild Prism', desc:'Creates 1 Royal Prism (color bomb) on the board.'}, es:{nome:'Prisma Salvaje', desc:'Crea 1 Prisma Real (bomba de color) en el tablero.'}},
-  {id:'marca', uso:'batalha', nome:'Marca do Ca√ßador', desc:'O alvo recebe +30% de dano por 3 turnos.', preco:120, icon:'üéØ', en:{nome:'Hunter\'s Mark', desc:'Target takes +30% damage for 3 turns.'}, es:{nome:'Marca del Cazador', desc:'El objetivo recibe +30% de da√±o por 3 turnos.'}},
-  {id:'elixir', uso:'batalha', nome:'Elixir de Aura', desc:'+25 de energia para todos os her√≥is imediatamente.', preco:130, icon:'üí´', en:{nome:'Aura Elixir', desc:'+25 energy for all heroes instantly.'}, es:{nome:'Elixir de Aura', desc:'+25 de energ√≠a para todos los h√©roes al instante.'}},
-  {id:'vassoura', uso:'batalha', nome:'Vassoura Arcana', desc:'Varre os debuffs do tabuleiro: v√©us e √Ås de Copas somem.', preco:110, icon:'üßπ', en:{nome:'Arcane Broom', desc:'Sweeps board debuffs: veils and Ace of Hearts vanish.'}, es:{nome:'Escoba Arcana', desc:'Barre los debuffs del tablero: velos y As de Copas desaparecen.'}},
-  {id:'bomba', uso:'batalha', nome:'Bomba Elemental', desc:'Explode 300 de dano em TODOS os inimigos.', preco:170, icon:'üí•', en:{nome:'Elemental Bomb', desc:'Blasts 300 damage on ALL enemies.'}, es:{nome:'Bomba Elemental', desc:'Explota 300 de da√±o en TODOS los enemigos.'}},
-  {id:'dado', uso:'batalha', nome:'Dado do Destino', desc:'Re-embaralha o tabuleiro e garante 1 power-up novo.', preco:80, icon:'üé≤', en:{nome:'Die of Fate', desc:'Reshuffles the board and grants 1 new power-up.'}, es:{nome:'Dado del Destino', desc:'Rebaraja el tablero y garantiza 1 power-up nuevo.'}},
-  {id:'olho', uso:'batalha', nome:'Olho de Barion', desc:'Revela as gemas ocultas e aponta a melhor jogada.', preco:70, icon:'üßø', en:{nome:'Eye of Barion', desc:'Reveals hidden gems and points out the best move.'}, es:{nome:'Ojo de Barion', desc:'Revela las gemas ocultas y se√±ala la mejor jugada.'}}
-];
-let inventory={}; try{ inventory=JSON.parse(localStorage.getItem('12r_inv')||'{}'); }catch(e){}
-function saveInventory(){ localStorage.setItem('12r_inv',JSON.stringify(inventory)); }
-function buyItem(id){
-  const item=SHOP_ITEMS.find(i=>i.id===id); if(!item) return;
-  if(coins<item.preco){ sfxInvalid(); return; }
-  grantCoins(-item.preco);
-  inventory[id]=(inventory[id]||0)+1;
-  saveInventory();
-  renderShop();
-  renderMochila();
-  sfxSelect();
-}
-function renderShop(){
-  const list=document.getElementById('shopList'); if(!list) return;
-  updateCoinBadge();
-  list.innerHTML=SHOP_ITEMS.map(i=>`
-    <div class="shop-item">
-      <span class="shop-icon">${i.icon}</span>
-      <div class="shop-copy"><b>${L(i.nome)}</b> <small class="shop-uso">${i.uso==='auto'?T('autom√°tico','automatic','autom√°tico'):T('usar na batalha','use in battle','usar en batalla')}</small><small>${L(i.desc)}</small><small class="shop-owned">${T('Na mochila','In bag','En la mochila')}: ${inventory[i.id]||0}</small></div>
-      <button class="overlay-btn shop-buy" data-item="${i.id}" ${coins<i.preco?'disabled':''}>ü™ô ${i.preco}</button>
-    </div>`).join('');
-  list.querySelectorAll('.shop-buy').forEach(b=>b.addEventListener('click',()=>buyItem(b.dataset.item)));
-}
-/* Estados dos itens 'auto' da batalha atual */
-let eternalReviveCharges=0, coinDoubleRun=false, xpDoubleRun=false, bannerAtkRun=1;
-let battleConsumablesDone=false; /* itens auto s√≥ na 1¬™ miss√£o da batalha */
-function coinsVitoria(n){ return coinDoubleRun ? n*2 : n; }
-function consumeInventoryOnBattleStart(){
-  if(battleConsumablesDone) return;
-  battleConsumablesDone=true;
-  const used=[];
-  if(inventory.shuffle>0){ inventory.shuffle--; royalShuffles++; used.push(T('Embaralhamento Extra','Extra Shuffle','Barajado Extra')); }
-  if(inventory.blessing>0){ inventory.blessing--; spawnRandomPowerUps(2); used.push(T('B√™n√ß√£o dos Reinos','Realm Blessing','Bendici√≥n de los Reinos')); }
-  if(inventory.banquete>0){ inventory.banquete--; const extra=Math.round(PLAYER_MAX_HP*0.2); PLAYER_MAX_HP+=extra; playerHP+=extra; updatePlayerHP(); used.push(T('Banquete Real (+20% HP)','Royal Feast (+20% HP)','Banquete Real (+20% HP)')); }
-  if(inventory.lagrima>0){ inventory.lagrima--; eternalReviveCharges=1; used.push(T('L√°grima da Eternidade','Tear of Eternity','L√°grima de la Eternidad')); }
-  if(inventory.amuleto>0){ inventory.amuleto--; coinDoubleRun=true; used.push(T('Amuleto da Fortuna','Fortune Amulet','Amuleto de la Fortuna')); }
-  if(inventory.pergaminho>0){ inventory.pergaminho--; xpDoubleRun=true; used.push(T('Pergaminho do S√°bio','Sage Scroll','Pergamino del Sabio')); }
-  if(inventory.estandarte>0){ inventory.estandarte--; bannerAtkRun=1.10; used.push(T('Estandarte da Coroa','Crown Banner','Estandarte de la Corona')); }
-  if(used.length){ saveInventory(); setBattleStatus(T(`Itens usados: ${used.join(' ¬∑ ')}.`,`Items used: ${used.join(' ¬∑ ')}.`,`Objetos usados: ${used.join(' ¬∑ ')}.`),'support'); }
-}
-/* üéí MOCHILA: itens de batalha us√°veis na hora + acesso √† loja */
-function renderMochila(){
-  const list=document.getElementById('mochilaList'); if(!list) return;
-  const emBatalha=document.body.classList.contains('game-active');
-  const mc=document.getElementById('mochilaCoins'); if(mc) mc.textContent=`ü™ô ${coins}`;
-  const itens=SHOP_ITEMS.filter(i=>(inventory[i.id]||0)>0);
-  if(!itens.length){
-    list.innerHTML=`<p class="account-note">${T('Mochila vazia. Visite a loja e prepare-se para as batalhas!','Empty bag. Visit the shop and gear up for battle!','Mochila vac√≠a. ¬°Visita la tienda y prep√°rate!')}</p>`;
-    return;
-  }
-  list.innerHTML=itens.map(i=>`
-    <div class="shop-item">
-      <span class="shop-icon">${i.icon}</span>
-      <div class="shop-copy"><b>${L(i.nome)} √ó${inventory[i.id]}</b><small>${L(i.desc)}</small></div>
-      ${i.uso==='batalha'
-        ? `<button class="overlay-btn shop-buy" data-usar="${i.id}" ${emBatalha?'':'disabled'}>${T('Usar','Use','Usar')}</button>`
-        : `<small class="shop-uso">${T('autom√°tico','automatic','autom√°tico')}</small>`}
-    </div>`).join('');
-  list.querySelectorAll('[data-usar]').forEach(b=>b.addEventListener('click',()=>usarItemBatalha(b.dataset.usar)));
-}
-function usarItemBatalha(id){
-  if(!document.body.classList.contains('game-active')||(inventory[id]||0)<=0){ sfxInvalid(); return; }
-  if(playerHP<=0){ sfxInvalid(); return; }
-  const nomeItem=L(SHOP_ITEMS.find(i=>i.id===id)?.nome||id);
-  switch(id){
-    case 'potion': healPlayer(600); break;
-    case 'vela': healPlayer(300); break;
-    case 'oleo': addBuff(1.25,5); break;
-    case 'barreira': addShield(500); break;
-    case 'ampulheta': addStun(1); break;
-    case 'martelo': {
-      let quebrou=false;
-      Object.keys(obstaclesMeta).forEach(key=>{
-        if(obstaclesMeta[key].type==='sombra') return;
-        const [r,c]=key.split('_').map(Number);
-        delete obstaclesMeta[key]; board[r][c]=-1; quebrou=true;
-      });
-      if(quebrou){ boardRenderCache=null; collapseAndRefill(); renderBoard(); }
-      break;
-    }
-    case 'prisma': spawnRandomColorBombs(1); break;
-    case 'marca': enemyVulnerableTurns=Math.max(enemyVulnerableTurns,3); enemyVulnerableMult=Math.max(enemyVulnerableMult,1.3); renderStatusTray(); break;
-    case 'elixir': grantTeamEnergy(25); break;
-    case 'vassoura': {
-      hiddenGems={};
-      Object.keys(obstaclesMeta).forEach(key=>{
-        if(obstaclesMeta[key].type!=='copas') return;
-        const [r,c]=key.split('_').map(Number);
-        delete obstaclesMeta[key]; board[r][c]=-1;
-      });
-      boardRenderCache=null; collapseAndRefill(); renderBoard();
-      break;
-    }
-    case 'bomba': applyDamageToAllEnemies(300,null); break;
-    case 'dado': shuffleBoard(false); spawnRandomPowerUps(1); break;
-    case 'olho': hiddenGems={}; boardRenderCache=null; renderBoard(); showBestMoveHint(); break;
-    default: return;
-  }
-  inventory[id]--; saveInventory();
-  sfxPassive();
-  setBattleStatus('üéí '+nomeItem+' '+T('usado!','used!','¬°usado!'),'support');
-  renderMochila();
-  if(finishRoomIfCleared(T('O item derrotou o √∫ltimo inimigo!','The item defeated the last enemy!','¬°El objeto derrot√≥ al √∫ltimo enemigo!'))) return;
-}
-
-/* F2-1 ¬∑ Desafio dos Chefes: os 8 chefes-Carta em sequ√™ncia, escalando */
-let bossRushMode=false, bossRushIdx=0;
-const BOSS_RUSH_ORDER=['gareth','cedric','elizier','roland','jules','bernyce','kalander','julius'];
-function buildBossRushStage(n){
-  const key=BOSS_RUSH_ORDER[Math.min(n,BOSS_RUSH_ORDER.length-1)];
-  const c=HUMANOS_CARDS[key];
-  const escala=1+n*0.18;
-  return {
-    title:`${T('Desafio dos Chefes','Boss Challenge','Desaf√≠o de Jefes')} ¬∑ ${n+1}/8`,
-    scene:4,
-    enemies:[{name:c.nome, hp:Math.round(c.hp*1.6*escala), atk:Math.round(c.atk*1.1*escala), sprite:c.sprite, flip:!!c.flip, cardId:key, isBoss:true, maxHp:Math.round(c.hp*1.6*escala)}]
-  };
-}
-/* v9.2 ¬∑ TORRE DE ACESSO √Ä ETERNIDADE (Torre Infinita) ‚Äî modo SURVIVOR sem fim:
-   TODOS os personagens do jogo, na ordem de apari√ß√£o (a pr√≥pria ordem de KINGDOMS ‚Äî
-   personagens novos entram na torre automaticamente), 1 por miss√£o. Ao derrotar o
-   √∫ltimo, o ciclo recome√ßa MAIS FORTE (mesmo os de n√≠vel fraco). Regras: s√≥ no
-   Pesadelo; a vida N√ÉO renova entre miss√µes; consum√≠veis liberados; ranking MENSAL. */
-let towerMode=false, towerFloor=1;
-let towerPrevDifficulty=null; /* restaura a dificuldade do jogador ao sair da torre */
-function towerMonthKey(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
-function towerMonthly(){ try{ return JSON.parse(localStorage.getItem('12r_tower_month')||'{}'); }catch(e){ return {}; } }
-function towerRecordMonthly(andaresVencidos){
-  const tm=towerMonthly(); const mk=towerMonthKey();
-  if((tm[mk]||0)<andaresVencidos){ tm[mk]=andaresVencidos; localStorage.setItem('12r_tower_month',JSON.stringify(tm)); }
-}
-const TOWER_RANK_REWARDS=[
-  ['ü•á Top 1','2000 ü™ô + '+'Lenda da Eternidade'],
-  ['ü•à Top 2','1500 ü™ô'],
-  ['ü•â Top 3','1200 ü™ô'],
-  ['üèÖ Top 10','800 ü™ô'],
-  ['üéñ Top 100','300 ü™ô']
-];
-function buildTowerStage(floor){
-  const ordem=KINGDOMS; /* ordem de apari√ß√£o no jogo */
-  const n=ordem.length;
-  const ciclo=Math.floor((floor-1)/n);
-  const k=ordem[(floor-1)%n];
-  const base=HUMANOS_CARDS[k.id]||null;
-  const hpBase=base?Math.round(base.hp*1.4):((k.atk||12)*16+120);
-  const atkBase=base?base.atk:Math.max(6,Math.round((k.atk||12)*0.9));
-  const escala=Math.pow(1.35,ciclo)*(1+((floor-1)%n)*0.03);
-  const hp=Math.round(hpBase*escala), atk=Math.round(atkBase*escala);
-  return {
-    title:`${T('Torre de Acesso √† Eternidade','Tower of Access to Eternity','Torre de Acceso a la Eternidad')} ¬∑ ${T('Andar','Floor','Piso')} ${floor}${ciclo>0?` ¬∑ ${T('Ciclo','Cycle','Ciclo')} ${ciclo+1}`:''}`,
-    scene:4,
-    bgUrl:'assets/bg/humanos/fase-09.jpg', /* cen√°rio: Lend√°ria Torre de Acesso √† Eternidade */
-    enemies:[{name:k.nome, hp, atk, maxHp:hp, sprite:k.sprite, cardId:k.id, isBoss:((floor-1)%n)===n-1}]
-  };
-}
-const GOLEM_SPRITE = 'assets/enemies/stone-sentinel/single-1.png';
-let autoTargetMode = false;
-let battleSpeedIndex = 0;
-let royalShuffles = 1;
-let formationIndex = 0;
-let bestCombo = 0;
-const BATTLE_SPEEDS = [1,1.5,2];
-/* v9.1 ¬∑ 12 forma√ß√µes nomeadas (y‚âà0 = linha de frente, maior escala/z) */
-const HERO_FORMATIONS = [
-  { nome:'Cl√°ssica',        slots:[{x:16,y:42,s:.94,z:18},{x:39,y:46,s:.98,z:20},{x:22,y:4,s:1.17,z:38},{x:48,y:7,s:1.2,z:40}] },
-  { nome:'Falange',         slots:[{x:6,y:6,s:1.1,z:40},{x:20,y:2,s:1.14,z:42},{x:34,y:4,s:1.12,z:41},{x:48,y:6,s:1.1,z:40}] },
-  { nome:'Muralha',         slots:[{x:8,y:44,s:.94,z:18},{x:22,y:40,s:.96,z:20},{x:36,y:42,s:.95,z:19},{x:50,y:45,s:.93,z:17}] },
-  { nome:'Coluna Diagonal', slots:[{x:12,y:46,s:.9,z:16},{x:24,y:31,s:1.0,z:26},{x:36,y:17,s:1.1,z:34},{x:48,y:3,s:1.2,z:42}] },
-  { nome:'Ponta de Lan√ßa',  slots:[{x:50,y:2,s:1.24,z:43},{x:32,y:14,s:1.1,z:34},{x:32,y:32,s:1.0,z:25},{x:14,y:44,s:.9,z:16}] },
-  { nome:'Escudo',          slots:[{x:8,y:4,s:1.16,z:40},{x:50,y:4,s:1.16,z:41},{x:22,y:40,s:.95,z:19},{x:38,y:42,s:.94,z:18}] },
-  { nome:'Escolta Real',    slots:[{x:30,y:2,s:1.24,z:43},{x:8,y:34,s:.98,z:24},{x:28,y:44,s:.93,z:17},{x:48,y:36,s:.97,z:23}] },
-  { nome:'Emboscada',       slots:[{x:6,y:8,s:1.12,z:39},{x:20,y:14,s:1.06,z:35},{x:38,y:36,s:.97,z:22},{x:52,y:44,s:.9,z:16}] },
-  { nome:'Ala Esquerda',    slots:[{x:10,y:2,s:1.2,z:42},{x:12,y:17,s:1.1,z:34},{x:14,y:32,s:1.0,z:25},{x:16,y:46,s:.9,z:16}] },
-  { nome:'Ala Direita',     slots:[{x:52,y:4,s:1.18,z:41},{x:48,y:18,s:1.1,z:34},{x:46,y:32,s:1.0,z:25},{x:44,y:46,s:.9,z:16}] },
-  { nome:'Losango',         slots:[{x:29,y:0,s:1.22,z:42},{x:12,y:24,s:1.04,z:29},{x:48,y:24,s:1.04,z:30},{x:30,y:46,s:.9,z:16}] },
-  { nome:'Estrela do Caos', slots:[{x:8,y:20,s:1.06,z:32},{x:42,y:10,s:1.14,z:37},{x:20,y:4,s:1.18,z:40},{x:52,y:38,s:.95,z:20}] }
-];
-formationIndex=Math.max(0,Math.min(HERO_FORMATIONS.length-1,Number(localStorage.getItem('12r_formation')||0)));
-const ENEMY_FORMATIONS = {
-  1:[{x:80,y:10,s:1.2,z:42}],
-  2:[{x:73,y:36,s:.94,z:22},{x:86,y:3,s:1.14,z:44}],
-  3:[{x:69,y:42,s:.84,z:20},{x:89,y:30,s:.94,z:28},{x:80,y:0,s:1.16,z:46}],
-  4:[{x:68,y:43,s:.82,z:18},{x:90,y:35,s:.86,z:24},{x:72,y:4,s:1.08,z:42},{x:90,y:0,s:1.12,z:46}]
-};
-const SCENE_ENEMY_FORMATIONS = [
-  {1:[{x:81,y:8,s:1.22,z:44}]},
-  {2:[{x:64,y:39,s:.96,z:22},{x:90,y:24,s:1.12,z:44}]},
-  {2:[{x:62,y:40,s:.94,z:21},{x:90,y:24,s:1.14,z:45}]},
-  {3:[{x:54,y:40,s:.9,z:19},{x:75,y:34,s:.94,z:25},{x:92,y:24,s:1.08,z:38}]},
-  {3:[{x:54,y:40,s:.88,z:19},{x:75,y:34,s:.92,z:25},{x:92,y:24,s:1.12,z:38}]}
-];
-
-const seedText = new URLSearchParams(location.search).get('seed') || String(Date.now());
-let rngState = [...seedText].reduce((acc,ch)=>(Math.imul(acc,31)+ch.charCodeAt(0))>>>0,2166136261) || 1;
-function gameRandom(){
-  rngState ^= rngState << 13; rngState ^= rngState >>> 17; rngState ^= rngState << 5;
-  return (rngState>>>0)/4294967296;
-}
-
-const boardEl = document.getElementById('board');
-const arenaEl = document.getElementById('arena');
-const enemyArenaEl = document.getElementById('enemyArena');
-const partyArenaEl = document.getElementById('partyArena');
-const stageProgressEl = document.getElementById('stageProgress');
-const stageLabelEl = document.getElementById('stageLabel');
-const dungeonTitleEl = document.getElementById('dungeonTitle');
-const playerHpBar = document.getElementById('playerHpBar');
-const playerHpText = document.getElementById('playerHpText');
-const playerHpTotal = document.getElementById('playerHpTotal');
-const comboTextEl = document.getElementById('comboText');
-const battleStatusEl = document.getElementById('battleStatus');
-const statusTrayEl = document.getElementById('statusTray');
-const sceneBgEl = document.querySelector('.scene-bg');
-const battleToolsPanelEl = document.getElementById('battleToolsPanel');
-const comboRecordEl = document.getElementById('comboRecord');
-const stageObjectiveEl = document.getElementById('stageObjective');
-const hpStatusIconEl = document.getElementById('hpStatusIcon');
-const battleHistoryListEl = document.getElementById('battleHistoryList');
-
-/* Cabe√ßalho compacto: mant√©m miss√£o/rel√≥gio na primeira linha e objetivo,
-   recorde e controles na segunda, sem alterar os IDs usados pelos eventos. */
-function organizeMissionHeader(){
-  const top=document.querySelector('.mission-topbar');
-  const metrics=document.querySelector('.mission-metrics');
-  const actions=document.querySelector('.mission-actions');
-  const timer=document.getElementById('missionTimer');
-  const phase=document.getElementById('battlePhaseChip');
-  if(top&&metrics&&actions&&timer&&phase){
-    metrics.appendChild(actions);
-    let clockGroup=document.getElementById('missionClockGroup');
-    if(!clockGroup){
-      clockGroup=document.createElement('div');
-      clockGroup.id='missionClockGroup';
-      clockGroup.className='mission-clock-group';
-    }
-    clockGroup.append(phase,timer);
-    top.appendChild(clockGroup);
-  }
-}
-organizeMissionHeader();
-
-boardEl.style.gridTemplateColumns = `repeat(${SIZE}, 1fr)`;
-boardEl.style.gridTemplateRows = `repeat(${SIZE}, 1fr)`;
-
-function wait(ms){ return new Promise(res=>setTimeout(res, ms/(BATTLE_SPEEDS[battleSpeedIndex]||1))); }
-function inferHistoryCategory(message){
-  const text=String(message).toLowerCase();
-  if(/dano|atac|contra-atac|inciner/.test(text)) return 'damage';
-  if(/cura|recuper|escudo|prote|intoc|reflex/.test(text)) return 'support';
-  if(/fase|trilha|tabuleiro|alvo|forma|velocidade/.test(text)) return 'system';
-  return 'action';
-}
-function setBattleStatus(message,category){
-  if(battleStatusEl) battleStatusEl.textContent=message;
-  const entry={
-    id:++battleHistorySeq,
-    stage:stageIndex+1,
-    time:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'}),
-    message:String(message),
-    category:category||inferHistoryCategory(message)
-  };
-  battleHistory.push(entry);
-  if(battleHistory.length>160) battleHistory.shift();
-  if(document.getElementById('battleHistoryScreen')?.classList.contains('show')) renderBattleHistory();
-}
-function renderBattleHistory(){
-  if(!battleHistoryListEl) return;
-  if(!battleHistory.length){
-    battleHistoryListEl.innerHTML='<div class="history-empty">'+T('Nenhum evento registrado nesta batalha.','No events recorded in this battle.','Ning√∫n evento registrado en esta batalla.')+'</div>';
-    return;
-  }
-  battleHistoryListEl.innerHTML=[...battleHistory].reverse().map(entry=>
-    '<article class="history-entry '+entry.category+'">'+
-      '<div class="history-meta"><span>'+T('Fase ','Stage ','Fase ')+entry.stage+'</span><time>'+entry.time+'</time></div>'+
-      '<p>'+entry.message+'</p>'+
-    '</article>').join('');
-}
-function openBattleHistory(){ renderBattleHistory(); openPanel('battleHistoryScreen'); }
-function clearBattleHistory(){ battleHistory=[]; renderBattleHistory(); setBattleStatus(T('Hist√≥rico reiniciado.','History cleared.','Historial reiniciado.'),'system'); }
-async function copyBattleHistory(){
-  const text=battleHistory.map(entry=>'['+entry.time+'] '+T('Fase ','Stage ','Fase ')+entry.stage+' ‚Äî '+entry.message).join('\n');
-  try{
-    await navigator.clipboard.writeText(text);
-    setBattleStatus(T('Hist√≥rico copiado para a √°rea de transfer√™ncia.','History copied to the clipboard.','Historial copiado al portapapeles.'),'system');
-  }catch(e){
-    setBattleStatus(T('N√£o foi poss√≠vel copiar o hist√≥rico neste navegador.','Could not copy the history in this browser.','No se pudo copiar el historial en este navegador.'),'system');
-  }
-  renderBattleHistory();
-}
-function haptic(pattern){ if(hapticsEnabled && navigator.vibrate) navigator.vibrate(pattern); }
-function pulseHpEffect(kind,duration=900){
-  const anchor=document.getElementById('playerHpAnchor');
-  if(!anchor) return;
-  const cls='hp-'+kind+'-pulse';
-  anchor.classList.remove(cls); void anchor.offsetWidth; anchor.classList.add(cls);
-  window.setTimeout(()=>anchor.classList.remove(cls),duration);
-}
-function syncHpStateClasses(){
-  const anchor=document.getElementById('playerHpAnchor');
-  if(!anchor) return;
-  anchor.classList.toggle('hp-shield',playerShield>0);
-  anchor.classList.toggle('hp-invulnerable',invulnerableTurns>0);
-  anchor.classList.toggle('hp-reflect',reflectTurns>0);
-  const pct=playerHP/PLAYER_MAX_HP*100;
-  anchor.classList.toggle('hp-critical',pct>0&&pct<=25);
-  if(hpStatusIconEl){
-    hpStatusIconEl.textContent=invulnerableTurns>0?'‚ú¶':reflectTurns>0?'‚Ü∫':playerShield>0?'üõ°':pct<=25?'!':'‚ô•';
-  }
-}
-function renderStatusTray(){
-  if(!statusTrayEl) return;
-  const chips = [];
-  if(playerShield>0) chips.push(['positive',T('Escudo ','Shield ','Escudo ')+playerShield+(shieldTurns?' ¬∑ '+shieldTurns+'t':'')]);
-  if(enemyBlindTurns>0) chips.push(['positive',T('Cegueira','Blind','Ceguera')+' ¬∑ '+enemyBlindTurns+'t']);
-  if(reflectTurns>0) chips.push(['positive',T('Reflex√£o','Reflect','Reflejo')+' ¬∑ '+reflectTurns+'t']);
-  if(invulnerableTurns>0) chips.push(['positive',T('Intoc√°vel','Untouchable','Intocable')+' ¬∑ '+invulnerableTurns+'t']);
-  if(lifestealCharges>0) chips.push(['positive',T('Eternidade','Eternity','Eternidad')+' ¬∑ '+lifestealCharges+T(' cargas',' charges',' cargas')]);
-  if(stoneArmorTurns>0) chips.push(['positive',T('Armadura de Pedra','Stone Armor','Armadura de Piedra')+' ¬∑ '+stoneArmorTurns+'t']);
-  if(golemAllies>0) chips.push(['positive',T('Golens aliados','Allied golems','G√≥lems aliados')+' ¬∑ '+golemAllies]);
-  if(enemyVulnerableTurns>0) chips.push(['negative',T('Defesa rompida','Defense broken','Defensa rota')+' ¬∑ '+enemyVulnerableTurns+'t']);
-  if(incinerateActive) chips.push(['negative',T('Incinerar +','Incinerate +','Incinerar +')+incinerateStacks]);
-  if(enemyDots.length) chips.push(['negative',L(enemyDots[0].label||'Dano cont√≠nuo')+' ¬∑ '+Math.max(...enemyDots.map(d=>d.turns))+'t']);
-  const detail=(label)=>{
-    const s=String(label).toLowerCase();
-    if(/cegueira|blind|ceguera/.test(s)) return T('Pr√É¬≥ximo ataque inimigo falha.','The next enemy attack misses.','El pr√É¬≥ximo ataque enemigo falla.');
-    if(/defesa rompida|defense broken|defensa rota/.test(s)) return T('Inimigos recebem dano aumentado.','Enemies take increased damage.','Los enemigos reciben da√É¬±o aumentado.');
-    if(/incinerar|incinerate/.test(s)) return T('Ataques acumulam dano cont√É¬≠nuo por 3 turnos.','Attacks add damage-over-time for 3 turns.','Los ataques a√É¬±aden da√É¬±o continuo por 3 turnos.');
-    if(/dano cont√É¬≠nuo|damage over time/.test(s)) return T('Dano aplicado no fim de cada turno.','Damage is applied at the end of each turn.','Da√É¬±o aplicado al final de cada turno.');
-    return '';
-  };
-  statusTrayEl.innerHTML = chips.map(([kind,label])=>'<span class="status-chip '+kind+'"><b>'+label+'</b>'+(detail(label)?'<small>'+detail(label)+'</small>':'')+'</span>').join('');
-  syncHpStateClasses();
-}
-function scopeSvg(svg,scope){
-  return svg
-    .replace(/id="([^"]+)"/g,(_,id)=>`id="${id}-${scope}"`)
-    .replace(/url\(#([^)]+)\)/g,(_,id)=>`url(#${id}-${scope})`);
-}
-
-/* ---------- ASSET CONTRACT / COMBAT DIRECTOR ---------- */
-const HERO_ACTIONS = Object.freeze({
-  idle:   { frames:1, duration:1, loop:true },
-  attack: { frames:6, duration:560, loop:false },
-  cast:   { frames:6, duration:720, loop:false },
-  hit:    { frames:3, duration:300, loop:false }
-});
-const MAX_ACTIVE_FX = 28;
-function resolvedGraphicsQuality(){
-  if(graphicsQuality!=='auto') return graphicsQuality;
-  if(reducedMotion||navigator.connection?.saveData||(navigator.deviceMemory&&navigator.deviceMemory<=2)) return 'economy';
-  if((navigator.deviceMemory&&navigator.deviceMemory<=4)||matchMedia('(max-width:700px)').matches) return 'medium';
-  return 'high';
-}
-function particleBudget(){ return V93.quality?.particles?.[resolvedGraphicsQuality()]||MAX_ACTIVE_FX; }
-const heroFacingOverrides = new Set();
-
-function heroIsFlipped(k){
-  return Boolean(k.heroFlip) !== heroFacingOverrides.has(k.id);
-}
-
-function spriteMarkup(k, action='idle'){
-  const spec = k.sprites?.[action];
-  if(spec?.src){
-    const meta = {...HERO_ACTIONS[action], ...spec};
-    const steps = Math.max(1, Number(meta.frames||1)-1);
-    return `<div class="hero-sprite-sheet${heroIsFlipped(k)?' flip':''}" aria-hidden="true" style="--sprite-url:url('${meta.src}');--sprite-frames:${Math.max(1,Number(meta.frames||1))};--sprite-steps:${steps};--sprite-duration:${Number(meta.duration||520)}ms"></div>`;
-  }
-  if(k.sprite) return `<img class="hero-sprite-image${heroIsFlipped(k)?' flip':''}" src="${k.sprite}" alt="${L(k.nome)}">`;
-  return scopeSvg(CHIBI_SVG[k.id],k.id);
-}
-
-function playHeroAction(idx, action='attack'){
-  const k = KINGDOMS[idx];
-  const avatar = document.getElementById('party-'+k.id+'-avatar');
-  if(!avatar) return;
-  const meta = HERO_ACTIONS[action] || HERO_ACTIONS.attack;
-  avatar.dataset.action = action;
-  if(k.sprites?.[action]?.src) avatar.innerHTML = spriteMarkup(k,action);
-  avatar.classList.remove('hero-action'); void avatar.offsetWidth; avatar.classList.add('hero-action');
-  window.setTimeout(()=>{
-    if(!avatar.isConnected || avatar.dataset.action!==action) return;
-    avatar.dataset.action='idle';
-    if(k.sprites?.[action]?.src) avatar.innerHTML = spriteMarkup(k,'idle');
-    avatar.classList.remove('hero-action');
-  }, Math.max(80,Number(meta.duration||520)));
-}
-
-function trimCombatFx(){
-  const layer = document.getElementById('specialFxLayer');
-  if(!layer) return;
-  const fx = layer.querySelectorAll('[data-fx]');
-  for(let i=0;i<Math.max(0,fx.length-particleBudget());i++) fx[i].remove();
-}
-
-function spawnCombatFx(kind,target,color='#fff',duration=650){
-  const layer = document.getElementById('specialFxLayer');
-  if(!layer || !target || !particlesEnabled || reducedMotion) return;
-  const lr=layer.getBoundingClientRect(), tr=target.getBoundingClientRect();
-  const fx=document.createElement('div');
-  fx.dataset.fx=kind;
-  fx.className=kind==='hit' ? 'fx-hit-spark' : 'attack-telegraph';
-  fx.style.color=color;
-  fx.style.left=(tr.left-lr.left+tr.width/2)+'px';
-  fx.style.top=(tr.top-lr.top+tr.height/2)+'px';
-  layer.appendChild(fx); trimCombatFx();
-  window.setTimeout(()=>fx.remove(),duration);
-}
-
-/* v9 ¬∑ Part√≠culas tem√°ticas por reino: cada ataque tem identidade pr√≥pria.
-   angle em graus (0=direita, -90=sobe, 90=cai); dist em px; dur em ms. */
-const REALM_FX_PROFILE={
-  fogo:    {count:12, angle:[-125,-55], dist:[26,64], dur:[520,880],  rot:[0,90],    scale:[.8,1.25]},  // brasas sobem
-  agua:    {count:12, angle:[35,145],   dist:[24,60], dur:[520,860],  rot:[-25,25],  scale:[.8,1.15]},  // respingos caem
-  luz:     {count:10, angle:[0,360],    dist:[22,58], dur:[480,820],  rot:[0,180],   scale:[.7,1.3]},   // fagulhas radiais
-  humanos: {count:8,  angle:[0,360],    dist:[14,42], dur:[560,900],  rot:[0,0],     scale:[1.2,2.1]},  // an√©is do tempo
-  natureza:{count:10, angle:[55,125],   dist:[28,66], dur:[700,1100], rot:[140,520], scale:[.85,1.2]},  // folhas rodopiam
-  terra:   {count:12, angle:[20,160],   dist:[26,62], dur:[460,760],  rot:[90,400],  scale:[.8,1.2]},   // estilha√ßos
-  areia:   {count:16, angle:[-22,22],   dist:[30,80], dur:[520,880],  rot:[0,140],   scale:[.7,1.1], mirror:true}, // rajada lateral
-  sombras: {count:11, angle:[-140,-40], dist:[20,52], dur:[700,1150], rot:[-60,60],  scale:[1,1.6]},    // n√©voa ascende
-  raio:    {count:12, angle:[0,360],    dist:[24,62], dur:[380,640],  rot:[0,90],    scale:[.7,1.2]},   // fa√≠scas el√©tricas r√°pidas
-  vento:   {count:12, angle:[-30,30],   dist:[34,84], dur:[520,860],  rot:[-180,180],scale:[.7,1.15], mirror:true}, // lufadas laterais
-  chuvas:  {count:14, angle:[75,105],   dist:[30,70], dur:[430,700],  rot:[8,14],    scale:[.8,1.1]},   // gotas despencam
-  gelo:    {count:11, angle:[60,120],   dist:[24,58], dur:[750,1200], rot:[-160,160],scale:[.7,1.2]}    // flocos derivam
-};
-function spawnRealmParticles(realmId, targetEl, countOverride){
-  const layer=document.getElementById('specialFxLayer');
-  const prof=REALM_FX_PROFILE[realmId];
-  if(!layer||!targetEl||!prof||!particlesEnabled||reducedMotion) return;
-  const lr=layer.getBoundingClientRect(), tr=targetEl.getBoundingClientRect();
-  const cx=tr.left-lr.left+tr.width/2, cy=tr.top-lr.top+tr.height/2;
-  const rand=(a,b)=>a+Math.random()*(b-a);
-  const n=Math.max(1,Math.min(countOverride||prof.count,particleBudget()));
-  for(let i=0;i<n;i++){
-    const p=document.createElement('div');
-    p.className='realm-particle rp-'+realmId;
-    p.dataset.fx='particle';
-    const ang=rand(prof.angle[0],prof.angle[1])*Math.PI/180;
-    const dist=rand(prof.dist[0],prof.dist[1]);
-    const flip=prof.mirror&&i%2?-1:1;
-    const dur=rand(prof.dur[0],prof.dur[1]);
-    const delay=rand(0,120);
-    p.style.left=(cx+rand(-9,9))+'px';
-    p.style.top=(cy+rand(-9,9))+'px';
-    p.style.setProperty('--dx',(Math.cos(ang)*dist*flip).toFixed(1)+'px');
-    p.style.setProperty('--dy',(Math.sin(ang)*dist).toFixed(1)+'px');
-    p.style.setProperty('--rot',rand(prof.rot[0],prof.rot[1]).toFixed(0)+'deg');
-    p.style.setProperty('--rp-scale',rand(prof.scale[0],prof.scale[1]).toFixed(2));
-    p.style.setProperty('--rp-dur',dur.toFixed(0)+'ms');
-    p.style.setProperty('--rp-delay',delay.toFixed(0)+'ms');
-    layer.appendChild(p);
-    window.setTimeout(()=>p.remove(),dur+delay+120);
-  }
-  trimCombatFx();
-}
-
-function renderPartyArena(){
-  partyArenaEl.innerHTML = '';
-  computeBattleGemColors();
-  ACTIVE.forEach(idx=>{
-    const k = KINGDOMS[idx];
-    const ag = battleGemColors[idx];
-    const gemC=ag?ag.c:(k.orbColor||k.color), gemL=ag?ag.l:(k.orbColorLight||k.colorLight), gemD=ag?ag.d:(k.orbColorDark||k.colorDark);
-    const unit = document.createElement('div');
-    unit.className = 'unit hero-unit rarity-'+(k.stars||0)+(k.id.endsWith('-jovem')?' hero-young':'');
-    unit.id = 'party-'+k.id;
-    unit.style.setProperty('--realm',k.color);
-    unit.style.setProperty('--aura-inner',k.color);
-    unit.style.setProperty('--aura-inner-light',k.colorLight);
-    unit.style.setProperty('--aura-outer',k.rarity==='DIVINA'?'#ffe58a':k.colorLight);
-    unit.style.setProperty('--aura-outer-light',k.rarity==='DIVINA'?'#ffffff':k.color);
-    const avatarContent = spriteMarkup(k,'idle');
-    const stageHtml=`
-      <div class="unit-stage">
-        <div class="unit-ground-shadow"></div>
-        <div class="avatar-circle" id="party-${k.id}-avatar" data-hero-id="${k.id}" data-action="idle">${avatarContent}</div>
-      </div>`;
-    const nomeHtml=vizPrefs.heroNames==='off'?'':`
-       <div class="unit-name${vizPrefs.heroNames==='top'?' name-top':''}"><span class="unit-gem" style="--ug:${gemC};--ug-l:${gemL};--ug-d:${gemD}" aria-hidden="true"></span>${L(k.nome)}</div>`;
-    unit.innerHTML = (vizPrefs.heroNames==='top'?nomeHtml+stageHtml:stageHtml+nomeHtml)+`
-      <div class="charge-outer"><div class="charge-inner" id="charge-${k.id}" style="width:0%"></div></div>
-      <div class="charge-text" id="chargeText-${k.id}">0/100</div>
-    `;
-    partyArenaEl.appendChild(unit);
-    const avatarEl = document.getElementById('party-'+k.id+'-avatar');
-    avatarEl.style.cursor = 'pointer';
-    avatarEl.setAttribute('role','button');
-    avatarEl.setAttribute('tabindex','0');
-    avatarEl.setAttribute('aria-label',T(`${L(k.nome)}: espelhar personagem; se houver habilidade carregada, abrir a sele√ß√£o`,`${L(k.nome)}: mirror character; if an ability is charged, open its selection`,`${L(k.nome)}: espejar personaje; si hay una habilidad cargada, abrir la selecci√≥n`));
-    avatarEl.addEventListener('click', ()=>onHeroAvatarClick(idx));
-    avatarEl.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); onHeroAvatarClick(idx); } });
-  });
-  renderGolemUnits();
-  applyBattleFormation();
-}
-
-function renderGolemUnits(spawned=false){
-  partyArenaEl.querySelectorAll('.golem-unit').forEach(unit=>unit.remove());
-  for(let i=0;i<golemAllies;i++){
-    const unit=document.createElement('div');
-    unit.className='unit summon-unit golem-unit'+(spawned?' golem-spawned':'');
-    unit.dataset.summon='golem';
-    unit.id='golem-'+i;
-    unit.style.setProperty('--realm','#8b5a2b');
-    unit.style.setProperty('--aura-inner','#8b5a2b');
-    unit.style.setProperty('--aura-inner-light','#f0bd78');
-    unit.style.setProperty('--aura-outer','#c98f4b');
-    unit.style.setProperty('--aura-outer-light','#ffe0a1');
-    unit.innerHTML=`
-      <div class="unit-stage">
-        <div class="unit-ground-shadow"></div>
-        <div class="avatar-circle" aria-hidden="true">
-          <img class="enemy-sprite-image summon-sprite" src="${GOLEM_SPRITE}" alt="${T(`Golem aliado ${i+1}`,`Ally golem ${i+1}`,`G√≥lem aliado ${i+1}`)}">
-        </div>
-      </div>
-      <div class="unit-name">${T('Golem','Golem','G√≥lem')} ${i+1}</div>
-      <div class="golem-badge">¬Ω ${T('DANO','DMG','DA√ëO')}</div>
-    `;
-    partyArenaEl.appendChild(unit);
-  }
-  applyBattleFormation();
-  if(spawned){
-    window.setTimeout(()=>partyArenaEl.querySelectorAll('.golem-spawned').forEach(unit=>unit.classList.remove('golem-spawned')),850);
-  }
-}
-
-function renderHarpyUnits(spawned=false){
-  partyArenaEl.querySelectorAll('.harpy-unit').forEach(unit=>unit.remove());
-  const soph=KINGDOMS.find(kk=>kk.id==='vento');
-  if(soph){
-    for(let i=0;i<harpyAllies;i++){
-      const unit=document.createElement('div');
-      unit.className='unit summon-unit harpy-unit'+(spawned?' golem-spawned':'');
-      unit.dataset.summon='harpy';
-      unit.id='harpy-'+i;
-      unit.style.setProperty('--realm','#6cb8e8');
-      unit.style.setProperty('--aura-inner','#6cb8e8');
-      unit.style.setProperty('--aura-inner-light','#e6f7ff');
-      unit.style.setProperty('--aura-outer','#9fd6f5');
-      unit.style.setProperty('--aura-outer-light','#ffffff');
-      unit.innerHTML=`
-        <div class="unit-stage">
-          <div class="unit-ground-shadow"></div>
-          <div class="avatar-circle" aria-hidden="true">
-            <img class="enemy-sprite-image summon-sprite" src="${soph.sprite}" alt="${T(`Harpia aliada ${i+1}`,`Ally harpy ${i+1}`,`Arp√≠a aliada ${i+1}`)}">
-          </div>
-        </div>
-        <div class="unit-name">${T('Harpia','Harpy','Arp√≠a')} ${i+1}</div>
-        <div class="golem-badge">20% ${T('DANO','DMG','DA√ëO')}</div>
-      `;
-      partyArenaEl.appendChild(unit);
-    }
-  }
-  applyBattleFormation();
-  if(spawned){
-    window.setTimeout(()=>partyArenaEl.querySelectorAll('.golem-spawned').forEach(unit=>unit.classList.remove('golem-spawned')),850);
-  }
-}
-
-function updateHeroProgressUI(idx){
-  const k = KINGDOMS[idx];
-  const total = Math.max(0,Math.min(99,heroProgress[idx]||0));
-  const queued = (heroActiveQueue[idx]||[]).length;
-  const bar = document.getElementById('charge-'+k.id);
-  const txt = document.getElementById('chargeText-'+k.id);
-  const unit = document.getElementById('party-'+k.id);
-  if(bar) bar.style.width = total+'%';
-  heroReady[idx] = queued>0;
-  if(queued>0){
-    if(txt) txt.textContent = queued+T(' ATIVA'+(queued>1?'S':''),' ACTIVE',' ACTIVA'+(queued>1?'S':''))+' ¬∑ '+total+'/100';
-    if(unit) unit.classList.add('ready');
-  } else {
-    if(txt) txt.textContent = `${total}/100`;
-    if(unit) unit.classList.remove('ready');
-  }
-}
-
-function onHeroAvatarClick(idx){
-  if(!canAcceptPlayerInput()) return;
-  const k=KINGDOMS[idx];
-  if(!k) return;
-  if(heroReady[idx]) { openAbilityPicker(idx); return; }
-  if(heroFacingOverrides.has(k.id)) heroFacingOverrides.delete(k.id);
-  else heroFacingOverrides.add(k.id);
-  const avatar=document.getElementById('party-'+k.id+'-avatar');
-  if(avatar) avatar.innerHTML=spriteMarkup(k,avatar.dataset.action||'idle');
-  setBattleStatus(T(`${L(k.nome)} mudou o lado para o qual est√° olhando.`,`${L(k.nome)} changed the direction they are facing.`,`${L(k.nome)} cambi√≥ el lado hacia el que mira.`),'system');
-}
-
-function abilityCanBeUsed(a){
-  if(a.requiresGolems && golemAllies<a.requiresGolems) return false;
-  return true;
-}
-
-function openAbilityPicker(idx){
-  const k = KINGDOMS[idx];
-  const queue=heroActiveQueue[idx]||[];
-  if(!queue.length) return;
-  const grouped=[];
-  queue.forEach(a=>{
-    const current=grouped.find(item=>item.a===a);
-    if(current) current.count++;
-    else grouped.push({a,count:1});
-  });
-  document.getElementById('abilityPickerTitle').textContent=L(k.nome)+T(' ¬∑ Ativas',' ¬∑ Actives',' ¬∑ Activas');
-  document.getElementById('abilityPickerSummary').textContent=T('Escolha uma habilidade carregada. As demais cargas continuar√£o armazenadas para esta miss√£o.','Choose a charged ability. The remaining charges will stay stored for this mission.','Elige una habilidad cargada. Las dem√°s cargas seguir√°n almacenadas para esta misi√≥n.');
-  const list=document.getElementById('abilityPickerList');
-  list.innerHTML='';
-  grouped.forEach(({a,count})=>{
-    const btn=document.createElement('button');
-    btn.type='button';
-    btn.className='ability-choice';
-    btn.disabled=!abilityCanBeUsed(a);
-    btn.style.setProperty('--realm',k.color);
-    btn.style.setProperty('--realm-light',k.colorLight);
-    btn.style.setProperty('--realm-dark',k.colorDark);
-    const requirement=a.requiresGolems&&!abilityCanBeUsed(a)?T(' ¬∑ requer '+a.requiresGolems+' golens',' ¬∑ requires '+a.requiresGolems+' golems',' ¬∑ requiere '+a.requiresGolems+' g√≥lems'):'';
-    btn.innerHTML='<span class="ability-tier">'+a.gems+'%</span><span class="ability-choice-copy"><b>'+L(a.name)+'</b><small>'+L(a.desc)+requirement+'</small></span><span class="ability-charge-count">√ó'+count+'</span>';
-    btn.addEventListener('click',()=>useQueuedActive(idx,a));
-    list.appendChild(btn);
-  });
-  document.getElementById('abilityPickerScreen').classList.add('show');
-}
-
-function useQueuedActive(idx,a){
-  questEvent('active');
-  if(!canAcceptPlayerInput() || !abilityCanBeUsed(a)) return;
-  if(!missionStartMs) startMissionTimer();
-  const queue=heroActiveQueue[idx]||[];
-  const queueIndex=queue.indexOf(a);
-  if(queueIndex<0) return;
-  queue.splice(queueIndex,1);
-  heroActiveQueue[idx]=queue;
-  updateHeroProgressUI(idx);
-  document.getElementById('abilityPickerScreen').classList.remove('show');
-  busy=true;
-  setBattlePhase('heroes');
-  triggerAbility(idx,a);
-  setBattleStatus(T(`${L(KINGDOMS[idx].nome)} liberou ${L(a.name)}!`,`${L(KINGDOMS[idx].nome)} unleashed ${L(a.name)}!`,`¬°${L(KINGDOMS[idx].nome)} liber√≥ ${L(a.name)}!`));
-  haptic([30,25,55]);
-  window.setTimeout(()=>{
-    if(!roomClearScheduled&&!stageTransitioning){ busy=false; setBattlePhase('idle'); }
-  },1200);
-}
-
-function renderStageProgress(){
-  stageProgressEl.innerHTML = '';
-  const total=worldRun.active?5:towerMode?5:bossRushMode?8:5;
-  const atual=worldRun.active?worldRun.nivel-1:towerMode?((towerFloor-1)%5):bossRushMode?bossRushIdx:0;
-  for(let i=0;i<total;i++){
-    const seg = document.createElement('div');
-    seg.className = 'arena-seg' + (i<atual ? ' done' : (i===atual ? ' current' : ''));
-    stageProgressEl.appendChild(seg);
-  }
-  if(worldRun.active){
-    const fase=WORLDS[0].fases[worldRun.fase];
-    stageLabelEl.textContent = `${T('Miss√£o','Mission','Misi√≥n')} ${worldRun.nivel}/5`;
-    dungeonTitleEl.textContent = L(fase.nome);
-  }else if(towerMode){
-    stageLabelEl.textContent = `${T('Andar','Floor','Piso')} ${towerFloor}`;
-    dungeonTitleEl.textContent = T('Torre de Acesso √† Eternidade','Tower of Access to Eternity','Torre de Acceso a la Eternidad');
-  }else{
-    /* modos extra (Desafio dos Chefes etc.): t√≠tulo vem SEMPRE do stage ativo ‚Äî nunca da demo */
-    stageLabelEl.textContent = bossRushMode ? `${T('Chefe','Boss','Jefe')} ${bossRushIdx+1}/8` : '';
-    dungeonTitleEl.textContent = activeStageData?.title || '';
-  }
-  arenaEl.className = 'arena scene-'+((activeStageData&&Number.isFinite(activeStageData.scene))?activeStageData.scene:4);
-  if(activeStageData?.bgUrl){
-    arenaEl.style.setProperty('background-image',`linear-gradient(rgba(6,3,13,.22),rgba(6,3,13,.5)),url('${activeStageData.bgUrl}')`,'important');
-    arenaEl.style.setProperty('background-size','cover');
-    arenaEl.style.setProperty('background-position','center');
-  }else{
-    arenaEl.style.removeProperty('background-image');
-    arenaEl.style.removeProperty('background-size');
-    arenaEl.style.removeProperty('background-position');
-  }
-}
-
-
-function applyBattleFormation(){
-  const heroSlots=HERO_FORMATIONS[formationIndex%HERO_FORMATIONS.length].slots;
-  const heroUnits=[...partyArenaEl.querySelectorAll('.hero-unit')];
-  heroUnits.forEach((unit,i)=>applyFormationSlot(unit,heroSlots[i]||heroSlots[heroSlots.length-1],112));
-  const barbaraIdx=ACTIVE.findIndex(idx=>KINGDOMS[idx]?.id==='terra');
-  const barbaraSlot=heroSlots[barbaraIdx]||heroSlots[0]||{x:30,y:35,s:1,z:20};
-  const golemOffsets=[{x:-8,y:4,s:.64},{x:8,y:2,s:.68},{x:-13,y:7,s:.58},{x:13,y:6,s:.6}];
-  [...partyArenaEl.querySelectorAll('.golem-unit')].forEach((unit,i)=>{
-    const offset=golemOffsets[i%golemOffsets.length];
-    applyFormationSlot(unit,{x:Math.max(4,Math.min(96,barbaraSlot.x+offset.x)),y:barbaraSlot.y+offset.y,s:offset.s,z:barbaraSlot.z+2+i},72);
-  });
-  const sophIdx=ACTIVE.findIndex(idx=>KINGDOMS[idx]?.id==='vento');
-  const sophSlot=heroSlots[sophIdx]||heroSlots[0]||{x:70,y:30,s:1,z:20};
-  const harpyOffsets=[{x:-9,y:-6,s:.5},{x:9,y:-7,s:.52},{x:-14,y:2,s:.46},{x:14,y:1,s:.48},{x:0,y:-11,s:.44}];
-  [...partyArenaEl.querySelectorAll('.harpy-unit')].forEach((unit,i)=>{
-    const offset=harpyOffsets[i%harpyOffsets.length];
-    applyFormationSlot(unit,{x:Math.max(4,Math.min(96,sophSlot.x+offset.x)),y:sophSlot.y+offset.y,s:offset.s,z:sophSlot.z+2+i},64);
-  });
-  const enemySlots=SCENE_ENEMY_FORMATIONS[stageIndex]?.[enemies.length]||ENEMY_FORMATIONS[Math.min(4,Math.max(1,enemies.length))]||ENEMY_FORMATIONS[1];
-  [...enemyArenaEl.children].forEach((unit,i)=>{
-    const enemy=enemies[i];
-    const slot={...(enemySlots[i]||enemySlots[enemySlots.length-1])};
-    const isBoss=enemy?.isBoss===true || i===enemies.length-1;
-    if(isBoss&&!enemy?.isCard) slot.s*=1.16;
-    /* Grupos ficam mais separados horizontalmente e em profundidades distintas;
-       isso evita que nomes, barras e sprites ocupem a mesma √°rea. */
-    if(enemies.length>=3){ slot.x=Math.max(50,Math.min(94,slot.x)); }
-    /* O chefe fica sempre em segundo plano; assim nome/vida n√£o encostam na
-       barra de informa√ß√µes e os demais inimigos conservam leitura pr√≥pria. */
-    if(isBoss&&enemies.length>1){ slot.y=Math.max(20,slot.y); slot.z+=6; }
-    applyFormationSlot(unit,slot,enemy?.isCard?112:(isBoss?116:112));
-  });
-}
-
-/* == CH√ÉO DOS CEN√ÅRIOS: onde o piso REAL de cada arte come√ßa (fra√ß√£o do TOPO da imagem)
-   e onde termina (moldura decorativa na base, se houver). Medido arte por arte. */
-const SCENE_GROUND={
-  humanos:[ [0.60,1],[0.63,1],[0.64,1],[0.64,1],[0.65,1],
-            [0.60,1],[0.62,1],[0.63,0.86],[0.75,1],[0.66,1] ]
-};
-function groundBand(){
-  let top=0.55, bot=1;
-  if(worldRun.active){ const g=SCENE_GROUND.humanos[worldRun.fase]; if(g){ top=g[0]; bot=g[1]; } }
-  return {top,bot};
-}
-function applyFormationSlot(unit,slot,width){
-  if(!unit||!slot) return;
-  /* Ajuste fino mobile: comprime a forma√ß√£o para nenhuma unidade/nome sair da tela */
-  const estreito=window.innerWidth<=600;
-  const enemySlot=unit.classList.contains('enemy-unit');
-  const x=estreito
-    ? (enemySlot?Math.max(8,Math.min(92,slot.x)):Math.max(15,Math.min(85,50+(slot.x-50)*0.72)))
-    : slot.x;
-  const y=estreito?50+(slot.y-50)*0.9:slot.y;
-  const s=estreito?slot.s*0.8:slot.s;
-  const w=estreito?Math.round(width*(enemySlot?0.9:0.84)):width;
-  /* ATERRISSAGEM: re-mapeia a profundidade (y 0..46) para a banda de ch√£o da arte da
-     fase ‚Äî todos os p√©s (her√≥is, inimigos, golens, harpias) pisam no piso pintado.
-     bottom% = ((1-F)¬∑alturaArena ‚àí gap ‚àí UI sob os p√©s) / alturaRow  (cover = 100% da
-     altura da arte vis√≠vel, ent√£o fra√ß√£o do topo da arte ‚â° fra√ß√£o do topo da arena). */
-  let yFin=y;
-  const arenaBox=document.querySelector('.arena');
-  const rowEl=unit.parentElement;
-  if(arenaBox&&rowEl&&rowEl.clientHeight>40&&document.body.classList.contains('game-active')){
-    const {top,bot}=groundBand();
-    const aH=arenaBox.clientHeight, rH=rowEl.clientHeight;
-    /* v9.2: personagens mais ASSENTADOS no piso (gap menor = todos descem) */
-    const gap=18, uiFeet=20*s;
-    const yMax=Math.max(4,(((1-top)*aH-gap-uiFeet)/rH)*100);
-    const yMin=Math.max(0,(((1-bot)*aH-gap)/rH)*100);
-    const prof=Math.max(0,Math.min(1,y/46));
-    yFin=yMin+prof*Math.max(0,yMax-yMin);
-    if(enemySlot) yFin=Math.max(0,yFin-3); /* sobe o grupo e mant√©m dist√¢ncia do HUD */
-  }
-  unit.style.setProperty('--slot-x',x+'%');
-  unit.style.setProperty('--slot-y',yFin+'%');
-  /* nitidez: a escala √© aplicada na LARGURA (layout) ‚Äî o navegador rasteriza o sprite
-     no tamanho final em vez de ampliar um raster menor (que ficava emba√ßado) */
-  unit.style.setProperty('--slot-scale','1');
-  unit.style.setProperty('--slot-z',String(slot.z));
-  unit.style.setProperty('--slot-w',Math.round(w*s)+'px');
-}
-/* Reaplica a forma√ß√£o ao girar/redimensionar a tela durante a batalha */
-let formResizeTimer=null;
-window.addEventListener('resize',()=>{
-  clearTimeout(formResizeTimer);
-  formResizeTimer=setTimeout(()=>{ if(partyArenaEl&&partyArenaEl.children.length) applyBattleFormation(); },220);
-});
-
-function toggleBattleTools(force){
-  const shouldOpen=typeof force==='boolean'?force:!battleToolsPanelEl.classList.contains('open');
-  battleToolsPanelEl.classList.toggle('open',shouldOpen);
-  battleToolsPanelEl.setAttribute('aria-hidden',String(!shouldOpen));
-  document.getElementById('battleToolsToggle').setAttribute('aria-expanded',String(shouldOpen));
-}
-
-function cycleBattleTarget(){
-  const alive=enemies.map((e,i)=>e.hp>0?i:-1).filter(i=>i>=0);
-  if(!alive.length) return;
-  const current=currentTargetIndex();
-  const next=alive[(Math.max(0,alive.indexOf(current))+1)%alive.length];
-  autoTargetMode=false;
-  updateBattleToolLabels();
-  manualTarget=next;
-  refreshTargetHighlight();
-  setBattleStatus(T(`Alvo t√°tico: ${L(enemies[next].name)}.`,`Tactical target: ${L(enemies[next].name)}.`,`Objetivo t√°ctico: ${L(enemies[next].name)}.`));
-}
-
-function toggleAutoTarget(){
-  autoTargetMode=!autoTargetMode;
-  if(autoTargetMode) manualTarget=null;
-  updateBattleToolLabels();
-  refreshTargetHighlight();
-  setBattleStatus(autoTargetMode?T('Alvo autom√°tico: o inimigo mais enfraquecido ser√° priorizado.','Auto target: the weakest enemy will be prioritized.','Objetivo autom√°tico: se priorizar√° al enemigo m√°s debilitado.'):T('Alvo autom√°tico desativado.','Auto target disabled.','Objetivo autom√°tico desactivado.'));
-}
-
-function cycleBattleSpeed(){
-  battleSpeedIndex=(battleSpeedIndex+1)%BATTLE_SPEEDS.length;
-  document.documentElement.style.setProperty('--battle-speed',String(BATTLE_SPEEDS[battleSpeedIndex]));
-  document.body.classList.add('speed-mode');
-  updateBattleToolLabels();
-  setBattleStatus(T(`Velocidade de batalha: ${BATTLE_SPEEDS[battleSpeedIndex]}√ó.`,`Battle speed: ${BATTLE_SPEEDS[battleSpeedIndex]}√ó.`,`Velocidad de batalla: ${BATTLE_SPEEDS[battleSpeedIndex]}√ó.`));
-}
-
-function findBestMove(){
-  const dirs=[[0,1],[1,0]];
-  for(let r=0;r<SIZE;r++) for(let c=0;c<SIZE;c++) for(const [dr,dc] of dirs){
-    const nr=r+dr,nc=c+dc;
-    if(nr>=SIZE||nc>=SIZE) continue;
-    const a={r,c},b={r:nr,c:nc};
-    if(board[r][c]===-4||board[nr][nc]===-4) continue;
-    const powerA=powerUps[cellKey(r,c)],powerB=powerUps[cellKey(nr,nc)];
-    if(powerA?.type==='colorBomb'||powerB?.type==='colorBomb'||(powerA&&powerB)) return [a,b];
-    swapCells(a,b);
-    const valid=findMatches().length>0;
-    swapCells(a,b);
-    if(valid) return [a,b];
-  }
-  return null;
-}
-
-/* v9.1 ¬∑ Conselheiro t√°tico: conhece o kit dos 12 her√≥is */
-function kitAdvice(){
-  for(const idx of ACTIVE){
-    if((heroActiveQueue[idx]||[]).length===0) continue;
-    const k=KINGDOMS[idx];
-    const realm=countRealmGems(idx);
-    const tips={
-      sombras:T(`com ${realm} bloco(s) das sombras, "${L('Por Toda a Escurid√£o')}" multiplicaria o pr√≥ximo ataque por ${Math.min(12,Math.max(1,realm))}`,`with ${realm} shadow block(s), "${L('Por Toda a Escurid√£o')}" would multiply the next attack by ${Math.min(12,Math.max(1,realm))}`,`con ${realm} bloque(s) de las sombras, "${L('Por Toda a Escurid√£o')}" multiplicar√≠a el pr√≥ximo ataque por ${Math.min(12,Math.max(1,realm))}`),
-      raio:T(`"${L('Hecatombe')}" renderia ${realm*150} de dano em todos agora (${realm} pe√ßa(s) roxa(s))`,`"${L('Hecatombe')}" would deal ${realm*150} damage to all right now (${realm} purple piece(s))`,`"${L('Hecatombe')}" infligir√≠a ${realm*150} de da√±o a todos ahora (${realm} pieza(s) morada(s))`),
-      areia:T(`"${L('Dan√ßa das Mil L√¢minas')}" renderia ${realm*70} por inimigo (${realm} pe√ßa(s) amarela(s))`,`"${L('Dan√ßa das Mil L√¢minas')}" would deal ${realm*70} per enemy (${realm} yellow piece(s))`,`"${L('Dan√ßa das Mil L√¢minas')}" infligir√≠a ${realm*70} por enemigo (${realm} pieza(s) amarilla(s))`),
-      gelo:T(`"${L('Geada Branca')}" renderia ${100+realm*20} em todos e congelaria (${realm} pe√ßa(s) de gelo)`,`"${L('Geada Branca')}" would deal ${100+realm*20} to all and freeze (${realm} ice piece(s))`,`"${L('Geada Branca')}" infligir√≠a ${100+realm*20} a todos y congelar√≠a (${realm} pieza(s) de hielo)`),
-      natureza:T(`"${L('Unidade da Natureza')}" somaria ${realm*100} de dano (${realm} joia(s) verde(s))`,`"${L('Unidade da Natureza')}" would add ${realm*100} damage (${realm} green gem(s))`,`"${L('Unidade da Natureza')}" sumar√≠a ${realm*100} de da√±o (${realm} joya(s) verde(s))`),
-      fogo:T(`o Ritual dobraria as ${realm} pedra(s) vermelha(s) atuais`,`the Ritual would double the current ${realm} red stone(s)`,`el Ritual duplicar√≠a las ${realm} piedra(s) roja(s) actuales`),
-      vento:harpyAllies<5?T(`invocar harpias ecoaria +${20*(harpyAllies+2)}% de dano`,`summoning harpies would echo +${20*(harpyAllies+2)}% damage`,`invocar arp√≠as har√≠a eco de +${20*(harpyAllies+2)}% de da√±o`):T(`as 5 harpias j√° ecoam o dano dela`,`all 5 harpies already echo her damage`,`las 5 arp√≠as ya hacen eco de su da√±o`),
-      terra:golemAllies>=2?T(`"${L('Terra Viva')}" sacrificaria golens por 1000 de dano`,`"${L('Terra Viva')}" would sacrifice golems for 1000 damage`,`"${L('Terra Viva')}" sacrificar√≠a g√≥lems por 1000 de da√±o`):T(`invocar golens replicaria metade do dano dela`,`summoning golems would replicate half her damage`,`invocar g√≥lems replicar√≠a la mitad de su da√±o`),
-      chuvas:T(`as chuvas cont√≠nuas corroem os inimigos a cada turno`,`the relentless rains corrode enemies every turn`,`las lluvias continuas corroen a los enemigos cada turno`),
-      luz:T(`a ultimate da Luz est√° pronta`,`the Light's ultimate is ready`,`la ultimate de la Luz est√° lista`),
-      humanos:T(`a ultimate de Berenice est√° pronta`,`Berenice's ultimate is ready`,`la ultimate de Berenice est√° lista`),
-      agua:T(`a ultimate de Maril est√° pronta`,`Maril's ultimate is ready`,`la ultimate de Maril est√° lista`)
-    };
-    const dica=tips[k.id]||T('toque no her√≥i iluminado','tap the glowing hero','toca al h√©roe iluminado');
-    return T(`${L(k.nome)} tem ultimate pronta ‚Äî ${dica}.`,`${L(k.nome)} has their ultimate ready ‚Äî ${dica}.`,`${L(k.nome)} tiene la ultimate lista ‚Äî ${dica}.`);
-  }
-  return null;
-}
-
-function showBestMoveHint(){
-  if(busy) return;
-  document.querySelectorAll('.gem.hinted').forEach(el=>el.classList.remove('hinted'));
-  const advice=kitAdvice();
-  const move=findBestMove();
-  if(!move){ shuffleBoard(); return; }
-  move.forEach(({r,c})=>document.querySelector(`.gem[data-r="${r}"][data-c="${c}"]`)?.classList.add('hinted'));
-  setBattleStatus(advice||T('Sugest√£o real√ßada: troque as duas joias pulsantes.','Hint highlighted: swap the two pulsing gems.','Sugerencia resaltada: intercambia las dos joyas pulsantes.'));
-  window.setTimeout(()=>document.querySelectorAll('.gem.hinted').forEach(el=>el.classList.remove('hinted')),2400);
-}
-
-function useRoyalShuffle(){
-  if(busy) return;
-  if(royalShuffles<=0){ setBattleStatus(T('O embaralhamento real j√° foi usado nesta fase.','The royal shuffle has already been used this stage.','El barajado real ya se us√≥ en esta fase.')); return; }
-  royalShuffles--;
-  shuffleBoard(false);
-  updateBattleToolLabels();
-  setBattleStatus(T('Embaralhamento real usado: o tabuleiro ganhou novas possibilidades.','Royal shuffle used: the board gained fresh possibilities.','Barajado real usado: el tablero gan√≥ nuevas posibilidades.'));
-  haptic([24,22,42]);
-}
-
-function toggleTacticalGrid(){
-  const active=arenaEl.classList.toggle('tactical-grid');
-  document.getElementById('gridTool').classList.toggle('active',active);
-  setBattleStatus(active?T('Grade de profundidade ativada.','Depth grid enabled.','Cuadr√≠cula de profundidad activada.'):T('Grade de profundidade ocultada.','Depth grid hidden.','Cuadr√≠cula de profundidad oculta.'));
-}
-
-function cycleHeroFormation(){
-  formationIndex=(formationIndex+1)%HERO_FORMATIONS.length;
-  localStorage.setItem('12r_formation',String(formationIndex));
-  applyBattleFormation();
-  const f=HERO_FORMATIONS[formationIndex];
-  const tool=document.getElementById('formationTool');
-  if(tool) tool.textContent=`‚ôü ${L(f.nome)}`;
-  setBattleStatus(T(`Forma√ß√£o "${L(f.nome)}" (${formationIndex+1}/${HERO_FORMATIONS.length}) aplicada.`,`Formation "${L(f.nome)}" (${formationIndex+1}/${HERO_FORMATIONS.length}) applied.`,`Formaci√≥n "${L(f.nome)}" (${formationIndex+1}/${HERO_FORMATIONS.length}) aplicada.`),'system');
-  sfxSelect();
-}
-
-async function toggleGameFullscreen(){
-  try{
-    if(!document.fullscreenElement) await document.documentElement.requestFullscreen();
-    else await document.exitFullscreen();
-  }catch(err){ setBattleStatus(T('A tela cheia n√£o est√° dispon√≠vel neste navegador.','Fullscreen is not available in this browser.','La pantalla completa no est√° disponible en este navegador.')); }
-}
-
-function showStageObjective(){
-  const obj=currentObjective();
-  if(obj?.type==='survive'){ stageObjectiveEl.textContent=T(`OBJETIVO ¬∑ Sobreviva ${obj.turns} turnos (faltam ${Math.max(0,obj.turns-stageTurns)})`,`OBJECTIVE ¬∑ Survive ${obj.turns} turns (${Math.max(0,obj.turns-stageTurns)} left)`,`OBJETIVO ¬∑ Sobrevive ${obj.turns} turnos (faltan ${Math.max(0,obj.turns-stageTurns)})`); return; }
-  if(obj?.type==='collect'){ stageObjectiveEl.textContent=T(`OBJETIVO ¬∑ Colete ${obj.count} esferas (faltam ${Math.max(0,obj.count-stageCollected)})`,`OBJECTIVE ¬∑ Collect ${obj.count} spheres (${Math.max(0,obj.count-stageCollected)} left)`,`OBJETIVO ¬∑ Recoge ${obj.count} esferas (faltan ${Math.max(0,obj.count-stageCollected)})`); return; }
-  if(obj?.type==='moves'){ stageObjectiveEl.textContent=T(`OBJETIVO ¬∑ Ven√ßa em at√© ${obj.limit} movimentos (restam ${Math.max(0,obj.limit-stageTurns)})`,`OBJECTIVE ¬∑ Win within ${obj.limit} moves (${Math.max(0,obj.limit-stageTurns)} remaining)`,`OBJETIVO ¬∑ Gana en un m√°ximo de ${obj.limit} movimientos (quedan ${Math.max(0,obj.limit-stageTurns)})`); return; }
-  const alive=enemies.filter(e=>e.hp>0);
-  stageObjectiveEl.textContent=T(`OBJETIVO ¬∑ Derrote ${alive.length} ${alive.length===1?'inimigo':'inimigos'}`,`OBJECTIVE ¬∑ Defeat ${alive.length} ${alive.length===1?'enemy':'enemies'}`,`OBJETIVO ¬∑ Derrota ${alive.length} ${alive.length===1?'enemigo':'enemigos'}`);
-}
-
-function updateComboRecord(value){
-  bestCombo=Math.max(bestCombo,value||0);
-  comboRecordEl.textContent=`${T('RECORDE','RECORD','R√âCORD')} √ó${bestCombo}`;
-  comboRecordEl.classList.toggle('active',value===bestCombo&&value>1);
-}
-
-function updateBattleToolLabels(){
-  document.getElementById('autoTargetTool').textContent=`‚óâ Auto: ${autoTargetMode?T('sim','on','s√≠'):T('n√£o','off','no')}`;
-  document.getElementById('autoTargetTool').classList.toggle('active',autoTargetMode);
-  document.getElementById('speedTool').textContent=`¬ª ${T('Velocidade','Speed','Velocidad')} ${BATTLE_SPEEDS[battleSpeedIndex]}√ó`;
-  document.getElementById('shuffleTool').textContent=`‚ü≥ ${T('Embaralhar','Shuffle','Barajar')} (${royalShuffles})`;
-  const formTool=document.getElementById('formationTool');
-  if(formTool) formTool.textContent=`‚ôü ${L(HERO_FORMATIONS[formationIndex%HERO_FORMATIONS.length].nome)}`;
-  const moodTool=document.getElementById('musicMoodTool');
-  if(moodTool) moodTool.textContent=`‚ô´ ${T('M√∫sica','Music','M√∫sica')}: ${['Auto',T('Calma','Calm','Calma'),T('√âpica','Epic','√âpica')][musicMoodMode]}`;
-}
-
-function currentTargetIndex(){
-  if(autoTargetMode){
-    let best=-1,bestRatio=Infinity;
-    enemies.forEach((e,idx)=>{ if(e.hp>0 && e.hp/e.maxHp<bestRatio){ best=idx; bestRatio=e.hp/e.maxHp; } });
-    if(best>=0) return best;
-  }
-  if(manualTarget!==null && enemies[manualTarget] && enemies[manualTarget].hp>0) return manualTarget;
-  return enemies.findIndex(e=>e.hp>0);
-}
-
-function selectTarget(idx){
-  if(busy || playerHP<=0) return;
-  if(!enemies[idx] || enemies[idx].hp<=0) return;
-  if(enemies.length<=1) return;
-  autoTargetMode = false;
-  manualTarget = idx;
-  updateBattleToolLabels();
-  refreshTargetHighlight();
-  setBattleStatus(T(`Alvo selecionado: ${L(enemies[idx].name)}.`,`Target selected: ${L(enemies[idx].name)}.`,`Objetivo seleccionado: ${L(enemies[idx].name)}.`));
-  haptic(12);
-}
-
-function refreshTargetHighlight(){
-  const activeIdx = currentTargetIndex();
-  enemies.forEach((e,idx)=>{
-    const unit = document.getElementById('enemy-'+idx);
-    if(!unit) return;
-    unit.classList.toggle('target', idx===activeIdx && e.hp>0);
-  });
-}
-
-function enemyAuraPalette(enemy){
-  const text=(enemy?.name||'').toLowerCase();
-  if(/drag√£o|carmesim/.test(text)) return ['#d52d32','#ffad58','#ff4938','#ffd17c'];
-  if(/limo/.test(text)) return ['#3cb65c','#b8ff87','#63d968','#d8ffa8'];
-  if(/pedra|golem/.test(text)) return ['#8a6849','#e1bb79','#b5824e','#ffe0a1'];
-  if(/lobo/.test(text)) return ['#63428f','#c9a7ff','#8a5bd0','#ead8ff'];
-  if(/espectro/.test(text)) return ['#4ba5a8','#b6ffff','#7b66c9','#d9d2ff'];
-  if(/trevas|servo/.test(text)) return ['#632e78','#d7a0ee','#a43f72','#ffb5dd'];
-  return ['#ae4f44','#ffd0a5','#d47759','#ffe1b8'];
-}
-
-function renderEnemies(){
-  enemyArenaEl.innerHTML = '';
-  enemyArenaEl.style.setProperty('--enemy-count',String(Math.max(1,enemies.length)));
-  const activeIdx = currentTargetIndex();
-  const selectable = enemies.filter(e=>e.hp>0).length>1;
-  enemies.forEach((e, idx)=>{
-    const unit = document.createElement('div');
-    const isBoss=e.isBoss===true || idx===enemies.length-1;
-    unit.className = 'unit enemy-unit' + (e.hp<=0 ? ' dead' : (idx===activeIdx ? ' target' : '')) + (selectable && e.hp>0 ? ' selectable' : '') + (isBoss?' boss-unit':'') + (e.isCard?' enemy-card-unit':'');
-    unit.id = 'enemy-'+idx;
-    const palette=enemyAuraPalette(e);
-    unit.style.setProperty('--aura-inner',palette[0]);
-    unit.style.setProperty('--aura-inner-light',palette[1]);
-    unit.style.setProperty('--aura-outer',palette[2]);
-    unit.style.setProperty('--aura-outer-light',palette[3]);
-    const stageHtml=`
-      <div class="unit-stage">
-        <div class="target-arrow"></div>
-        <div class="unit-ground-shadow"></div>
-        <div class="avatar-circle" id="enemyPortrait-${idx}">
-          <img class="enemy-sprite-image${(e.flip||e.isCard)?' flip':''}${e.etype==='soldado2'?' soldado2-clean':''}" src="${e.sprite}" alt="${L(e.name)}"${e.tint?` style="filter:${e.tint}"`:''}>
-          <span class="enemy-intent" aria-label="${T(`Pr√≥ximo ataque: aproximadamente ${e.atk} de dano`,`Next attack: about ${e.atk} damage`,`Pr√≥ximo ataque: aproximadamente ${e.atk} de da√±o`)}">‚öî ${e.atk}</span>
-        </div>
-      </div>`;
-    const nomeHtml=vizPrefs.enemyNames==='off'?'':`
-      <div class="unit-name${e.isBoss?' boss-name':''}${vizPrefs.enemyNames==='top'?' name-top':''}">${e.isBoss?'üëë ':''}${L(e.name)}</div>`;
-    unit.innerHTML = (vizPrefs.enemyNames==='top'?nomeHtml+stageHtml:stageHtml+nomeHtml)+`
-      <div class="unit-hp-outer"><div class="unit-hp-inner" id="enemyHpBar-${idx}" style="width:${Math.max(0,e.hp/e.maxHp*100)}%"></div></div>
-      <div class="unit-hp-text" id="enemyHpText-${idx}">${Math.max(0,e.hp)} / ${e.maxHp}</div>
-    `;
-    if(e.hp>0){ unit.addEventListener('click', ()=>selectTarget(idx)); }
-    if(e.hp>0){
-      unit.setAttribute('role','button');
-      unit.setAttribute('tabindex','0');
-      unit.setAttribute('aria-label',T(`Selecionar ${L(e.name)} como alvo`,`Select ${L(e.name)} as target`,`Seleccionar a ${L(e.name)} como objetivo`));
-      unit.addEventListener('keydown',ev=>{ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); selectTarget(idx); } });
-    }
-    enemyArenaEl.appendChild(unit);
-  });
-  applyBattleFormation();
-}
-
-/* == Cores aliadas de gemas: cartas do mesmo reino usam sempre o MESMO s√≠mbolo;
-   quando h√° 2+ cartas do reino na equipe, as gemas seguem a escada de cores de
-   reinos aliados para se distinguirem no tabuleiro.
-   Reino Rosa: Rosa ‚Üí Branco ‚Üí Azul Escuro ‚Üí Marrom. (Demais reinos: a definir.) */
-/* == ALIAN√áAS C√çCLICAS DE REINOS (definidas pelo usu√°rio, 2026-08-05):
-   Alian√ßa A: Rosa(humanos) ‚Üí Branco(luz) ‚Üí Azul Escuro(agua) ‚Üí Marrom(terra)
-   Alian√ßa B: Sombras ‚Üí Raio ‚Üí Gelo ‚Üí Chuva
-   Alian√ßa C: Fogo ‚Üí Vento ‚Üí Areia ‚Üí Natureza
-   Regra: com 2+ cartas do mesmo reino na equipe, a N-√©sima carta usa as CORES do
-   N-√©simo reino da alian√ßa (rota√ß√£o c√≠clica a partir do pr√≥prio reino), mantendo
-   SEMPRE o s√≠mbolo do reino de origem ‚Äî pintado na cor do reino quando a cor muda. */
-const ALLIED_ORDER={
-  humanos:['humanos','luz','agua','terra'],
-  luz:['luz','agua','terra','humanos'],
-  agua:['agua','terra','humanos','luz'],
-  terra:['terra','humanos','luz','agua'],
-  sombras:['sombras','raio','gelo','chuvas'],
-  raio:['raio','gelo','chuvas','sombras'],
-  gelo:['gelo','chuvas','sombras','raio'],
-  chuvas:['chuvas','sombras','raio','gelo'],
-  fogo:['fogo','vento','areia','natureza'],
-  vento:['vento','areia','natureza','fogo'],
-  areia:['areia','natureza','fogo','vento'],
-  natureza:['natureza','fogo','vento','areia']
-};
-function realmOrb(id){
-  const k=KINGDOMS.find(x=>x.id===id);
-  return k?{c:k.orbColor||k.color, l:k.orbColorLight||k.colorLight, d:k.orbColorDark||k.colorDark}:null;
-}
-/* == AS 3 GRANDES ALIAN√áAS DE YGDRIA (nomes oficiais definidos pelo criador) == */
-const ALLIANCES=[
-  {id:'lago',   nome:'Alian√ßa do Lago de Ygdria', membros:['humanos','luz','agua','terra'],   cor:'#6fb7ff', icon:'üåä'},
-  {id:'dragao', nome:'Alian√ßa do Rei Drag√£o',     membros:['fogo','vento','natureza','areia'], cor:'#ff8a4d', icon:'üêâ'},
-  {id:'barion', nome:'Alian√ßa Barion',            membros:['sombras','raio','gelo','chuvas'],  cor:'#b48aff', icon:'üå©'}
-];
-function allianceOf(realmId){ return ALLIANCES.find(a=>a.membros.includes(realmId))||null; }
-/* B√¥nus de sinergia: repetir reino fortalece o ATQ do grupo; equipe 100% da mesma
-   alian√ßa fortalece ATQ e HP. Calculado ao montar a equipe/batalha. */
-let allianceBonus={atk:1,hp:1,rotulos:[]};
-function computeAllianceBonus(ids){
-  const time=(ids&&ids.length?ids:ACTIVE)||[];
-  const bonus={atk:1,hp:1,rotulos:[]};
-  if(time.length===4){
-    const fams={};
-    time.forEach(i=>{ const f=KINGDOMS[i]?.iconId||KINGDOMS[i]?.id; if(f) fams[f]=(fams[f]||0)+1; });
-    const maxRepet=Math.max(1,...Object.values(fams));
-    if(maxRepet>=2){
-      const extra=maxRepet===2?0.10:maxRepet===3?0.15:0.20;
-      bonus.atk+=extra;
-      const famTop=Object.keys(fams).find(f=>fams[f]===maxRepet);
-      const lead=KINGDOMS.find(k=>k.id===famTop);
-      bonus.rotulos.push(`${maxRepet}√ó ${lead?L(lead.reino):famTop} ¬∑ +${Math.round(extra*100)}% ${T('ATQ','ATK','ATQ')}`);
-    }
-    const als=new Set(time.map(i=>allianceOf(KINGDOMS[i]?.iconId||KINGDOMS[i]?.id)?.id||'x'));
-    if(als.size===1&&!als.has('x')){
-      const al=ALLIANCES.find(a=>a.id===[...als][0]);
-      bonus.atk+=0.05; bonus.hp+=0.10;
-      bonus.rotulos.push(`${al.icon} ${al.nome} ¬∑ +5% ${T('ATQ','ATK','ATQ')} ¬∑ +10% HP`);
-    }
-  }
-  return bonus;
-}
-/* ATQ efetivo em batalha (inclui b√¥nus de alian√ßa e Estandarte da Coroa) */
-function heroAtkBattle(idx){ return Math.round(heroAtkFor(idx)*(allianceBonus?.atk||1)*(typeof bannerAtkRun==='number'?bannerAtkRun:1)); }
-let battleGemColors={};
-/* Estados de combate das cartas SUPER/ULTRA RARAS (restaurados) */
-let damageReductionStacks=0;   /* Kalander ¬∑ O Her√≥i da Na√ß√£o (cap 2) */
-let queenFuryStacks=0;         /* Bernyce ¬∑ √çmpeto da Rainha */
-let chamarizCharges=0;         /* Jules ¬∑ Chamariz (reviver com 100 HP) */
-let sombrasDevoradorasOn=false;/* Julius ¬∑ Sombras Devoradoras */
-let pendingDimensional=[];     /* Julius ¬∑ L√¢mina Dimensional (dano nas miss√µes futuras) */
-let tempoSombrioTimer=null;    /* Julius inimigo ¬∑ corrup√ß√£o por tempo real */
-function computeBattleGemColors(){
-  battleGemColors={};
-  const fams={};
-  ACTIVE.forEach(i=>{
-    const fam=KINGDOMS[i].iconId||KINGDOMS[i].id;
-    /* Cada carta come√ßa sempre com a gema-base do pr√≥prio reino.
-       A escada de cores s√≥ √© aplicada quando houver repeti√ß√£o do reino. */
-    const own=realmOrb(fam);
-    if(own) battleGemColors[i]={...own};
-    (fams[fam]=fams[fam]||[]).push(i);
-  });
-  Object.entries(fams).forEach(([fam,idxs])=>{
-    if(idxs.length<2) return;
-    const ordem=ALLIED_ORDER[fam];
-    if(!ordem) return;
-    const lead=KINGDOMS.find(k=>k.id===fam);
-    idxs.forEach((i,ord)=>{
-      const doador=ordem[ord%ordem.length];
-      const cores=realmOrb(doador);
-      if(!cores) return;
-      battleGemColors[i]={...cores};
-      /* Gema com cor emprestada leva o S√çMBOLO na cor do reino de origem */
-       if(doador!==fam && lead) battleGemColors[i].icon=fam==='sombras'?'#050308':lead.color;
-    });
-  });
-}
-
-/* == HABILIDADES DE FASE: cada carta tem UM truque que usa apenas quando aparece
-   como INIMIGA numa fase (nunca quando √© usada como her√≥i). Descritas no modal da
-   carta; executadas em enemyCounterAttack a cada `cd` turnos, salvo stun/cegueira. */
-let hiddenGems={};   // V√©u do Eclipse: c√©lulas com cor oculta {r_c: turnos restantes}
-const OB_TYPES={ ice:{icon:'‚ùÑ',nome:'gelo'}, stone:{icon:'‚õ∞',nome:'pedra'}, sand:{icon:'‚è≥',nome:'areia'}, vine:{icon:'üåø',nome:'vinhas'}, sombra:{icon:'üåë',nome:'sombra'}, copas:{icon:'‚ù§',nome:'copas'} };
-
-function stageAbilityFor(cardId){
-  if(!cardId) return null;
-  const k=KINGDOMS.find(x=>x.id===cardId);
-  return (k&&k.stageAbility)?k.stageAbility:null;
-}
-function saPickCells(qtd){
-  const cand=[];
-  for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){
-    const key=cellKey(r,c);
-    if(board[r][c]>=0 && !powerUps[key] && !obstaclesMeta[key] && !hiddenGems[key]) cand.push({r,c,key});
-  }
-  for(let i=cand.length-1;i>0;i--){ const j=Math.floor(gameRandom()*(i+1)); [cand[i],cand[j]]=[cand[j],cand[i]]; }
-  return cand.slice(0,qtd);
-}
-function saChangeColorSafe(r,c){
-  const atual=board[r][c];
-  const opcoes=ACTIVE.filter(i=>i!==atual);
-  for(let t=0;t<opcoes.length+2;t++){
-    board[r][c]=opcoes[Math.floor(gameRandom()*opcoes.length)];
-    if(!findMatches().length) return true;
-  }
-  board[r][c]=atual;
-  return false;
-}
-function saDrainHero(idx, amount){
-  heroProgress[idx]=Math.max(0,(heroProgress[idx]||0)-amount);
-  firedTiers[idx]=new Set(KINGDOMS[idx].abilities.filter(a=>a.kind==='passive'&&a.gems<=heroProgress[idx]).map(a=>a.gems));
-  updateHeroProgressUI(idx);
-}
-function saMostChargedHero(){
-  let best=-1,bestV=-1;
-  ACTIVE.forEach(i=>{ const v=heroProgress[i]||0; if(v>bestV){bestV=v;best=i;} });
-  return best;
-}
-function saHealEnemy(e, amount){
-  if(!amount) return;
-  e.hp=Math.min(e.maxHp,e.hp+Math.round(amount));
-  const i=enemies.indexOf(e);
-  const bar=document.getElementById('enemyHpBar-'+i);
-  const txt=document.getElementById('enemyHpText-'+i);
-  if(bar) bar.style.width=Math.max(0,(e.hp/e.maxHp)*100)+'%';
-  if(txt) txt.textContent=`${e.hp} / ${e.maxHp}`;
-}
-function saAnnounce(e, sa){
-  explainMechanicOnce('stage-'+sa.nome,`${L(sa.nome)}: ${L(sa.desc||'efeito especial de fase')}`);
-  const i=enemies.indexOf(e);
-  setBattleStatus(T(`‚öî ${L(e.name)} usou ${L(sa.nome)}!`,`‚öî ${L(e.name)} used ${L(sa.nome)}!`,`‚öî ¬°${L(e.name)} us√≥ ${L(sa.nome)}!`), 'damage');
-  showFloatDamage(0,'enemy-'+i,false);
-  const anchor=document.getElementById('enemy-'+i);
-  const el=anchor?.querySelector('.dmg-float:last-child');
-  if(el){ el.textContent=L(sa.nome)+'!'; el.style.color='#ffb3c8'; el.style.fontSize='11px'; }
-}
-function runStageAbilities(){
-  if(busy) return; /* nunca mutar o tabuleiro com uma resolu√ß√£o de combos em voo */
-  enemies.forEach(e=>{
-    if(e.hp<=0) return;
-    const sa=stageAbilityFor(e.cardId);
-    if(!sa||sa.tempoReal) return;
-    e.saCounter=(e.saCounter||0)+1;
-    { const iEn=enemies.indexOf(e);
-      const anc=document.getElementById('enemy-'+iEn);
-      let bdg=anc?.querySelector('.sa-count');
-      if(anc&&!bdg){ bdg=document.createElement('div'); bdg.className='sa-count'; anc.appendChild(bdg); }
-      if(bdg) bdg.textContent='üó°'+Math.max(0,sa.cd-e.saCounter); }
-    if(e.saCounter<sa.cd) return;
-    e.saCounter=0;
-    try{ execStageAbility(e,sa); saAnnounce(e,sa); }catch(err){ console.warn('stageAbility', err); }
-  });
-}
-function execStageAbility(e, sa){
-  let mexeuBoard=false;
-  switch(sa.tipo){
-    case 'trocarCores':
-      saPickCells(sa.qtd||3).forEach(cell=>{ if(saChangeColorSafe(cell.r,cell.c)) mexeuBoard=true; });
-      break;
-    case 'selarPowerUp':{
-      const keys=Object.keys(powerUps);
-      if(keys.length){
-        const key=keys[Math.floor(gameRandom()*keys.length)];
-        const [r,c]=key.split('_').map(Number);
-        delete powerUps[key];
-        if(board[r][c]===-2){ board[r][c]=ACTIVE[Math.floor(gameRandom()*ACTIVE.length)]; saChangeColorSafe(r,c); }
-        mexeuBoard=true;
-      } else saHealEnemy(e, sa.cura||60);
-      break;
-    }
-    case 'drenarMaisCarregado':{
-      const h=saMostChargedHero(); if(h>=0) saDrainHero(h, sa.valor||12);
-      break;
-    }
-    case 'criarObstaculos':{
-      const livre=Math.max(0, 8-Object.keys(obstaclesMeta).length);
-      saPickCells(Math.min(sa.qtd||1, livre)).forEach((cell,i2)=>{
-        board[cell.r][cell.c]=-4;
-        delete powerUps[cell.key];
-        obstaclesMeta[cell.key]={type:sa.obst||'stone', hits:(sa.hits||1)+((sa.reforcado&&i2<sa.reforcado)?1:0)};
-        mexeuBoard=true;
-      });
-      break;
-    }
-    case 'embaralharTudo': shuffleBoard(false); break;
-    case 'drenarTodosECurar':{
-      let total=0;
-      ACTIVE.forEach(i2=>{ const tira=Math.min(heroProgress[i2]||0, sa.valor||6); if(tira>0){ saDrainHero(i2,tira); total+=tira; } });
-      if(total>0) saHealEnemy(e, total*(sa.curaMult||5));
-      break;
-    }
-    case 'lavarColuna':{
-      const c=Math.floor(gameRandom()*SIZE);
-      for(let r=0;r<SIZE;r++){ const key=cellKey(r,c); if(board[r][c]>=0&&!obstaclesMeta[key]){ board[r][c]=-1; delete powerUps[key]; delete hiddenGems[key]; } }
-      collapseAndRefill(); mexeuBoard=true;
-      break;
-    }
-    case 'queimarCruz':{
-      const r=1+Math.floor(gameRandom()*(SIZE-2)), c=1+Math.floor(gameRandom()*(SIZE-2));
-      [[r,c],[r-1,c],[r+1,c],[r,c-1],[r,c+1]].forEach(([rr,cc])=>{
-        const key=cellKey(rr,cc);
-        if(obstaclesMeta[key]) return;
-        delete powerUps[key]; delete hiddenGems[key];
-        if(board[rr][cc]>=0||board[rr][cc]===-2) board[rr][cc]=-1;
-      });
-      collapseAndRefill(); mexeuBoard=true;
-      break;
-    }
-    case 'embaralharLinhas':{
-      const linhas=[];
-      while(linhas.length<(sa.qtd||2)){ const r=Math.floor(gameRandom()*SIZE); if(!linhas.includes(r)) linhas.push(r); }
-      const celulas=[];
-      linhas.forEach(r=>{ for(let c=0;c<SIZE;c++){ if(board[r][c]>=0&&!obstaclesMeta[cellKey(r,c)]) celulas.push({r,c}); } });
-      for(let tent=0;tent<10;tent++){
-        const vals=celulas.map(p=>board[p.r][p.c]);
-        for(let i2=vals.length-1;i2>0;i2--){ const j=Math.floor(gameRandom()*(i2+1)); [vals[i2],vals[j]]=[vals[j],vals[i2]]; }
-        celulas.forEach((p,i2)=>{ board[p.r][p.c]=vals[i2]; });
-        if(!findMatches().length) break;
-      }
-      mexeuBoard=true;
-      break;
-    }
-    case 'ocultarCores':
-      saPickCells(sa.qtd||5).forEach(cell=>{ hiddenGems[cell.key]=sa.turnos||3; });
-      mexeuBoard=true;
-      break;
-    case 'sobrecarga':{
-      const h=saMostChargedHero();
-      if(h>=0&&(heroProgress[h]||0)>(sa.limite||50)){ heroProgress[h]=sa.limite||50; saDrainHero(h,0); }
-      break;
-    }
-    case 'deslizarLinha':{
-      const r=Math.floor(gameRandom()*SIZE);
-      const cols=[];
-      for(let c=0;c<SIZE;c++){ if(board[r][c]>=0&&!obstaclesMeta[cellKey(r,c)]) cols.push(c); }
-      if(cols.length>1){
-        for(let tent=0;tent<4;tent++){
-          const vals=cols.map(c=>board[r][c]);
-          vals.unshift(vals.pop());
-          cols.forEach((c,i2)=>{ board[r][c]=vals[i2]; });
-          if(!findMatches().length) break;
-        }
-        cols.forEach(c=>{ delete powerUps[cellKey(r,c)]; });
-        mexeuBoard=true;
-      }
-      break;
-    }
-    case 'asDeCopas':{
-      const alvo=saPickCells(1)[0];
-      if(alvo){
-        board[alvo.r][alvo.c]=-4;
-        delete powerUps[alvo.key];
-        obstaclesMeta[alvo.key]={type:'copas',hits:1};
-        mexeuBoard=true;
-      }
-      break;
-    }
-    case 'cortarX':{
-      for(let i2=0;i2<SIZE;i2++){
-        [[i2,i2],[i2,SIZE-1-i2]].forEach(([rr,cc])=>{
-          const key=cellKey(rr,cc);
-          if(obstaclesMeta[key]) return;
-          delete powerUps[key]; delete hiddenGems[key];
-          if(board[rr][cc]>=0||board[rr][cc]===-2) board[rr][cc]=-1;
-        });
-      }
-      collapseAndRefill(); mexeuBoard=true;
-      break;
-    }
-    case 'regulacaoReal':{
-      const chaves=Object.keys(powerUps);
-      chaves.forEach(key=>{
-        const [rr,cc]=key.split('_').map(Number);
-        delete powerUps[key];
-        if(board[rr][cc]===-2){ board[rr][cc]=ACTIVE[Math.floor(gameRandom()*ACTIVE.length)]; saChangeColorSafe(rr,cc); }
-      });
-      if(chaves.length){ saHealEnemy(e,(sa.cura||80)*chaves.length); mexeuBoard=true; }
-      break;
-    }
-    case 'encharcar':
-      ACTIVE.forEach(i2=>{ nextAttackMult[i2]=Math.min(nextAttackMult[i2]||1, sa.mult||0.5); });
-      renderStatusTray();
-      break;
-  }
-  if(mexeuBoard){
-    renderBoard();
-    if(!hasValidMoves()) shuffleBoard(false);
-  }
-}
-
-/* Escudo anti tap-through: ap√≥s trocas de tela, ignora cliques por 350ms para o
-   toque que iniciou a transi√ß√£o n√£o "vazar" no bot√£o que aparece por baixo. */
-let tapGuardUntil=0;
-function armTapGuard(duration=350){ tapGuardUntil=performance.now()+Math.max(0,duration); }
-document.addEventListener('click',e=>{
-  const bypass=e.target instanceof Element&&e.target.closest('[data-tap-guard-bypass]');
-  if(performance.now()<tapGuardUntil&&!bypass){ e.stopPropagation(); e.preventDefault(); }
-},true);
-
-/* ===== v9.1 ¬∑ FUNCIONALIDADES NOVAS ===== */
-/* F1 ¬∑ Auto-batalha */
-let autoBattle=false, autoBattleTimer=null;
-let autoActives=localStorage.getItem('12r_autoactives')==='1';
-function setAutoBattle(on){
-  autoBattle=on;
-  const b=document.getElementById('autoTool');
-  if(b) b.textContent=(on?'‚è∏ ':'‚ñ∂ ')+T('Auto: ','Auto: ','Auto: ')+(on?T('sim','on','s√≠'):T('n√£o','off','no'));
-  clearInterval(autoBattleTimer); autoBattleTimer=null;
-  if(on){
-    autoBattleTimer=setInterval(()=>{
-      if(!autoBattle||!canAcceptPlayerInput()||document.hidden) return;
-      if(!document.body.classList.contains('game-active')) return;
-      /* auto-ativas: dispara a primeira ativa carregada antes de jogar */
-      if(autoActives){
-        for(const hi of ACTIVE){
-          const fila=heroActiveQueue[hi]||[];
-          if(fila.length){ useQueuedActive(hi,fila[0]); return; }
-        }
-      }
-      const mv=findBestMove();
-      if(mv) trySwap(mv[0],mv[1]);
-    },1300);
-  }
-}
-/* F2 ¬∑ Besti√°rio */
-function bestiary(){ try{ return JSON.parse(localStorage.getItem('12r_bestiary')||'{}'); }catch(e){ return {}; } }
-function registerBestiary(nomePt){
-  const b=bestiary(); b[nomePt]=(b[nomePt]||0)+1;
-  localStorage.setItem('12r_bestiary',JSON.stringify(b));
-}
-/* F3 ¬∑ Recompensas de login di√°rio: ciclo de 7 dias (moedas crescentes + itens).
-   A sequ√™ncia quebra se faltar um dia; o ciclo reinicia ap√≥s o dia 7. */
-const LOGIN_REWARDS=[
-  {c:15},
-  {c:20},
-  {c:25, item:'vela'},
-  {c:30},
-  {c:40, item:'potion'},
-  {c:50},
-  {c:80, item:'blessing'}
-];
-function checkLoginReward(){
-  let st={date:'',streak:0};
-  try{ st=JSON.parse(localStorage.getItem('12r_login')||'{"date":"","streak":0}'); }catch(e){}
-  const hoje=todayKey();
-  if(st.date===hoje) return;
-  const ontem=(()=>{ const d=new Date(); d.setDate(d.getDate()-1); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); })();
-  st.streak=(st.date===ontem)?st.streak+1:1;
-  st.date=hoje;
-  localStorage.setItem('12r_login',JSON.stringify(st));
-  const dia=(st.streak-1)%7;
-  const rec=LOGIN_REWARDS[dia];
-  grantCoins(rec.c);
-  let extra='';
-  if(rec.item){
-    inventory[rec.item]=(inventory[rec.item]||0)+1;
-    saveInventory();
-    const it=SHOP_ITEMS.find(i=>i.id===rec.item);
-    extra=' + '+(it?it.icon+' '+L(it.nome):rec.item);
-  }
-  setTimeout(()=>{
-    const t=document.createElement('div');
-    t.className='ach-toast show';
-    t.innerHTML='<span class="ach-toast-icon">üìÖ</span><div><b>'+T('Recompensa de login ‚Äî dia ','Login reward ‚Äî day ','Recompensa de inicio ‚Äî d√≠a ')+(dia+1)+'/7</b><br>+'+rec.c+' '+T('moedas','coins','monedas')+extra+' ¬∑ '+T('sequ√™ncia','streak','racha')+' '+st.streak+'</div>';
-    document.body.appendChild(t);
-    setTimeout(()=>t.remove(),4200);
-  },900);
-}
-function renderLoginCalendar(){
-  let st={date:'',streak:0};
-  try{ st=JSON.parse(localStorage.getItem('12r_login')||'{}'); }catch(e){}
-  const diaAtual=st.streak?(st.streak-1)%7:-1;
-  return '<div class="quests-box login-cal"><b>üìÖ '+T('Login di√°rio ‚Äî ciclo de 7 dias','Daily login ‚Äî 7-day cycle','Inicio diario ‚Äî ciclo de 7 d√≠as')+'</b><div class="login-days">'+
-    LOGIN_REWARDS.map((r,i)=>{
-      const it=r.item?SHOP_ITEMS.find(x=>x.id===r.item):null;
-      return '<span class="login-day'+(i<diaAtual?' done':i===diaAtual?' today':'')+'"><i>'+(i+1)+'</i>ü™ô'+r.c+(it?'<em>'+it.icon+'</em>':'')+'</span>';
-    }).join('')+
-    '</div><small>'+T('Sequ√™ncia atual','Current streak','Racha actual')+': '+(st.streak||0)+' '+T('dia(s)','day(s)','d√≠a(s)')+'</small></div>';
-}
-/* F4 ¬∑ Miss√µes di√°rias */
-function questsState(){
-  const hoje=todayKey();
-  let q; try{ q=JSON.parse(localStorage.getItem('12r_quests')||'null'); }catch(e){ q=null; }
-  if(!q||q.date!==hoje) q={date:hoje, prog:{win2:0,combo4:0,active2:0}, done:[]};
-  return q;
-}
-const QUESTS_DEF=[
-  {id:'win2',   n:2, ico:'‚öî', nome:()=>T('Ven√ßa 2 miss√µes','Win 2 missions','Gana 2 misiones'), premio:40},
-  {id:'combo4', n:1, ico:'‚ú¶', nome:()=>T('Fa√ßa um combo √ó4','Land a √ó4 combo','Logra un combo √ó4'), premio:40},
-  {id:'active2',n:2, ico:'‚ú®', nome:()=>T('Use 2 habilidades ativas','Use 2 active abilities','Usa 2 habilidades activas'), premio:40}
-];
-function questEvent(tipo,valor){
-  const q=questsState();
-  if(tipo==='win') q.prog.win2=Math.min(2,q.prog.win2+1);
-  if(tipo==='combo'&&valor>=4) q.prog.combo4=1;
-  if(tipo==='active') q.prog.active2=Math.min(2,q.prog.active2+1);
-  QUESTS_DEF.forEach(d=>{
-    if(!q.done.includes(d.id)&&q.prog[d.id]>=d.n){
-      q.done.push(d.id);
-      grantCoins(d.premio);
-      setBattleStatus('üèÖ '+T('Miss√£o di√°ria conclu√≠da','Daily quest complete','Misi√≥n diaria completa')+': '+d.nome()+' (+'+d.premio+' ü™ô)','support');
-    }
-  });
-  localStorage.setItem('12r_quests',JSON.stringify(q));
-}
-/* F5 ¬∑ Equipes salvas (3 slots) */
-function teamCode(ids){ return '12R-'+ids.map(i=>KINGDOMS[i]?.id).join('.'); }
-function parseTeamCode(txt){
-  const m=String(txt||'').trim().match(/^12R-(.+)$/i); if(!m) return null;
-  const ids=m[1].split('.').map(idn=>KINGDOMS.findIndex(k=>k.id===idn.trim().toLowerCase())).filter(i=>i>=0);
-  return ids.length===4 && new Set(ids).size===4?ids:null;
-}
-function renderTeamSlots(){
-  const box=document.getElementById('teamSlots'); if(!box) return;
-  let times; try{ times=JSON.parse(localStorage.getItem('12r_teams')||'[null,null,null]'); }catch(e){ times=[null,null,null]; }
-  box.innerHTML='';
-  const brasao='<svg class="team-crest" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l7 2.6v6.2c0 4.8-3 8.4-7 10.6-4-2.2-7-5.8-7-10.6V4.6L12 2zm0 3.1L7.2 6.8v4.3c0 3.4 2 6.1 4.8 7.9 2.8-1.8 4.8-4.5 4.8-7.9V6.8L12 5.1z"/><path d="M12 7.4l1.2 2.4 2.6.4-1.9 1.9.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.9 2.6-.4L12 7.4z"/></svg>';
-  times.forEach((t2,i)=>{
-    const b=document.createElement('button');
-    b.type='button'; b.className='team-slot'+(t2?' filled':'');
-    b.innerHTML=t2?(brasao+' '+t2.map(ii=>KINGDOMS[ii]?.nome?.[0]||'?').join(''))
-                  :(brasao+' '+T('Equipe','Team','Equipo')+' '+(i+1));
-    b.title=t2?T('Toque para usar esta equipe. Com 4 escolhidas, toque para sobrescrever.','Tap to use this team. With 4 chosen, tap to overwrite.','Toca para usar este equipo.'):T('Escolha 4 cartas e toque para salvar.','Pick 4 cards and tap to save.','Elige 4 cartas y toca para guardar.');
-    b.addEventListener('click',()=>{
-      if(chosenIds.length===4){ times[i]=[...chosenIds]; localStorage.setItem('12r_teams',JSON.stringify(times)); renderTeamSlots(); sfxSelect(); }
-      else if(t2){ chosenIds=t2.filter(ii=>KINGDOMS[ii]).slice(0,4); renderSelectGrid(); renderTeamSlots(); sfxSelect(); }
-      else sfxInvalid();
-    });
-    box.appendChild(b);
-  });
-  const share=document.createElement('button');
-  share.type='button'; share.className='team-slot';
-  share.textContent='üîó';
-  share.title=T('Com 4 escolhidas: copia o c√≥digo da equipe. Vazio: cola um c√≥digo.','With 4 chosen: copies team code. Empty: paste a code.','Con 4: copia el c√≥digo. Vac√≠o: pega un c√≥digo.');
-  share.addEventListener('click',async()=>{
-    if(chosenIds.length===4){
-      await navigator.clipboard?.writeText(teamCode(chosenIds));
-      share.textContent='‚úÖ'; setTimeout(()=>share.textContent='üîó',1400);
-    } else {
-      const txt=prompt(T('Cole o c√≥digo da equipe (12R-...)','Paste the team code (12R-...)','Pega el c√≥digo (12R-...)'));
-      const ids=parseTeamCode(txt);
-      if(ids){ chosenIds=ids; renderSelectGrid(); sfxSelect(); } else if(txt) sfxInvalid();
-    }
-  });
-  box.appendChild(share);
-}
-/* F7 ¬∑ Recorde de turnos por fase */
-function faseBest(){ try{ return JSON.parse(localStorage.getItem('12r_fase_best')||'{}'); }catch(e){ return {}; } }
-function faseTime(){ try{ return JSON.parse(localStorage.getItem('12r_fase_time')||'{}'); }catch(e){ return {}; } }
-/* ‚è± Timer da miss√£o: conta desde a entrada; √© a base oficial para habilidades de
-   tempo real e para os rankings de miss√£o/fase. */
-let missionStartMs=0, missionTimerInt=null, missionPausedAt=0, missionPausedTotal=0;
-function missionElapsed(){
-  if(!missionStartMs) return 0;
-  const pausedNow=missionPausedAt?Date.now()-missionPausedAt:0;
-  return Math.max(0,Math.floor((Date.now()-missionStartMs-missionPausedTotal-pausedNow)/1000));
-}
-function fmtTempo(s){ return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
-function startMissionTimer(reset=true){
-  if(reset){ missionStartMs=Date.now(); missionPausedAt=0; missionPausedTotal=0; }
-  clearInterval(missionTimerInt);
-  const tick=()=>{ const el=document.getElementById('missionTimer'); if(el) el.textContent='‚è± '+fmtTempo(missionElapsed()); };
-  tick();
-  missionTimerInt=setInterval(tick,1000);
-}
-function stopMissionTimer(){ clearInterval(missionTimerInt); missionTimerInt=null; }
-function pauseMissionClock(){
-  if(!missionStartMs || missionPausedAt) return;
-  missionPausedAt=Date.now(); stopMissionTimer();
-}
-function resumeMissionClock(){
-  if(!missionPausedAt) return;
-  missionPausedTotal += Date.now()-missionPausedAt;
-  missionPausedAt=0;
-  if(missionStartMs) startMissionTimer(false);
-}
-/* üëÅ Prefer√™ncias de VISUALIZA√á√ÉO (menu Op√ß√µes ‚Üí Visualiza√ß√£o) */
-/* Prefer√™ncias padr√£o da apresenta√ß√£o de batalha: HUD superior discreto,
-   her√≥is sem etiquetas e inimigos identificados abaixo do sprite. */
-let vizPrefs={heroNames:'off',enemyNames:'bottom',dmg:true,dps:true,timer:true,turnInfo:true,topHud:'transparent',infoBar:'transparent'};
-try{ vizPrefs={...vizPrefs,...JSON.parse(localStorage.getItem('12r_viz')||'{}')}; }catch(e){}
-/* Migra√ß√£o de defaults visuais da campanha: aplica uma √∫nica vez para que
-   vers√µes anteriores n√£o reintroduzam HUD s√≥lido e nomes de her√≥is. */
-if(localStorage.getItem('12r_viz_defaults')!=='9.3.9'){
-  vizPrefs.heroNames='off'; vizPrefs.enemyNames='bottom'; vizPrefs.topHud='transparent'; vizPrefs.infoBar='transparent';
-  localStorage.setItem('12r_viz_defaults','9.3.9');
-  localStorage.setItem('12r_viz',JSON.stringify(vizPrefs));
-}
-if(!['solid','transparent','off'].includes(vizPrefs.topHud)) vizPrefs.topHud='solid';
-if(!['solid','transparent','off'].includes(vizPrefs.infoBar)) vizPrefs.infoBar='transparent';
-function saveViz(){ localStorage.setItem('12r_viz',JSON.stringify(vizPrefs)); applyVizSettings(); }
-function applyVizSettings(){
-  document.body.classList.toggle('viz-dmg-off',!vizPrefs.dmg);
-  document.body.classList.toggle('viz-dps-off',!vizPrefs.dps);
-  document.body.classList.toggle('viz-timer-off',!vizPrefs.timer);
-  document.body.classList.toggle('viz-turn-info-off',!vizPrefs.turnInfo);
-  ['solid','transparent','off'].forEach(mode=>{
-    document.body.classList.toggle(`viz-top-hud-${mode}`,vizPrefs.topHud===mode);
-    document.body.classList.toggle(`viz-info-bar-${mode}`,vizPrefs.infoBar===mode);
-  });
-  if(vizPrefs.topHud!=='off') document.body.classList.remove('hud-peek');
-}
-function vizNameLabel(v){ return v==='top'?T('Em cima','Top','Arriba'):v==='off'?T('Desabilitado','Disabled','Desactivado'):T('Embaixo','Bottom','Abajo'); }
-function vizOnOff(v){ return v?T('Mostrar','Show','Mostrar'):T('Ocultar','Hide','Ocultar'); }
-function vizSurfaceLabel(v){ return v==='transparent'?T('Transparente','Transparent','Transparente'):v==='off'?T('Desabilitado','Disabled','Desactivado'):T('Ativo','On','Activo'); }
-function refreshVizBattle(){
-  applyVizSettings();
-  if(document.body.classList.contains('game-active')){
-    renderPartyArena(); renderEnemies(); renderCardStrip();
-    ACTIVE.forEach(i=>updateHeroProgressUI(i));
-  }
-}
-/* F9 ¬∑ Modo foto */
-function togglePhotoMode(on){
-  document.body.classList.toggle('photo-mode',on);
-  if(on){
-    closeAllPanels();
-    const sair=(ev)=>{ togglePhotoMode(false); document.removeEventListener('click',sair,true); ev.stopPropagation(); ev.preventDefault(); };
-    setTimeout(()=>document.addEventListener('click',sair,true),350);
-  }
-}
-
-function loadStage(idx){
-  combatEpoch++;
-  stageTransitioning = false;
-  roomClearScheduled = false;
-  selected = null;
-  stageIndex = idx;
-  if(towerMode && difficulty==='pesadelo' && playerHP>0) survivorStageStartHP=playerHP;
-  gamePaused = false;
-  computeBattleGemColors();
-  hiddenGems={};
-  boardRenderCache=null; /* nova fase = render completo do tabuleiro */
-  { const ar=document.querySelector('.arena'); if(ar){ ar.classList.remove('stage-fade'); void ar.offsetWidth; ar.classList.add('stage-fade'); } }
-  if(!worldRun.active && !towerMode && !bossRushMode){
-    /* rota √≥rf√£: reancora no Reino dos Humanos (fases demo NUNCA voltam) */
-    worldRun={active:true, fase:Math.min(worldProg('humanos').unlocked, WORLDS[0].fases.length-1), nivel:1};
-  }
-  const stageData = bossRushMode ? buildBossRushStage(bossRushIdx) : worldRun.active ? buildWorldLevel() : buildTowerStage(towerFloor);
-  activeStageData = stageData;
-  const diffM=DIFFICULTY_MULTS[difficulty]||DIFFICULTY_MULTS.normal;
-  enemies = stageData.enemies.map(e=>{
-    const hp=Math.round(e.hp*diffM.hp), atk=Math.round(e.atk*diffM.atk);
-    return {...e, hp, atk, maxHp:hp};
-  });
-  playerShield = 0; enemyDots = []; enemyStunTurns = 0; atkBuffTurns = 0; atkBuffMult = 1;
-  lastEnemyAttacker = null;
-  stageTookDamage = false;
-  golemAllies = 0;
-  damageReductionStacks = 0; queenFuryStacks = 0; chamarizCharges = 0; sombrasDevoradorasOn = false;
-  clearInterval(tempoSombrioTimer); tempoSombrioTimer = null;
-  document.getElementById('sombraHud')?.remove();
-  enemyBlindTurns = 0; shieldTurns = 0; reflectTurns = 0; invulnerableTurns = 0;
-  lifestealCharges = 0; lifestealMult = 0; lastDragonRitual = {before:0,after:0,converted:0};
-  const phaseKey=worldRun.active?`humanos-${worldRun.fase}`:(towerMode?`tower-${towerFloor}`:`stage-${idx}`);
-  if(incineratePhaseKey!==phaseKey){ incinerateActive=false; incinerateStacks=0; incineratePhaseKey=phaseKey; }
-  enemyVulnerableTurns = 0; enemyVulnerableMult = 1;
-  stoneArmorTurns = 0;
-  manualTarget = null; lastDamageDealt = 0; heroLastDamage = {}; nextAttackMult = {};
-  royalShuffles = 1;
-  /* Prefetch: sprites da pr√≥xima miss√£o nunca d√£o pop-in */
-  if(worldRun.active && worldRun.nivel<5){
-    try{
-      const proxKeys=WORLDS[0].fases[worldRun.fase].missoes[worldRun.nivel]||[];
-      proxKeys.forEach(kk=>{ const src=HUMANOS_CARDS[kk]?.sprite||HUMANOS_ETYPES[kk]?.sprite; if(src){ const im=new Image(); im.src=src; } });
-    }catch(e){}
-  }
-  /* Julius ¬∑ L√¢mina Dimensional: as sombras acumuladas ferem os inimigos desta miss√£o */
-  if(worldRun.active && pendingDimensional.length){
-    let somaPct=0;
-    pendingDimensional.forEach(fila=>{ const v=fila.shift(); if(v) somaPct+=v; });
-    pendingDimensional=pendingDimensional.filter(f=>f.length);
-    if(somaPct>0){
-      enemies.forEach(e2=>{ e2.hp=Math.max(1,e2.hp-Math.round(e2.maxHp*somaPct/100)); });
-      setTimeout(()=>setBattleStatus(T(`‚öî As Sombras Dimensionais feriram os inimigos em ${somaPct}%!`,`‚öî The Dimensional Shadows wounded the enemies by ${somaPct}%!`,`‚öî ¬°Las Sombras Dimensionales hirieron a los enemigos en un ${somaPct}%!`),'support'),900);
-    }
-  }
-  /* Julius inimigo ¬∑ Tempo Sombrio: a cada 30s reais corrompe uma gema; tudo corrompido = derrota */
-  if(enemies.some(e2=>e2.cardId==='julius'&&e2.hp>0)){
-    tempoSombrioTimer=setInterval(()=>{
-      if(document.hidden||gamePaused||battlePhase==='paused'||playerHP<=0) return;
-      const cand=[];
-      for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){ const key=cellKey(r,c); if(board[r][c]>=0&&!powerUps[key]) cand.push({r,c,key}); }
-      if(!cand.length){
-        clearInterval(tempoSombrioTimer); tempoSombrioTimer=null;
-        setBattleStatus(T('As sombras consumiram o tabuleiro inteiro...','The shadows consumed the entire board...','Las sombras consumieron todo el tablero...'));
-        playerHP=0; updatePlayerHP(); handlePlayerDefeat();
-        return;
-      }
-      const alvo=cand[Math.floor(Math.random()*cand.length)];
-      board[alvo.r][alvo.c]=-4;
-      obstaclesMeta[alvo.key]={type:'sombra',hits:9999};
-      renderBoard();
-      { let hud=document.getElementById('sombraHud');
-        if(!hud){ hud=document.createElement('div'); hud.id='sombraHud'; document.querySelector('.mission-topbar')?.appendChild(hud); }
-        const corrompidas=Object.values(obstaclesMeta).filter(m=>m.type==='sombra').length;
-        hud.textContent='üåë '+corrompidas+'/'+(SIZE*SIZE); }
-      if(!hasValidMoves()) shuffleBoard(false);
-      setBattleStatus(T('‚è≥ Tempo Sombrio corrompeu uma gema!','‚è≥ Dark Time corrupted a gem!','‚è≥ ¬°El Tiempo Sombr√≠o corrompi√≥ una gema!'),'damage');
-    },30000);
-  }
-  ACTIVE.forEach(idx2=>updateHeroProgressUI(idx2));
-  renderStageProgress();
-  renderEnemies();
-  renderGolemUnits();
-  renderHarpyUnits();
-  showStageObjective();
-  updateBattleToolLabels();
-  renderStatusTray();
-  stageTurns=0; stageCollected=0;
-  missionStartMs=0; missionPausedAt=0; missionPausedTotal=0; stopMissionTimer();
-  /* F√ÅCIL: o tabuleiro (power-ups e blocos) continua da miss√£o anterior da fase */
-  const manterTabuleiro = carryBoardNext && difficulty==='facil' && worldRun.active &&
-    worldRun.nivel>1 && Array.isArray(board) && board.length===SIZE;
-  carryBoardNext=false;
-  if(manterTabuleiro){
-    if(findMatches().length>0) sanitizeBoardWithoutMatches();
-    if(!hasValidMoves()) shuffleBoard(false);
-    renderBoard();
-  }else{
-    createBoard();
-    placeObstacles(stageData.obstacles);
-    renderBoard();
-  }
-  consumeInventoryOnBattleStart();
-  if(worldRun.active&&worldRun.fase===0&&worldRun.nivel===1&&!towerMode) startCoach();
-  maybeShowStory(idx);
-  playStageMusic(stageData.scene);
-  const introTitle=worldRun.active?L(stageData.title.split(' ¬∑ ')[1]||stageData.title):towerMode?L(stageData.title):T(`Fase ${idx+1}`,`Stage ${idx+1}`,`Fase ${idx+1}`);
-  setBattleStatus(T(`${introTitle}: combine esferas para enfrentar ${stageData.enemies.map(e=>L(e.name)).join(' e ')}.`,`${introTitle}: match spheres to face ${stageData.enemies.map(e=>L(e.name)).join(' and ')}.`,`${introTitle}: combina esferas para enfrentar a ${stageData.enemies.map(e=>L(e.name)).join(' y ')}.`));
-  const qaMode=new URLSearchParams(location.search).get('qa');
-  if(qaMode==='luciusritual'&&!qaRitualTriggered){
-    qaRitualTriggered=true;
-    const fireIdx=ACTIVE.find(i=>KINGDOMS[i].id==='fogo');
-    const ritual=KINGDOMS[fireIdx]?.abilities.find(a=>a.tipo==='doubleRedOnce');
-    if(ritual) window.setTimeout(()=>triggerAbility(fireIdx,ritual),80);
-  }
-  if(qaMode==='specialclear'&&idx===0){
-    const luciusIdx=ACTIVE.find(i=>KINGDOMS[i].id==='fogo');
-    const blast=KINGDOMS[luciusIdx]?.abilities.find(a=>a.tipo==='dano');
-    if(blast){
-      enemies.forEach(enemy=>{enemy.hp=Math.min(enemy.hp,50);});
-      renderEnemies();
-      heroActiveQueue[luciusIdx]=[blast];
-      updateHeroProgressUI(luciusIdx);
-      setBattleStatus('QA: habilidade especial pronta para validar o encerramento autom√°tico da sala.','system');
-    }
-  }
-  if(qaMode==='activequeue'&&idx===0){
-    const heroIdx=ACTIVE[0];
-    heroActiveQueue[heroIdx]=KINGDOMS[heroIdx].abilities.filter(a=>a.kind==='active');
-    updateHeroProgressUI(heroIdx);
-    setBattleStatus('QA: tr√™s habilidades ativas acumuladas para validar o seletor.','system');
-  }
-  if(qaMode==='barbara'&&idx===0){
-    const terraIdx=ACTIVE.find(i=>KINGDOMS[i].id==='terra');
-    const summon=KINGDOMS[terraIdx]?.abilities.find(a=>a.tipo==='summonGolems');
-    if(terraIdx!==undefined&&summon){
-      heroActiveQueue[terraIdx]=[summon];
-      updateHeroProgressUI(terraIdx);
-      setBattleStatus('QA: Invoca√ß√£o de Golens pronta para validar a arena.','system');
-    }
-  }
-  if(qaMode==='all-specials'&&idx===0){
-    enemies.forEach(enemy=>{ enemy.hp=5000; enemy.maxHp=5000; });
-    renderEnemies();
-    ACTIVE.forEach(heroIdx=>{
-      heroActiveQueue[heroIdx]=KINGDOMS[heroIdx].abilities.filter(a=>a.kind==='active');
-      updateHeroProgressUI(heroIdx);
-    });
-    setBattleStatus('QA: todas as habilidades ativas carregadas para a matriz de especiais.','system');
-  }
-  if(pendingRoomPassives.length){
-    window.setTimeout(()=>launchPendingRoomPassives(),260);
-  }
-  setBattlePhase('idle');
-  saveProgress();
-}
-
-function randColorIndex(){
-  return ACTIVE[Math.floor(gameRandom()*ACTIVE.length)];
-}
-
-function cellKey(r,c){ return `${r}_${c}`; }
-
-function applyPowerupQAFixture(){
-  if(!['127.0.0.1','localhost'].includes(location.hostname)) return false;
-  const params=new URLSearchParams(location.search);
-  const qa=params.get('qa');
-  if(!qa) return false;
-  const base=Array.from({length:SIZE},(_,r)=>Array.from({length:SIZE},(_,c)=>ACTIVE[(r*2+c)%ACTIVE.length]));
-  powerUps={};
-  if(qa==='luciusritual'){ board=base; return true; }
-  if(qa==='match4'){
-    board=base; board[0]=[ACTIVE[0],ACTIVE[0],ACTIVE[1],ACTIVE[0],ACTIVE[2],ACTIVE[3]]; board[1][2]=ACTIVE[0];
-    return true;
-  }
-  if(qa==='match5'){
-    board=base; board[0]=[ACTIVE[0],ACTIVE[0],ACTIVE[1],ACTIVE[0],ACTIVE[0],ACTIVE[2]]; board[1][2]=ACTIVE[0];
-    return true;
-  }
-  if(qa==='powercombo'){
-    board=base;
-    const combo=params.get('combo')||'striped-wrapped';
-    const [first,second]=combo.split('-');
-    const makePower=(type,orientation='horizontal')=>type==='striped'?{type,orientation}:type==='color'?{type:'colorBomb'}:{type:'wrapped'};
-    const powerA=makePower(first,'horizontal'),powerB=makePower(second,'vertical');
-    powerUps[cellKey(5,0)]=powerA;
-    if(powerA.type==='colorBomb') board[5][0]=-2;
-    if(second!=='regular'){
-      powerUps[cellKey(5,1)]=powerB;
-      if(powerB.type==='colorBomb') board[5][1]=-2;
-    }
-    return true;
-  }
-  return false;
-}
-
-let lastFallInfo=null;        // v9: mapa de quedas para animar o refill
-let lastActivatedPowers=[];   // v9: power-ups disparados na resolu√ß√£o atual
-let obstaclesMeta={};         // v9.1: obst√°culos do tabuleiro {r_c:{type:'ice'|'stone',hits}}
-let stageTurns=0;             // v9.1: movimentos do jogador nesta fase
-let stageCollected=0;         // v9.1: esferas coletadas nesta fase
-
-/* v9.1 ¬∑ Obst√°culos: blocos de gelo (1 golpe) e pedra (2 golpes).
-   Quebram com combina√ß√µes vizinhas ou atingidos por power-ups. */
-function placeObstacles(spec){
-  obstaclesMeta={};
-  if(!spec) return;
-  const wanted=[];
-  for(let i=0;i<(spec.ice||0);i++) wanted.push('ice');
-  for(let i=0;i<(spec.stone||0);i++) wanted.push('stone');
-  if(!wanted.length) return;
-  const cells=[];
-  for(let r=1;r<SIZE-1;r++) for(let c=0;c<SIZE;c++) cells.push({r,c});
-  for(let i=cells.length-1;i>0;i--){
-    const j=Math.floor(gameRandom()*(i+1));
-    [cells[i],cells[j]]=[cells[j],cells[i]];
-  }
-  wanted.forEach((type,i)=>{
-    const cell=cells[i]; if(!cell) return;
-    board[cell.r][cell.c]=-4;
-    delete powerUps[cellKey(cell.r,cell.c)];
-    obstaclesMeta[cellKey(cell.r,cell.c)]={type,hits:type==='stone'?2:1};
-  });
-  const labels={ice:'Blocos de gelo t√™m 1 resist√™ncia e quebram com combina√ß√µes vizinhas.',stone:'Blocos de pedra t√™m 2 resist√™ncias; use combina√ß√µes ou power-ups ao lado deles.'};
-  [...new Set(wanted)].forEach(type=>explainMechanicOnce('obstacle-'+type,labels[type]||'Obst√°culo: fa√ßa combina√ß√µes vizinhas para remov√™-lo.'));
-}
-function hitAdjacentObstacles(cells){
-  const hitKeys=new Set();
-  cells.forEach(({r,c})=>{
-    [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dr,dc])=>{
-      const nr=r+dr,nc=c+dc;
-      if(nr<0||nc<0||nr>=SIZE||nc>=SIZE) return;
-      if(board[nr]?.[nc]===-4) hitKeys.add(cellKey(nr,nc));
-    });
-  });
-  let broke=false;
-  hitKeys.forEach(key=>{
-    const meta=obstaclesMeta[key]; if(!meta) return;
-    if(meta.type==='sombra') return; /* Tempo Sombrio: a corrup√ß√£o √© indestrut√≠vel */
-    if(persistentObstaclesMode() && meta.type!=='copas') return; /* Pesadelo: obst√°culos permanentes */
-    meta.hits--;
-    const [r,c]=key.split('_').map(Number);
-    const gemEl=boardEl.querySelector(`.gem[data-r="${r}"][data-c="${c}"]`);
-    if(meta.hits<=0){
-      if(obstaclesMeta[key]?.type!=='sombra') delete obstaclesMeta[key];
-      board[r][c]=-1;
-      if(gemEl) gemEl.classList.add('matched');
-      if(meta.type==='copas'){
-        /* √Ås de Copas estourado: 5% da vida ATUAL de dano */
-        const danoCopas=Math.max(1,Math.round(playerHP*0.05));
-        playerHP=Math.max(0,playerHP-danoCopas); if(danoCopas>0) stageTookDamage=true; updatePlayerHP();
-        showFloatDamage(danoCopas,'playerHpAnchor',true);
-        setBattleStatus(T(`‚ù§ O √Ås de Copas explodiu! Voc√™ perdeu ${danoCopas} de vida.`,`‚ù§ The Ace of Hearts burst! You lost ${danoCopas} HP.`,`‚ù§ ¬°El As de Copas estall√≥! Perdiste ${danoCopas} de vida.`),'damage');
-        if(playerHP<=0) setTimeout(()=>handlePlayerDefeat(),300);
-      }
-      spawnRealmParticles(meta.type==='ice'?'gelo':'terra',gemEl||boardEl,7);
-      broke=true;
-    } else if(gemEl){
-      const block=gemEl.querySelector('.obstacle-block');
-      if(block){ block.classList.remove('ob-strong'); block.classList.add('ob-cracked'); }
-    }
-  });
-  if(broke){ sfxHit(); setBattleStatus(T('Bloco destru√≠do! O caminho est√° mais livre.','Block destroyed! The path is clearer.','¬°Bloque destruido! El camino est√° m√°s libre.'),'support'); }
-}
-
-/* v9.1 ¬∑ Objetivos variados por fase */
-function currentObjective(){ return activeStageData?.objective||null; }
-function checkStageObjective(){
-  const obj=currentObjective();
-  if(!obj) return false;
-  if(obj.type==='survive'&&stageTurns>=obj.turns&&playerHP>0){
-    setBattleStatus(T('Objetivo cumprido: o grupo sobreviveu √† investida!','Objective complete: the party survived the onslaught!','¬°Objetivo cumplido: el grupo sobrevivi√≥ a la embestida!'),'support');
-    onStageCleared();
-    return true;
-  }
-  if(obj.type==='collect'&&stageCollected>=obj.count){
-    setBattleStatus(T('Objetivo cumprido: esferas suficientes coletadas!','Objective complete: enough spheres collected!','¬°Objetivo cumplido: esferas suficientes recogidas!'),'support');
-    onStageCleared();
-    return true;
-  }
-  if(obj.type==='moves'&&stageTurns>obj.limit&&!allEnemiesDefeated()){
-    busy=true; combatEpoch++;
-    sfxDefeat();
-    renderBattleReport('defeatReport');
-    setTimeout(()=>showOverlay('defeatOverlay'),400);
-    return true;
-  }
-  return false;
-}
-
-/* v9.1 ¬∑ Idioma da interface (PT/EN/ES). Conte√∫do dos her√≥is permanece PT nesta vers√£o. */
-const VALID_LANGS=['pt','en','es'];
-let lang=VALID_LANGS.includes(localStorage.getItem('12r_lang'))?localStorage.getItem('12r_lang'):'pt';
-function T(pt,en,es){ return lang==='en'?en:lang==='es'?(es||en):pt; }
-const I18N_DICT={"Reino da Luz":["Realm of Light","Reino de la Luz"],"Reino dos Humanos":["Realm of Humans","Reino de los Humanos"],"Reino da √Ågua":["Realm of Water","Reino del Agua"],"Reino do Fogo":["Realm of Fire","Reino del Fuego"],"Reino da Natureza":["Realm of Nature","Reino de la Naturaleza"],"Reino da Terra":["Realm of Earth","Reino de la Tierra"],"Reino da Areia":["Realm of Sand","Reino de la Arena"],"Reino das Sombras":["Realm of Shadows","Reino de las Sombras"],"Reino do Raio":["Realm of Lightning","Reino del Rayo"],"Reino do Vento":["Realm of Wind","Reino del Viento"],"Reino das Chuvas":["Realm of Rains","Reino de las Lluvias"],"Reino do Gelo":["Realm of Ice","Reino del Hielo"],"DIVINA":["DIVINE","DIVINA"],"NORMAL":["NORMAL","NORMAL"],"RARO":["RARE","RARO"],"Berenice das Sombras":["Shadow Berenice","Berenice de las Sombras"],"VERS√ÉO 9.1":["VERSION 9.1","VERSI√ìN 9.1"],"A Luz Divina de Ygdria ¬∑ Rainha Maga":["The Divine Light of Ygdria ¬∑ Mage Queen","La Luz Divina de Ygdria ¬∑ Reina Maga"],"A Maga da Eternidade ¬∑ Rainha Maga":["The Mage of Eternity ¬∑ Mage Queen","La Maga de la Eternidad ¬∑ Reina Maga"],"Soberana dos Mares ¬∑ Rainha Maga":["Sovereign of the Seas ¬∑ Mage Queen","Soberana de los Mares ¬∑ Reina Maga"],"O Sucessor do Drag√£o de Ignis ¬∑ Rei Mago":["The Successor of the Dragon of Ignis ¬∑ Mage King","El Sucesor del Drag√≥n de Ignis ¬∑ Rey Mago"],"A Guardi√£ de Toda a Natureza ¬∑ Rainha Maga":["The Guardian of All Nature ¬∑ Mage Queen","La Guardiana de Toda la Naturaleza ¬∑ Reina Maga"],"A Maga Mais Forte ¬∑ Rainha Maga":["The Strongest Mage ¬∑ Mage Queen","La Maga M√°s Fuerte ¬∑ Reina Maga"],"A Flor Dan√ßante do O√°sis de Meriady ¬∑ Rainha Maga":["The Dancing Flower of the Oasis of Meriady ¬∑ Mage Queen","La Flor Danzante del Oasis de Meriady ¬∑ Reina Maga"],"A Soberana das Sombras Eternas ¬∑ Rainha Maga":["The Sovereign of the Eternal Shadows ¬∑ Mage Queen","La Soberana de las Sombras Eternas ¬∑ Reina Maga"],"Senhor dos Trov√µes e da Destrui√ß√£o ¬∑ Rei Mago":["Lord of Thunder and Destruction ¬∑ Mage King","Se√±or de los Truenos y la Destrucci√≥n ¬∑ Rey Mago"],"A Rainha Harpia ¬∑ Rainha Maga":["The Harpy Queen ¬∑ Mage Queen","La Reina Arp√≠a ¬∑ Reina Maga"],"Senhor das Chuvas Torrenciais ¬∑ Rei Mago":["Lord of the Torrential Rains ¬∑ Mage King","Se√±or de las Lluvias Torrenciales ¬∑ Rey Mago"],"O Abomin√°vel Rei das Neves ¬∑ Rei Mago":["The Abominable Snow King ¬∑ Mage King","El Abominable Rey de las Nieves ¬∑ Rey Mago"],"Sentinela da Capital ¬∑ Soldado":["Sentinel of the Capital ¬∑ Soldier","Centinela de la Capital ¬∑ Soldado"],"O Mago Nobre ¬∑ Mago":["The Noble Mage ¬∑ Mage","El Mago Noble ¬∑ Mago"],"Olhos da Coroa ¬∑ Arqueira":["Eyes of the Crown ¬∑ Archer","Ojos de la Corona ¬∑ Arquera"],"Escudo Real de Bernyce ¬∑ Cavaleiro":["Royal Shield of Bernyce ¬∑ Knight","Escudo Real de Bernyce ¬∑ Caballero"],"Toda grande vit√≥ria come√ßa com um simples soldado.":["Every great victory begins with a simple soldier.","Toda gran victoria comienza con un simple soldado."],"Cada feiti√ßo escrito hoje ser√° uma lenda amanh√£.":["Every spell written today will be a legend tomorrow.","Cada hechizo escrito hoy ser√° una leyenda ma√±ana."],"Nenhum inimigo escapa do olhar da Coroa.":["No enemy escapes the gaze of the Crown.","Ning√∫n enemigo escapa a la mirada de la Corona."],"Minha Lan√ßa protege o reino antes da minha pr√≥pria vida.":["My Lance protects the realm before my own life.","Mi Lanza protege el reino antes que mi propia vida."],"Fulgor Ofuscante":["Blinding Radiance","Fulgor Cegador"],"A cada 4 turnos, a luz ofusca e embaralha todo o tabuleiro.":["Every 4 turns, the light dazzles and shuffles the entire board.","Cada 4 turnos, la luz deslumbra y baraja todo el tablero."],"Decreto da Coroa":["Crown Decree","Decreto de la Corona"],"A cada 4 turnos, todos os her√≥is perdem 6 de energia e ela recupera 5√ó o total drenado.":["Every 4 turns, all heroes lose 6 energy and she heals 5x the total drained.","Cada 4 turnos, todos los h√©roes pierden 6 de energ√≠a y ella recupera 5√ó el total drenado."],"Mar√© Vazante":["Ebb Tide","Marea Menguante"],"A cada 4 turnos, uma coluna inteira √© lavada e re-preenchida sem conceder energia.":["Every 4 turns, an entire column is washed away and refilled without granting energy.","Cada 4 turnos, una columna entera es arrastrada y rellenada sin otorgar energ√≠a."],"Sopro de Brasas":["Ember Breath","Aliento de Brasas"],"A cada 4 turnos, queima uma cruz de 5 c√©lulas; power-ups atingidos s√£o destru√≠dos.":["Every 4 turns, burns a cross of 5 cells; power-ups caught in it are destroyed.","Cada 4 turnos, quema una cruz de 5 celdas; los potenciadores alcanzados son destruidos."],"Ra√≠zes Famintas":["Hungry Roots","Ra√≠ces Hambrientas"],"A cada 4 turnos, ra√≠zes prendem 2 esferas do tabuleiro.":["Every 4 turns, roots trap 2 orbs on the board.","Cada 4 turnos, las ra√≠ces atrapan 2 esferas del tablero."],"Abalo S√≠smico":["Seismic Shock","Sacudida S√≠smica"],"A cada 4 turnos, duas linhas do tabuleiro s√£o sacudidas e embaralhadas.":["Every 4 turns, two rows of the board are shaken and shuffled.","Cada 4 turnos, dos filas del tablero son sacudidas y barajadas."],"Miragem de Meriady":["Mirage of Meriady","Espejismo de Meriady"],"A cada 4 turnos, a areia cobre 3 esferas do tabuleiro.":["Every 4 turns, sand covers 3 orbs on the board.","Cada 4 turnos, la arena cubre 3 esferas del tablero."],"V√©u do Eclipse":["Veil of the Eclipse","Velo del Eclipse"],"A cada 4 turnos, 5 esferas t√™m a cor oculta por 3 turnos.":["Every 4 turns, 5 orbs have their color hidden for 3 turns.","Cada 4 turnos, 5 esferas tienen su color oculto por 3 turnos."],"Curto-Circuito":["Short Circuit","Cortocircuito"],"A cada 4 turnos, o her√≥i mais carregado perde toda energia acima de 50.":["Every 4 turns, the most charged hero loses all energy above 50.","Cada 4 turnos, el h√©roe m√°s cargado pierde toda la energ√≠a por encima de 50."],"Rajada de Lafesia":["Gust of Lafesia","R√°faga de Lafesia"],"A cada 4 turnos, uma linha desliza em c√≠rculo e power-ups na linha s√£o levados pelo vento.":["Every 4 turns, a row slides in a loop and power-ups on it are swept away by the wind.","Cada 4 turnos, una fila se desliza en c√≠rculo y los potenciadores en ella son llevados por el viento."],"Manto de Chuva":["Rain Cloak","Manto de Lluvia"],"A cada 4 turnos, encharca as armas: o pr√≥ximo ataque de cada her√≥i causa metade do dano.":["Every 4 turns, soaks the weapons: each hero's next attack deals half damage.","Cada 4 turnos, empapa las armas: el pr√≥ximo ataque de cada h√©roe causa la mitad del da√±o."],"Nevasca de Artyka":["Blizzard of Artyka","Ventisca de Artyka"],"A cada 4 turnos, congela 3 esferas ‚Äî uma delas com gelo refor√ßado.":["Every 4 turns, freezes 3 orbs ‚Äî one of them with reinforced ice.","Cada 4 turnos, congela 3 esferas ‚Äî una de ellas con hielo reforzado."],"Troca de Guarda":["Changing of the Guard","Cambio de Guardia"],"A cada 6 turnos, 3 esferas aleat√≥rias trocam de cor.":["Every 6 turns, 3 random orbs change color.","Cada 6 turnos, 3 esferas aleatorias cambian de color."],"Selo Arcano":["Arcane Seal","Sello Arcano"],"A cada 5 turnos, sela 1 power-up do tabuleiro; sem power-up, recupera 60 de vida.":["Every 5 turns, seals 1 power-up on the board; with no power-up, restores 60 HP.","Cada 5 turnos, sella 1 potenciador del tablero; si no hay potenciador, recupera 60 de vida."],"Flecha Certeira":["Deadeye Arrow","Flecha Certera"],"A cada 5 turnos, o her√≥i mais carregado perde 12 de energia.":["Every 5 turns, the most charged hero loses 12 energy.","Cada 5 turnos, el h√©roe m√°s cargado pierde 12 de energ√≠a."],"Basti√£o de Lan√ßas":["Bastion of Lances","Basti√≥n de Lanzas"],"A cada 5 turnos, finca um bloqueio de pedra no tabuleiro.":["Every 5 turns, plants a stone blocker on the board.","Cada 5 turnos, clava un bloqueo de piedra en el tablero."],"Corte de Luz":["Light Slash","Corte de Luz"],"Dobra o dano do pr√≥ximo ataque de Galat√©ia.":["Doubles the damage of Galat√©ia's next attack.","Duplica el da√±o del pr√≥ximo ataque de Galat√©ia."],"Luz da Prote√ß√£o":["Light of Protection","Luz de la Protecci√≥n"],"Cega todos os inimigos por uma rodada; o pr√≥ximo ataque erra.":["Blinds all enemies for one round; their next attack misses.","Ciega a todos los enemigos por una ronda; el pr√≥ximo ataque falla."],"Cura Divina":["Divine Heal","Curaci√≥n Divina"],"Recupera 20% da vida m√°xima do grupo.":["Restores 20% of the party's max HP.","Recupera el 20% de la vida m√°xima del grupo."],"Explos√£o de Luz":["Light Burst","Explosi√≥n de Luz"],"Atinge todos os inimigos com tr√™s vezes o √∫ltimo ataque.":["Hits all enemies with three times the last attack.","Golpea a todos los enemigos con tres veces el √∫ltimo ataque."],"Luz Divina de Ygdria":["Divine Light of Ygdria","Luz Divina de Ygdria"],"Recupera 30% da vida m√°xima do grupo.":["Restores 30% of the party's max HP.","Recupera el 30% de la vida m√°xima del grupo."],"Por Toda a Luz do Universo":["By All the Light of the Universe","Por Toda la Luz del Universo"],"Atinge todos os inimigos com o dobro da soma dos √∫ltimos ataques do grupo.":["Hits all enemies with double the sum of the party's last attacks.","Golpea a todos los enemigos con el doble de la suma de los √∫ltimos ataques del grupo."],"Cora√ß√£o Piedoso":["Merciful Heart","Coraz√≥n Piadoso"],"Ergue um escudo de vida por dois turnos.":["Raises a life shield for two turns.","Levanta un escudo de vida por dos turnos."],"Cora√ß√£o Puro":["Pure Heart","Coraz√≥n Puro"],"O dano do √∫ltimo ataque ecoa em todos os inimigos.":["The damage of the last attack echoes across all enemies.","El da√±o del √∫ltimo ataque resuena en todos los enemigos."],"Milagre":["Miracle","Milagro"],"Ataque das Fronteiras do Universo":["Attack from the Borders of the Universe","Ataque de las Fronteras del Universo"],"Desfere um dano cr√≠tico igual a cinco vezes o ataque base.":["Deals critical damage equal to five times the base attack.","Asesta un da√±o cr√≠tico igual a cinco veces el ataque base."],"Sempre Comigo":["Always With Me","Siempre Conmigo"],"Carrega as tr√™s habilidades ativas de todos os aliados.":["Charges the three active abilities of all allies.","Carga las tres habilidades activas de todos los aliados."],"Por Toda Eternidade":["For All Eternity","Por Toda la Eternidad"],"Os pr√≥ximos tr√™s ataques curam cinco vezes o valor de ataque.":["The next three attacks heal five times the attack value.","Los pr√≥ximos tres ataques curan cinco veces el valor de ataque."],"Corais Explosivos":["Explosive Corals","Corales Explosivos"],"Atinge um oponente com duas vezes o √∫ltimo ataque.":["Hits one opponent with twice the last attack.","Golpea a un oponente con dos veces el √∫ltimo ataque."],"Armadura de Corais":["Coral Armor","Armadura de Corales"],"Protege o grupo e devolve o dano ao inimigo por um turno.":["Protects the party and returns damage to the enemy for one turn.","Protege al grupo y devuelve el da√±o al enemigo por un turno."],"Cardumes Invasores":["Invading Shoals","Card√∫menes Invasores"],"Impede que o grupo sofra dano por dois turnos.":["Prevents the party from taking damage for two turns.","Impide que el grupo sufra da√±o por dos turnos."],"Concha Impenetr√°vel":["Impenetrable Shell","Concha Impenetrable"],"Ergue um escudo resistente durante tr√™s turnos.":["Raises a sturdy shield for three turns.","Levanta un escudo resistente durante tres turnos."],"Abertura dos Port√µes de Atlantis":["Opening of the Gates of Atlantis","Apertura de las Puertas de Atlantis"],"Atinge todos os inimigos com tr√™s vezes o √∫ltimo combo.":["Hits all enemies with three times the last combo.","Golpea a todos los enemigos con tres veces el √∫ltimo combo."],"Garras do Drag√£o":["Dragon Claws","Garras del Drag√≥n"],"Inflige duas vezes o dano do √∫ltimo ataque de Lucius.":["Deals twice the damage of Lucius's last attack.","Inflige dos veces el da√±o del √∫ltimo ataque de Lucius."],"Renascido das Chamas":["Reborn from the Flames","Renacido de las Llamas"],"Recupera 10% da vida m√°xima do grupo.":["Restores 10% of the party's max HP.","Recupera el 10% de la vida m√°xima del grupo."],"Chuva de Lava":["Lava Rain","Lluvia de Lava"],"Uma chuva vulc√¢nica causa 100 de dano em cada inimigo.":["A volcanic rain deals 100 damage to each enemy.","Una lluvia volc√°nica causa 100 de da√±o a cada enemigo."],"Ritual do Drag√£o":["Dragon Ritual","Ritual del Drag√≥n"],"Dobra uma √∫nica vez a quantidade atual de pedras vermelhas, preservando power-ups.":["Doubles the current number of red gems a single time, preserving power-ups.","Duplica una sola vez la cantidad actual de gemas rojas, conservando los potenciadores."],"Explos√£o de Fogo do Drag√£o":["Dragon Fire Burst","Explosi√≥n de Fuego del Drag√≥n"],"Explode o alvo com 500 de dano direto.":["Blasts the target with 500 direct damage.","Hace estallar al objetivo con 500 de da√±o directo."],"Armadura de Fogo Eterna":["Eternal Fire Armor","Armadura de Fuego Eterna"],"At√© o fim da fase, cada ataque acumula Incinerar e causa dano crescente ao longo do tempo.":["Until the end of the stage, each attack stacks Incinerate and deals increasing damage over time.","Hasta el final de la fase, cada ataque acumula Incinerar y causa da√±o creciente con el tiempo."],"Ben√ß√£o":["Blessing","Bendici√≥n"],"Adiciona 10 pontos ao contador de energia de todos os aliados.":["Adds 10 points to every ally's energy counter.","A√±ade 10 puntos al contador de energ√≠a de todos los aliados."],"Escudo de Folhas":["Leaf Shield","Escudo de Hojas"],"Protege o grupo contra o pr√≥ximo ataque.":["Protects the party against the next attack.","Protege al grupo contra el pr√≥ximo ataque."],"Vinhas Mortais":["Deadly Vines","Enredaderas Mortales"],"Prende o inimigo por tr√™s turnos e causa duas vezes o dano do √∫ltimo ataque.":["Traps the enemy for three turns and deals twice the damage of the last attack.","Atrapa al enemigo por tres turnos y causa dos veces el da√±o del √∫ltimo ataque."],"Natureza Morta":["Still Life","Naturaleza Muerta"],"Adiciona tr√™s power-ups aleat√≥rios ao tabuleiro.":["Adds three random power-ups to the board.","A√±ade tres potenciadores aleatorios al tablero."],"Esp√≠rito da Natureza":["Spirit of Nature","Esp√≠ritu de la Naturaleza"],"Cada joia verde no tabuleiro recupera 100 de HP.":["Each green gem on the board restores 100 HP.","Cada gema verde en el tablero recupera 100 de vida."],"Unidade da Natureza":["Unity of Nature","Unidad de la Naturaleza"],"Cada joia verde no tabuleiro adiciona 100 de dano ao ataque.":["Each green gem on the board adds 100 damage to the attack.","Cada gema verde en el tablero a√±ade 100 de da√±o al ataque."],"Golpe da Clava":["Club Smash","Golpe de Maza"],"Atinge o inimigo com duas vezes o √∫ltimo ataque e o atordoa por dois turnos.":["Hits the enemy with twice the last attack and stuns it for two turns.","Golpea al enemigo con dos veces el √∫ltimo ataque y lo aturde por dos turnos."],"Armadura de Pedra":["Stone Armor","Armadura de Piedra"],"Reduz o dano recebido e devolve parte dele durante dois turnos.":["Reduces damage taken and returns part of it for two turns.","Reduce el da√±o recibido y devuelve parte de √©l durante dos turnos."],"Terremoto Destruidor":["Devastating Earthquake","Terremoto Destructor"],"Causa 100 de dano em todos e reduz a defesa inimiga.":["Deals 100 damage to all and lowers enemy defense.","Causa 100 de da√±o a todos y reduce la defensa enemiga."],"Invoca√ß√£o de Golens":["Golem Summoning","Invocaci√≥n de G√≥lems"],"Invoca dois golens; cada um replica metade do dano de Kallendra at√© o fim da miss√£o.":["Summons two golems; each replicates half of Kallendra's damage until the end of the mission.","Invoca dos g√≥lems; cada uno replica la mitad del da√±o de Kallendra hasta el final de la misi√≥n."],"For√ßa Terra":["Earth Force","Fuerza Tierra"],"Atinge todos os inimigos com 300 de dano.":["Hits all enemies with 300 damage.","Golpea a todos los enemigos con 300 de da√±o."],"Terra Viva":["Living Earth","Tierra Viva"],"Sacrifica dois golens para infligir 1000 de dano ao alvo.":["Sacrifices two golems to inflict 1000 damage on the target.","Sacrifica dos g√≥lems para infligir 1000 de da√±o al objetivo."],"Tempestade de Areia":["Sandstorm","Tormenta de Arena"],"Anula a vis√£o dos inimigos, fazendo os ataques errarem neste turno.":["Blots out the enemies' vision, making their attacks miss this turn.","Anula la visi√≥n de los enemigos, haciendo que sus ataques fallen este turno."],"L√¢mina Dan√ßante":["Dancing Blade","Hoja Danzante"],"Atinge um inimigo com 300 de dano.":["Hits one enemy with 300 damage.","Golpea a un enemigo con 300 de da√±o."],"Pir√¢mide de Meriady":["Pyramid of Meriady","Pir√°mide de Meriady"],"Adiciona um escudo por uma rodada.":["Adds a shield for one round.","A√±ade un escudo por una ronda."],"O√°sis no Deserto":["Oasis in the Desert","Oasis en el Desierto"],"Recupera 600 de vida.":["Restores 600 HP.","Recupera 600 de vida."],"Enigma da Esfinge":["Riddle of the Sphinx","Enigma de la Esfinge"],"Com v√°rios inimigos, o mais fraco perde metade da vida; sozinho, recebe 500 de dano.":["With several enemies, the weakest loses half its HP; if alone, it takes 500 damage.","Con varios enemigos, el m√°s d√©bil pierde la mitad de su vida; si est√° solo, recibe 500 de da√±o."],"Dan√ßa das Mil L√¢minas":["Dance of a Thousand Blades","Danza de las Mil Hojas"],"Atinge todos os inimigos com 70 de dano para cada pe√ßa amarela no tabuleiro.":["Hits all enemies with 70 damage for each yellow piece on the board.","Golpea a todos los enemigos con 70 de da√±o por cada pieza amarilla en el tablero."],"Cora√ß√£o Impiedoso":["Merciless Heart","Coraz√≥n Despiadado"],"Cria um campo que dobra o dano recebido pelo inimigo por um turno.":["Creates a field that doubles the damage the enemy takes for one turn.","Crea un campo que duplica el da√±o que recibe el enemigo por un turno."],"Cora√ß√£o Impuro":["Impure Heart","Coraz√≥n Impuro"],"Todo o dano recebido volta ao inimigo durante dois turnos.":["All damage taken returns to the enemy for two turns.","Todo el da√±o recibido vuelve al enemigo durante dos turnos."],"Maldi√ß√£o":["Curse","Maldici√≥n"],"Retira 10% da vida do alvo inimigo que atacou no √∫ltimo turno.":["Drains 10% of the HP of the enemy that attacked last turn.","Quita el 10% de la vida del enemigo que atac√≥ en el √∫ltimo turno."],"Sombra do Universo":["Shadow of the Universe","Sombra del Universo"],"Desfere em todos os inimigos um cr√≠tico devastador de doze vezes o ataque base.":["Unleashes on all enemies a devastating critical of twelve times the base attack.","Asesta a todos los enemigos un cr√≠tico devastador de doce veces el ataque base."],"Todas as Sombras Venham a Mim":["All Shadows Come to Me","Que Todas las Sombras Vengan a M√≠"],"Dobra uma √∫nica vez o n√∫mero atual de blocos das sombras.":["Doubles the current number of shadow blocks a single time.","Duplica una sola vez el n√∫mero actual de bloques de las sombras."],"Por Toda a Escurid√£o":["By All the Darkness","Por Toda la Oscuridad"],"Multiplica o pr√≥ximo ataque pelo total de blocos das sombras no tabuleiro.":["Multiplies the next attack by the total shadow blocks on the board.","Multiplica el pr√≥ximo ataque por el total de bloques de las sombras en el tablero."],"Ataque de Raios":["Lightning Strike","Ataque de Rayos"],"Um raio cai no inimigo infligindo 100 de dano.":["A lightning bolt strikes the enemy, dealing 100 damage.","Un rayo cae sobre el enemigo infligiendo 100 de da√±o."],"Estrondo":["Thunderclap","Estruendo"],"Atordoa todos os inimigos por 1 turno.":["Stuns all enemies for 1 turn.","Aturde a todos los enemigos por 1 turno."],"Campo Magn√©tico":["Magnetic Field","Campo Magn√©tico"],"Coloca um escudo magn√©tico e devolve os ataques recebidos por 3 turnos.":["Deploys a magnetic shield and returns incoming attacks for 3 turns.","Coloca un escudo magn√©tico y devuelve los ataques recibidos por 3 turnos."],"Full Power":["Full Power","Full Power"],"Adiciona 3 esferas de energia ao redor dele; cada esfera dobra seu ataque. Cada uma dura 1 turno.":["Adds 3 energy orbs around him; each orb doubles his attack. Each lasts 1 turn.","A√±ade 3 esferas de energ√≠a a su alrededor; cada esfera duplica su ataque. Cada una dura 1 turno."],"Trov√£o Fulminante":["Fulminating Thunder","Trueno Fulminante"],"Atinge o inimigo com um raio infligindo 1000 de dano.":["Strikes the enemy with a bolt dealing 1000 damage.","Golpea al enemigo con un rayo infligiendo 1000 de da√±o."],"Hecatombe":["Hecatomb","Hecatombe"],"Atinge todos os inimigos com 150 de dano para cada pe√ßa roxa no tabuleiro e inflige os efeitos de atordoar e eletrocutar.":["Hits all enemies with 150 damage for each purple piece on the board and inflicts stun and electrocute effects.","Golpea a todos los enemigos con 150 de da√±o por cada pieza morada en el tablero e inflige los efectos de aturdir y electrocutar."],"Furac√£o":["Hurricane","Hurac√°n"],"Atinge todos os inimigos com 100 de dano.":["Hits all enemies with 100 damage.","Golpea a todos los enemigos con 100 de da√±o."],"Barreira de Vento":["Wind Barrier","Barrera de Viento"],"Impede os danos por 2 turnos.":["Blocks damage for 2 turns.","Impide el da√±o por 2 turnos."],"Garras Afiadas":["Sharpened Claws","Garras Afiladas"],"Atinge o inimigo com um dano extra do dobro do ataque.":["Hits the enemy with extra damage of double the attack.","Golpea al enemigo con un da√±o extra del doble del ataque."],"Furac√£o Destruidor":["Devastating Hurricane","Hurac√°n Destructor"],"F√∫ria dos C√©us":["Fury of the Skies","Furia de los Cielos"],"2 Harpias se unem a ela, cada uma atacando com 20% do dano.":["2 Harpies join her, each attacking with 20% of her damage.","2 Arp√≠as se unen a ella, cada una atacando con el 20% del da√±o."],"F√∫ria Suprema dos C√©us":["Supreme Fury of the Skies","Furia Suprema de los Cielos"],"Mais 3 Harpias se unem a ela, cada uma atacando com 20% do dano, totalizando 5.":["3 more Harpies join her, each attacking with 20% of her damage, for a total of 5.","3 Arp√≠as m√°s se unen a ella, cada una atacando con el 20% del da√±o, para un total de 5."],"Chuva Leve":["Light Rain","Lluvia Ligera"],"Atinge todos os inimigos com 30 de dano em todos os turnos. Dura at√© eles morrerem.":["Hits all enemies with 30 damage every turn. Lasts until they die.","Golpea a todos los enemigos con 30 de da√±o en todos los turnos. Dura hasta que mueran."],"Aprendendo Conceitos Volume I":["Learning Concepts Volume I","Aprendiendo Conceptos Volumen I"],"Usa o seu livro para criar 3 power-ups seus.":["Uses his book to create 3 of his power-ups.","Usa su libro para crear 3 potenciadores suyos."],"Vis√£o Comprometida":["Impaired Vision","Visi√≥n Comprometida"],"Faz os inimigos errarem o ataque por 3 turnos.":["Makes enemies miss their attacks for 3 turns.","Hace que los enemigos fallen sus ataques por 3 turnos."],"Aprendendo Conceitos Volume II":["Learning Concepts Volume II","Aprendiendo Conceptos Volumen II"],"Usa o seu livro para criar 3 power-ups m√°ximos.":["Uses his book to create 3 maximum power-ups.","Usa su libro para crear 3 potenciadores m√°ximos."],"Chuva √Åcida":["Acid Rain","Lluvia √Åcida"],"D√° 300 de dano no inimigo, e 30 de dano em todos os turnos.":["Deals 300 damage to the enemy, plus 30 damage every turn.","Causa 300 de da√±o al enemigo, y 30 de da√±o en todos los turnos."],"Chuva Torrencial":["Torrential Rain","Lluvia Torrencial"],"Atinge todos os inimigos com 100 de dano em todos os turnos. Dura at√© eles morrerem.":["Hits all enemies with 100 damage every turn. Lasts until they die.","Golpea a todos los enemigos con 100 de da√±o en todos los turnos. Dura hasta que mueran."],"Machado de Gelo":["Ice Axe","Hacha de Hielo"],"Inflige 300 de dano no inimigo e 150 em √°rea.":["Deals 300 damage to the enemy and 150 area damage.","Inflige 300 de da√±o al enemigo y 150 en √°rea."],"Bola de Neve":["Snowball","Bola de Nieve"],"Atordoa o inimigo pela quantidade de turnos equivalente a 1/4 das pedras cinza claras no tabuleiro.":["Stuns the enemy for a number of turns equal to 1/4 of the light gray gems on the board.","Aturde al enemigo por una cantidad de turnos equivalente a 1/4 de las gemas gris claro en el tablero."],"Aurora Austral":["Southern Aurora","Aurora Austral"],"Recupera 500 de vida.":["Restores 500 HP.","Recupera 500 de vida."],"Aurora Boreal":["Northern Lights","Aurora Boreal"],"Inflige 500 de dano no inimigo.":["Deals 500 damage to the enemy.","Inflige 500 de da√±o al enemigo."],"Geada Branca":["White Frost","Escarcha Blanca"],"D√° 100 de dano em cada inimigo + 20 por cada pe√ßa cinza clara no tabuleiro e congela eles por 1 turno.":["Deals 100 damage to each enemy + 20 per light gray piece on the board and freezes them for 1 turn.","Causa 100 de da√±o a cada enemigo + 20 por cada pieza gris claro en el tablero y los congela por 1 turno."],"Morte Congelada":["Frozen Death","Muerte Congelada"],"Congela totalmente o inimigo por 5 turnos e reduz a vida dele pela metade da atual.":["Fully freezes the enemy for 5 turns and cuts its current HP in half.","Congela totalmente al enemigo por 5 turnos y reduce su vida a la mitad de la actual."],"Ben√ß√£o das Flores de Cerejeira":["Blessing of the Cherry Blossoms","Bendici√≥n de las Flores de Cerezo"],"Recupera 100 de vida todas as vezes que for acionada (25%, 50%, 75%, 100%).":["Restores 100 HP every time it triggers (25%, 50%, 75%, 100%).","Recupera 100 de vida cada vez que se activa (25%, 50%, 75%, 100%)."],"Flechas das Flores de Cerejeira":["Arrows of the Cherry Blossoms","Flechas de las Flores de Cerezo"],"Atinge todos os inimigos infligindo o dano do √∫ltimo ataque (25%, 50%, 75%, 100%).":["Hits all enemies dealing the damage of the last attack (25%, 50%, 75%, 100%).","Golpea a todos los enemigos infligiendo el da√±o del √∫ltimo ataque (25%, 50%, 75%, 100%)."],"Lan√ßa das Flores de Cerejeira":["Lance of the Cherry Blossoms","Lanza de las Flores de Cerezo"],"Atinge o inimigo infligindo 3√ó o dano do √∫ltimo ataque (25%, 50%, 75%, 100%).":["Hits the enemy dealing 3√ó the damage of the last attack (25%, 50%, 75%, 100%).","Golpea al enemigo infligiendo 3√ó el da√±o del √∫ltimo ataque (25%, 50%, 75%, 100%)."],"Cl√°ssica":["Classic","Cl√°sica"],"Falange":["Phalanx","Falange"],"Muralha":["Wall","Muralla"],"Coluna Diagonal":["Diagonal Column","Columna Diagonal"],"Ponta de Lan√ßa":["Spearhead","Punta de Lanza"],"Escudo":["Shield","Escudo"],"Escolta Real":["Royal Escort","Escolta Real"],"Emboscada":["Ambush","Emboscada"],"Ala Esquerda":["Left Wing","Ala Izquierda"],"Ala Direita":["Right Wing","Ala Derecha"],"Losango":["Diamond","Rombo"],"Estrela do Caos":["Chaos Star","Estrella del Caos"],"Primeira Vit√≥ria":["First Victory","Primera Victoria"],"Ven√ßa uma fase.":["Win a stage.","Gana una fase."],"Intoc√°vel":["Untouchable","Intocable"],"Ven√ßa uma fase sem sofrer dano.":["Win a stage without taking damage.","Gana una fase sin recibir da√±o."],"Mestre do Combo":["Combo Master","Maestro del Combo"],"Alcance um combo √ó8.":["Reach an x8 combo.","Alcanza un combo √ó8."],"Art√≠fice":["Artificer","Art√≠fice"],"Crie 10 power-ups em uma run.":["Craft 10 power-ups in one run.","Crea 10 potenciadores en una partida."],"Regulador de Ygdria":["Regulator of Ygdria","Regulador de Ygdria"],"Conquiste as 10 fases do Reino dos Humanos.":["Conquer all 10 stages of the Realm of Humans.","Conquista las 10 fases del Reino de los Humanos."],"Perfeccionista":["Perfectionist","Perfeccionista"],"Conquiste 3 estrelas em 5 fases.":["Earn 3 stars on 5 stages.","Consigue 3 estrellas en 5 fases."],"Escalador":["Climber","Escalador"],"Supere o andar 5 da Torre Infinita.":["Clear floor 5 of the Infinite Tower.","Supera el piso 5 de la Torre Infinita."],"Lenda da Torre":["Tower Legend","Leyenda de la Torre"],"Supere o andar 10 da Torre Infinita.":["Clear floor 10 of the Infinite Tower.","Supera el piso 10 de la Torre Infinita."],"Corte Sombria":["Dark Court","Corte Sombr√≠a"],"Ven√ßa uma fase com Berenice das Sombras e Mardogear juntos.":["Win a stage with Shadow Berenice and Mardogear together.","Gana una fase con Berenice de las Sombras y Mardogear juntos."],"Tesouro Real":["Royal Treasure","Tesoro Real"],"Acumule 500 moedas.":["Hoard 500 coins.","Acumula 500 monedas."],"Ritual Di√°rio":["Daily Ritual","Ritual Diario"],"Conclua um Desafio Di√°rio.":["Complete a Daily Challenge.","Completa un Desaf√≠o Diario."],"Veterano":["Veteran","Veterano"],"Alcance o n√≠vel de perfil 5.":["Reach profile level 5.","Alcanza el nivel de perfil 5."],"Embaralhamento Extra":["Extra Shuffle","Barajado Extra"],"+1 embaralhamento real na pr√≥xima batalha.":["+1 royal shuffle in your next battle.","+1 barajado real en tu pr√≥xima batalla."],"Po√ß√£o Vital":["Vital Potion","Poci√≥n Vital"],"Recupera 600 de HP no in√≠cio da pr√≥xima batalha.":["Restores 600 HP at the start of your next battle.","Restaura 600 de vida al inicio de tu pr√≥xima batalla."],"B√™n√ß√£o dos Reinos":["Realm Blessing","Bendici√≥n de los Reinos"],"Comece a pr√≥xima batalha com 2 power-ups no tabuleiro.":["Start your next battle with 2 power-ups on the board.","Comienza tu pr√≥xima batalla con 2 potenciadores en el tablero."],"Dano cont√≠nuo":["Damage over time","Da√±o continuo"],"gelo":["ice","hielo"],"pedra":["stone","piedra"],"areia":["sand","arena"],"vinhas":["vines","enredaderas"],"O p√¢ntano sussurra... sinto presen√ßas famintas rondando o Port√£o.":["The swamp whispers... I sense hungry presences circling the Gate.","El pantano susurra... siento presencias hambrientas rondando el Portal."],"Que venham! O fogo de Ignis abrir√° alas para todos n√≥s.":["Let them come! The fire of Ignis will clear the way for us all.","¬°Que vengan! El fuego de Ignis abrir√° camino para todos nosotros."],"Estas pedras guardam mem√≥ria. A Sentinela desperta ‚Äî pisem leve.":["These stones hold memory. The Sentinel awakens ‚Äî tread lightly.","Estas piedras guardan memoria. La Centinela despierta ‚Äî pisen con cuidado."],"A floresta esconde olhos entre as copas. Fiquem pr√≥ximos de mim.":["The forest hides eyes among the treetops. Stay close to me.","El bosque esconde ojos entre las copas. Mant√©nganse cerca de m√≠."],"O tempo pesa neste corredor... os espectros odeiam os vivos.":["Time weighs heavy in this corridor... the specters hate the living.","El tiempo pesa en este pasillo... los espectros odian a los vivos."],"O Trono est√° al√©m destas chamas. O Drag√£o Carmesim nos aguarda!":["The Throne lies beyond these flames. The Crimson Dragon awaits us!","El Trono est√° m√°s all√° de estas llamas. ¬°El Drag√≥n Carmes√≠ nos espera!"],"Drag√µes tamb√©m sangram. Deixem a escurid√£o ir √† frente.":["Dragons bleed too. Let the darkness lead the way.","Los dragones tambi√©n sangran. Dejen que la oscuridad vaya al frente."],"Minha terra natal... as dunas dan√ßam comigo. Colham as esferas que o vento trouxer.":["My homeland... the dunes dance with me. Gather the spheres the wind brings.","Mi tierra natal... las dunas bailan conmigo. Recojan las esferas que traiga el viento."],"Este abismo me pertence. Sobrevivam ao que vem ‚Äî eu cuido do resto.":["This abyss belongs to me. Survive what is coming ‚Äî I will handle the rest.","Este abismo me pertenece. Sobrevivan a lo que viene ‚Äî yo me encargo del resto."],"Um trono sombrio? Que o c√©u ruja: a HECATOMBE espera por eles.":["A dark throne? Let the sky roar: the HECATOMB awaits them.","¬øUn trono sombr√≠o? Que el cielo ruja: la HECATOMBE los espera."],"E quando o trov√£o passar... apenas o gelo permanecer√°.":["And when the thunder passes... only the ice will remain.","Y cuando pase el trueno... solo el hielo permanecer√°."],"Po√ß√£o Vital (+600 HP)":["Vital Potion (+600 HP)","Poci√≥n Vital (+600 HP)"],"Bomba de Cor":["Color Bomb","Bomba de Color"],"Embrulhado":["Wrapped","Envuelto"],"Listrado":["Striped","Rayado"],"Chuva":["Rain","Lluvia"],"Eletrocutado":["Electrocuted","Electrocutado"],"Incinerar":["Incinerate","Incinerar"],"Slime de Cerejeira":["Cherry Blossom Slime","Slime de Cerezo"],"Lobo Raivoso":["Rabid Wolf","Lobo Rabioso"],"Soldado 1":["Soldier 1","Soldado 1"],"Soldado 2":["Soldier 2","Soldado 2"],"Capit√£o dos Soldados":["Captain of the Soldiers","Capit√°n de los Soldados"],"Vulto Sombrio":["Dark Shade","Sombra Oscura"],"Espectro Sombrio":["Dark Specter","Espectro Sombr√≠o"],"Cavaleiro Morto-Vivo":["Undead Knight","Caballero No Muerto"],"Soldado da Biblioteca 1":["Library Soldier 1","Soldado de la Biblioteca 1"],"Soldado da Biblioteca 2":["Library Soldier 2","Soldado de la Biblioteca 2"],"Soldado da Biblioteca 3":["Library Soldier 3","Soldado de la Biblioteca 3"],"Soldado de Infantaria":["Infantry Soldier","Soldado de Infanter√≠a"],"Soldado de Cavalaria":["Cavalry Soldier","Soldado de Caballer√≠a"],"Comandante dos Soldados":["Commander of the Soldiers","Comandante de los Soldados"],"Soldado do Trono Real":["Royal Throne Soldier","Soldado del Trono Real"],"Terra dos Reguladores de Ygdria":["Land of the Regulators of Ygdria","Tierra de los Reguladores de Ygdria"],"Cidade das Cerejeiras":["City of Cherry Blossoms","Ciudad de los Cerezos"],"Catedral de Ygdria":["Cathedral of Ygdria","Catedral de Ygdria"],"Pal√°cio dos Reguladores":["Palace of the Regulators","Palacio de los Reguladores"],"Academia Real de Magia e Combate":["Royal Academy of Magic and Combat","Academia Real de Magia y Combate"],"Mercado Central dos Reinos":["Central Market of the Realms","Mercado Central de los Reinos"],"Pra√ßa das Doze Ess√™ncias":["Square of the Twelve Essences","Plaza de las Doce Esencias"],"Biblioteca da Eternidade":["Library of Eternity","Biblioteca de la Eternidad"],"Muralha dos Her√≥is":["Wall of Heroes","Muralla de los H√©roes"],"Lend√°ria Torre de Acesso √† Eternidade":["Legendary Tower of Access to Eternity","Legendaria Torre de Acceso a la Eternidad"],"Castelo da Coroa Humana":["Castle of the Human Crown","Castillo de la Corona Humana"],"Capital de Ygdria":["Capital of Ygdria","Capital de Ygdria"],"Onde a f√© encontrou a magia":["Where faith met magic","Donde la fe encontr√≥ la magia"],"A ordem acima de tudo":["Order above all","El orden por encima de todo"],"Onde nascem os magos-cavaleiros":["Where mage-knights are born","Donde nacen los magos caballeros"],"Tudo tem um pre√ßo":["Everything has a price","Todo tiene un precio"],"Doze pilares, doze reinos":["Twelve pillars, twelve realms","Doce pilares, doce reinos"],"Todo saber, um s√≥ sil√™ncio":["All knowledge, a single silence","Todo el saber, un solo silencio"],"Eles ainda vigiam":["They still keep watch","Ellos a√∫n vigilan"],"O c√©u √© a porta":["The sky is the door","El cielo es la puerta"],"O trono espera seu verdadeiro rei":["The throne awaits its true king","El trono espera a su verdadero rey"],"4√ó carta 1‚òÖ":["4√ó 1‚òÖ card","4√ó carta 1‚òÖ"],"4√ó carta 2‚òÖ":["4√ó 2‚òÖ card","4√ó carta 2‚òÖ"],"Minha capital... as cerejeiras choram p√©talas. Algo corrompeu a guarda da cidade.":["My capital... the cherry trees weep petals. Something has corrupted the city guard.","Mi capital... los cerezos lloran p√©talos. Algo corrompi√≥ a la guardia de la ciudad."],"Este lugar j√° foi sagrado. Os vitrais ainda cantam... mas h√° a√ßo entre os bancos.":["This place was once sacred. The stained glass still sings... but there is steel among the pews.","Este lugar fue sagrado. Los vitrales a√∫n cantan... pero hay acero entre los bancos."],"Os Reguladores mantinham o equil√≠brio entre os reinos. Quem os dobrou?":["The Regulators kept the balance between the realms. Who bent them?","Los Reguladores manten√≠an el equilibrio entre los reinos. ¬øQui√©n los dobleg√≥?"],"Ha! Estudei aqui... e fui expulso. Hora de mostrar aos instrutores o que aprendi sozinho.":["Ha! I studied here... and got expelled. Time to show the instructors what I learned on my own.","¬°Ja! Estudi√© aqu√≠... y me expulsaron. Hora de mostrarles a los instructores lo que aprend√≠ por mi cuenta."],"Conhe√ßo mercados assim ‚Äî e emboscadas tamb√©m. Tr√™s l√¢minas nos esperam no fim desta rua.":["I know markets like this ‚Äî and ambushes too. Three blades await us at the end of this street.","Conozco mercados as√≠ ‚Äî y tambi√©n emboscadas. Tres hojas nos esperan al final de esta calle."],"Vultos entre os pilares... e um riso que n√£o √© humano. Ele acha que sombras s√£o um jogo.":["Shades among the pillars... and a laugh that is not human. He thinks shadows are a game.","Sombras entre los pilares... y una risa que no es humana. √âl cree que las sombras son un juego."],"S√©culos de conhecimento vigiados por soldados... e por ela. Bernyce n√£o empresta livros.":["Centuries of knowledge guarded by soldiers... and by her. Bernyce does not lend books.","Siglos de conocimiento vigilados por soldados... y por ella. Bernyce no presta libros."],"Infantaria, cavalaria, comando... e no topo da muralha, Kalander. Esta pedra vai tremer.":["Infantry, cavalry, command... and atop the wall, Kalander. This stone is going to shake.","Infanter√≠a, caballer√≠a, mando... y en lo alto de la muralla, Kalander. Esta piedra va a temblar."],"Esta torre toca a Eternidade... e Julius desceu dela. Sinto o v√©u se rasgar.":["This tower touches Eternity... and Julius came down from it. I can feel the veil tearing.","Esta torre toca la Eternidad... y Julius descendi√≥ de ella. Siento c√≥mo se rasga el velo."],"O castelo da minha linhagem. Todos os campe√µes dele nos aguardam... e Julius por tr√°s de tudo.":["The castle of my lineage. All of its champions await us... and Julius behind it all.","El castillo de mi linaje. Todos sus campeones nos aguardan... y Julius detr√°s de todo."],"Cinco cartas contra n√≥s? √ìtimo. Sempre quis um baralho em chamas.":["Five cards against us? Great. I always wanted a burning deck.","¬øCinco cartas contra nosotros? Genial. Siempre quise una baraja en llamas."],"Cedric, Elizier e Roland":["Cedric, Elizier and Roland","Cedric, Elizier y Roland"],"Rei Mago":["Mage King","Rey Mago"],"Rainha Maga":["Mage Queen","Reina Maga"],"Cavaleiro Mago":["Mage Knight","Caballero Mago"],"Cavaleira Maga":["Mage Dame","Dama Maga"],"Narrador":["Narrator","Narrador"],"The Joker ¬∑ Bobo da Corte":["The Joker ¬∑ Court Jester","The Joker ¬∑ Buf√≥n de la Corte"],"O Her√≥i da Na√ß√£o ¬∑ Cavaleiro Mago":["The Hero of the Nation ¬∑ Mage Knight","El H√©roe de la Naci√≥n ¬∑ Caballero Mago"],"Rainha dos Reguladores ¬∑ Rainha Maga":["Queen of the Regulators ¬∑ Mage Queen","Reina de los Reguladores ¬∑ Reina Maga"],"O Cavaleiro do Al√©m ¬∑ Cavaleiro Mago":["The Knight from Beyond ¬∑ Mage Knight","El Caballero del M√°s All√° ¬∑ Caballero Mago"],"SUPER RARO":["SUPER RARE","S√öPER RARO"],"ULTRA RARO":["ULTRA RARE","ULTRA RARO"],"O maior truque n√£o √© enganar o inimigo... √© conquistar sua confian√ßa.":["The greatest trick is not fooling the enemy... it is winning their trust.","El mayor truco no es enga√±ar al enemigo... es ganarse su confianza."],"Uma rainha governa um reino... uma m√£e protege uma gera√ß√£o.":["A queen rules a kingdom... a mother protects a generation.","Una reina gobierna un reino... una madre protege una generaci√≥n."],"Minhas sombras devoram o passado... e reescrevem a hist√≥ria!":["My shadows devour the past... and rewrite history!","¬°Mis sombras devoran el pasado... y reescriben la historia!"],"√Ås de Copas":["Ace of Hearts","As de Copas"],"A cada 5 turnos, cria 1 gema rosa de cora√ß√£o vermelho; se voc√™ estour√°-la, recebe 5% da sua vida atual de dano.":["Every 5 turns, creates 1 pink gem with a red heart; if you pop it, you take 5% of your current HP as damage.","Cada 5 turnos, crea 1 gema rosa con coraz√≥n rojo; si la revientas, recibes 5% de tu vida actual como da√±o."],"Golpe Cruzado":["Cross Slash","Golpe Cruzado"],"A cada 4 turnos, suas l√¢minas g√™meas cortam um X no tabuleiro: as esferas das diagonais s√£o removidas sem conceder energia.":["Every 4 turns, his twin blades slash an X across the board: the diagonal orbs are removed without granting energy.","Cada 4 turnos, sus espadas gemelas cortan una X en el tablero: las esferas de las diagonales se eliminan sin otorgar energ√≠a."],"Regula√ß√£o Real":["Royal Regulation","Regulaci√≥n Real"],"A cada 4 turnos, remove TODOS os power-ups do tabuleiro e recupera 80 de vida por cada um removido.":["Every 4 turns, removes ALL power-ups from the board and heals 80 HP for each one removed.","Cada 4 turnos, elimina TODOS los potenciadores del tablero y recupera 80 de vida por cada uno."],"Tempo Sombrio":["Dark Time","Tiempo Sombr√≠o"],"A cada 30 segundos no rel√≥gio, corrompe uma gema com uma sombra: ela n√£o pode ser movida nem removida. Se todas forem corrompidas, voc√™ perde!":["Every 30 seconds on the clock, corrupts a gem with shadow: it cannot be moved or removed. If all gems are corrupted, you lose!","Cada 30 segundos de reloj, corrompe una gema con sombra: no puede moverse ni eliminarse. ¬°Si todas son corrompidas, pierdes!"],"Truque de Cartas":["Card Trick","Truco de Cartas"],"Cria 1 power-up aleat√≥rio no tabuleiro (25%, 75%).":["Creates 1 random power-up on the board (25%, 75%).","Crea 1 potenciador aleatorio en el tablero (25%, 75%)."],"Chamariz":["Decoy","Se√±uelo"],"Depois de ativar, se seu HP chegar a 0 voc√™ n√£o perde: o HP volta para 100 (25%... 50%, 100%).":["After activating, if your HP reaches 0 you do not lose: HP returns to 100 (50%, 100%).","Tras activarla, si tu HP llega a 0 no pierdes: el HP vuelve a 100 (50%, 100%)."],"Corte Duplo":["Double Slash","Corte Doble"],"Duplica o ataque dele at√© o final do turno (25%, 75%; n√£o acumula no mesmo turno).":["Doubles his attack until the end of the turn (25%, 75%; does not stack in the same turn).","Duplica su ataque hasta el final del turno (25%, 75%; no se acumula en el mismo turno)."],"O Her√≥i da Na√ß√£o":["The Hero of the Nation","El H√©roe de la Naci√≥n"],"Reduz os danos recebidos em 20% pela miss√£o toda; acumula at√© 2√ó (50%, 100%).":["Reduces damage taken by 20% for the whole mission; stacks up to 2√ó (50%, 100%).","Reduce el da√±o recibido en 20% durante toda la misi√≥n; se acumula hasta 2√ó (50%, 100%)."],"Regula√ß√£o Total":["Total Regulation","Regulaci√≥n Total"],"Os inimigos ficam 2 turnos sem atacar (25%, 75%).":["Enemies cannot attack for 2 turns (25%, 75%).","Los enemigos no atacan durante 2 turnos (25%, 75%)."],"√çmpeto da Rainha":["Queen's Fury","√çmpetu de la Reina"],"Os inimigos recebem 20% de dano extra at√© o fim da miss√£o; acumula sempre que ativar (50%, 100%).":["Enemies take 20% extra damage until the end of the mission; stacks every activation (50%, 100%).","Los enemigos reciben 20% de da√±o extra hasta el fin de la misi√≥n; se acumula con cada activaci√≥n (50%, 100%)."],"Corte Sombrio":["Shadow Slash","Corte Sombr√≠o"],"Inflige 20% da vida atual do inimigo e causa cegueira por 1 turno (25%).":["Deals 20% of the enemy's current HP and blinds it for 1 turn (25%).","Inflige 20% de la vida actual del enemigo y lo ciega por 1 turno (25%)."],"Para que Serve esse Rel√≥gio":["What Is this Clock For","Para qu√© Sirve este Reloj"],"Paralisa o tempo do inimigo: ele n√£o ataca mais at√© sua vida chegar a 25% (50%).":["Freezes the enemy's time: it cannot attack until its HP drops to 25% (50%).","Paraliza el tiempo del enemigo: no ataca hasta que su vida llegue al 25% (50%)."],"Sombras Devoradoras":["Devouring Shadows","Sombras Devoradoras"],"Sempre que o inimigo atacar, todos os inimigos perdem 5% da vida total (75%).":["Whenever the enemy attacks, all enemies lose 5% of their total HP (75%).","Cada vez que el enemigo ataca, todos los enemigos pierden 5% de su vida total (75%)."],"L√¢mina das Sombras Dimensional I":["Dimensional Shadow Blade I","Hoja de las Sombras Dimensional I"],"Atinge todos os inimigos com 10% da vida e as miss√µes futuras com 8%, 6%, 4%, 2%, 0% consecutivamente. Acumulativa (100%).":["Hits all enemies for 10% of their HP and future missions for 8%, 6%, 4%, 2%, 0% consecutively. Stacks (100%).","Golpea a todos los enemigos con 10% de su vida y a las misiones futuras con 8%, 6%, 4%, 2%, 0% consecutivamente. Acumulable (100%)."],"sombra":["shadow","sombra"],"copas":["hearts","copas"]};
-I18N_DICT['VERS√ÉO 9.3']=['VERSION 9.3','VERSI√ìN 9.3'];
-/* L(): traduz strings de DADOS (habilidades, fases, inimigos, loja...) na renderiza√ß√£o.
-   Chave = string PT can√¥nica dos objetos; valor = [EN, ES]. Fora do dicion√°rio: retorna como veio. */
-function L(str){ if(lang==='pt'||!str) return str; const e=I18N_DICT[str]; return e ? (lang==='en'?e[0]:(e[1]||e[0])) : str; }
-/* == ARTE LOCALIZADA: se existir assets/i18n/<idioma>/<mesmo caminho> (ex.:
-   assets/i18n/en/assets/cards/enemies/gareth-card.png), o jogo usa a vers√£o
-   traduzida; sen√£o cai na original automaticamente (onerror / camada dupla). */
-function THUMB(src){ return src?('assets/thumbs/'+String(src).split('/').pop()):src; }
-function THUMBF(src){ return src?` onerror="this.onerror=null;this.src='${src}'"`:''; }
-function IMGL(src){ return (lang==='pt'||!src) ? src : 'assets/i18n/'+lang+'/'+src; }
-function IMGF(src){ return (lang==='pt'||!src) ? '' : ` onerror="this.onerror=null;this.src='${src}'"`; }
-function applyI18nArtCss(){
-  let st=document.getElementById('i18nArtCss');
-  if(!st){ st=document.createElement('style'); st.id='i18nArtCss'; document.head.appendChild(st); }
-  if(lang==='pt'){ st.textContent=''; return; }
-  const mapa='assets/map/ygdria.png', mapaL='assets/i18n/'+lang+'/'+mapa;
-  st.textContent=`.map-canvas{background-image:url('${mapaL}'),url('${mapa}');}
-.scene-bg[data-screen="menu"]{background-image:linear-gradient(180deg,rgba(5,4,12,.22) 0%,rgba(5,4,12,.38) 55%,rgba(4,3,10,.66) 100%),url('${mapaL}'),url('${mapa}');}`;
-}
-
-const STATIC_I18N=[
-  ['#playBtn .menu-label','Jogar','Play','Jugar'],
-  ['#galleryBtn .menu-label','Galeria <small class="menu-hint">Cartas e habilidades</small>','Gallery <small class="menu-hint">Cards & abilities</small>','Galer√≠a <small class="menu-hint">Cartas y habilidades</small>'],
-  ['#shopBtn .menu-label','Loja <small class="menu-hint">Consum√≠veis de batalha</small>','Shop <small class="menu-hint">Battle consumables</small>','Tienda <small class="menu-hint">Consumibles de batalla</small>'],
-  ['#achBtn .menu-label','Conquistas','Achievements','Logros'],
-  ['#optionsBtn .menu-label','Op√ß√µes','Options','Opciones'],
-  ['#helpBtn .menu-label','Como jogar','How to play','C√≥mo jugar'],
-  ['#optionsTitle','Op√ß√µes','Options','Opciones'],
-  ['#achTitle','Perfil & Conquistas','Profile & Achievements','Perfil y Logros'],
-  ['#shopTitle','Loja Real','Royal Shop','Tienda Real'],
-  ['#galleryTitle','Galeria dos Reinos','Gallery of the Realms','Galer√≠a de los Reinos'],
-  ['#playAgainBtn','Jogar novamente','Play again','Jugar de nuevo'],
-  ['#retryBtn','Tentar novamente','Try again','Intentar de nuevo'],
-  ['#startBtn','Iniciar a Aventura!','Begin the Adventure!','¬°Iniciar la Aventura!'],
-  ['#autoTeamBtn','Equipe sugerida','Suggested team','Equipo sugerido'],
-  ["#continueBtn .menu-label","Continuar <small class=\"menu-hint\" id=\"continueHint\">Sem progresso salvo</small>","Continue <small class=\"menu-hint\" id=\"continueHint\">No saved progress</small>","Continuar <small class=\"menu-hint\" id=\"continueHint\">Sin progreso guardado</small>"],
-  ["#menuVersion","VERS√ÉO 9.3 ¬∑ DEMO OFICIAL MOBILE","VERSION 9.3 ¬∑ OFFICIAL MOBILE DEMO","VERSI√ìN 9.3 ¬∑ DEMO OFICIAL M√ìVIL"],
-  ["#selectBackBtn","‚Üê Voltar","‚Üê Back","‚Üê Volver"],
-  ["#selectScreen .screen-eyebrow","Forma√ß√£o do grupo","Party setup","Formaci√≥n del grupo"],
-  ["#selectScreen .screen-title","Forma√ß√£o da Equipe","Team Formation","Formaci√≥n del Equipo"],
-  ["#selectGalleryBtn","Galeria","Gallery","Galer√≠a"],
-  [".select-counter","Escolhidos: <b id=\"selectCount\">0</b>/4","Chosen: <b id=\"selectCount\">0</b>/4","Elegidos: <b id=\"selectCount\">0</b>/4"],
-  ["#battleStatus","Combine tr√™s esferas do mesmo Reino para atacar.","Match three orbs of the same Realm to attack.","Combina tres esferas del mismo Reino para atacar."],
-  ["#stageObjective","Objetivo: derrote todos os inimigos","Objective: defeat all enemies","Objetivo: derrota a todos los enemigos"],
-  ["#comboRecord","RECORDE √ó0","BEST √ó0","R√âCORD √ó0"],
-  ["#cycleTargetTool","üéØ Pr√≥ximo alvo","üéØ Next target","üéØ Siguiente objetivo"],
-  ["#battleToolsClose","‚úï Fechar","‚úï Close","‚úï Cerrar"],
-  ["#hintTool","‚ú¶ Sugerir jogada","‚ú¶ Suggest move","‚ú¶ Sugerir jugada"],
-  ["#gridTool","‚óá Grade t√°tica","‚óá Tactical grid","‚óá Cuadr√≠cula t√°ctica"],
-  ["#fullscreenTool","‚õ∂ Tela cheia","‚õ∂ Fullscreen","‚õ∂ Pantalla completa"],
-  ["#resetBtn","Reiniciar fase","Restart stage","Reiniciar fase"],
-  ["#swapBtn2","Trocar her√≥is","Swap heroes","Cambiar h√©roes"],
-  ["#stageClearOverlay h2","Fase Conclu√≠da!","Stage Complete!","¬°Fase Completada!"],
-  ["#grandClearTitle","Reino Conquistado!","Realm Conquered!","¬°Reino Conquistado!"],
-  ["#grandClearText","A vit√≥ria ecoa por Ygdria.","Victory echoes across Ygdria.","La victoria resuena por Ygdria."],
-  ["#shareDailyBtn","üìã Compartilhar resultado","üìã Share result","üìã Compartir resultado"],
-  ["#defeatOverlay h2","Derrota","Defeat","Derrota"],
-  ["#defeatOverlay p","Seu grupo caiu em batalha. As gemas dos reinos ainda esperam por voc√™.","Your party fell in battle. The realm gems still await you.","Tu grupo cay√≥ en batalla. Las gemas de los reinos a√∫n te esperan."],
-  ["[data-close=\"galleryScreen\"]","Fechar","Close","Cerrar"],
-  ["[data-close=\"abilityPickerScreen\"]","Fechar","Close","Cerrar"],
-  ["[data-close=\"worldScreen\"]","Fechar","Close","Cerrar"],
-  ["[data-close=\"accountScreen\"]","Fechar","Close","Cerrar"],
-  ["[data-close=\"achScreen\"]","Fechar","Close","Cerrar"],
-  ["[data-close=\"shopScreen\"]","Fechar","Close","Cerrar"],
-  ["[data-close=\"optionsScreen\"]","Fechar","Close","Cerrar"],
-  ["[data-close=\"battleHistoryScreen\"]","Fechar","Close","Cerrar"],
-  ["[data-close=\"helpScreen\"]","Entendi","Got it","Entendido"],
-  ["#abilityPickerTitle","Habilidades ativas","Active abilities","Habilidades activas"],
-  ["#worldTitle","Mundos","Worlds","Mundos"],
-  ["#worldNote","Cada fase tem 5 n√≠veis ‚Äî o 5¬∫ guarda o CHEFE. Ven√ßa o chefe para desbloquear a pr√≥xima fase. Os demais reinos ser√£o revelados em breve.","Each stage has 5 levels ‚Äî the 5th holds the BOSS. Beat the boss to unlock the next stage. The other realms will be revealed soon.","Cada fase tiene 5 niveles ‚Äî el 5¬∫ guarda al JEFE. Vence al jefe para desbloquear la siguiente fase. Los dem√°s reinos se revelar√°n pronto."],
-  ["#accountTitle","Minha Conta","My Account","Mi Cuenta"],
-  ["#rankNote","üèÜ Ranking Global: ser√° ativado junto com o servidor. Seu nome de usu√°rio j√° est√° reservado localmente.","üèÜ Global Ranking: activates together with the server. Your username is already reserved locally.","üèÜ Ranking Global: se activar√° junto con el servidor. Tu nombre de usuario ya est√° reservado localmente."],
-  ["#accountLoginBtn","Entrar / Criar conta","Sign in / Create account","Entrar / Crear cuenta"],
-  ["#logoutBtn","Sair da conta","Sign out","Cerrar sesi√≥n"],
-  ["#optMasterVolumeLabel","Volume geral","Master volume","Volumen general"],
-  ["#optMusicVolumeLabel","Volume da m√∫sica","Music volume","Volumen de la m√∫sica"],
-  ["#optSfxVolumeLabel","Efeitos sonoros","Sound effects","Efectos de sonido"],
-  ["#optDifficultyLabel","Dificuldade","Difficulty","Dificultad"],
-  ["#optLanguageLabel","Idioma / Language","Language / Idioma","Idioma / Language"],
-  ["#optProgressLabel","Progresso","Progress","Progreso"],
-  ["#optQualityLabel","Qualidade gr√°fica","Graphics quality","Calidad gr√°fica"],
-  ["#optContrastLabel","Alto contraste","High contrast","Alto contraste"],
-  ["#optLargeTextLabel","Texto maior","Larger text","Texto m√°s grande"],
-  ["#optFlashesLabel","Reduzir flashes","Reduce flashes","Reducir destellos"],
-  ["#qualitySelect option[value=\"auto\"]","Autom√°tica","Automatic","Autom√°tica"],
-  ["#qualitySelect option[value=\"high\"]","Alta","High","Alta"],
-  ["#qualitySelect option[value=\"medium\"]","M√©dia","Medium","Media"],
-  ["#qualitySelect option[value=\"economy\"]","Econ√¥mica","Economy","Econ√≥mica"],
-  ["#diffGroup [data-diff=\"facil\"]","F√°cil","Easy","F√°cil"],
-  ["#diffGroup [data-diff=\"normal\"]","Normal","Normal","Normal"],
-  ["#diffGroup [data-diff=\"dificil\"]","Dif√≠cil","Hard","Dif√≠cil"],
-  ["#diffGroup [data-diff=\"pesadelo\"]","Pesadelo","Nightmare","Pesadilla"],
-  ["#exportSaveBtn","Exportar","Export","Exportar"],
-  ["#importSaveBtn","Importar","Import","Importar"],
-  ["#optReduceLabel","Reduzir anima√ß√µes","Reduce animations","Reducir animaciones"],
-  ["#optParticlesLabel","Part√≠culas de batalha","Battle particles","Part√≠culas de batalla"],
-  ["#optHapticsLabel","Vibra√ß√£o em dispositivos m√≥veis","Vibration on mobile devices","Vibraci√≥n en dispositivos m√≥viles"],
-  ["#vizSectionTitle","üëÅ Visualiza√ß√£o","üëÅ Display","üëÅ Visualizaci√≥n"],
-  ["#vizHeroLabel","Nome dos her√≥is","Hero names","Nombre de los h√©roes"],
-  ["#vizEnemyLabel","Nome dos inimigos","Enemy names","Nombre de los enemigos"],
-  ["#vizDmgLabel","N√∫meros de dano","Damage numbers","N√∫meros de da√±o"],
-  ["#vizDpsLabel","DPS nas mini-cartas","DPS on mini-cards","DPS en las mini-cartas"],
-  ["#vizTimerLabel","Timer da miss√£o","Mission timer","Temporizador de misi√≥n"],
-  ["#vizTurnInfoLabel","Indicador de turno","Turn indicator","Indicador de turno"],
-  ["#vizTopHudLabel","HUD superior","Top HUD","HUD superior"],
-  ["#vizInfoBarLabel","Barra de informa√ß√µes","Information bar","Barra de informaci√≥n"],
-  ["#mochilaTitle","üéí Mochila","üéí Bag","üéí Mochila"],
-  ["[data-close=\"mochilaScreen\"]","Fechar","Close","Cerrar"],
-  ["#mochilaShopBtn","ü™ô Abrir Loja de Consum√≠veis","ü™ô Open Consumables Shop","ü™ô Abrir Tienda de Consumibles"],
-  ["#towerTitle","üóº Torre de Acesso √† Eternidade","üóº Tower of Access to Eternity","üóº Torre de Acceso a la Eternidad"],
-  ["[data-close=\"towerScreen\"]","Fechar","Close","Cerrar"],
-  ["#towerStartBtn","üóº Escalar a Torre (Pesadelo)","üóº Climb the Tower (Nightmare)","üóº Escalar la Torre (Pesadilla)"],
-  ["#resetProgressBtn","Apagar progresso local","Erase local progress","Borrar progreso local"],
-  ["#helpTitle","Como jogar","How to play","C√≥mo jugar"],
-  ["#helpScreen .tutorial-step:nth-child(1)","<b>1. Forme o grupo</b><p>Escolha quatro cartas. A esfera colorida de cada carta passa a fazer parte do tabuleiro.</p>","<b>1. Build your party</b><p>Pick four cards. Each card's colored orb becomes part of the board.</p>","<b>1. Forma tu grupo</b><p>Elige cuatro cartas. La esfera de color de cada carta pasa a formar parte del tablero.</p>"],
-  ["#helpScreen .tutorial-step:nth-child(2)","<b>2. Combine esferas</b><p>Arraste ou toque em duas esferas vizinhas. Uma linha com tr√™s ou mais gera ataque e energia.</p>","<b>2. Match orbs</b><p>Drag or tap two neighboring orbs. A line of three or more triggers an attack and grants energy.</p>","<b>2. Combina esferas</b><p>Arrastra o toca dos esferas vecinas. Una l√≠nea de tres o m√°s genera ataque y energ√≠a.</p>"],
-  ["#helpScreen .tutorial-step:nth-child(3)","<b>3. Escolha o alvo</b><p>Quando houver v√°rios inimigos, toque no oponente que deve receber o pr√≥ximo ataque.</p>","<b>3. Pick your target</b><p>When there are several enemies, tap the foe that should take the next attack.</p>","<b>3. Elige el objetivo</b><p>Cuando haya varios enemigos, toca al oponente que debe recibir el pr√≥ximo ataque.</p>"],
-  ["#helpScreen .tutorial-step:nth-child(4)","<b>4. Acumule Aura</b><p>Com 25%, 50% e 75% de energia, o her√≥i libera habilidades passivas automaticamente.</p>","<b>4. Build up Aura</b><p>At 25%, 50% and 75% energy, the hero unleashes passive abilities automatically.</p>","<b>4. Acumula Aura</b><p>Con 25%, 50% y 75% de energ√≠a, el h√©roe libera habilidades pasivas autom√°ticamente.</p>"],
-  ["#helpScreen .tutorial-step:nth-child(5)","<b>5. Ataque supremo</b><p>Ao chegar a 100%, toque no her√≥i iluminado para lan√ßar sua habilidade especial.</p>","<b>5. Ultimate attack</b><p>At 100%, tap the glowing hero to unleash their special ability.</p>","<b>5. Ataque supremo</b><p>Al llegar al 100%, toca al h√©roe iluminado para lanzar su habilidad especial.</p>"],
-  ["#helpScreen .tutorial-step:nth-child(6)","<b>6. Conquiste o Trono</b><p>Ven√ßa as cinco fases, gerencie cura e escudo e derrote o Drag√£o Carmesim.</p>","<b>6. Claim the Throne</b><p>Clear the five stages, manage healing and shields, and defeat the Crimson Dragon.</p>","<b>6. Conquista el Trono</b><p>Supera las cinco fases, administra curaci√≥n y escudo y derrota al Drag√≥n Carmes√≠.</p>"],
-  ["#helpScreen .tutorial-step:nth-child(7)","<b>7. Crie power-ups</b><p>Combine 4 para criar uma esfera listrada, 5 para um Prisma Real e forme T ou L para uma esfera encapsulada.</p>","<b>7. Create power-ups</b><p>Match 4 to create a striped orb, 5 for a Royal Prism, and make a T or L shape for a wrapped orb.</p>","<b>7. Crea potenciadores</b><p>Combina 4 para crear una esfera rayada, 5 para un Prisma Real y forma una T o L para una esfera envuelta.</p>"],
-  ["#helpScreen .tutorial-step:nth-child(8)","<b>8. Combine especiais</b><p>Troque dois power-ups vizinhos para lan√ßar efeitos conjuntos ainda mais poderosos.</p>","<b>8. Combine specials</b><p>Swap two neighboring power-ups to unleash even more powerful combined effects.</p>","<b>8. Combina especiales</b><p>Intercambia dos potenciadores vecinos para lanzar efectos conjuntos a√∫n m√°s poderosos.</p>"],
-  ["#pauseTitle","Jogo pausado","Game paused","Juego en pausa"],
-  ["#resumeBtn .menu-label","Continuar batalha","Resume battle","Continuar batalla"],
-  ["#pauseOptionsBtn .menu-label","Op√ß√µes","Options","Opciones"],
-  ["#restartStageBtn .menu-label","Reiniciar fase","Restart stage","Reiniciar fase"],
-  ["#returnMenuBtn .menu-label","Menu principal","Main menu","Men√∫ principal"],
-  ["#battleHistoryScreen .screen-eyebrow","Registro t√°tico","Tactical log","Registro t√°ctico"],
-  ["#battleHistoryTitle","Hist√≥rico da batalha","Battle history","Historial de batalla"],
-  ["#copyHistoryBtn","Copiar hist√≥rico","Copy history","Copiar historial"],
-  ["#clearHistoryBtn","Limpar","Clear","Limpiar"],
-  ["#mapBackBtn","‚Üê Menu","‚Üê Menu","‚Üê Men√∫"],
-  ["#mapSubtitle","Escolha um reino para explorar","Choose a realm to explore","Elige un reino para explorar"],
-  ["#loginEyebrow","SUA LENDA COME√áA AQUI","YOUR LEGEND BEGINS HERE","TU LEYENDA COMIENZA AQU√ç"],
-  ["#loginTitle","Entrar nos 12 Reinos","Enter the 12 Realms","Entrar a los 12 Reinos"],
-  ["#guestBtn","üé≠ Jogar como Convidado","üé≠ Play as Guest","üé≠ Jugar como Invitado"],
-  ["#guestNote","Convidado: sem ranking, sem nuvem e sem PVP (em breve).","Guest: no ranking, no cloud save and no PVP (soon).","Invitado: sin ranking, sin nube y sin PVP (pronto)."],
-  ["#loginOu","ou entre com sua conta","or sign in with your account","o entra con tu cuenta"],
-  ["#loginSubmit","Entrar / Criar conta","Sign in / Create account","Entrar / Crear cuenta"],
-  ["#googleBtn","<span class=\"g-logo\">G</span> Entrar com Google","<span class=\"g-logo\">G</span> Sign in with Google","<span class=\"g-logo\">G</span> Entrar con Google"],
-  ["#obStep1 .boot-eyebrow","PASSO 1 DE 3","STEP 1 OF 3","PASO 1 DE 3"],
-  ["#obT1","Qual a sua data de nascimento?","What is your birth date?","¬øCu√°l es tu fecha de nacimiento?"],
-  ["#obNext1","Continuar","Continue","Continuar"],
-  ["#obStep2 .boot-eyebrow","PASSO 2 DE 3","STEP 2 OF 3","PASO 2 DE 3"],
-  ["#obT2","Como deseja ser tratado(a)?","How would you like to be addressed?","¬øC√≥mo deseas que te llamemos?"],
-  [".title-opt[data-title=\"Rei Mago\"]","ü§¥<b>Rei Mago</b>","ü§¥<b>Mage King</b>","ü§¥<b>Rey Mago</b>"],
-  [".title-opt[data-title=\"Rainha Maga\"]","üë∏<b>Rainha Maga</b>","üë∏<b>Mage Queen</b>","üë∏<b>Reina Maga</b>"],
-  [".title-opt[data-title=\"Cavaleiro Mago\"]","üõ°Ô∏è<b>Cavaleiro Mago</b>","üõ°Ô∏è<b>Mage Knight</b>","üõ°Ô∏è<b>Caballero Mago</b>"],
-  [".title-opt[data-title=\"Cavaleira Maga\"]","‚öîÔ∏è<b>Cavaleira Maga</b>","‚öîÔ∏è<b>Mage Dame</b>","‚öîÔ∏è<b>Dama Maga</b>"],
-  ["#obStep3 .boot-eyebrow","PASSO 3 DE 3","STEP 3 OF 3","PASO 3 DE 3"],
-  ["#obT3","Como quer ser chamado(a)?","What should we call you?","¬øC√≥mo quieres que te llamen?"],
-  ["#obPrevLabel","Voc√™ ser√°:","You will be:","Ser√°s:"],
-  ["#obFinish","Confirmar nome","Confirm name","Confirmar nombre"],
-  ["#storyLayer .story-hint","toque para continuar","tap to continue","toca para continuar"],
-  ["#storySkip","Pular","Skip","Saltar"]
-];
-function applyLanguage(){
-  applyI18nArtCss();
-  const li=lang==='en'?2:lang==='es'?3:1;
-  STATIC_I18N.forEach(entry=>{
-    const el=document.querySelector(entry[0]);
-    if(el) el.innerHTML=entry[li]||entry[1];
-  });
-  const dailyLabel=document.querySelector('#dailyBtn .menu-label');
-  if(dailyLabel){
-    const hint=document.getElementById('dailyHint')?.outerHTML||'';
-    dailyLabel.innerHTML=T('Desafio Di√°rio ','Daily Challenge ','Desaf√≠o Diario ')+hint;
-  }
-  const towerLabel=document.querySelector('#towerBtn .menu-label');
-  if(towerLabel){
-    const hint=document.getElementById('towerHint')?.outerHTML||'';
-    towerLabel.innerHTML=T('Torre de Acesso √† Eternidade ','Tower of Access to Eternity ','Torre de Acceso a la Eternidad ')+hint;
-  }
-  const sub=document.querySelector('.select-sub');
-  const totalCartas=KINGDOMS.length;
-  if(sub) sub.textContent=T(
-    `Escolha 4 entre ${totalCartas} cartas. Toque na carta para escalar e use apenas a lupa para abrir a arte e ler todas as habilidades.`,
-    `Pick 4 of ${totalCartas} cards. Tap a card to enlist; use the magnifier to open the art and read every ability.`,
-    `Elige 4 de ${totalCartas} cartas. Toca la carta para alistar; usa la lupa para abrir el arte y leer todas las habilidades.`);
-  document.querySelectorAll('#langGroup [data-lang], #langScreen [data-lang]').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
-}
-
-/* v9.1 ¬∑ Di√°logos de hist√≥ria pr√©-fase (pulados na Torre e durante o tutorial) */
-const STAGE_DIALOGS={
-  0:[{h:'luz',t:'O p√¢ntano sussurra... sinto presen√ßas famintas rondando o Port√£o.'},
-     {h:'fogo',t:'Que venham! O fogo de Ignis abrir√° alas para todos n√≥s.'}],
-  1:[{h:'terra',t:'Estas pedras guardam mem√≥ria. A Sentinela desperta ‚Äî pisem leve.'}],
-  2:[{h:'agua',t:'A floresta esconde olhos entre as copas. Fiquem pr√≥ximos de mim.'}],
-  3:[{h:'humanos',t:'O tempo pesa neste corredor... os espectros odeiam os vivos.'}],
-  4:[{h:'luz',t:'O Trono est√° al√©m destas chamas. O Drag√£o Carmesim nos aguarda!'},
-     {h:'sombras',t:'Drag√µes tamb√©m sangram. Deixem a escurid√£o ir √† frente.'}],
-  5:[{h:'areia',t:'Minha terra natal... as dunas dan√ßam comigo. Colham as esferas que o vento trouxer.'}],
-  6:[{h:'sombras',t:'Este abismo me pertence. Sobrevivam ao que vem ‚Äî eu cuido do resto.'}],
-  7:[{h:'raio',t:'Um trono sombrio? Que o c√©u ruja: a HECATOMBE espera por eles.'},
-     {h:'gelo',t:'E quando o trov√£o passar... apenas o gelo permanecer√°.'}]
-};
-let storyQueue=[];
-/* v9.2 ¬∑ FALAS DE ENTRADA DOS INIMIGOS: todos os inimigos falam quando a miss√£o
-   come√ßa (mesmo v√°rios por miss√£o). Feras m√°gicas N√ÉO falam ‚Äî emitem sons. */
-const ENEMY_LINES={
-  slimeCereja:[['*Blub... blub... squish!*','*Blub... blub... squish!*','*Blub... blub... squish!*']],
-  loboRaivoso:[['*GRRRRRRR... AUUUUUU!*','*GRRRRRRR... AWOOOO!*','*GRRRRRRR... AUUUUUU!*']],
-  soldado1:[['Alto! Ningu√©m passa pela guarda da capital.','Halt! No one passes the capital guard.','¬°Alto! Nadie pasa la guardia de la capital.'],
-            ['Pela Coroa! Rendam-se agora.','For the Crown! Surrender now.','¬°Por la Corona! R√≠ndanse ahora.']],
-  soldado2:[['Voc√™s n√£o deviam ter vindo at√© aqui.','You should not have come here.','No deber√≠an haber venido hasta aqu√≠.'],
-            ['A ordem √© prender os invasores!','Orders are to arrest the invaders!','¬°La orden es arrestar a los invasores!']],
-  capitao:[['Eu treinei cada l√¢mina desta cidade. Mostrem o que sabem!','I trained every blade in this city. Show me what you know!','Entren√© cada espada de esta ciudad. ¬°Muestren lo que saben!']],
-  vulto:[['*Um sussurro gelado atravessa o ar...*','*An icy whisper crosses the air...*','*Un susurro helado cruza el aire...*']],
-  espectro:[['Voc√™s pertencem... √†s sombras...','You belong... to the shadows...','Ustedes pertenecen... a las sombras...']],
-  morto:[['A morte n√£o me libertou do meu posto.','Death did not release me from my post.','La muerte no me liber√≥ de mi puesto.']],
-  soldBib1:[['Sil√™ncio na Biblioteca! O saber n√£o √© para todos.','Silence in the Library! Knowledge is not for everyone.','¬°Silencio en la Biblioteca! El saber no es para todos.']],
-  soldBib2:[['Cada p√°gina aqui vale mais que suas vidas.','Every page here is worth more than your lives.','Cada p√°gina aqu√≠ vale m√°s que sus vidas.']],
-  soldBib3:[['Saiam! Os arquivos da Eternidade s√£o selados.','Leave! The archives of Eternity are sealed.','¬°Fuera! Los archivos de la Eternidad est√°n sellados.']],
-  infantaria:[['Forma√ß√£o de lan√ßas! Avan√ßar!','Spear formation! Advance!','¬°Formaci√≥n de lanzas! ¬°Avancen!']],
-  cavalaria:[['Ao meu sinal, a cavalaria esmaga qualquer um.','At my signal, the cavalry crushes anyone.','A mi se√±al, la caballer√≠a aplasta a cualquiera.']],
-  comandante:[['Eu comando a Muralha. E a Muralha nunca caiu.','I command the Wall. And the Wall has never fallen.','Yo comando la Muralla. Y la Muralla nunca cay√≥.']],
-  trono:[['O Trono Real n√£o recebe visitas. Apenas prisioneiros.','The Royal Throne receives no guests. Only prisoners.','El Trono Real no recibe visitas. Solo prisioneros.']],
-  gareth:[['Toda grande vit√≥ria come√ßa com um simples soldado. Hoje, a minha!','Every great victory starts with a simple soldier. Today, mine!','¬°Toda gran victoria empieza con un simple soldado. Hoy, la m√≠a!']],
-  cedric:[['Cada feiti√ßo escrito hoje ser√° uma lenda amanh√£. Testemunhem!','Every spell written today will be a legend tomorrow. Witness it!','Cada hechizo escrito hoy ser√° una leyenda ma√±ana. ¬°Sean testigos!']],
-  elizier:[['Nenhum inimigo escapa do olhar da Coroa.','No enemy escapes the gaze of the Crown.','Ning√∫n enemigo escapa a la mirada de la Corona.']],
-  roland:[['Minha lan√ßa protege o reino antes da minha pr√≥pria vida!','My lance protects the realm before my own life!','¬°Mi lanza protege el reino antes que mi propia vida!']],
-  jules:[['Hihihi... querem ver um truque? A carta da vez √©... VOC√äS!','Heehee... want to see a trick? The next card is... YOU!','Jijiji... ¬øquieren ver un truco? La carta de turno son... ¬°USTEDES!']],
-  bernyce:[['Uma rainha governa um reino. Ajoelhem-se diante da Reguladora.','A queen rules a realm. Kneel before the Regulator.','Una reina gobierna un reino. Arrod√≠llense ante la Reguladora.']],
-  kalander:[['O Her√≥i da Na√ß√£o n√£o recua. Nem diante de voc√™s.','The Hero of the Nation does not retreat. Not even before you.','El H√©roe de la Naci√≥n no retrocede. Ni ante ustedes.']],
-  julius:[['Minhas sombras devoram o passado... e reescrevem a hist√≥ria!','My shadows devour the past... and rewrite history!','¬°Mis sombras devoran el pasado... y reescriben la historia!']]
-};
-function enemyLineFor(e){
-  const key=e.cardId||e.etype;
-  const tpl=HUMANOS_ETYPES[e.etype];
-  const arr=ENEMY_LINES[key];
-  if(arr){
-    const tri=arr[Math.floor(gameRandom()*arr.length)];
-    return T(tri[0],tri[1],tri[2]);
-  }
-  if(tpl?.fera) return '*Grrrrrr...*';
-  const k=KINGDOMS.find(x=>x.id===key);
-  if(k?.frase) return L(k.frase);
-  return T('Voc√™s n√£o deveriam ter vindo at√© aqui...','You should not have come here...','No deber√≠an haber venido hasta aqu√≠...');
-}
-function storySpeakerSprite(name){
-  const wanted=String(name||'').trim();
-  if(!wanted) return '';
-  const activeEnemy=(enemies||[]).find(e=>e?.name===wanted&&e.sprite);
-  if(activeEnemy?.sprite) return activeEnemy.sprite;
-  const enemyType=Object.values(HUMANOS_ETYPES||{}).find(t=>t?.n===wanted&&t.sprite);
-  if(enemyType?.sprite) return enemyType.sprite;
-  const enemyCard=Object.values(HUMANOS_CARDS||{}).find(c=>c?.nome===wanted&&c.sprite);
-  return enemyCard?.sprite||'';
-}
-function maybeShowStory(idx){
-  const seq=[];
-  /* v9.3.7 ¬∑ roteiro oficial do Reino dos Humanos. A primeira entrada usa
-     as falas escritas para a miss√£o; repeti√ß√µes mant√™m apenas a apresenta√ß√£o
-     dos inimigos e uma fala do her√≥i que n√£o pertence ao roteiro. */
-  if(worldRun.active&&worldRun.storyMode!==false){
-    const roteiro=HUMAN_STORY?.[worldRun.fase]?.missions?.[worldRun.nivel-1];
-    if(roteiro){
-      const primeira=!storyMissionDone(worldRun.fase,worldRun.nivel);
-      if(worldRun.nivel===1 && primeira) seq.push({name:'Narrador',t:HUMAN_STORY[worldRun.fase].before});
-      if(primeira && roteiro.length) roteiro.forEach(s=>{
-        if(s?.h) seq.push(s);
-        else seq.push({...s,sprite:s?.sprite||storySpeakerSprite(s?.name)});
-      });
-      if(seq.length){ storyQueue=[...seq]; renderStoryStep(); return; }
-      const regra=STORY_RULES[worldRun.fase];
-      const extra=ACTIVE.map(i=>KINGDOMS[i]).find(k=>k&&!regra?.allowed.includes(k.id));
-      if(extra) seq.push({h:extra.id,t:extra.frase||`${L(extra.nome)} est√° pronto para ajudar.`});
-    }
-  }
-  /* Her√≥is: S√ì os personagens escalados na fase t√™m di√°logo (1¬™ miss√£o da fase) */
-  if(worldRun.active&&activeStageData?.dial){
-    activeStageData.dial.forEach(d=>{
-      const presente=ACTIVE.some(i=>(KINGDOMS[i].iconId||KINGDOMS[i].id)===d.h||KINGDOMS[i].id===d.h);
-      if(presente) seq.push(d);
-    });
-  }
-  /* Inimigos: TODOS se apresentam quando a miss√£o come√ßa; feras s√≥ grunhem */
-  const ditas=new Set();
-  (enemies||[]).forEach(e=>{
-    const fala=enemyLineFor(e);
-    if(ditas.has(e.name+fala)) return; /* dois iguais n√£o repetem a mesma fala */
-    ditas.add(e.name+fala);
-    seq.push({name:e.name, sprite:e.sprite, t:fala});
-  });
-  if(!seq.length) return;
-  storyQueue=[...seq];
-  renderStoryStep();
-}
-function renderStoryStep(){
-  const layer=document.getElementById('storyLayer');
-  if(!layer) return;
-  if(!storyQueue.length){ layer.classList.remove('show','cinematic'); layer.style.removeProperty('--story-bg'); return; }
-  layer.classList.add('cinematic');
-  if(activeStageData?.bgUrl) layer.style.setProperty('--story-bg',`url("${activeStageData.bgUrl}")`);
-  const step=storyQueue[0];
-  if(step.h){
-    const k=KINGDOMS.find(kk=>kk.id===step.h);
-    document.getElementById('storyPortrait').src=k?(k.sprite||k.cardThumb||k.img):'assets/icon.svg';
-    document.getElementById('storyName').textContent=k?L(k.nome):T('Narrador','Narrator','Narrador');
-    document.getElementById('storyText').textContent=L(step.t);
-  }else{
-    document.getElementById('storyPortrait').src=step.sprite||'assets/icon.svg';
-    document.getElementById('storyName').textContent=L(step.name||'???');
-    document.getElementById('storyText').textContent=step.t;
-  }
-  layer.classList.add('show');
-}
-function advanceStory(){
-  storyQueue.shift();
-  if(storyQueue.length) renderStoryStep();
-  else finishStorySequence();
-  sfxSelect();
-}
-let storyDoneCallback=null;
-function finishStorySequence(){
-  storyQueue=[];
-  document.getElementById('storyLayer')?.classList.remove('show','cinematic');
-  const done=storyDoneCallback; storyDoneCallback=null;
-  if(typeof done==='function') done();
-}
-function skipStory(complete=false){
-  const done=storyDoneCallback; storyDoneCallback=null;
-  storyQueue=[]; document.getElementById('storyLayer')?.classList.remove('show','cinematic');
-  if(complete&&typeof done==='function') done();
-}
-function showStorySequence(seq,onDone=null){
-  storyDoneCallback=typeof onDone==='function'?onDone:null;
-  if(!seq?.length){ finishStorySequence(); return; }
-  storyQueue=[...seq];
-  renderStoryStep();
-}
-
-/* v9.1 ¬∑ Perfil: estat√≠sticas de vida do jogador */
-let profile={wins:0,losses:0,damage:0,maxCombo:0,powerUps:0,heroUse:{}};
-try{ profile={...profile,...JSON.parse(localStorage.getItem('12r_profile')||'{}')}; }catch(e){}
-function saveProfile(){ localStorage.setItem('12r_profile',JSON.stringify(profile)); }
-function flushRunToProfile(won){
-  if(won) profile.wins++; else profile.losses++;
-  const dealt=Object.values(runStats.damage).reduce((a,b)=>a+b,0);
-  profile.damage+=Math.max(0,dealt-(runStats._flushedDamage||0));
-  runStats._flushedDamage=dealt;
-  profile.maxCombo=Math.max(profile.maxCombo,runStats.maxCombo);
-  profile.powerUps+=Math.max(0,runStats.powerUps-(runStats._flushedPU||0));
-  runStats._flushedPU=runStats.powerUps;
-  if(won) ACTIVE.forEach(i=>{ const id=KINGDOMS[i].id; profile.heroUse[id]=(profile.heroUse[id]||0)+1; });
-  saveProfile();
-}
-function renderProfileStats(){
-  const el=document.getElementById('profileStats'); if(!el) return;
-  const fav=Object.entries(profile.heroUse).sort((a,b)=>b[1]-a[1])[0];
-  const favName=fav?L(KINGDOMS.find(k=>k.id===fav[0])?.nome||fav[0]):'‚Äî';
-  const towerBest=Number(localStorage.getItem('12r_tower_best')||0);
-  const achCount=Object.keys(unlockedAch).length;
-  const nextXp=profileXpForNext();
-  const rows=[
-    [T('N√≠vel do Perfil','Profile Level','Nivel del Perfil'),`Lv ${profileLevel()}${nextXp?` ¬∑ ${profileXp}/${nextXp} XP`:''}`],
-    [T('Vit√≥rias','Wins','Victorias'),profile.wins],[T('Derrotas','Losses','Derrotas'),profile.losses],
-    [T('Dano total','Total damage','Da√±o total'),profile.damage.toLocaleString('pt-BR')],
-    [T('Maior combo','Best combo','Mejor combo'),'√ó'+profile.maxCombo],
-    [T('Power-ups criados','Power-ups crafted','Power-ups creados'),profile.powerUps],
-    [T('Her√≥i favorito','Favorite hero','H√©roe favorito'),favName],
-    [T('Melhor andar da Torre','Best tower floor','Mejor piso de la Torre'),towerBest||'‚Äî'],
-    [T('Moedas','Coins','Monedas'),'ü™ô '+coins],
-    [T('Conquistas','Achievements','Logros'),`${achCount}/${ACHIEVEMENTS.length}`]
-  ];
-  el.innerHTML=rows.map(([l,v])=>`<div class="pstat"><small>${l}</small><b>${v}</b></div>`).join('');
-}
-
-/* v9.1 ¬∑ Resultado di√°rio compartilh√°vel + export/import de progresso */
-function buildDailyShareText(){
-  const fav=Object.entries(runStats.damage).sort((a,b)=>b[1]-a[1])[0];
-  const mvp=fav?L(KINGDOMS[fav[0]]?.nome||'‚Äî'):'‚Äî';
-  const d=new Date();
-  const diffLabel={facil:T('F√°cil','Easy','F√°cil'),normal:'Normal',dificil:T('Dif√≠cil','Hard','Dif√≠cil'),pesadelo:T('Pesadelo','Nightmare','Pesadilla')}[difficulty]||'Normal';
-  return `‚öî ${T('12 Reinos ‚Äî Desafio Di√°rio','12 Realms ‚Äî Daily Challenge','12 Reinos ‚Äî Desaf√≠o Diario')} ${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}\n`+
-    `‚òÖ${runStats.starsEarned||0} ${T('estrelas','stars','estrellas')} ¬∑ Combo √ó${runStats.maxCombo} ¬∑ MVP: ${mvp} ¬∑ ${diffLabel}\n`+
-    `https://jcgoliver21.github.io/ygdria-demo/`;
-}
-async function copyTextToClipboard(text){
-  try{ await navigator.clipboard.writeText(text); return true; }
-  catch(e){
-    const ta=document.createElement('textarea');
-    ta.value=text; document.body.appendChild(ta); ta.select();
-    try{ document.execCommand('copy'); }catch(err){}
-    ta.remove(); return true;
-  }
-}
-function exportSave(){
-  const data={};
-  for(let i=0;i<localStorage.length;i++){
-    const key=localStorage.key(i);
-    if(key&&key.startsWith('12r_')) data[key]=localStorage.getItem(key);
-  }
-  const code=btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-  const ta=document.getElementById('saveCode');
-  if(ta){ ta.value=code; ta.select(); }
-  copyTextToClipboard(code);
-  return code;
-}
-function importSave(){
-  const ta=document.getElementById('saveCode');
-  const code=(ta?.value||'').trim();
-  if(!code) return false;
-  try{
-    const data=JSON.parse(decodeURIComponent(escape(atob(code))));
-    if(typeof data!=='object'||!data) throw new Error('inv√°lido');
-    Object.entries(data).forEach(([k,v])=>{ if(k.startsWith('12r_')&&typeof v==='string') localStorage.setItem(k,v); });
-    location.reload();
-    return true;
-  }catch(e){
-    if(ta) ta.value=T('C√≥digo inv√°lido ‚Äî cole o c√≥digo exportado completo.','Invalid code ‚Äî paste the full exported code.','C√≥digo inv√°lido ‚Äî pega el c√≥digo exportado completo.');
-    return false;
-  }
-}
-
-/* v9.1 ¬∑ Tutorial guiado (primeira batalha) */
-const COACH_STEPS_I18N={
-  pt:[
-    {text:'Bem-vindo aos 12 Reinos! Arraste uma esfera para trocar com a vizinha e formar uma linha de 3 do mesmo reino.', auto:'match'},
-    {text:'Quando houver mais de um inimigo, toque nele para mirar. O pr√≥ximo ataque ser√° direcionado ao alvo marcado.'},
-    {text:'Toque no retrato de um her√≥i para espelh√°-lo e mudar o lado para o qual ele est√° virado.'},
-    {text:'Use o bot√£o de forma√ß√£o nas ferramentas t√°ticas para alternar a disposi√ß√£o dos quatro her√≥is.'},
-    {text:'Cada combina√ß√£o enche a aura. Aos 25%, 50% e 75% os her√≥is disparam passivas autom√°ticas.'},
-    {text:'Combine 4 ou mais esferas para criar power-ups: listrados varrem linhas, embrulhados explodem em √°rea e Prismas Reais limpam cores.'},
-    {text:'Com aura em 100%, toque no her√≥i iluminado para lan√ßar a habilidade especial.'},
-    {text:'Quando um bloco, uma armadilha ou um efeito de fase aparecer pela primeira vez, a mensagem explicar√° como ele funciona.'}
-  ],
-  en:[
-    {text:'Welcome to the 12 Realms! Drag a sphere to swap with its neighbor and line up 3 of the same realm.', auto:'match'},
-    {text:'When there is more than one enemy, tap one to aim. The next attack goes to the marked target.'},
-    {text:'Tap a hero portrait to mirror the character and change which way they face.'},
-    {text:'Use the formation button in tactical tools to change the four heroes‚Äô arrangement.'},
-    {text:'Every match charges aura. At 25%, 50% and 75% heroes trigger automatic passives.'},
-    {text:'Match 4+ spheres to craft power-ups: striped sweep lines, wrapped explode areas and Royal Prisms clear colors.'},
-    {text:'At 100% aura, tap the glowing hero to cast their special ability.'},
-    {text:'When a block, trap or stage effect appears for the first time, a message explains how it works.'}
-  ],
-  es:[
-    {text:'¬°Bienvenido a los 12 Reinos! Arrastra una esfera para intercambiarla y alinear 3 del mismo reino.', auto:'match'},
-    {text:'Cuando haya m√°s de un enemigo, toca uno para apuntar. El pr√≥ximo ataque ir√° al objetivo marcado.'},
-    {text:'Toca el retrato de un h√©roe para espejarlo y cambiar hacia d√≥nde mira.'},
-    {text:'Usa el bot√≥n de formaci√≥n de las herramientas t√°cticas para cambiar la disposici√≥n de los h√©roes.'},
-    {text:'Cada combinaci√≥n carga el aura. Al 25%, 50% y 75% los h√©roes activan pasivas autom√°ticas.'},
-    {text:'Combina 4+ esferas para crear potenciadores: rayados barren l√≠neas, envueltos explotan √°reas y Prismas Reales limpian colores.'},
-    {text:'Con aura al 100%, toca al h√©roe iluminado para lanzar su habilidad especial.'},
-    {text:'Cuando aparezca por primera vez un bloque, una trampa o un efecto de fase, un mensaje explicar√° su funcionamiento.'}
-  ]
-};
-const COACH_STEPS=COACH_STEPS_I18N.pt;
-let coachStep=-1;
-function renderCoach(){
-  const layer=document.getElementById('coachLayer');
-  if(!layer) return;
-  if(coachStep<0||coachStep>=COACH_STEPS.length){
-    layer.classList.remove('show');
-    if(coachStep>=COACH_STEPS.length) localStorage.setItem('12r_tutorial','1');
-    return;
-  }
-  layer.classList.add('show');
-  const steps=COACH_STEPS_I18N[lang]||COACH_STEPS_I18N.pt;
-  const txt=document.getElementById('coachText');
-  if(txt) txt.textContent=steps[coachStep].text;
-  const btn=document.getElementById('coachNext');
-  if(btn) btn.textContent=coachStep>=steps.length-1?T('Vamos l√°!','Let\'s go!','¬°Vamos!'):T('Entendi','Got it','Entendido');
-}
-function startCoach(){
-  if(localStorage.getItem('12r_tutorial')||towerMode||IS_DAILY_RUN) return;
-  coachStep=0;
-  renderCoach();
-}
-function explainMechanicOnce(key,text){
-  if(!worldRun.active||worldRun.fase===undefined||localStorage.getItem('12r_mechanic_'+key)) return;
-  localStorage.setItem('12r_mechanic_'+key,'1');
-  setBattleStatus(T('Tutorial: ','Tutorial: ','Tutorial: ')+text,'system');
-}
-function coachAdvanceOnMatch(){
-  if(coachStep===0&&COACH_STEPS[0].auto==='match'){ coachStep=1; renderCoach(); }
-}
-
-function playPowerActivationFx(){
-  if(reducedMotion||!lastActivatedPowers.length){ lastActivatedPowers=[]; return; }
-  const cellPct=100/SIZE;
-  lastActivatedPowers.forEach(({r,c,power})=>{
-    const fx=document.createElement('div');
-    fx.className='pow-fx '+(power.type==='wrapped'?'pow-blast':power.type==='colorBomb'?'pow-prism':(power.orientation==='horizontal'?'pow-sweep-h':'pow-sweep-v'));
-    if(power.type==='wrapped'){ fx.style.left=(c*cellPct+cellPct/2)+'%'; fx.style.top=(r*cellPct+cellPct/2)+'%'; }
-    else if(power.type==='colorBomb'){ fx.style.setProperty('--cx',(c*cellPct+cellPct/2)+'%'); fx.style.setProperty('--cy',(r*cellPct+cellPct/2)+'%'); }
-    else if(power.orientation==='horizontal'){ fx.style.top=(r*cellPct)+'%'; }
-    else{ fx.style.left=(c*cellPct)+'%'; }
-    if(power.type==='wrapped') sfxPowerWrapped();
-    else if(power.type==='colorBomb') sfxPowerPrism();
-    else sfxPowerStriped();
-    boardEl.appendChild(fx);
-    window.setTimeout(()=>fx.remove(),680);
-  });
-  lastActivatedPowers=[];
-}
-
-function createBoard(){
-  board = [];
-  powerUps = {};
-  lastSwap = null;
-  forcedResolution = null;
-  for(let r=0;r<SIZE;r++){
-    const row = [];
-    for(let c=0;c<SIZE;c++){
-      let color;
-      do{ color = randColorIndex(); }
-      while(
-        (c>=2 && row[c-1]===color && row[c-2]===color) ||
-        (r>=2 && board[r-1][c]===color && board[r-2][c]===color)
-      );
-      row.push(color);
-    }
-    board.push(row);
-  }
-  if(applyPowerupQAFixture()) return;
-  if(!hasValidMoves()) shuffleBoard(false);
-}
-
-/* Repreenche apenas as c√©lulas livres sem permitir linhas prontas. Usado ao
-   atravessar miss√µes na dificuldade F√°cil, quando o tabuleiro √© preservado. */
-function sanitizeBoardWithoutMatches(){
-  const open=[];
-  for(let r=0;r<SIZE;r++) for(let c=0;c<SIZE;c++) if(board[r][c]>=0) open.push({r,c});
-  for(let pass=0;pass<8;pass++){
-    for(const cell of open){
-      const choices=ACTIVE.length?ACTIVE:[0];
-      let color=choices[Math.floor(gameRandom()*choices.length)];
-      let guard=0;
-      while(guard++<12){
-        const left=cell.c>=2&&board[cell.r][cell.c-1]===color&&board[cell.r][cell.c-2]===color;
-        const up=cell.r>=2&&board[cell.r-1][cell.c]===color&&board[cell.r-2][cell.c]===color;
-        if(!left&&!up) break;
-        color=choices[Math.floor(gameRandom()*choices.length)];
-      }
-      board[cell.r][cell.c]=color;
-    }
-    if(findMatches().length===0) return;
-  }
-  createBoard();
-}
-
-/* v9.1 anti-flicker: renderBoard DIFERENCIAL ‚Äî s√≥ reconstr√≥i c√©lulas cujo conte√∫do
-   mudou (assinatura valor|power|obst√°culo|v√©u|corAliada). Elimina o "piscar" causado
-   pelo rebuild total a cada passo de cascata (que reiniciava todas as anima√ß√µes). */
-let boardRenderCache=null;
-function gemSignature(r,c){
-  const key=cellKey(r,c);
-  const v=board[r][c];
-  const pw=powerUps[key];
-  const ob=obstaclesMeta[key];
-  const ag=v>=0?battleGemColors[v]:null;
-  return v+'|'+(pw?pw.type+(pw.orientation||''):'')+'|'+(ob?ob.type+ob.hits:'')+'|'+(hiddenGems[key]?1:0)+'|'+(ag?ag.c+(ag.icon||''):'');
-}
-function renderCellContent(cell,r,c){
-  cell.innerHTML='';
-  const colorIdx = board[r][c];
-  const wrapper = document.createElement('div');
-  wrapper.className = 'gem';
-  wrapper.dataset.r=r; wrapper.dataset.c=c;
-  const power = powerUps[cellKey(r,c)];
-  if(colorIdx===-2 && power?.type==='colorBomb'){
-    wrapper.dataset.power='colorBomb';
-    wrapper.setAttribute('role','button');
-    wrapper.setAttribute('tabindex','0');
-    wrapper.setAttribute('aria-label',T(`Bomba de cor, linha ${r+1}, coluna ${c+1}`,`Color bomb, row ${r+1}, column ${c+1}`,`Bomba de color, fila ${r+1}, columna ${c+1}`));
-    wrapper.innerHTML='<div class="orb power-colorbomb" aria-hidden="true"></div>';
-  } else if(colorIdx>=0 && hiddenGems[cellKey(r,c)]){
-    const k = KINGDOMS[colorIdx];
-    wrapper.dataset.realm = k.id;
-    wrapper.setAttribute('role','button');
-    wrapper.setAttribute('tabindex','0');
-    wrapper.setAttribute('aria-label',T(`Esfera oculta pelo V√©u, linha ${r+1}, coluna ${c+1}`,`Sphere hidden by the Veil, row ${r+1}, column ${c+1}`,`Esfera oculta por el Velo, fila ${r+1}, columna ${c+1}`));
-    wrapper.innerHTML = '<div class="orb orb-hidden" style="--orb-light:#6b6383;--orb:#241f33;--orb-dark:#0a0812;"><span class="orb-q" aria-hidden="true">?</span></div>';
-  } else if(colorIdx>=0){
-    const k = KINGDOMS[colorIdx];
-    wrapper.dataset.realm = k.id;
-    if(power) wrapper.dataset.power=power.type;
-    wrapper.setAttribute('role','button');
-    wrapper.setAttribute('tabindex','0');
-    const powerLabel=power?.type==='striped' ? T(`, power-up listrado ${power.orientation==='horizontal'?'horizontal':'vertical'}`,`, ${power.orientation==='horizontal'?'horizontal':'vertical'} striped power-up`,`, power-up rayado ${power.orientation==='horizontal'?'horizontal':'vertical'}`) : power?.type==='wrapped' ? T(', power-up embrulhado',', wrapped power-up',', power-up envuelto') : '';
-    wrapper.setAttribute('aria-label',T(`Esfera do ${L(k.reino)}${powerLabel}, linha ${r+1}, coluna ${c+1}`,`${L(k.reino)} sphere${powerLabel}, row ${r+1}, column ${c+1}`,`Esfera del ${L(k.reino)}${powerLabel}, fila ${r+1}, columna ${c+1}`));
-    const powerClass=power?.type==='striped' ? ` power-striped ${power.orientation}` : power?.type==='wrapped' ? ' power-wrapped' : '';
-    const ag=battleGemColors[colorIdx];
-    wrapper.innerHTML = `<div class="orb orb-${k.id}${powerClass}" data-realm="${k.id}" style="--orb-light:${ag?ag.l:(k.orbColorLight||k.colorLight)};--orb:${ag?ag.c:(k.orbColor||k.color)};--orb-dark:${ag?ag.d:(k.orbColorDark||k.colorDark)};${ag&&ag.icon?`--orb-icon-c:${ag.icon};`:''}">
-      <svg class="orb-icon" viewBox="0 0 24 24">${KINGDOM_ICON[k.iconId||k.id]||''}</svg>
-    </div>`;
-  }
-  if(colorIdx===-4){
-    const meta=obstaclesMeta[cellKey(r,c)]||{type:'ice',hits:1};
-    wrapper.dataset.obstacle=meta.type;
-    const obt=OB_TYPES[meta.type]||OB_TYPES.stone;
-    wrapper.innerHTML=`<div class="orb obstacle-block ob-${meta.type}${meta.hits>1?' ob-strong':''}" aria-hidden="true"><span class="ob-icon">${obt.icon}</span></div>`;
-    wrapper.setAttribute('aria-label',T(`Bloco de ${L(obt.nome)}, linha ${r+1}, coluna ${c+1}`,`${L(obt.nome)} block, row ${r+1}, column ${c+1}`,`Bloque de ${L(obt.nome)}, fila ${r+1}, columna ${c+1}`));
-  }
-  const fall=lastFallInfo?.[cellKey(r,c)];
-  if(fall){
-    wrapper.classList.add('falling');
-    if(fall.fresh) wrapper.classList.add('fresh');
-    wrapper.style.setProperty('--fall-from',(-(fall.rows*106))+'%');
-    wrapper.style.setProperty('--fall-dur',(300+fall.rows*45)+'ms');
-  }
-  if(colorIdx!==-4) attachGemHandlers(wrapper);
-  cell.appendChild(wrapper);
-}
-function renderBoard(){
-  const full = !boardRenderCache || boardEl.childElementCount!==SIZE*SIZE;
-  if(full){
-    boardEl.innerHTML = '';
-    boardRenderCache={};
-    for(let r=0;r<SIZE;r++){
-      for(let c=0;c<SIZE;c++){
-        const cell = document.createElement('div');
-        cell.className='cell'; cell.dataset.r=r; cell.dataset.c=c;
-        renderCellContent(cell,r,c);
-        boardRenderCache[cellKey(r,c)]=gemSignature(r,c);
-        boardEl.appendChild(cell);
-      }
-    }
-  } else {
-    const cells=boardEl.children;
-    for(let r=0;r<SIZE;r++){
-      for(let c=0;c<SIZE;c++){
-        const key=cellKey(r,c);
-        const sig=gemSignature(r,c);
-        if(boardRenderCache[key]===sig && !(lastFallInfo&&lastFallInfo[key])) continue;
-        renderCellContent(cells[r*SIZE+c],r,c);
-        boardRenderCache[key]=sig;
-      }
-    }
-    if(!selected) boardEl.querySelectorAll('.gem.selected').forEach(g=>g.classList.remove('selected'));
-  }
-  lastFallInfo=null;
-}
-
-/* ---------- INPUT: click-to-select AND drag/swipe ---------- */
-let dragStart = null;
-let dragHandled = false;
-
-function attachGemHandlers(el){
-  el.addEventListener('pointerdown', onGemPointerDown);
-  el.addEventListener('click', onGemClickFallback);
-  el.addEventListener('keydown',e=>{
-    if(e.key==='Enter'||e.key===' '){
-      e.preventDefault();
-      handleTapSelect(parseInt(el.dataset.r),parseInt(el.dataset.c));
-    }
-  });
-}
-
-function onGemPointerDown(e){
-  if(busy || playerHP<=0) return;
-  dragStart = { r:parseInt(e.currentTarget.dataset.r), c:parseInt(e.currentTarget.dataset.c), x:e.clientX, y:e.clientY };
-  dragHandled = false;
-}
-
-document.addEventListener('pointermove', (e)=>{
-  if(!dragStart || dragHandled || busy) return;
-  const dx = e.clientX-dragStart.x, dy = e.clientY-dragStart.y;
-  const absX=Math.abs(dx), absY=Math.abs(dy);
-  if(Math.max(absX,absY) < 14) return;
-  let tr=dragStart.r, tc=dragStart.c;
-  if(absX>absY){ tc += dx>0?1:-1; } else { tr += dy>0?1:-1; }
-  if(tr<0||tr>=SIZE||tc<0||tc>=SIZE){ dragStart=null; return; }
-  dragHandled = true;
-  clearSelectionVisual();
-  const from = {r:dragStart.r,c:dragStart.c}, to = {r:tr,c:tc};
-  dragStart = null;
-  trySwap(from,to);
-});
-
-document.addEventListener('pointerup', ()=>{
-  if(dragStart && !dragHandled){
-    handleTapSelect(dragStart.r, dragStart.c);
-  }
-  dragStart = null; dragHandled=false;
-});
-
-function onGemClickFallback(e){
-  // kept for accessibility (keyboard/assistive click); drag logic above handles real interaction
-}
-
-function clearSelectionVisual(){
-  if(selected){
-    const prevEl = document.querySelector(`.gem[data-r="${selected.r}"][data-c="${selected.c}"]`);
-    if(prevEl) prevEl.classList.remove('selected');
-    selected = null;
-  }
-}
-
-function handleTapSelect(r,c){
-  if(busy || playerHP<=0) return;
-  const el = document.querySelector(`.gem[data-r="${r}"][data-c="${c}"]`);
-  if(!selected){
-    selected = {r,c};
-    if(el) el.classList.add('selected');
-    sfxGemTap();
-    haptic(8);
-    setBattleStatus(T('Esfera selecionada. Escolha uma vizinha para trocar.','Sphere selected. Pick a neighboring one to swap.','Esfera seleccionada. Elige una vecina para intercambiar.'));
-    return;
-  }
-  const prevEl = document.querySelector(`.gem[data-r="${selected.r}"][data-c="${selected.c}"]`);
-  if(selected.r===r && selected.c===c){
-    if(prevEl) prevEl.classList.remove('selected'); selected=null; return;
-  }
-  const isAdjacent = (Math.abs(selected.r-r)+Math.abs(selected.c-c))===1;
-  if(!isAdjacent){
-    if(prevEl) prevEl.classList.remove('selected');
-    selected = {r,c};
-    if(el) el.classList.add('selected');
-    sfxGemTap();
-    return;
-  }
-  if(prevEl) prevEl.classList.remove('selected');
-  const from = {...selected}, to = {r,c};
-  selected = null;
-  trySwap(from,to);
-}
-
-function trySwap(from,to){
-  if(!canAcceptPlayerInput()) return;
-  if(!missionStartMs) startMissionTimer();
-  if(board[from.r]?.[from.c]===-4||board[to.r]?.[to.c]===-4){
-    renderBoard(); sfxInvalid(); haptic([18,30,18]);
-    setBattleStatus(T('Blocos de gelo e pedra n√£o podem ser movidos: quebre-os com combina√ß√µes vizinhas.','Ice and stone blocks cannot be moved: break them with adjacent matches.','Los bloques de hielo y piedra no se pueden mover: r√≥mpelos con combinaciones vecinas.'));
-    return;
-  }
-  const powerFrom=powerUps[cellKey(from.r,from.c)]||null;
-  const powerTo=powerUps[cellKey(to.r,to.c)]||null;
-  swapCells(from,to);
-  const powerCombo=buildPowerComboResolution(from,to,powerFrom,powerTo);
-  const matches = findMatches();
-  if(matches.length===0 && !powerCombo){
-    swapCells(from,to); renderBoard(); sfxInvalid(); haptic([18,30,18]);
-    setBattleStatus(T('Troca inv√°lida: forme uma linha com pelo menos tr√™s esferas.','Invalid swap: line up at least three spheres.','Intercambio inv√°lido: forma una l√≠nea con al menos tres esferas.'));
-  } else {
-    busy=true; setBattlePhase('resolving'); comboStep=0; lastSwap={from:{...from},to:{...to}}; forcedResolution=powerCombo; renderBoard(); haptic(powerCombo?[28,18,45]:16);
-    setBattleStatus(powerCombo ? powerCombo.label : T(`${matches.length} esferas conectadas. Ataque em prepara√ß√£o!`,`${matches.length} spheres connected. Attack incoming!`,`${matches.length} esferas conectadas. ¬°Ataque en preparaci√≥n!`));
-    setTimeout(()=>resolveMatches(),120);
-  }
-}
-
-function swapCells(a,b){
-  const tmp=board[a.r][a.c]; board[a.r][a.c]=board[b.r][b.c]; board[b.r][b.c]=tmp;
-  const keyA=cellKey(a.r,a.c),keyB=cellKey(b.r,b.c);
-  const powerA=powerUps[keyA],powerB=powerUps[keyB];
-  if(powerB) powerUps[keyA]=powerB; else delete powerUps[keyA];
-  if(powerA) powerUps[keyB]=powerA; else delete powerUps[keyB];
-}
-
-function findMatches(){
-  const matched=[];
-  for(let r=0;r<SIZE;r++){
-    let runStart=0;
-    for(let c=1;c<=SIZE;c++){
-      const same = c<SIZE && board[r][c]>=0 && board[r][c]===board[r][c-1];
-      if(!same){ if(c-runStart>=3) for(let k=runStart;k<c;k++) matched.push({r,c:k}); runStart=c; }
-    }
-  }
-  for(let c=0;c<SIZE;c++){
-    let runStart=0;
-    for(let r=1;r<=SIZE;r++){
-      const same = r<SIZE && board[r][c]>=0 && board[r][c]===board[r-1][c];
-      if(!same){ if(r-runStart>=3) for(let k=runStart;k<r;k++) matched.push({r:k,c}); runStart=r; }
-    }
-  }
-  const uniq={}; matched.forEach(m=>{ uniq[m.r+'_'+m.c]=m; }); return Object.values(uniq);
-}
-
-function findMatchGroups(){
-  const groups=[];
-  for(let r=0;r<SIZE;r++){
-    let start=0;
-    for(let c=1;c<=SIZE;c++){
-      const same=c<SIZE&&board[r][c]>=0&&board[r][c]===board[r][c-1];
-      if(!same){
-        if(c-start>=3) groups.push({orientation:'horizontal',color:board[r][start],cells:Array.from({length:c-start},(_,i)=>({r,c:start+i}))});
-        start=c;
-      }
-    }
-  }
-  for(let c=0;c<SIZE;c++){
-    let start=0;
-    for(let r=1;r<=SIZE;r++){
-      const same=r<SIZE&&board[r][c]>=0&&board[r][c]===board[r-1][c];
-      if(!same){
-        if(r-start>=3) groups.push({orientation:'vertical',color:board[start][c],cells:Array.from({length:r-start},(_,i)=>({r:start+i,c}))});
-        start=r;
-      }
-    }
-  }
-  return groups;
-}
-
-function uniqueCells(cells){
-  const map=new Map();
-  cells.forEach(cell=>{ if(cell&&cell.r>=0&&cell.r<SIZE&&cell.c>=0&&cell.c<SIZE) map.set(cellKey(cell.r,cell.c),{r:cell.r,c:cell.c}); });
-  return [...map.values()];
-}
-
-function cellInList(cell,cells){ return cells.some(item=>item.r===cell.r&&item.c===cell.c); }
-
-function preferredCreator(cells){
-  if(lastSwap?.to&&cellInList(lastSwap.to,cells)) return {...lastSwap.to};
-  if(lastSwap?.from&&cellInList(lastSwap.from,cells)) return {...lastSwap.from};
-  return {...cells[Math.floor(cells.length/2)]};
-}
-
-function planCreatedPowerUps(groups){
-  const plans=[];
-  const membership=new Map();
-  groups.forEach((group,index)=>group.cells.forEach(cell=>{
-    const key=cellKey(cell.r,cell.c);
-    if(!membership.has(key)) membership.set(key,[]);
-    membership.get(key).push({group,index});
-  }));
-  const consumed=new Set();
-  for(const [key,items] of membership){
-    const horizontal=items.find(item=>item.group.orientation==='horizontal');
-    const vertical=items.find(item=>item.group.orientation==='vertical');
-    if(horizontal&&vertical&&horizontal.group.color===vertical.group.color){
-      const [r,c]=key.split('_').map(Number);
-      plans.push({r,c,color:horizontal.group.color,power:{type:'wrapped'}});
-      consumed.add(horizontal.index); consumed.add(vertical.index);
-    }
-  }
-  groups.forEach((group,index)=>{
-    if(consumed.has(index)||group.cells.length<4) return;
-    const creator=preferredCreator(group.cells);
-    const type=group.cells.length>=5?'colorBomb':'striped';
-    plans.push({
-      ...creator,
-      color:group.color,
-      power:type==='colorBomb'?{type:'colorBomb'}:{type:'striped',orientation:group.orientation}
-    });
-  });
-  const unique=new Map();
-  plans.forEach(plan=>unique.set(cellKey(plan.r,plan.c),plan));
-  return [...unique.values()];
-}
-
-function addRowCells(cells,row){ for(let c=0;c<SIZE;c++) cells.push({r:row,c}); }
-function addColumnCells(cells,column){ for(let r=0;r<SIZE;r++) cells.push({r,c:column}); }
-function addRadiusCells(cells,row,column,radius){
-  for(let r=row-radius;r<=row+radius;r++) for(let c=column-radius;c<=column+radius;c++) cells.push({r,c});
-}
-
-function effectCellsForPower(r,c,power,targetColor){
-  const cells=[{r,c}];
-  if(power.type==='striped'){
-    if(power.orientation==='horizontal') addRowCells(cells,r); else addColumnCells(cells,c);
-  } else if(power.type==='wrapped'){
-    addRadiusCells(cells,r,c,1);
-  } else if(power.type==='colorBomb'){
-    const color=targetColor>=0?targetColor:ACTIVE[0];
-    for(let rr=0;rr<SIZE;rr++) for(let cc=0;cc<SIZE;cc++) if(board[rr][cc]===color) cells.push({r:rr,c:cc});
-  }
-  return uniqueCells(cells);
-}
-
-function expandPowerEffects(initialCells,targetColor){
-  const expanded=uniqueCells(initialCells);
-  const queue=[...expanded];
-  const seenPowers=new Set();
-  lastActivatedPowers=[];
-  while(queue.length){
-    const cell=queue.shift();
-    const key=cellKey(cell.r,cell.c);
-    const power=powerUps[key];
-    if(!power||seenPowers.has(key)) continue;
-    seenPowers.add(key);
-    lastActivatedPowers.push({r:cell.r,c:cell.c,power});
-    for(const extra of effectCellsForPower(cell.r,cell.c,power,targetColor)){
-      const extraKey=cellKey(extra.r,extra.c);
-      if(!expanded.some(item=>cellKey(item.r,item.c)===extraKey)){
-        expanded.push(extra); queue.push(extra);
-      }
-    }
-  }
-  return uniqueCells(expanded);
-}
-
-function buildPowerComboResolution(from,to,powerFrom,powerTo){
-  const hasColorBomb=powerFrom?.type==='colorBomb'||powerTo?.type==='colorBomb';
-  if(hasColorBomb){
-    if(powerFrom?.type==='colorBomb'&&powerTo?.type==='colorBomb'){
-      return {label:T('Dupla Bomba de Cor: todo o tabuleiro foi purificado!','Double Color Bomb: the entire board was purified!','¬°Doble Bomba de Color: todo el tablero fue purificado!'),cells:Array.from({length:SIZE*SIZE},(_,i)=>({r:Math.floor(i/SIZE),c:i%SIZE}))};
-    }
-    const colorBombWasFrom=powerFrom?.type==='colorBomb';
-    const otherPower=colorBombWasFrom?powerTo:powerFrom;
-    const colorCell=colorBombWasFrom?from:to;
-    const targetColor=board[colorCell.r][colorCell.c];
-    const targets=[];
-    for(let r=0;r<SIZE;r++) for(let c=0;c<SIZE;c++) if(board[r][c]===targetColor) targets.push({r,c});
-    const cells=[from,to,...targets];
-    if(otherPower?.type==='striped'){
-      targets.forEach((cell,index)=>index%2?addColumnCells(cells,cell.c):addRowCells(cells,cell.r));
-      return {label:T('Bomba de Cor + Listrado: uma tempestade de linhas atravessa o tabuleiro!','Color Bomb + Striped: a storm of lines sweeps across the board!','¬°Bomba de Color + Rayado: una tormenta de l√≠neas atraviesa el tablero!'),cells:uniqueCells(cells)};
-    }
-    if(otherPower?.type==='wrapped'){
-      targets.forEach(cell=>addRadiusCells(cells,cell.r,cell.c,1));
-      return {label:T('Bomba de Cor + Embrulhado: todas as joias da cor explodem em √°rea!','Color Bomb + Wrapped: every gem of that color explodes in an area!','¬°Bomba de Color + Envuelto: todas las joyas de ese color explotan en √°rea!'),cells:uniqueCells(cells)};
-    }
-    return {label:T('Bomba de Cor: todas as joias da cor escolhida foram removidas!','Color Bomb: every gem of the chosen color was removed!','¬°Bomba de Color: todas las joyas del color elegido fueron eliminadas!'),cells:uniqueCells(cells)};
-  }
-  if(!powerFrom||!powerTo) return null;
-  const center=to;
-  const cells=[from,to];
-  if(powerFrom.type==='striped'&&powerTo.type==='striped'){
-    addRowCells(cells,center.r); addColumnCells(cells,center.c);
-    return {label:T('Dois Listrados: linha e coluna destru√≠das!','Two Striped: row and column destroyed!','¬°Dos Rayados: fila y columna destruidas!'),cells:uniqueCells(cells)};
-  }
-  if(powerFrom.type==='wrapped'&&powerTo.type==='wrapped'){
-    addRadiusCells(cells,center.r,center.c,2);
-    return {label:T('Dois Embrulhados: uma explos√£o 5√ó5 abalou o tabuleiro!','Two Wrapped: a 5√ó5 blast shook the board!','¬°Dos Envueltos: una explosi√≥n 5√ó5 sacudi√≥ el tablero!'),cells:uniqueCells(cells)};
-  }
-  if((powerFrom.type==='striped'&&powerTo.type==='wrapped')||(powerFrom.type==='wrapped'&&powerTo.type==='striped')){
-    for(let offset=-1;offset<=1;offset++){
-      if(center.r+offset>=0&&center.r+offset<SIZE) addRowCells(cells,center.r+offset);
-      if(center.c+offset>=0&&center.c+offset<SIZE) addColumnCells(cells,center.c+offset);
-    }
-    return {label:T('Listrado + Embrulhado: tr√™s linhas e tr√™s colunas foram varridas!','Striped + Wrapped: three rows and three columns were swept!','¬°Rayado + Envuelto: tres filas y tres columnas fueron barridas!'),cells:uniqueCells(cells)};
-  }
-  return null;
-}
-
-function hasValidMoves(){
-  for(let r=0;r<SIZE;r++){
-    for(let c=0;c<SIZE;c++){
-      for(const [dr,dc] of [[0,1],[1,0]]){
-        const nr=r+dr,nc=c+dc;
-        if(nr>=SIZE||nc>=SIZE) continue;
-        if(board[r][c]===-4||board[nr][nc]===-4) continue;
-        const powerHere=powerUps[cellKey(r,c)],powerThere=powerUps[cellKey(nr,nc)];
-        if(powerHere?.type==='colorBomb'||powerThere?.type==='colorBomb'||(powerHere&&powerThere)) return true;
-        swapCells({r,c},{r:nr,c:nc});
-        const valid=findMatches().length>0;
-        swapCells({r,c},{r:nr,c:nc});
-        if(valid) return true;
-      }
-    }
-  }
-  return false;
-}
-
-function shuffleBoard(announce=true){
-  // v9.1: embaralha apenas as esferas comuns, preservando power-ups fixos e obst√°culos no lugar
-  const spots=[];
-  for(let r=0;r<SIZE;r++) for(let c=0;c<SIZE;c++) if(board[r][c]>=0) spots.push({r,c});
-  const values=spots.map(({r,c})=>board[r][c]);
-  for(let attempt=0;attempt<32;attempt++){
-    for(let i=values.length-1;i>0;i--){
-      const j=Math.floor(gameRandom()*(i+1));
-      [values[i],values[j]]=[values[j],values[i]];
-    }
-    spots.forEach(({r,c},i)=>{ board[r][c]=values[i]; });
-    if(findMatches().length===0 && hasValidMoves()){
-      renderBoard();
-      if(announce) setBattleStatus(T('O tabuleiro ficou sem jogadas e foi embaralhado automaticamente.','The board had no moves left and was shuffled automatically.','El tablero se qued√≥ sin jugadas y se baraj√≥ autom√°ticamente.'));
-      return true;
-    }
-  }
-  spots.forEach(({r,c},i)=>{ board[r][c]=ACTIVE[i%ACTIVE.length]; });
-  renderBoard();
-  if(announce) setBattleStatus(T('As joias foram reorganizadas para criar novas combina√ß√µes.','The gems were rearranged to create new matches.','Las joyas se reorganizaron para crear nuevas combinaciones.'));
-  return false;
-}
-
-function allEnemiesDefeated(){
-  return enemies.length>0 && enemies.every(enemy=>enemy.hp<=0);
-}
-
-function queuePassivesForNextRoom(idx,abilities){
-  abilities.filter(a=>a&&a.kind==='passive').forEach(a=>pendingRoomPassives.push({idx,a}));
-}
-
-function finishRoomIfCleared(reason=T('Todos os inimigos foram derrotados.','All enemies have been defeated.','Todos los enemigos fueron derrotados.')){
-  if(!allEnemiesDefeated() || roomClearScheduled || stageTransitioning) return false;
-  if(board.some(row=>row.some(v=>v===-1))){ collapseAndRefill(); renderBoard(); }
-  roomClearScheduled=true;
-  busy=true;
-  setBattlePhase('transition');
-  comboStep=0;
-  selected=null;
-  forcedResolution=null;
-  setBattleStatus(reason,'system');
-  window.setTimeout(()=>onStageCleared(),260);
-  return true;
-}
-
-async function launchPendingRoomPassives(){
-  if(!pendingRoomPassives.length || stageTransitioning) return;
-  const epoch=combatEpoch;
-  const queued=pendingRoomPassives.splice(0);
-  busy=true;
-  setBattlePhase('heroes');
-  setBattleStatus(T('A energia preservada da sala anterior desperta no in√≠cio do combate.','The energy preserved from the previous room awakens as combat begins.','La energ√≠a conservada de la sala anterior despierta al inicio del combate.'),'support');
-  for(let i=0;i<queued.length;i++){
-    if(epoch!==combatEpoch) return;
-    const item=queued[i];
-    triggerAbility(item.idx,item.a,{deferRoomCheck:true});
-    await wait(900);
-    if(allEnemiesDefeated()){
-      queued.slice(i+1).forEach(rest=>pendingRoomPassives.push(rest));
-      finishRoomIfCleared(T('As passivas preservadas eliminaram todos os inimigos desta sala.','The preserved passives wiped out all enemies in this room.','Las pasivas conservadas eliminaron a todos los enemigos de esta sala.'));
-      return;
-    }
-  }
-  if(epoch===combatEpoch){ busy=false; setBattlePhase('idle'); }
-}
-
-async function resolveMatches(){
-  const epoch = combatEpoch;
-  if(allEnemiesDefeated()){ finishRoomIfCleared(); return; }
-  const forced=forcedResolution;
-  forcedResolution=null;
-  const groups=forced?[]:findMatchGroups();
-  let matches=forced?uniqueCells(forced.cells):findMatches();
-  if(matches.length===0){
-    if(allEnemiesDefeated()){ finishRoomIfCleared(); return; }
-    if(!hasValidMoves()) shuffleBoard();
-    afterPlayerTurn(); return;
-  }
-  const targetColor=matches.map(cell=>board[cell.r][cell.c]).find(color=>color>=0)??ACTIVE[0];
-  const createdPlans=forced?[]:planCreatedPowerUps(groups);
-  matches=expandPowerEffects(matches,targetColor);
-  playPowerActivationFx();
-  const createdByKey=new Map(createdPlans.map(plan=>[cellKey(plan.r,plan.c),plan]));
-  lastSwap=null;
-  comboStep++; showCombo(comboStep); updateComboRecord(comboStep); sfxMatch(comboStep);
-  runStats.maxCombo=Math.max(runStats.maxCombo,comboStep);
-  if(comboStep>=3) setTimeout(()=>setBattleStatus(`‚ö° ${T('Cascata','Cascade','Cascada')} √ó${comboStep}!`,'action'),200);
-  if(comboStep>=4) questEvent('combo',comboStep);
-  if(createdPlans.length){ runStats.powerUps+=createdPlans.length; sfxPowerCreated(); }
-  if(createdPlans.length){
-    const names=createdPlans.map(plan=>plan.power.type==='colorBomb'?T('Bomba de Cor','Color Bomb','Bomba de Color'):plan.power.type==='wrapped'?T('Embrulhado','Wrapped','Envuelto'):T('Listrado','Striped','Rayado'));
-    setBattleStatus(T(`Power-up criado: ${names.join(' + ')}! Continue combinando para ativ√°-lo.`,`Power-up created: ${names.join(' + ')}! Keep matching to activate it.`,`¬°Power-up creado: ${names.join(' + ')}! Sigue combinando para activarlo.`));
-  } else {
-    setBattleStatus(forced?.label||(comboStep>1 ? T(`Combo x${comboStep}! O dano foi ampliado.`,`Combo x${comboStep}! Damage amplified.`,`¬°Combo x${comboStep}! El da√±o fue amplificado.`) : T('Energia dos Reinos canalizada para o grupo.','Realm energy channeled into the party.','Energ√≠a de los Reinos canalizada al grupo.')));
-  }
-
-  const colorCounts = {};
-  let boardRefilledEarly = false;
-  matches.forEach(m=>{
-    const color = board[m.r][m.c];
-    if(color>=0) colorCounts[color]=(colorCounts[color]||0)+1;
-    const gemEl = document.querySelector(`.gem[data-r="${m.r}"][data-c="${m.c}"]`);
-    if(gemEl){ gemEl.style.setProperty('--pop-delay',Math.floor(Math.random()*80)+'ms'); gemEl.classList.add('matched'); }
-    const key=cellKey(m.r,m.c);
-    const created=createdByKey.get(key);
-    if(created){
-      board[m.r][m.c]=created.power.type==='colorBomb'?-2:created.color;
-      powerUps[key]=created.power;
-      if(gemEl) gemEl.classList.add('power-created');
-    } else {
-      board[m.r][m.c]=-1;
-      delete powerUps[key];
-      if(obstaclesMeta[key]?.type!=='sombra') delete obstaclesMeta[key];
-    }
-  });
-  hitAdjacentObstacles(matches);
-  stageCollected+=Object.values(colorCounts).reduce((a,b)=>a+b,0);
-  coachAdvanceOnMatch();
-
-  await wait(220);
-  if(epoch!==combatEpoch) return;
-  collapseAndRefill();
-  renderBoard();
-  boardRefilledEarly = true;
-  await wait(120);
-  if(epoch!==combatEpoch) return;
-
-  const multiplier = 1 + 0.25*(comboStep-1);
-  setBattlePhase('heroes');
-  const buffMult = atkBuffTurns>0 ? (1+atkBuffMult) : 1;
-
-  for(const colorIdxStr of Object.keys(colorCounts)){
-    const colorIdx = parseInt(colorIdxStr);
-    const count = colorCounts[colorIdxStr];
-    const heroAtk = heroAtkBattle(colorIdx);
-    const queuedMult = nextAttackMult[colorIdx] || 1;
-    const emp=heroEmpower[colorIdx];
-    const empMult=(emp&&emp.left>0)?emp.mult:1;
-    if(emp&&emp.left>0){ emp.left--; if(emp.left<=0) delete heroEmpower[colorIdx]; }
-    const dmg = Math.round(heroAtk * count * multiplier * buffMult * queuedMult * empMult);
-    nextAttackMult[colorIdx] = 1;
-    await flyEnergyToHero(colorIdx);
-    triggerHeroAttackAnim(colorIdx);
-    applyDamageToEnemy(dmg, colorIdx);
-    if(KINGDOMS[colorIdx].id==='terra'&&golemAllies>0&&allEnemiesDefeated()===false){
-      const golemDamage=Math.round(dmg*.5*golemAllies);
-      applyDamageToEnemy(golemDamage,colorIdx);
-      setBattleStatus(T(`${golemAllies} golens replicaram ${golemDamage} de dano para Kallendra.`,`${golemAllies} golems echoed ${golemDamage} damage for Kallendra.`,`${golemAllies} g√≥lems replicaron ${golemDamage} de da√±o para Kallendra.`),'damage');
-    }
-    if(KINGDOMS[colorIdx].id==='vento'&&harpyAllies>0&&allEnemiesDefeated()===false){
-      const harpyDamage=Math.round(dmg*.2*harpyAllies);
-      if(harpyDamage>0){
-        applyDamageToEnemy(harpyDamage,colorIdx);
-        setBattleStatus(T(`${harpyAllies} harpia(s) replicaram ${harpyDamage} de dano para Sophitia.`,`${harpyAllies} harpy(ies) echoed ${harpyDamage} damage for Sophitia.`,`${harpyAllies} arp√≠a(s) replicaron ${harpyDamage} de da√±o para Sophitia.`),'damage');
-      }
-    }
-    heroLastDamage[colorIdx] = dmg;
-    if(lifestealCharges>0){
-      healPlayer(Math.round(heroAtk*lifestealMult));
-      lifestealCharges--;
-      renderStatusTray();
-    }
-    await wait(750);
-    if(epoch!==combatEpoch) return;
-    const { toFire, becameReady } = registerHeroProgress(colorIdx, count);
-    if(allEnemiesDefeated()){
-      queuePassivesForNextRoom(colorIdx,toFire);
-      finishRoomIfCleared(T('A √∫ltima combina√ß√£o derrotou todos os inimigos. O combo foi encerrado.','The final match defeated all enemies. The combo has ended.','La √∫ltima combinaci√≥n derrot√≥ a todos los enemigos. El combo termin√≥.'));
-      return;
-    }
-    for(let abilityIndex=0;abilityIndex<toFire.length;abilityIndex++){
-      const a=toFire[abilityIndex];
-      triggerAbility(colorIdx, a,{deferRoomCheck:true});
-      await wait(2000);
-      if(epoch!==combatEpoch) return;
-      if(allEnemiesDefeated()){
-        queuePassivesForNextRoom(colorIdx,toFire.slice(abilityIndex+1));
-        finishRoomIfCleared(T('Uma habilidade passiva concluiu a sala. O tabuleiro foi pausado.','A passive ability cleared the room. The board is paused.','Una habilidad pasiva complet√≥ la sala. El tablero qued√≥ en pausa.'));
-        return;
-      }
-    }
-    if(becameReady){
-      showAuraReadyBanner(KINGDOMS[colorIdx]);
-      await wait(2000);
-      if(epoch!==combatEpoch) return;
-    }
-  }
-
-  if(allEnemiesDefeated()){ finishRoomIfCleared(); return; }
-  if(!boardRefilledEarly) collapseAndRefill();
-  renderBoard();
-  await wait(380);
-  if(epoch===combatEpoch) resolveMatches();
-}
-
-function flyEnergyToHero(colorIdx){
-  return new Promise(resolve=>{
-    const k = KINGDOMS[colorIdx];
-    const heroAvatar = document.getElementById('party-'+k.id+'-avatar');
-    if(!heroAvatar || !boardEl.isConnected){ resolve(); return; }
-    const boardRect = boardEl.getBoundingClientRect();
-    const heroRect = heroAvatar.getBoundingClientRect();
-    const startX = boardRect.left + boardRect.width/2;
-    const startY = boardRect.top + boardRect.height*0.25;
-    const orb = document.createElement('div');
-    orb.className = 'energy-orb';
-    orb.style.left = startX+'px';
-    orb.style.top = startY+'px';
-    orb.style.background = `radial-gradient(circle,#fff,${k.color})`;
-    orb.style.color = k.color;
-    document.body.appendChild(orb);
-    requestAnimationFrame(()=>{
-      const dx = (heroRect.left+heroRect.width/2) - startX;
-      const dy = (heroRect.top+heroRect.height/2) - startY;
-      orb.style.transform = `translate(${dx}px, ${dy}px) scale(0.4)`;
-      orb.style.opacity = '0.15';
-    });
-    setTimeout(()=>{ orb.remove(); resolve(); }, 380);
-  });
-}
-
-function triggerHeroAttackAnim(colorIdx){
-  const k = KINGDOMS[colorIdx];
-  const unit = document.getElementById('party-'+k.id);
-  if(unit){ unit.classList.remove('attacking'); void unit.offsetWidth; unit.classList.add('attacking'); }
-  playHeroAction(colorIdx,'attack');
-}
-
-function triggerHeroCastAnim(colorIdx){
-  const k = KINGDOMS[colorIdx];
-  const unit = document.getElementById('party-'+k.id);
-  if(unit){ unit.classList.remove('casting'); void unit.offsetWidth; unit.classList.add('casting');
-    window.setTimeout(()=>unit.classList.remove('casting'),950); }
-  playHeroAction(colorIdx,'cast');
-}
-
-/* v9 ¬∑ Coreografias de especial por reino: cada builder monta a cena do cast.
-   O container recebe --sx/--sy (origem), --tx/--ty (alvo) e --ddx/--ddy (delta). */
-const SPECIAL_CAST_BUILDERS={
-  fogo(el){ el.innerHTML='<div class="sc-fireball" style="--d:0ms"></div><div class="sc-fireball" style="--d:130ms"></div><div class="sc-fireball" style="--d:260ms"></div><div class="sc-fire-burst"></div>'; },
-  agua(el){ el.innerHTML='<div class="sc-wave"></div><div class="sc-geyser"></div>'; },
-  luz(el){ el.innerHTML='<div class="sc-lightbeam"></div><div class="sc-lightrays"></div>'; },
-  humanos(el){ el.innerHTML='<div class="sc-chrono-ring" style="--d:0ms"></div><div class="sc-chrono-ring" style="--d:160ms"></div><div class="sc-chrono-ring" style="--d:320ms"></div><div class="sc-chrono-hand"></div>'; },
-  natureza(el){ el.innerHTML='<div class="sc-vine" style="--vx:-18px;--d:0ms"></div><div class="sc-vine" style="--vx:0px;--d:110ms"></div><div class="sc-vine" style="--vx:18px;--d:220ms"></div>'; },
-  terra(el){ el.innerHTML='<div class="sc-boulder" style="--bx:-16px;--d:0ms"></div><div class="sc-boulder" style="--bx:2px;--d:140ms"></div><div class="sc-boulder" style="--bx:18px;--d:280ms"></div><div class="sc-dust-wave"></div>'; },
-  areia(el){ el.innerHTML='<div class="sc-sand-gust" style="--gy:-12px;--d:0ms"></div><div class="sc-sand-gust" style="--gy:0px;--d:90ms"></div><div class="sc-sand-gust" style="--gy:12px;--d:180ms"></div><div class="sc-sand-vortex"></div>'; },
-  sombras(el){ el.innerHTML='<div class="sc-dark-veil"></div><div class="sc-void-vortex"></div><div class="sc-shadow-claw" style="--d:.42s"></div><div class="sc-shadow-claw" style="--d:.58s"></div>'; },
-  raio(el){ el.innerHTML='<div class="sc-bolt" style="--d:.08s"></div><div class="sc-bolt" style="--bx:14px;--d:.3s"></div><div class="sc-shockring"></div>'; },
-  vento(el){ el.innerHTML='<div class="sc-cyclone"></div><div class="sc-windslash" style="--d:.12s"></div><div class="sc-windslash" style="--gy:10px;--d:.3s"></div>'; },
-  chuvas(el){ el.innerHTML='<div class="sc-raincloud"></div><div class="sc-rainfall"></div>'; },
-  gelo(el){ el.innerHTML='<div class="sc-icespike" style="--ix:-20px;--d:0s"></div><div class="sc-icespike" style="--ix:0px;--d:.12s"></div><div class="sc-icespike" style="--ix:20px;--d:.24s"></div><div class="sc-frostburst"></div>'; }
-};
-
-function launchSpecialFx(idx,a){
-  if(!particlesEnabled) return;
-  const k = KINGDOMS[idx];
-  /* Cartas novas herdam AUTOMATICAMENTE a coreografia do seu reino (iconId) */
-  const realmFx = k.iconId||k.id;
-  const layer = document.getElementById('specialFxLayer');
-  const source = document.getElementById('party-'+k.id+'-avatar');
-  const defensive = ['cura','escudo','escudoAtordoa','escudoCura','buff','curaBuff','healPercent','shieldTurns','reflectTurns','invulnerableTurns','lifestealCharges','activateAllUltimates','stoneArmor'].includes(a.tipo);
-  const boardEffect = ['doubleRedOnce','spawnPowerUps'].includes(a.tipo);
-  if(a.tipo==='summonGolems'){
-    if(source){
-      source.classList.remove('golem-summon-cast'); void source.offsetWidth; source.classList.add('golem-summon-cast');
-      window.setTimeout(()=>source.classList.remove('golem-summon-cast'),900);
-      spawnCombatFx('telegraph',source,k.colorLight,900);
-    }
-    return;
-  }
-  const targetIdx = currentTargetIndex();
-  const target = boardEffect ? boardEl : (defensive ? document.getElementById('playerHpAnchor') : document.getElementById('enemy-'+targetIdx));
-  if(!layer||!source||!target) return;
-  spawnCombatFx('telegraph',target,k.colorLight,500);
-  if(reducedMotion){
-    target.classList.remove('fx-target-flash'); void target.offsetWidth; target.classList.add('fx-target-flash');
-    window.setTimeout(()=>target.classList.remove('fx-target-flash'),360);
-    return;
-  }
-  const lr=layer.getBoundingClientRect(),sr=source.getBoundingClientRect(),tr=target.getBoundingClientRect();
-  const sx=sr.left-lr.left+sr.width/2-16, sy=sr.top-lr.top+sr.height/2-16;
-  const tx=tr.left-lr.left+tr.width/2-16, ty=tr.top-lr.top+tr.height/2-16;
-  const ring=document.createElement('div');
-  ring.className='impact-ring fx-'+realmFx;
-  ring.dataset.fx='impact';
-  ring.style.color=k.colorLight; ring.style.setProperty('--tx',tx+'px'); ring.style.setProperty('--ty',ty+'px');
-  const builder=SPECIAL_CAST_BUILDERS[realmFx];
-  let castEl;
-  if(builder){
-    castEl=document.createElement('div');
-    castEl.className='special-cast sc-'+realmFx+(a.kind==='active'?' ultimate':'');
-    castEl.dataset.fx='cast';
-    castEl.style.setProperty('--sx',sx+'px'); castEl.style.setProperty('--sy',sy+'px');
-    castEl.style.setProperty('--tx',tx+'px'); castEl.style.setProperty('--ty',ty+'px');
-    castEl.style.setProperty('--ddx',(tx-sx)+'px'); castEl.style.setProperty('--ddy',(ty-sy)+'px');
-    builder(castEl);
-    layer.append(castEl,ring);
-  }else{
-    castEl=document.createElement('div');
-    castEl.className=`special-projectile fx-${realmFx}${a.kind==='active'?' ultimate':''}`;
-    castEl.dataset.fx='projectile';
-    castEl.style.setProperty('--sx',sx+'px'); castEl.style.setProperty('--sy',sy+'px');
-    castEl.style.setProperty('--tx',tx+'px'); castEl.style.setProperty('--ty',ty+'px');
-    layer.append(castEl,ring);
-  }
-  trimCombatFx();
-  /* anti-flicker: flash de arena s√≥ em ATIVAS e sem re-trigger empilhado */
-  if(a.kind==='active' && !arenaEl.classList.contains('fx-flash')){
-    arenaEl.classList.add('fx-flash');
-    window.setTimeout(()=>arenaEl.classList.remove('fx-flash'), 500);
-  }
-  window.setTimeout(()=>{
-    spawnCombatFx('hit',target,k.colorLight,520);
-    spawnRealmParticles(realmFx,target,a.kind==='active'?22:12);
-    ring.remove();
-  },560);
-  window.setTimeout(()=>{ castEl.remove(); ring.remove(); },1600);
-}
-
-function registerHeroProgress(idx, count){
-  const prev = Math.max(0,heroProgress[idx]||0);
-  const gained = Math.max(0,Number(count)||0);
-  const rawTotal = prev+gained;
-  heroProgress[idx] = rawTotal%100;
-  if(!heroActiveQueue[idx]) heroActiveQueue[idx]=[];
-  const k = KINGDOMS[idx];
-  const toFire = [];
-  let becameReady = false;
-  const cycles=Math.floor(rawTotal/100);
-  k.abilities.forEach(a=>{
-    /* at:[25,75] (cartas oficiais): dispara ao cruzar CADA limiar listado (+voltas de 100) */
-    if(Array.isArray(a.at)){
-      for(let cycle=0;cycle<=cycles;cycle++){
-        a.at.forEach(t=>{
-          const th=t+cycle*100;
-          if(th>prev&&th<=rawTotal){
-            if(a.kind==='active'){ heroActiveQueue[idx].push(a); becameReady=true; }
-            else toFire.push(a);
-          }
-        });
-      }
-      return;
-    }
-    /* every:true (cartas oficiais): dispara a cada `gems`% cruzado ‚Äî 25/50/75/100... */
-    if(a.every){
-      const fires=Math.floor(rawTotal/a.gems)-Math.floor(prev/a.gems);
-      for(let i=0;i<fires;i++){
-        if(a.kind==='active'){ heroActiveQueue[idx].push(a); becameReady=true; }
-        else toFire.push(a);
-      }
-      return;
-    }
-    for(let cycle=0;cycle<=cycles;cycle++){
-      const threshold=a.gems+(cycle*100);
-      if(threshold>prev&&threshold<=rawTotal){
-        if(a.kind==='active'){
-          heroActiveQueue[idx].push(a);
-          becameReady=true;
-        }else{
-          toFire.push(a);
-        }
-      }
-    }
-  });
-  if(heroActiveQueue[idx].length){
-    heroReady[idx]=true;
-  }else{
-    heroReady[idx]=false;
-  }
-  firedTiers[idx]=new Set(k.abilities.filter(a=>a.kind==='passive'&&a.gems<=heroProgress[idx]).map(a=>a.gems));
-  updateHeroProgressUI(idx);
-  return { toFire, becameReady };
-}
-
-function grantActiveSetToAll(){
-  ACTIVE.forEach(heroIdx=>{
-    if(!heroActiveQueue[heroIdx]) heroActiveQueue[heroIdx]=[];
-    KINGDOMS[heroIdx].abilities.filter(a=>a.kind==='active').forEach(a=>{
-      heroActiveQueue[heroIdx].push(a);
-    });
-    heroReady[heroIdx]=true;
-    updateHeroProgressUI(heroIdx);
-  });
-}
-
-function grantTeamEnergy(amount){
-  /* anti-flicker: passivas de v√°rios her√≥is disparam escalonadas, n√£o no mesmo frame */
-  let atraso=0;
-  ACTIVE.forEach(heroIdx=>{
-    const result=registerHeroProgress(heroIdx,amount);
-    if(allEnemiesDefeated()) queuePassivesForNextRoom(heroIdx,result.toFire);
-    else result.toFire.forEach(passive=>{
-      window.setTimeout(()=>{ if(playerHP>0) triggerAbility(heroIdx,passive,{deferRoomCheck:true}); }, atraso);
-      atraso+=450;
-    });
-  });
-}
-
-function countRealmGems(idx){
-  let total=0;
-  for(let r=0;r<SIZE;r++){
-    for(let c=0;c<SIZE;c++){
-      if(board[r]?.[c]===idx) total++;
-    }
-  }
-  return total;
-}
-
-function spawnRandomPowerUps(quantity=3){
-  const candidates=[];
-  for(let r=0;r<SIZE;r++){
-    for(let c=0;c<SIZE;c++){
-      if(board[r][c]>=0&&!powerUps[cellKey(r,c)]) candidates.push({r,c});
-    }
-  }
-  for(let i=candidates.length-1;i>0;i--){
-    const j=Math.floor(gameRandom()*(i+1));
-    [candidates[i],candidates[j]]=[candidates[j],candidates[i]];
-  }
-  candidates.slice(0,quantity).forEach((cell,index)=>{
-    powerUps[cellKey(cell.r,cell.c)]=index%2
-      ? {type:'wrapped'}
-      : {type:'striped',orientation:index%4===0?'horizontal':'vertical'};
-  });
-  renderBoard();
-}
-
-function spawnRandomColorBombs(quantity=3){
-  const candidates=[];
-  for(let r=0;r<SIZE;r++){
-    for(let c=0;c<SIZE;c++){
-      if(board[r][c]>=0&&!powerUps[cellKey(r,c)]) candidates.push({r,c});
-    }
-  }
-  for(let i=candidates.length-1;i>0;i--){
-    const j=Math.floor(gameRandom()*(i+1));
-    [candidates[i],candidates[j]]=[candidates[j],candidates[i]];
-  }
-  candidates.slice(0,quantity).forEach(cell=>{
-    board[cell.r][cell.c]=-2;
-    powerUps[cellKey(cell.r,cell.c)]={type:'colorBomb'};
-  });
-  renderBoard();
-}
-
-function doubleRealmGemsOnce(heroIdx){
-  if(heroIdx===undefined||!KINGDOMS[heroIdx]) return {before:0,after:0,converted:0};
-  const realmCells=[];
-  const candidates=[];
-  for(let r=0;r<SIZE;r++){
-    for(let c=0;c<SIZE;c++){
-      const key=cellKey(r,c);
-      if(board[r][c]===heroIdx) realmCells.push({r,c});
-      else if(board[r][c]>=0&&!powerUps[key]) candidates.push({r,c});
-    }
-  }
-  for(let i=candidates.length-1;i>0;i--){
-    const j=Math.floor(gameRandom()*(i+1));
-    [candidates[i],candidates[j]]=[candidates[j],candidates[i]];
-  }
-  const convertedCells=candidates.slice(0,Math.min(realmCells.length,candidates.length));
-  convertedCells.forEach(({r,c})=>{ board[r][c]=heroIdx; });
-  lastDragonRitual={before:realmCells.length,after:realmCells.length+convertedCells.length,converted:convertedCells.length};
-  renderBoard();
-  convertedCells.forEach(({r,c})=>{
-    const cell=boardEl.querySelector('.cell[data-r="'+r+'"][data-c="'+c+'"]');
-    if(cell) cell.classList.add('ritual-converted');
-  });
-  window.setTimeout(()=>boardEl.querySelectorAll('.ritual-converted').forEach(cell=>cell.classList.remove('ritual-converted')),1050);
-  const isFire=KINGDOMS[heroIdx].id==='fogo';
-  const label=isFire
-    ? T('Ritual do Drag√£o: '+realmCells.length+' pedras vermelhas tornaram-se '+lastDragonRitual.after,'Dragon Ritual: '+realmCells.length+' red stones became '+lastDragonRitual.after,'Ritual del Drag√≥n: '+realmCells.length+' piedras rojas se convirtieron en '+lastDragonRitual.after)
-    : T(L(KINGDOMS[heroIdx].nome)+': '+realmCells.length+' blocos do reino tornaram-se '+lastDragonRitual.after,L(KINGDOMS[heroIdx].nome)+': '+realmCells.length+' realm blocks became '+lastDragonRitual.after,L(KINGDOMS[heroIdx].nome)+': '+realmCells.length+' bloques del reino se convirtieron en '+lastDragonRitual.after);
-  setBattleStatus(label+T('. O efeito foi aplicado uma √∫nica vez.','. The effect was applied only once.','. El efecto se aplic√≥ una sola vez.'),'support');
-  return lastDragonRitual;
-}
-
-function doubleRedGemsOnce(){
-  const fireIdx=ACTIVE.find(idx=>KINGDOMS[idx].id==='fogo');
-  return doubleRealmGemsOnce(fireIdx);
-}
-
-function triggerAbility(idx, a, options={}){
-  const k = KINGDOMS[idx];
-  explainMechanicOnce('ability-'+a.name,`${L(a.name)}: ${L(a.desc||'habilidade especial do personagem')}`);
-  const isPassive=a.kind==='passive';
-  showAbilityBanner(k, a, isPassive);
-  if(isPassive) triggerHeroAttackAnim(idx); else triggerHeroCastAnim(idx);
-  launchSpecialFx(idx,a);
-  if(isPassive){ sfxPassive(); }
-  else{ sfxUltimate(); sfxElemental(k.iconId||k.id); showUltimateCutin(k,a); }
-  sfxHeroSignature(k.iconId||k.id,!isPassive);
-  setBattleStatus(T(`${L(k.nome).split(',')[0]} lan√ßou ${L(a.name)}.`,`${L(k.nome).split(',')[0]} cast ${L(a.name)}.`,`${L(k.nome).split(',')[0]} lanz√≥ ${L(a.name)}.`));
-  haptic(isPassive ? 22 : [35,20,70]);
-  switch(a.tipo){
-    case 'dano': applyDamageToEnemy(a.valor, idx); break;
-    case 'dot': addDot(a.valor, a.turnos); break;
-    case 'danoDot': applyDamageToEnemy(a.valor, idx); addDot(a.dot, a.turnos, undefined, L(a.name||'Dano cont√≠nuo')); break;
-    case 'cura': healPlayer(a.valor); break;
-    case 'curaDano': healPlayer(a.valor); applyDamageToEnemy(a.dano, idx); break;
-    case 'danoCura': applyDamageToEnemy(a.valor, idx); healPlayer(a.valor); break;
-    case 'escudo': addShield(a.valor); break;
-    case 'atordoa': addStun(a.valor); break;
-    case 'escudoAtordoa': addShield(a.valor); addStun(a.turnos); break;
-    case 'escudoCura': addShield(a.valor); healPlayer(a.cura); break;
-    case 'buff': addBuff(a.valor, a.turnos); break;
-    case 'curaBuff': healPlayer(a.valor); addBuff(a.mult, a.turnos); break;
-    case 'danoDobro': if(lastDamageDealt>0) applyDamageToEnemy(lastDamageDealt, idx); break;
-    case 'danoTodos': if(lastDamageDealt>0) applyDamageToAllEnemies(lastDamageDealt, idx); break;
-    case 'danoUltimoX5': if(lastDamageDealt>0) applyDamageToEnemy(lastDamageDealt*5, idx); break;
-    case 'nextAttackMult': nextAttackMult[idx]=a.valor||2; break;
-    case 'blind': enemyBlindTurns=Math.max(enemyBlindTurns,a.turnos||1); break;
-    case 'healPercent': healPlayer(Math.round(PLAYER_MAX_HP*a.valor)); break;
-    case 'damageAllFromLast': if(lastDamageDealt>0) applyDamageToAllEnemies(Math.round(lastDamageDealt*(a.mult||1)),idx); break;
-    case 'damageAllPartySum': {
-      const partyTotal=ACTIVE.reduce((sum,heroIdx)=>sum+(heroLastDamage[heroIdx]||0),0);
-      if(partyTotal>0) applyDamageToAllEnemies(Math.round(partyTotal*(a.mult||1)),idx);
-      break;
-    }
-    case 'shieldTurns': addShield(a.valor||400,a.turnos||1); break;
-    case 'echoAll': if(lastDamageDealt>0) applyDamageToAllEnemies(lastDamageDealt,idx); break;
-    case 'critBase': applyDamageToEnemy(Math.round(heroAtkBattle(idx)*(a.mult||5)),idx); break;
-    case 'activateAllUltimates':
-      grantActiveSetToAll();
-      break;
-    case 'lifestealCharges':
-      lifestealCharges=a.cargas||3; lifestealMult=a.mult||5;
-      break;
-    case 'damageFromLast': if(lastDamageDealt>0) applyDamageToEnemy(Math.round(lastDamageDealt*(a.mult||1)),idx); break;
-    case 'reflectTurns': reflectTurns=Math.max(reflectTurns,a.turnos||1); break;
-    case 'invulnerableTurns': invulnerableTurns=Math.max(invulnerableTurns,a.turnos||1); break;
-    case 'damageFromHeroLast': {
-      const heroDamage=heroLastDamage[idx]||lastDamageDealt;
-      if(heroDamage>0) applyDamageToEnemy(Math.round(heroDamage*(a.mult||1)),idx);
-      break;
-    }
-    case 'damageAllFixed': applyDamageToAllEnemies(a.valor||100,idx); break;
-    case 'doubleRedOnce': doubleRedGemsOnce(); break;
-    case 'incinerate': incinerateActive=true; incinerateStacks=0; break;
-    case 'energyAll': grantTeamEnergy(a.valor||10); break;
-    case 'stunAndDamageFromLast':
-      addStun(a.turnos||1);
-      if(lastDamageDealt>0) applyDamageToEnemy(Math.round(lastDamageDealt*(a.mult||1)),idx);
-      break;
-    case 'spawnPowerUps':
-      spawnRandomPowerUps(a.quantidade||3);
-      setBattleStatus(T(`${L(k.nome)} fez nascer ${a.quantidade||3} power-ups no tabuleiro.`,`${L(k.nome)} conjured ${a.quantidade||3} power-ups onto the board.`,`${L(k.nome)} hizo aparecer ${a.quantidade||3} power-ups en el tablero.`),'support');
-      break;
-    case 'healPerRealmGem': {
-      const realmGems=countRealmGems(idx);
-      healPlayer(realmGems*(a.valor||100));
-      setBattleStatus(T(`${realmGems} joias do reino recuperaram ${realmGems*(a.valor||100)} de HP.`,`${realmGems} realm gems restored ${realmGems*(a.valor||100)} HP.`,`${realmGems} joyas del reino recuperaron ${realmGems*(a.valor||100)} de vida.`),'support');
-      break;
-    }
-    case 'damagePerRealmGem': {
-      const realmGems=countRealmGems(idx);
-      applyDamageToEnemy(realmGems*(a.valor||100),idx);
-      break;
-    }
-    case 'danoArea':
-      applyDamageToEnemy(a.valor||300, idx);
-      applyDamageToAllEnemies(a.area||150, idx);
-      break;
-    case 'stunPerRealmGem': {
-      const turnosGelo=Math.max(1,Math.floor(countRealmGems(idx)/(a.divisor||4)));
-      addStun(turnosGelo);
-      setBattleStatus(T(`Bola de Neve: o inimigo foi atordoado por ${turnosGelo} turno(s).`,`Snowball: the enemy was stunned for ${turnosGelo} turn(s).`,`Bola de Nieve: el enemigo qued√≥ aturdido por ${turnosGelo} turno(s).`),'support');
-      break;
-    }
-    case 'freezeBlast': {
-      const gemasGelo=countRealmGems(idx);
-      applyDamageToAllEnemies((a.valor||100)+gemasGelo*(a.porGema||20), idx);
-      addStun(a.turnos||1);
-      setBattleStatus(T(`Geada Branca: ${gemasGelo} pe√ßa(s) do reino ampliaram o dano e congelaram os inimigos.`,`White Frost: ${gemasGelo} realm piece(s) amplified the damage and froze the enemies.`,`Escarcha Blanca: ${gemasGelo} pieza(s) del reino ampliaron el da√±o y congelaron a los enemigos.`),'combat');
-      break;
-    }
-    case 'freezeExecute': {
-      const alvoGelo=currentTargetIndex();
-      addStun(a.turnos||5);
-      if(alvoGelo>=0&&enemies[alvoGelo]&&enemies[alvoGelo].hp>0) applyDamageToEnemy(Math.max(1,Math.floor(enemies[alvoGelo].hp/2)),idx,alvoGelo);
-      break;
-    }
-    case 'dotAll':
-      enemies.forEach((e,i)=>{ if(e.hp>0) addDot(a.valor||30,a.turnos||999,i,L(a.name||'Chuva')); });
-      setBattleStatus(T(`${L(k.nome)} invocou uma chuva cont√≠nua sobre todos os inimigos.`,`${L(k.nome)} summoned an endless rain over all enemies.`,`${L(k.nome)} invoc√≥ una lluvia continua sobre todos los enemigos.`),'support');
-      break;
-    case 'spawnColorBombs':
-      spawnRandomColorBombs(a.quantidade||3);
-      setBattleStatus(T(`${L(k.nome)} inscreveu ${a.quantidade||3} Bombas de Cor no tabuleiro.`,`${L(k.nome)} inscribed ${a.quantidade||3} Color Bombs on the board.`,`${L(k.nome)} inscribi√≥ ${a.quantidade||3} Bombas de Color en el tablero.`),'support');
-      break;
-    case 'summonHarpies': {
-      const novasHarpias=Math.min(5-harpyAllies,a.quantidade||2);
-      if(novasHarpias>0){
-        harpyAllies+=novasHarpias;
-        renderHarpyUnits(true);
-        setBattleStatus(T(`${novasHarpias} Harpia(s) juntaram-se a ${L(k.nome)}. Cada uma replica 20% do dano dela.`,`${novasHarpias} Harpy(ies) joined ${L(k.nome)}. Each echoes 20% of her damage.`,`${novasHarpias} Arp√≠a(s) se unieron a ${L(k.nome)}. Cada una replica el 20% de su da√±o.`),'support');
-      } else setBattleStatus(T('Sophitia j√° lidera o m√°ximo de cinco harpias.','Sophitia already leads the maximum of five harpies.','Sophitia ya lidera el m√°ximo de cinco arp√≠as.'),'system');
-      break;
-    }
-    case 'empowerAttacks':
-      heroEmpower[idx]={left:a.cargas||3,mult:a.mult||2};
-      setBattleStatus(T(`${L(k.nome)} concentrou ${a.cargas||3} esferas de energia: os pr√≥ximos ${a.cargas||3} ataques ser√£o multiplicados por ${a.mult||2}.`,`${L(k.nome)} focused ${a.cargas||3} energy spheres: the next ${a.cargas||3} attacks will be multiplied by ${a.mult||2}.`,`${L(k.nome)} concentr√≥ ${a.cargas||3} esferas de energ√≠a: los pr√≥ximos ${a.cargas||3} ataques se multiplicar√°n por ${a.mult||2}.`),'support');
-      break;
-    case 'hecatombe': {
-      const roxas=countRealmGems(idx);
-      if(roxas>0) applyDamageToAllEnemies(roxas*(a.valor||150), idx);
-      addStun(1);
-      enemies.forEach((e,i)=>{ if(e.hp>0) addDot(50,2,i,T('Eletrocutado','Electrocuted','Electrocutado')); });
-      setBattleStatus(T(`Hecatombe: ${roxas} pe√ßa(s) roxa(s) canalizaram a f√∫ria dos trov√µes.`,`Hecatomb: ${roxas} purple piece(s) channeled the fury of the thunder.`,`Hecatombe: ${roxas} pieza(s) morada(s) canalizaron la furia de los truenos.`),'combat');
-      break;
-    }
-    case 'healFixed': healPlayer(a.valor||300); break;
-    case 'percentAtualCega': { const ti=currentTargetIndex(); if(ti>=0){ applyDamageToEnemy(Math.max(1,Math.round(enemies[ti].hp*(a.pct||0.2)))); enemyBlindTurns+=1; } break; }
-    case 'paralisiaTempo': { const ti=currentTargetIndex(); if(ti>=0){ enemies[ti].timeStopped=true; setBattleStatus(T(`O tempo de ${L(enemies[ti].name)} foi paralisado!`,`${L(enemies[ti].name)}'s time has been frozen!`,`¬°El tiempo de ${L(enemies[ti].name)} fue paralizado!`)); } break; }
-    case 'sombrasDevoradoras': sombrasDevoradorasOn=true; break;
-    case 'laminaDimensional': {
-      enemies.forEach((e2,i2)=>{ if(e2.hp>0) applyDamageToEnemy(Math.max(1,Math.round(e2.maxHp*0.10)),idx,i2); });
-      pendingDimensional.push([8,6,4,2]);
-      setBattleStatus(T('As sombras dimensionais avan√ßam sobre as pr√≥ximas miss√µes...','Dimensional shadows advance upon the coming missions...','Las sombras dimensionales avanzan sobre las pr√≥ximas misiones...'));
-      break;
-    }
-    case 'corteDuplo': nextAttackMult[idx]=Math.max(nextAttackMult[idx]||1,2); break;
-    case 'reducaoDano': damageReductionStacks=Math.min(2,damageReductionStacks+1); break;
-    case 'impetoRainha': queenFuryStacks++; break;
-    case 'chamariz': chamarizCharges++; break;
-    case 'vulnerableTurns':
-      enemyVulnerableTurns=Math.max(enemyVulnerableTurns,a.turnos||1);
-      enemyVulnerableMult=Math.max(enemyVulnerableMult,a.mult||2);
-      setBattleStatus(T(`Os inimigos receber√£o ${enemyVulnerableMult}√ó de dano por ${enemyVulnerableTurns} turno(s).`,`Enemies will take ${enemyVulnerableMult}√ó damage for ${enemyVulnerableTurns} turn(s).`,`Los enemigos recibir√°n ${enemyVulnerableMult}√ó de da√±o durante ${enemyVulnerableTurns} turno(s).`),'support');
-      break;
-    case 'damageTargetPercent': {
-      const alvo=lastEnemyAttacker!==null && enemies[lastEnemyAttacker]?.hp>0 ? lastEnemyAttacker : currentTargetIndex();
-      if(alvo>=0&&enemies[alvo]&&enemies[alvo].hp>0) applyDamageToEnemy(Math.max(1,Math.round(enemies[alvo].maxHp*(a.valor||.1))),idx,alvo);
-      break;
-    }
-    case 'critBaseAll': applyDamageToAllEnemies(Math.round(heroAtkBattle(idx)*(a.mult||3)),idx); break;
-    case 'nextAttackPerRealmGem': {
-      const realmGems=Math.min(12,Math.max(1,countRealmGems(idx)));
-      nextAttackMult[idx]=realmGems;
-      setBattleStatus(T(`O pr√≥ximo ataque de ${L(k.nome)} ser√° multiplicado por ${realmGems} bloco(s) do reino (m√°x. 12).`,`${L(k.nome)}'s next attack will be multiplied by ${realmGems} realm block(s) (max 12).`,`El pr√≥ximo ataque de ${L(k.nome)} se multiplicar√° por ${realmGems} bloque(s) del reino (m√°x. 12).`),'support');
-      break;
-    }
-    case 'weakestHalfOrDamage': {
-      const vivos=enemies.map((e,i)=>({e,i})).filter(({e})=>e.hp>0).sort((x,y)=>x.e.hp-y.e.hp);
-      const fraco=vivos[0];
-      if(fraco) applyDamageToEnemy(vivos.length>1?Math.max(1,Math.floor(fraco.e.hp/2)):(a.valor||300),idx,fraco.i);
-      break;
-    }
-    case 'damageAllPerRealmGem': {
-      const realmGems=countRealmGems(idx);
-      if(realmGems>0) applyDamageToAllEnemies(realmGems*(a.valor||50),idx);
-      setBattleStatus(T(`${realmGems} pe√ßa(s) do reino guiaram o ataque de ${L(k.nome)}.`,`${realmGems} realm piece(s) guided ${L(k.nome)}'s attack.`,`${realmGems} pieza(s) del reino guiaron el ataque de ${L(k.nome)}.`),'combat');
-      break;
-    }
-    case 'doubleRealmOnce': doubleRealmGemsOnce(idx); break;
-    case 'stoneArmor':
-      stoneArmorTurns=Math.max(stoneArmorTurns,a.turnos||2);
-      stoneArmorReduction=a.reducao||.5;
-      stoneArmorReflect=a.reflexao||.5;
-      pulseHpEffect('shield',1150);
-      break;
-    case 'damageAllAndVulnerable':
-      applyDamageToAllEnemies(a.valor||100,idx);
-      enemyVulnerableTurns=Math.max(enemyVulnerableTurns,a.turnos||2);
-      enemyVulnerableMult=Math.max(enemyVulnerableMult,a.mult||1.25);
-      break;
-    case 'summonGolems':
-      {
-        const summoned=Math.min(4,Math.max(0,a.quantidade||2));
-        const available=4-golemAllies;
-        const added=Math.min(summoned,available);
-        if(added>0){
-          golemAllies+=added;
-          renderGolemUnits(true);
-          setBattleStatus(T(`${L(k.nome)} invocou ${added} golens ao seu lado. Cada um replica metade do dano de Kallendra.`,`${L(k.nome)} summoned ${added} golems to her side. Each echoes half of Kallendra's damage.`,`${L(k.nome)} invoc√≥ ${added} g√≥lems a su lado. Cada uno replica la mitad del da√±o de Kallendra.`),'support');
-        }else{
-          setBattleStatus(T('Kallendra j√° possui o m√°ximo de quatro golens aliados.','Kallendra already commands the maximum of four allied golems.','Kallendra ya tiene el m√°ximo de cuatro g√≥lems aliados.'),'system');
-        }
-      }
-      break;
-    case 'sacrificeGolems':
-      if(golemAllies>=(a.quantidade||2)){
-        golemAllies-=a.quantidade||2;
-        renderGolemUnits();
-        applyDamageToEnemy(a.valor||1000,idx);
-      }else{
-        setBattleStatus(T(`${L('Terra Viva')} requer dois golens aliados.`,`${L('Terra Viva')} requires two allied golems.`,`${L('Terra Viva')} requiere dos g√≥lems aliados.`),'system');
-      }
-      break;
-  }
-  renderStatusTray();
-  if(!options.deferRoomCheck&&allEnemiesDefeated()){
-    window.setTimeout(()=>finishRoomIfCleared(T(`${L(a.name)} derrotou todos os inimigos da sala.`,`${L(a.name)} defeated every enemy in the room.`,`${L(a.name)} derrot√≥ a todos los enemigos de la sala.`)),40);
-  }
-}
-
-function showAbilityBanner(k, a, isTierMessage){
-  document.getElementById('abHero').textContent = L(k.nome)+' ¬∑ '+L(k.classe);
-  const banner = document.getElementById('abilityBanner');
-  if(isTierMessage){
-    document.getElementById('abName').textContent = T('‚ú® Acumulando Aura','‚ú® Charging Aura','‚ú® Acumulando Aura');
-    document.getElementById('abDesc').textContent = `${L(a.name)}: ${L(a.desc)}`;
-    banner.classList.remove('aura-ready');
-  } else {
-    document.getElementById('abName').textContent = '‚ú¶ '+L(a.name);
-    document.getElementById('abDesc').textContent = L(a.desc);
-    banner.classList.remove('aura-ready');
-  }
-  /* anti-flicker: banners em sequ√™ncia atualizam o texto sem reiniciar a anima√ß√£o */
-  const agoraB=performance.now();
-  if(!(banner._lastShow && agoraB-banner._lastShow<900 && banner.classList.contains('show'))){
-    banner.classList.remove('show'); void banner.offsetWidth; banner.classList.add('show');
-  }
-  banner._lastShow=agoraB;
-}
-
-function showAuraReadyBanner(k){
-  document.getElementById('abHero').textContent = L(k.nome)+' ¬∑ '+L(k.classe);
-  document.getElementById('abName').textContent = T('üåü HABILIDADE ATIVA CARREGADA üåü','üåü ACTIVE ABILITY CHARGED üåü','üåü HABILIDAD ACTIVA CARGADA üåü');
-  document.getElementById('abDesc').textContent = T(`Toque em ${L(k.nome)} no campo de batalha para escolher uma habilidade acumulada.`,`Tap ${L(k.nome)} on the battlefield to choose a stored ability.`,`Toca a ${L(k.nome)} en el campo de batalla para elegir una habilidad acumulada.`);
-  const banner = document.getElementById('abilityBanner');
-  banner.classList.add('aura-ready');
-  /* anti-flicker: banners em sequ√™ncia atualizam o texto sem reiniciar a anima√ß√£o */
-  const agoraB=performance.now();
-  if(!(banner._lastShow && agoraB-banner._lastShow<900 && banner.classList.contains('show'))){
-    banner.classList.remove('show'); void banner.offsetWidth; banner.classList.add('show');
-  }
-  banner._lastShow=agoraB;
-  sfxUltimate();
-}
-
-function healPlayer(amount){
-  playerHP = Math.min(PLAYER_MAX_HP, playerHP+amount);
-  updatePlayerHP();
-  pulseHpEffect('heal',1050);
-  showFloatDamage(amount, 'playerHpAnchor', false);
-  const anchor = document.getElementById('playerHpAnchor');
-  if(anchor){
-    const el = anchor.querySelector('.dmg-float:last-child');
-    if(el){ el.textContent = '+'+amount; el.style.color = '#8fffb0'; }
-  }
-}
-
-function addShield(amount,turns=0){
-  playerShield += amount;
-  shieldTurns=Math.max(shieldTurns,turns);
-  pulseHpEffect('shield',1150);
-  renderStatusTray();
-}
-function addStun(turns){ enemyStunTurns += turns; }
-function addDot(dmgPerTurn, turns, targetIdx=currentTargetIndex(), label=T('Dano cont√≠nuo','Damage over time','Da√±o continuo')){
-  if(targetIdx<0) return;
-  enemyDots.push({dmgPerTurn, turns, targetIdx, label});
-  renderStatusTray();
-}
-function addBuff(mult, turns){
-  const numeric=Number(mult)||0;
-  atkBuffMult = numeric>1 ? numeric-1 : numeric;
-  atkBuffTurns = turns;
-}
-
-function showCombo(step){
-  comboTextEl.textContent = `COMBO x${step}`;
-  comboTextEl.classList.remove('show');
-  void comboTextEl.offsetWidth;
-  comboTextEl.classList.add('show');
-}
-
-function collapseAndRefill(){
-  const oldPowerUps={...powerUps};
-  const nextPowerUps={};
-  const oldObstacles={...obstaclesMeta};
-  const nextObstacles={};
-  lastFallInfo={};
-  for(let c=0;c<SIZE;c++){
-    let pointer = SIZE-1;
-    for(let r=SIZE-1;r>=0;r--){
-      if(board[r][c]!==-1){
-        board[pointer][c]=board[r][c];
-        const power=oldPowerUps[cellKey(r,c)];
-        if(power) nextPowerUps[cellKey(pointer,c)]=power;
-        const obst=oldObstacles[cellKey(r,c)];
-        if(obst) nextObstacles[cellKey(pointer,c)]=obst;
-        if(pointer!==r){ board[r][c]=-1; lastFallInfo[cellKey(pointer,c)]={rows:pointer-r,fresh:false}; }
-        pointer--;
-      }
-    }
-    const spawnFall=pointer+1;
-    for(let r=pointer;r>=0;r--){ board[r][c]=randColorIndex(); lastFallInfo[cellKey(r,c)]={rows:spawnFall,fresh:true}; }
-  }
-  powerUps=nextPowerUps;
-  obstaclesMeta=nextObstacles;
-}
-
-
-function applyDamageToEnemy(dmg, colorIdx, targetIdxOverride){
-  const idx = (targetIdxOverride!==undefined && targetIdxOverride!==null) ? targetIdxOverride : currentTargetIndex();
-  if(idx===-1 || !enemies[idx] || enemies[idx].hp<=0) return;
-  const enemy = enemies[idx];
-  const attemptedDamage=Math.max(0,Math.round(dmg*(enemyVulnerableTurns>0?enemyVulnerableMult:1)*(1+0.2*queenFuryStacks)));
-  const finalDamage=Math.min(enemy.hp,attemptedDamage);
-  if(incinerateActive && colorIdx!==null && colorIdx!==undefined && targetIdxOverride===undefined){
-    incinerateStacks += 50;
-    addDot(incinerateStacks,3,idx,T('Incinerar','Incinerate','Incinerar'));
-  }
-  enemy.hp = Math.max(0, enemy.hp - finalDamage);
-  if(enemy.hp<=0 && !enemy.__bestReg){ enemy.__bestReg=true; registerBestiary(enemy.name); }
-  lastDamageDealt = finalDamage;
-  if(colorIdx!==null && colorIdx!==undefined){
-    heroLastDamage[colorIdx]=finalDamage;
-    runStats.damage[colorIdx]=(runStats.damage[colorIdx]||0)+finalDamage;
-    { const kD=KINGDOMS[colorIdx]; const elD=kD&&document.getElementById('dps-'+kD.id);
-      if(elD) elD.textContent='‚öî '+runStats.damage[colorIdx]; }
-  }
-  sfxCombatAttack(colorIdx!==null&&colorIdx!==undefined?(KINGDOMS[colorIdx]?.iconId||KINGDOMS[colorIdx]?.id):'humanos','hero');
-  const bar = document.getElementById('enemyHpBar-'+idx);
-  const txt = document.getElementById('enemyHpText-'+idx);
-  if(bar) bar.style.width = Math.max(0,enemy.hp/enemy.maxHp*100)+'%';
-  if(txt) txt.textContent = `${enemy.hp} / ${enemy.maxHp}`;
-
-  showFloatDamage(finalDamage, 'enemy-'+idx, false);
-  const enemyUnit = document.getElementById('enemy-'+idx);
-  if(enemyUnit){
-    enemyUnit.classList.remove('hit'); void enemyUnit.offsetWidth; enemyUnit.classList.add('hit');
-    const hitColor = colorIdx!==null && colorIdx!==undefined && KINGDOMS[colorIdx] ? KINGDOMS[colorIdx].colorLight : '#fff';
-    spawnCombatFx('hit',enemyUnit,hitColor,520);
-    if(colorIdx!==null && colorIdx!==undefined && KINGDOMS[colorIdx]) spawnRealmParticles(KINGDOMS[colorIdx].iconId||KINGDOMS[colorIdx].id,enemyUnit,8);
-  }
-
-  if(enemy.hp<=0){
-    if(enemyUnit){ enemyUnit.classList.add('dead'); enemyUnit.classList.remove('selectable'); }
-    if(manualTarget===idx) manualTarget=null;
-  }
-  refreshTargetHighlight();
-  renderStatusTray();
-}
-
-function applyDamageToAllEnemies(dmg, colorIdx){
-  enemies.forEach((e,i)=>{ if(e.hp>0) applyDamageToEnemy(dmg, colorIdx, i); });
-}
-
-function showFloatDamage(dmg, anchorId, isPlayer){
-  const anchor = document.getElementById(anchorId);
-  if(!anchor) return;
-  anchor.style.position = anchor.style.position || 'relative';
-  const el = document.createElement('div');
-  el.className = 'dmg-float' + (isPlayer? ' player-dmg':'') + (dmg>=100?' dmg-huge':dmg>=40?' dmg-big':'');
-  el.textContent = '-'+dmg;
-  el.style.left = (30+Math.random()*40)+'%';
-  anchor.appendChild(el);
-  setTimeout(()=>el.remove(), 1500);
-}
-
-function afterPlayerTurn(){
-  if(finishRoomIfCleared()) return;
-  stageTurns++;
-  /* V√©u do Eclipse expira com o tempo */
-  let veuMudou=false;
-  if(!persistentObstaclesMode()) Object.keys(hiddenGems).forEach(hk=>{ if(--hiddenGems[hk]<=0){ delete hiddenGems[hk]; veuMudou=true; } }); /* Pesadelo: debuffs do tabuleiro n√£o expiram */
-  if(veuMudou) renderBoard();
-  showStageObjective();
-  if(checkStageObjective()) return;
-  if(atkBuffTurns>0) atkBuffTurns--;
-  renderStatusTray();
-  setBattlePhase('enemies');
-  setTimeout(()=>tickDots(), 300);
-}
-
-function tickDots(){
-  if(enemyDots.length){
-    const totals={};
-    enemyDots.forEach(d=>{
-      const target=(enemies[d.targetIdx]&&enemies[d.targetIdx].hp>0)?d.targetIdx:currentTargetIndex();
-      if(target>=0) totals[target]=(totals[target]||0)+d.dmgPerTurn;
-      d.turns--;
-    });
-    enemyDots=enemyDots.filter(d=>d.turns>0);
-    Object.entries(totals).forEach(([target,total])=>applyDamageToEnemy(total,null,Number(target)));
-  }
-  renderStatusTray();
-  if(finishRoomIfCleared(T('O dano cont√≠nuo eliminou o √∫ltimo inimigo.','Damage over time finished off the last enemy.','El da√±o continuo elimin√≥ al √∫ltimo enemigo.'))) return;
-  setTimeout(()=>enemyCounterAttack(), 350);
-}
-
-function advanceTimedDefense(){
-  if(shieldTurns>0){ shieldTurns--; if(shieldTurns===0) playerShield=0; }
-  if(reflectTurns>0) reflectTurns--;
-  if(invulnerableTurns>0) invulnerableTurns--;
-  if(stoneArmorTurns>0) stoneArmorTurns--;
-  if(enemyVulnerableTurns>0){
-    enemyVulnerableTurns--;
-    if(enemyVulnerableTurns===0) enemyVulnerableMult=1;
-  }
-  renderStatusTray();
-}
-
-function handlePlayerDefeat(){
-  stopMissionTimer();
-  /* üíß L√°grima da Eternidade: renasce UMA vez com 50% da vida */
-  if(eternalReviveCharges>0){
-    eternalReviveCharges--;
-    playerHP=Math.max(1,Math.round(PLAYER_MAX_HP*0.5)); updatePlayerHP();
-    setBattleStatus(T('üíß A L√°grima da Eternidade trouxe o grupo de volta com 50% da vida!','üíß The Tear of Eternity brought the party back with 50% HP!','üíß ¬°La L√°grima de la Eternidad revivi√≥ al grupo con 50% de vida!'),'support');
-    return;
-  }
-  /* Jules ¬∑ Chamariz: escapa da derrota com 100 de HP */
-  if(chamarizCharges>0){
-    chamarizCharges--;
-    playerHP=100; updatePlayerHP();
-    setBattleStatus(T('‚ô† Chamariz! O truque de Jules te traz de volta com 100 de HP.',"‚ô† Decoy! Jules' trick brings you back with 100 HP.",'‚ô† ¬°Se√±uelo! El truco de Jules te devuelve con 100 de HP.'),'support');
-    return;
-  }
-  /* Julius 10.5 ¬∑ batalha roteirizada: voc√™ PERDE... mas conquista o reino */
-  if(worldRun.active && worldRun.fase===9 && worldRun.nivel===5){
-    clearInterval(tempoSombrioTimer); tempoSombrioTimer=null;
-    setBattleStatus(T('Julius era forte demais... mas voc√™s sobreviveram ‚Äî e Ygdria lembrar√° deste dia.','Julius was too strong... but you survived ‚Äî and Ygdria will remember this day.','Julius era demasiado fuerte... pero sobrevivieron ‚Äî e Ygdria recordar√° este d√≠a.'),'system');
-    playerHP=1; updatePlayerHP();
-    setTimeout(()=>{ onStageCleared(); },1400);
-    return;
-  }
-  /* üóº Torre: registra o resultado no ranking mensal antes de encerrar a escalada */
-  if(towerMode){
-    towerRecordMonthly(towerFloor-1);
-    const best=Math.max(Number(localStorage.getItem('12r_tower_best')||0),towerFloor-1);
-    localStorage.setItem('12r_tower_best',String(best));
-  }
-  sfxDefeat(); flushRunToProfile(false); renderBattleReport('defeatReport'); setTimeout(()=>showOverlay('defeatOverlay'), 400);
-}
-
-function enemyCounterAttack(){
-  setBattlePhase('enemies');
-  if(playerHP<=0){ busy=false; return; }
-  /* Dif√≠cil/Pesadelo: TODOS os inimigos vivos atacam, um de cada vez, ap√≥s a sua jogada */
-  const fila = allEnemiesAttackMode()
-    ? enemies.map((e,i)=>e.hp>0?i:-1).filter(i=>i>=0)
-    : [currentTargetIndex()].filter(i=>i>=0);
-  if(!fila.length){ busy=false; return; }
-  const encerrar=()=>{
-    advanceTimedDefense();
-    saveProgress();
-    busy = false;
-    if(!stageTransitioning&&playerHP>0) setBattlePhase('idle');
-    if(finishRoomIfCleared(T('O contra-ataque defensivo derrotou o √∫ltimo inimigo.','The defensive counterattack defeated the last enemy.','El contraataque defensivo derrot√≥ al √∫ltimo enemigo.'))) return;
-    if(playerHP<=0) handlePlayerDefeat();
-  };
-  if(enemyStunTurns>0){
-    enemyStunTurns--;
-    fila.forEach(fi=>{
-      showFloatDamage(0,'enemy-'+fi,false);
-      const anchor=document.getElementById('enemy-'+fi);
-      const el=anchor?.querySelector('.dmg-float:last-child');
-      if(el){ el.textContent=T('Atordoado!','Stunned!','¬°Aturdido!'); el.style.color='#cbb98a'; el.style.fontSize='11px'; }
-    });
-    encerrar();
-    return;
-  }
-  if(enemyBlindTurns>0){
-    enemyBlindTurns--;
-    setBattleStatus(T('Os inimigos erraram o ataque sob a Luz da Prote√ß√£o.','The enemies missed their attacks under the Light of Protection.','Los enemigos fallaron sus ataques bajo la Luz de la Protecci√≥n.'));
-    fila.forEach(fi=>showFloatDamage(0,'enemy-'+fi,false));
-    encerrar();
-    return;
-  }
-  runStageAbilities(); /* Habilidades de Fase dos inimigos-carta (suprimidas por stun/cegueira) */
-  const compasso=Math.max(180,Math.round(560/(BATTLE_SPEEDS[battleSpeedIndex]||1)));
-  let passo=0;
-  const proximo=()=>{
-    if(playerHP<=0 || passo>=fila.length){ encerrar(); return; }
-    const idx=fila[passo++];
-    const enemy=enemies[idx];
-    lastEnemyAttacker = idx;
-    if(!enemy || enemy.hp<=0){ proximo(); return; }
-    if(enemy.timeStopped && enemy.hp>enemy.maxHp*0.25){
-      setBattleStatus(T(`${L(enemy.name)} est√° com o tempo paralisado e n√£o pode atacar.`,`${L(enemy.name)} is frozen in time and cannot attack.`,`${L(enemy.name)} tiene el tiempo paralizado y no puede atacar.`));
-      showFloatDamage(0,'enemy-'+idx,false);
-      const anchorTS=document.getElementById('enemy-'+idx);
-      const elTS=anchorTS?.querySelector('.dmg-float:last-child');
-      if(elTS){ elTS.textContent='‚è±'; elTS.style.fontSize='13px'; }
-      window.setTimeout(proximo, fila.length>1?Math.round(compasso*0.5):0);
-      return;
-    }
-    if(enemy.timeStopped && enemy.hp<=enemy.maxHp*0.25){ enemy.timeStopped=false; }
-    const enemyUnit = document.getElementById('enemy-'+idx);
-    if(enemyUnit){ enemyUnit.classList.remove('attacking'); void enemyUnit.offsetWidth; enemyUnit.classList.add('attacking'); }
-    const variance = 0.85 + gameRandom()*0.3;
-    let dmg = Math.round(enemy.atk * variance * Math.pow(0.8, damageReductionStacks));
-    if(invulnerableTurns>0){
-      dmg=0;
-      setBattleStatus(T('O Cardume Invasor desviou completamente o ataque inimigo.','The Invading Shoal fully evaded the enemy attack.','El Cardumen Invasor esquiv√≥ por completo el ataque enemigo.'));
-    } else if(reflectTurns>0){
-      const reflected=dmg;
-      dmg=0;
-      applyDamageToEnemy(reflected,null,idx);
-      setBattleStatus(T(`A Armadura de Corais devolveu ${reflected} de dano.`,`The Coral Armor returned ${reflected} damage.`,`La Armadura de Corales devolvi√≥ ${reflected} de da√±o.`));
-    }
-    if(stoneArmorTurns>0&&dmg>0){
-      const original=dmg;
-      const reflected=Math.max(1,Math.round(original*stoneArmorReflect));
-      dmg=Math.max(0,Math.round(original*(1-stoneArmorReduction)));
-      applyDamageToEnemy(reflected,null,idx);
-      setBattleStatus(T(`A Armadura de Pedra reduziu o ataque para ${dmg} e devolveu ${reflected} de dano.`,`The Stone Armor reduced the attack to ${dmg} and returned ${reflected} damage.`,`La Armadura de Piedra redujo el ataque a ${dmg} y devolvi√≥ ${reflected} de da√±o.`),'support');
-    }
-    if(playerShield>0){
-      const absorbed = Math.min(playerShield, dmg);
-      playerShield -= absorbed;
-      dmg -= absorbed;
-      if(absorbed>0) pulseHpEffect('shield',900);
-    }
-    playerHP = Math.max(0, playerHP - dmg);
-    if(dmg>0) stageTookDamage=true;
-    updatePlayerHP();
-    if(dmg>0) pulseHpEffect('damage',800);
-    if(dmg>0&&partyArenaEl){ partyArenaEl.classList.remove('party-hurt'); void partyArenaEl.offsetWidth; partyArenaEl.classList.add('party-hurt');
-      window.setTimeout(()=>partyArenaEl.classList.remove('party-hurt'),480); }
-    sfxCombatAttack(enemy.etype||enemy.id||enemy.name,'enemy');
-    haptic([25,20,25]);
-    if(dmg>0) setBattleStatus(T(`${L(enemy.name)} contra-atacou e causou ${dmg} de dano.`,`${L(enemy.name)} counterattacked for ${dmg} damage.`,`${L(enemy.name)} contraatac√≥ y caus√≥ ${dmg} de da√±o.`));
-    /* anti-flicker: o tremor fica no palco da batalha, n√£o no body inteiro */
-    if(localStorage.getItem('12r_shake')!=='0'){
-      const shakeEl=document.querySelector('.arena')||document.body;
-      shakeEl.classList.remove('shake'); void shakeEl.offsetWidth; shakeEl.classList.add('shake');
-      window.setTimeout(()=>shakeEl.classList.remove('shake'), 450);
-    }
-    showFloatDamage(dmg, 'playerHpAnchor', true);
-    if(sombrasDevoradorasOn){
-      enemies.forEach((sx,si)=>{ if(sx.hp>0) applyDamageToEnemy(Math.max(1,Math.round(sx.maxHp*0.05)),0,si); });
-      setBattleStatus(T('As Sombras Devoradoras cobram o pre√ßo do ataque!',"The Devouring Shadows collect the attack's price!",'¬°Las Sombras Devoradoras cobran el precio del ataque!'));
-    }
-    window.setTimeout(proximo, fila.length>1?compasso:0);
-  };
-  proximo();
-}
-
-function updatePlayerHP(){
-  const pct = Math.max(0,(playerHP/PLAYER_MAX_HP)*100);
-  playerHpBar.style.height = pct+'%';
-  playerHpBar.style.width = '100%';
-  playerHpText.textContent = String(playerHP);
-  if(playerHpTotal) playerHpTotal.textContent = 'Total '+PLAYER_MAX_HP;
-  document.body.classList.toggle('player-critical',pct>0&&pct<=25);
-  playerHpBar.setAttribute('aria-valuenow',String(playerHP));
-  syncHpStateClasses();
-}
-
-/* v9 ¬∑ Estat√≠sticas da run, estrelas e celebra√ß√£o */
-let runStats={damage:{},maxCombo:0,powerUps:0};
-let victoryExitToMap=false;
-function resetRunStats(){ runStats={damage:{},maxCombo:0,powerUps:0,starsEarned:0,_flushedDamage:0,_flushedPU:0}; }
-function getStars(){ try{ return JSON.parse(localStorage.getItem('12r_stars')||'{}'); }catch(e){ return {}; } }
-function recordStars(stageIdx){
-  const ratio=playerHP/PLAYER_MAX_HP;
-  const stars=ratio>=.7?3:ratio>=.4?2:1;
-  const all=getStars();
-  if((all[stageIdx]||0)<stars){ all[stageIdx]=stars; localStorage.setItem('12r_stars',JSON.stringify(all)); }
-  return stars;
-}
-function renderBattleReport(elId){
-  const el=document.getElementById(elId); if(!el) return;
-  const entries=Object.entries(runStats.damage).map(([idx,dmg])=>({idx:+idx,dmg})).sort((a,b)=>b.dmg-a.dmg);
-  if(!entries.length){ el.innerHTML=''; return; }
-  const top=entries[0]; const mvp=KINGDOMS[top.idx]; const maxD=top.dmg||1;
-  el.innerHTML=`
-    <div class="report-mvp"><img src="${mvp.cardThumb||mvp.img}" alt="${L(mvp.nome)}"><div><small>${T('MVP DA BATALHA','BATTLE MVP','MVP DE LA BATALLA')}</small><strong>${L(mvp.nome)}</strong><span>${top.dmg} ${T('de dano total','total damage','de da√±o total')}</span></div></div>
-    <div class="report-ranking-title">${T('Ranking das cartas usadas','Cards used ranking','Ranking de cartas usadas')}</div>
-    <div class="report-rows">${entries.map((e,rank)=>{const k=KINGDOMS[e.idx];const medal=['ü•á','ü•à','ü•â'][rank]||`${rank+1}¬∫`;return `<div class="report-row"><span class="rr-rank">${medal}</span><span class="rr-name">${L(k.nome)}</span><div class="rr-bar"><i style="width:${Math.max(6,Math.round(e.dmg/maxD*100))}%;background:${k.color}"></i></div><span class="rr-val">${e.dmg}</span></div>`;}).join('')}</div>
-    <div class="report-meta">${T('Maior combo','Best combo','Mayor combo')} √ó${runStats.maxCombo} ¬∑ ${T('Power-ups criados:','Power-ups created:','Power-ups creados:')} ${runStats.powerUps}</div>`;
-}
-function launchVictoryConfetti(){
-  const layer=document.getElementById('victoryConfetti');
-  if(!layer||reducedMotion||!particlesEnabled) return;
-  layer.innerHTML='';
-  const colors=ACTIVE.map(i=>battleGemColors[i]?.c||KINGDOMS[i].orbColor||KINGDOMS[i].color);
-  for(let i=0;i<46;i++){
-    const p=document.createElement('i');
-    p.style.left=(Math.random()*100)+'%';
-    p.style.background=colors[i%colors.length];
-    p.style.animationDuration=(2.4+Math.random()*2.2)+'s';
-    p.style.animationDelay=(Math.random()*1.6)+'s';
-    p.style.width=p.style.height=(5+Math.random()*6)+'px';
-    layer.appendChild(p);
-  }
-  window.setTimeout(()=>{ layer.innerHTML=''; },6800);
-}
-
-function onStageCleared(){
-  if(stageTransitioning) return;
-  stopMissionTimer();
-  stageTransitioning = true;
-  busy = true;
-  setBattlePhase('transition');
-  combatEpoch++;
-  sfxVictory();
-  if(worldRun.active){
-    const world=WORLDS[0];
-    const fase=world.fases[worldRun.fase];
-    if(worldRun.nivel===5) markStoryPhaseDone(worldRun.fase);
-    if(worldRun.nivel<5){
-      questEvent('win');
-      worldRun.turnosFase=(worldRun.turnosFase||0)+stageTurns;
-      worldRun.tempoFase=(worldRun.tempoFase||0)+missionElapsed();
-      worldRun.nivel++;
-      grantCoins(coinsVitoria(3+worldRun.fase)); /* v9.2: economia rebalanceada (metade) */
-      const starsEl=document.getElementById('stageStars');
-      if(starsEl) starsEl.innerHTML='';
-      document.getElementById('stageClearText').textContent=`${L(fase.nome)}: ${T('n√≠vel','level','nivel')} ${worldRun.nivel-1}/5 ${T('superado! Avan√ßando...','cleared! Advancing...','superado! Avanzando...')}`;
-      showOverlay('stageClearOverlay');
-      carryBoardNext=true; /* F√°cil mant√©m o tabuleiro na pr√≥xima miss√£o */
-      setTimeout(()=>{ hideOverlay('stageClearOverlay'); loadStage(0); busy=false; },1500);
-      return;
-    }
-    // Chefe vencido ‚Äî fase completa!
-    { const hoje=todayKey();
-      if(localStorage.getItem('12r_firstwin')!==hoje){
-        localStorage.setItem('12r_firstwin',hoje);
-        grantCoins(20+worldRun.fase*5); /* dobra a recompensa base da primeira vit√≥ria do dia */
-        setBattleStatus('‚ú® '+T('Primeira vit√≥ria do dia: moedas em DOBRO!','First win of the day: DOUBLE coins!','¬°Primera victoria del d√≠a: monedas DOBLES!'),'support');
-      }
-    }
-    questEvent('win');
-    worldRun.turnosFase=(worldRun.turnosFase||0)+stageTurns;
-    worldRun.tempoFase=(worldRun.tempoFase||0)+missionElapsed();
-    { /* F7 ¬∑ recorde de turnos da fase */
-      const fb=faseBest();
-      if(!fb[worldRun.fase]||worldRun.turnosFase<fb[worldRun.fase]){ fb[worldRun.fase]=worldRun.turnosFase; localStorage.setItem('12r_fase_best',JSON.stringify(fb)); }
-    }
-    { /* ‚è± recorde de TEMPO da fase (ranking oficial de miss√µes) */
-      const ft=faseTime();
-      if(!ft[worldRun.fase]||worldRun.tempoFase<ft[worldRun.fase]){ ft[worldRun.fase]=worldRun.tempoFase; localStorage.setItem('12r_fase_time',JSON.stringify(ft)); }
-    }
-    /* M3 ¬∑ √∫ltima equipe vitoriosa vira a sugerida */
-    localStorage.setItem('12r_lastteam',JSON.stringify([...ACTIVE]));
-    /* M6 ¬∑ prefetch da arte da pr√≥xima fase */
-    { const prox=WORLDS[0].fases[worldRun.fase+1]; if(prox?.bg){ const im=new Image(); im.src=prox.bg; } }
-    const prog=worldProg('humanos');
-    const ratio=playerHP/PLAYER_MAX_HP;
-    const stars=ratio>=.7?3:ratio>=.4?2:1;
-    prog.starsByDifficulty=prog.starsByDifficulty||{};
-    prog.starsByDifficulty[difficulty]=prog.starsByDifficulty[difficulty]||{};
-    if((prog.starsByDifficulty[difficulty][worldRun.fase]||0)<stars) prog.starsByDifficulty[difficulty][worldRun.fase]=stars;
-    prog.stars[worldRun.fase]=Math.max(prog.stars[worldRun.fase]||0,stars);
-    prog.unlocked=Math.max(prog.unlocked,Math.min(world.fases.length-1,worldRun.fase+1));
-    saveWorldProg('humanos',prog);
-    grantCoins(coinsVitoria(20+worldRun.fase*5));
-    const ups=grantXp((30+worldRun.fase*10)*(xpDoubleRun?2:1));
-    checkAchievements('stage');
-    flushRunToProfile(true);
-      const starsEl=document.getElementById('stageStars');
-    if(starsEl) starsEl.innerHTML=[1,2,3].map(x=>`<span class="star${x<=stars?' on':''}" style="--i:${x}">‚òÖ</span>`).join('');
-    const victoryStars=document.getElementById('victoryStars');
-    if(victoryStars) victoryStars.innerHTML=[1,2,3].map(x=>`<span class="star${x<=stars?' on':''}" style="--i:${x}">‚òÖ</span>`).join('');
-    const victoryRank=document.getElementById('victoryRank');
-    if(victoryRank) victoryRank.textContent=`${DIFFICULTY_RANKS[difficulty]||'Prata'} ¬∑ ${difficultyLabel(difficulty)} ¬∑ ${stars}/3`;
-    if(worldRun.fase===world.fases.length-1){
-      /* Fase 10 vencida ‚Äî Reino dos Humanos conquistado */
-      grantCoins(coinsVitoria(150)); grantXp(100*(xpDoubleRun?2:1));
-      checkAchievements('world-complete');
-      const gt=document.getElementById('grandClearTitle'), gx=document.getElementById('grandClearText');
-      if(gt) gt.textContent=T('Reino dos Humanos Conquistado!','Human Realm Conquered!','¬°Reino de los Humanos Conquistado!');
-      if(gx) gx.textContent=T('A Terra dos Reguladores de Ygdria est√° livre. Os pr√≥ximos reinos aguardam...','The Land of the Regulators of Ygdria is free. The next realms await...','La Tierra de los Reguladores est√° libre. Los pr√≥ximos reinos esperan...');
-      const showFinalStory=worldRun.storyMode!==false;
-      const finaleFase=worldRun.fase;
-      worldRun.active=false;
-      const finishFinale=()=>{
-        victoryExitToMap=true;
-        renderBattleReport('victoryReport');
-        launchVictoryConfetti();
-        showOverlay('dungeonClearOverlay');
-      };
-      if(showFinalStory) showStorySequence([{name:'Narrador',t:HUMAN_STORY[finaleFase]?.after||''}],finishFinale);
-      else finishFinale();
-      return;
-    }
-    const completedFase=worldRun.fase;
-    const finishMissionReport=()=>{
-      const gt=document.getElementById('grandClearTitle'), gx=document.getElementById('grandClearText');
-      if(gt) gt.textContent=T('Miss√£o Conclu√≠da!','Mission Complete!','¬°Misi√≥n Completada!');
-      if(gx) gx.textContent=`${L(fase.chefe)} ${T('derrotado(a)!','defeated!','¬°derrotado(a)!')} ${L(fase.nome)} ${T('conquistada!','conquered!','conquistada!')}${ups.length?' '+ups.join(' '):''}`;
-      renderBattleReport('victoryReport');
-      launchVictoryConfetti();
-      victoryExitToMap=true;
-      showOverlay('dungeonClearOverlay');
-      worldRun.active=false;
-      busy=false;
-    };
-    const finalStory=worldRun.storyMode!==false&&HUMAN_STORY[completedFase]?.after;
-    if(finalStory) showStorySequence([{name:'Narrador',t:HUMAN_STORY[completedFase].after}],finishMissionReport);
-    else finishMissionReport();
-    return;
-  }
-  if(bossRushMode){
-    bossRushIdx++;
-    grantCoins(coinsVitoria(25+bossRushIdx*8));
-    const best=Math.max(Number(localStorage.getItem('12r_bossrush_best')||0),bossRushIdx);
-    localStorage.setItem('12r_bossrush_best',String(best));
-    if(bossRushIdx>=BOSS_RUSH_ORDER.length){
-      unlockAch('lenda');
-      const gt=document.getElementById('grandClearTitle'), gx=document.getElementById('grandClearText');
-      if(gt) gt.textContent=T('Lenda de Ygdria!','Legend of Ygdria!','¬°Leyenda de Ygdria!');
-      if(gx) gx.textContent=T('Voc√™ venceu os 8 campe√µes em sequ√™ncia. Nenhum trono resiste a voc√™.','You defeated all 8 champions in a row. No throne can resist you.','Venciste a los 8 campeones seguidos. Ning√∫n trono se te resiste.');
-      renderBattleReport('victoryReport'); launchVictoryConfetti();
-      bossRushMode=false;
-      showOverlay('dungeonClearOverlay');
-      return;
-    }
-    const starsEl=document.getElementById('stageStars');
-    if(starsEl) starsEl.innerHTML='';
-    document.getElementById('stageClearText').textContent=T(`Chefe ${bossRushIdx}/8 derrotado! O pr√≥ximo campe√£o avan√ßa...`,`Boss ${bossRushIdx}/8 defeated! The next champion steps up...`,`¬°Jefe ${bossRushIdx}/8 derrotado! El pr√≥ximo campe√≥n avanza...`);
-    showOverlay('stageClearOverlay');
-    setTimeout(()=>{ hideOverlay('stageClearOverlay'); loadStage(0); busy=false; }, 1600);
-    return;
-  }
-  if(towerMode){
-    const best=Math.max(Number(localStorage.getItem('12r_tower_best')||0),towerFloor);
-    localStorage.setItem('12r_tower_best',String(best));
-    grantCoins(coinsVitoria(5+Math.floor(towerFloor/3)));
-    grantXp((12+towerFloor*3)*(xpDoubleRun?2:1));
-    checkAchievements('tower');
-    flushRunToProfile(true);
-    towerFloor++;
-    if((towerFloor-1)%5===0){
-      grantCoins(coinsVitoria(50));
-      setBattleStatus('üéÅ '+T(`Ba√∫ da Torre! Andar ${towerFloor-1} rendeu +50 moedas.`,`Tower Chest! Floor ${towerFloor-1} granted +50 coins.`,`¬°Cofre de la Torre! El piso ${towerFloor-1} otorg√≥ +50 monedas.`),'support');
-    }
-    if(IS_DAILY_RUN && towerFloor>5){
-      /* Desafio Di√°rio conclu√≠do: 5 andares vencidos */
-      let dailyRecord={}; try{ dailyRecord=JSON.parse(localStorage.getItem('12r_daily')||'{}'); }catch(e){}
-      if(dailyRecord.date!==todayKey()){
-        grantCoins(150); grantXp(60);
-        localStorage.setItem('12r_daily',JSON.stringify({date:todayKey(),combo:runStats.maxCombo}));
-        checkAchievements('daily');
-      }
-      const shareBtn=document.getElementById('shareDailyBtn');
-      if(shareBtn) shareBtn.style.display='inline-block';
-      const gt=document.getElementById('grandClearTitle'), gx=document.getElementById('grandClearText');
-      if(gt) gt.textContent=T('Desafio Di√°rio Conclu√≠do!','Daily Challenge Complete!','¬°Desaf√≠o Diario Completado!');
-      if(gx) gx.textContent=T('Voc√™ venceu os 5 andares de hoje. Volte amanh√£ para um novo desafio!','You beat all 5 floors today. Come back tomorrow!','¬°Venciste los 5 pisos de hoy. Vuelve ma√±ana!');
-      renderBattleReport('victoryReport');
-      launchVictoryConfetti();
-      showOverlay('dungeonClearOverlay');
-      return;
-    }
-    towerRecordMonthly(towerFloor-1); /* ranking mensal em tempo real */
-    const starsEl=document.getElementById('stageStars');
-    if(starsEl) starsEl.innerHTML='';
-    const proxDesafiante=KINGDOMS[(towerFloor-1)%KINGDOMS.length];
-    document.getElementById('stageClearText').textContent = T(`Andar ${towerFloor-1} superado! Pr√≥ximo desafiante: ${proxDesafiante?.nome||'???'}.`,`Floor ${towerFloor-1} cleared! Next challenger: ${proxDesafiante?.nome||'???'}.`,`¬°Piso ${towerFloor-1} superado! Pr√≥ximo desafiante: ${proxDesafiante?.nome||'???'}.`);
-    showOverlay('stageClearOverlay');
-    setTimeout(()=>{ hideOverlay('stageClearOverlay'); loadStage(0); busy=false; }, 1600);
-    return;
-  }
-  const unlocked = Math.max(Number(localStorage.getItem('12r_unlocked')||0),Math.min(DUNGEON.length-1,stageIndex+1));
-  localStorage.setItem('12r_unlocked',String(unlocked));
-  saveProgress(stageIndex<DUNGEON.length-1 ? stageIndex+1 : stageIndex);
-  const earnedStars=recordStars(stageIndex);
-  runStats.starsEarned=(runStats.starsEarned||0)+earnedStars;
-  grantCoins(earnedStars*15+stageIndex*5);
-  const levelUps=grantXp(20+stageIndex*8);
-  checkAchievements('stage');
-  flushRunToProfile(true);
-  if(stageIndex >= DUNGEON.length-1){
-    grantCoins(IS_DAILY_RUN?150:80);
-    grantXp(60);
-    checkAchievements('dungeon');
-    if(IS_DAILY_RUN) localStorage.setItem('12r_daily',JSON.stringify({date:todayKey(),combo:runStats.maxCombo}));
-    const shareBtn=document.getElementById('shareDailyBtn');
-    if(shareBtn) shareBtn.style.display=IS_DAILY_RUN?'inline-block':'none';
-    renderBattleReport('victoryReport');
-    launchVictoryConfetti();
-    showOverlay('dungeonClearOverlay');
-  }
-  else{
-    const starsEl=document.getElementById('stageStars');
-    if(starsEl) starsEl.innerHTML=[1,2,3].map(n=>`<span class="star${n<=earnedStars?' on':''}" style="--i:${n}">‚òÖ</span>`).join('');
-    document.getElementById('stageClearText').textContent = `${L(DUNGEON[stageIndex].title)}${T(' - superado!',' - cleared!',' - ¬°superado!')}${levelUps.length?' '+levelUps.join(' '):''}`;
-    showOverlay('stageClearOverlay');
-    setTimeout(()=>{ hideOverlay('stageClearOverlay'); loadStage(stageIndex+1); busy=false; }, 1800);
-  }
-}
-
-function showOverlay(id){ document.getElementById(id).classList.add('show'); }
-function hideOverlay(id){ document.getElementById(id).classList.remove('show'); }
-
-function resetGame(){
-  resetRunStats();
-  pendingDimensional=[];
-  incineratePhaseKey=null; incinerateActive=false; incinerateStacks=0;
-  playerHP = PLAYER_MAX_HP; updatePlayerHP();
-  ['stageClearOverlay','dungeonClearOverlay','defeatOverlay'].forEach(hideOverlay);
-  selected=null; busy=false; comboStep=0;
-  heroProgress = {}; firedTiers = {}; heroReady = {}; heroActiveQueue = {};
-  pendingRoomPassives=[]; roomClearScheduled=false; golemAllies=0; harpyAllies=0; heroEmpower={};
-  if(worldRun.active) worldRun.nivel=1;          // reinicia a fase atual do mundo
-  if(towerMode && IS_DAILY_RUN) towerFloor=1;    // di√°rio recome√ßa do andar 1
-  loadStage(0);
-}
-
-function restartCurrentStage(){
-  const survivorHP = towerMode && difficulty==='pesadelo' ? Math.max(1,Math.min(PLAYER_MAX_HP,survivorStageStartHP||playerHP||1)) : PLAYER_MAX_HP;
-  playerHP = survivorHP; updatePlayerHP();
-  pendingDimensional=[];
-  ['stageClearOverlay','dungeonClearOverlay','defeatOverlay'].forEach(hideOverlay);
-  selected=null; busy=false; comboStep=0;
-  heroProgress = {}; firedTiers = {}; heroReady = {}; heroActiveQueue = {};
-  pendingRoomPassives=[]; roomClearScheduled=false; golemAllies=0; harpyAllies=0; heroEmpower={};
-  loadStage(stageIndex);
-}
-
-document.getElementById('muteBtn').addEventListener('click', toggleMusic);
-document.getElementById('resetBtn').addEventListener('click', resetGame);
-document.getElementById('retryBtn').addEventListener('click', restartCurrentStage);
-document.getElementById('playAgainBtn').addEventListener('click',()=>{
-  if(!victoryExitToMap){ resetGame(); return; }
-  victoryExitToMap=false;
-  hideOverlay('dungeonClearOverlay');
-  showMainMenu();
-  openMapScreen();
-  renderWorldMap();
-  openPanel('worldScreen');
-});
-
-// ---------- HERO SELECT SCREEN ----------
-const qaPreset = new URLSearchParams(location.search).get('qa');
-let chosenIds = qaPreset==='barbara'||qaPreset==='all-specials' ? [0,1,3,5] : [];
-let pendingStage = 0;
-const selectGridEl = document.getElementById('selectGrid');
-const selectCountEl = document.getElementById('selectCount');
-const startBtnEl = document.getElementById('startBtn');
-const swapBtnEl = document.getElementById('swapBtn2');
-
-var selectDeckOpen={}; /* decks abertos na tela de sele√ß√£o (persistem entre re-renders) */
-function renderSelectGrid(){
-  selectGridEl.innerHTML = '';
-  if(chosenIds.length&&!Object.values(selectDeckOpen).some(Boolean)){
-    chosenIds.forEach(ci=>{ const kk=KINGDOMS[ci]; if(kk) selectDeckOpen[kk.deck||kk.id]=true; });
-  }
-  /* v9.1 ¬∑ Roster agrupado em DECKS por reino (Reino Rosa primeiro) */
-  const ordem=['humanos','luz','agua','fogo','natureza','terra','areia','sombras','raio','vento','chuvas','gelo'];
-  const nomesDeck={humanos:T('Reino Rosa ¬∑ Humanos','Rose Realm ¬∑ Humans','Reino Rosa ¬∑ Humanos')};
-  ordem.forEach(deckId=>{
-    const membros=KINGDOMS.filter(k=>(k.deck||k.id)===deckId);
-    if(!membros.length) return;
-    membros.sort((a,b)=>(b.stars||0)-(a.stars||0)); /* maior raridade primeiro */
-    const lider=KINGDOMS.find(k=>k.id===deckId);
-    const section=document.createElement('div');
-    section.className='select-deck-section deck-'+deckId+(selectDeckOpen[deckId]?' open':'');
-    const escolhidasNoDeck=membros.filter(k=>chosenIds.includes(KINGDOMS.indexOf(k))).length;
-    const header=document.createElement('div');
-    header.className='select-deck-header';
-    header.setAttribute('role','button');
-    header.setAttribute('tabindex','0');
-    header.setAttribute('aria-expanded', selectDeckOpen[deckId]?'true':'false');
-    header.style.setProperty('--realm',lider?.color||'#d4af5a');
-    header.innerHTML=`<span class="deck-icon"><svg viewBox="0 0 24 24">${KINGDOM_ICON[deckId]||''}</svg></span><b>${nomesDeck[deckId]||L(lider?.reino||deckId)}</b>${escolhidasNoDeck?`<span class="deck-picked">${escolhidasNoDeck} ${T('na equipe','in team','en el equipo')}</span>`:''}<small>${membros.length} ${membros.length>1?T('cartas','cards','cartas'):T('carta','card','carta')}</small><span class="deck-caret" aria-hidden="true">‚ñ∏</span>`;
-    const alternar=()=>{ selectDeckOpen[deckId]=!selectDeckOpen[deckId]; section.classList.toggle('open',!!selectDeckOpen[deckId]); header.setAttribute('aria-expanded', selectDeckOpen[deckId]?'true':'false'); };
-    header.addEventListener('click',alternar);
-    header.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); alternar(); } });
-    section.appendChild(header);
-    const dgrid=document.createElement('div');
-    dgrid.className='select-deck-grid';
-    membros.forEach(k=>{
-      const idx=KINGDOMS.indexOf(k);
-      const card = document.createElement('div');
-      const permitido=storySelectionAllowed(idx);
-      card.className = 'select-card' + (chosenIds.includes(idx) ? ' chosen' : '') + (!permitido?' story-disabled':'');
-      card.setAttribute('aria-disabled',permitido?'false':'true');
-      card.style.setProperty('--realm',k.color);
-      card.style.setProperty('--realm-light',k.colorLight);
-      card.style.setProperty('--realm-dark',k.colorDark);
-      const pickOrder = chosenIds.indexOf(idx);
-      card.innerHTML = `
-        <div class="thumb-wrap"><img src="${THUMB(k.cardThumb||k.img)}"${THUMBF(k.cardThumb||k.img)} alt="${k.nome}" loading="lazy" decoding="async">${pickOrder>=0?`<div class="pick-badge" aria-hidden="true">${pickOrder+1}</div>`:''}<button class="zoom-btn" type="button" data-idx="${idx}" aria-label="${T(`Abrir carta de ${L(k.nome)} em alta resolu√ß√£o`,`Open ${L(k.nome)}'s card in high resolution`,`Abrir la carta de ${L(k.nome)} en alta resoluci√≥n`)}">üîç</button></div>
-      `;
-      card.setAttribute('role','button');
-      card.setAttribute('tabindex','0');
-      card.setAttribute('aria-label',chosenIds.includes(idx)?T(`Remover ${L(k.nome)} da equipe`,`Remove ${L(k.nome)} from the team`,`Quitar a ${L(k.nome)} del equipo`):T(`Adicionar ${L(k.nome)} √† equipe`,`Add ${L(k.nome)} to the team`,`A√±adir a ${L(k.nome)} al equipo`));
-      card.addEventListener('click',()=>toggleHero(idx));
-      card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleHero(idx);}});
-      card.querySelector('.zoom-btn').addEventListener('click', e=>{ e.stopPropagation(); openCardModal(idx); });
-      dgrid.appendChild(card);
-    });
-    section.appendChild(dgrid);
-    selectGridEl.appendChild(section);
-  });
-  /* lookup din√¢mico: o i18n recria o n√≥ #selectCount ao trocar de idioma */
-  { const sc=document.getElementById('selectCount'); if(sc) sc.textContent=chosenIds.length; }
-  startBtnEl.disabled = chosenIds.length!==4;
-  /* ‚öú Pr√©via do B√¥nus de Alian√ßa ao montar a equipe */
-  { const hint=document.getElementById('allianceHint');
-    if(hint){
-      if(chosenIds.length===4){
-        const b=computeAllianceBonus(chosenIds);
-        hint.innerHTML=b.rotulos.length?('‚öú '+b.rotulos.join(' ¬∑ ')):T('Sem b√¥nus de alian√ßa ‚Äî repita reinos ou feche uma alian√ßa completa.','No alliance bonus ‚Äî repeat realms or complete a full alliance.','Sin bono de alianza ‚Äî repite reinos o completa una alianza.');
-        hint.classList.toggle('on',b.rotulos.length>0);
-      } else if(chosenIds.length){
-        const als=[...new Set(chosenIds.map(i=>allianceOf(KINGDOMS[i]?.iconId||KINGDOMS[i]?.id)).filter(Boolean).map(a=>a.icon+' '+a.nome))];
-        hint.innerHTML=als.join(' ¬∑ ');
-        hint.classList.remove('on');
-      } else { hint.innerHTML=''; hint.classList.remove('on'); }
-    } }
-  renderTeamSlots();
-}
-
-function toggleHero(idx){
-  if(!storySelectionAllowed(idx)){
-    setBattleStatus(T('Este personagem entra nesta miss√£o apenas depois da primeira conclus√£o.','This character unlocks for this mission after its first clear.','Este personaje se desbloquea para esta misi√≥n tras completarla.'),'system');
-    sfxInvalid();
-    return;
-  }
-  if(chosenIds.includes(idx)){
-    chosenIds=chosenIds.filter(id=>id!==idx);
-  }else if(chosenIds.length<4){
-    chosenIds.push(idx);
-  }else{
-    setBattleStatus(T('A equipe j√° possui quatro personagens. Remova uma carta antes de escolher outra.','Your team already has four characters. Remove a card before choosing another.','El equipo ya tiene cuatro personajes. Quita una carta antes de elegir otra.'),'system');
-    haptic(18);
-  }
-  renderSelectGrid();
-  sfxSelect();
-}
-
-function openCardModal(idx){
-  window.__modalIdx=idx;
-  const k = KINGDOMS[idx];
-  document.getElementById('cardModal').classList.remove('character-view');
-  document.getElementById('shareCardBtn').style.display='block';
-  try{ const v=JSON.parse(localStorage.getItem('12r_seen')||'[]'); if(!v.includes(k.id)){ v.push(k.id); localStorage.setItem('12r_seen',JSON.stringify(v)); } }catch(e){}
-  { const mi=document.getElementById('cardModalImg'); mi.onerror=()=>{ mi.onerror=null; mi.src=k.img; }; mi.src=IMGL(k.img); }
-  document.getElementById('cardModalImg').alt = L(k.nome);
-  document.getElementById('cardModalName').textContent = L(k.nome);
-  document.getElementById('cardModalClasse').textContent = L(k.reino) + ' ¬∑ ' + L(k.classe);
-  const abilitiesEl = document.getElementById('cardModalAbilities');
-  const passives=k.abilities.filter(a=>a.kind==='passive');
-  const actives=k.abilities.filter(a=>a.kind==='active');
-  const renderAbility=a=>`
-      <div class="card-modal-ability">
-        <div class="tier-tag">${Array.isArray(a.at)?'('+a.at.join('%, ')+'%)':a.every?T('a cada ','every ','cada ')+a.gems+'%':a.gems+T('% de energia','% energy','% de energ√≠a')} ¬∑ ${a.kind==='active'?T('habilidade ativa','active ability','habilidad activa'):T('passiva','passive','pasiva')}</div>
-        <b>${L(a.name)}</b> ‚Äî ${L(a.desc)}
-      </div>`;
-  let mhtml=`<div class="card-modal-ability-section">${L(k.rarity||'DIVINA')} ¬∑ ${'‚òÖ'.repeat(k.stars||7)} ¬∑ ${T('ATQ','ATK','ATQ')} ${k.atk||12}</div>`;
-  if(passives.length) mhtml+=`<div class="card-modal-ability-section">${passives.length} ${passives.length>1?T('Passivas','Passives','Pasivas'):T('Passiva','Passive','Pasiva')}</div>`+passives.map(renderAbility).join('');
-  if(actives.length) mhtml+=`<div class="card-modal-ability-section">${actives.length} ${actives.length>1?T('Ativas','Actives','Activas'):T('Ativa','Active','Activa')}</div>`+actives.map(renderAbility).join('');
-  if(!k.abilities.length) mhtml+=`<div class="card-modal-ability"><b>${T('Sem habilidades especiais','No special abilities','Sin habilidades especiales')}</b> ‚Äî ${T('vence pela coragem e pelo a√ßo.','wins through courage and steel.','vence con coraje y acero.')}</div>`;
-  if(k.stageAbility){
-    mhtml+=`<div class="card-modal-ability-section">${T('Habilidade de Fase','Stage Ability','Habilidad de Fase')}</div>
-      <div class="card-modal-ability stage-ability-entry">
-        <div class="tier-tag">${T('apenas quando aparece como INIMIGA','only when it appears as an ENEMY','solo cuando aparece como ENEMIGA')} ¬∑ ${T('a cada','every','cada')} ${k.stageAbility.cd} ${T('turnos','turns','turnos')}</div>
-        <b>${L(k.stageAbility.nome)}</b> ‚Äî ${L(k.stageAbility.desc)}
-      </div>`;
-  }
-  if(k.frase) mhtml+=`<div class="card-modal-frase">‚Äú${L(k.frase)}‚Äù</div>`;
-  abilitiesEl.innerHTML=mhtml;
-  document.getElementById('cardModal').classList.add('show');
-  document.getElementById('cardModal').setAttribute('aria-hidden','false');
-  document.getElementById('closeCardModal').focus();
-}
-
-function openCharacterModal(src,nome,detalhe){
-  window.__modalIdx=null;
-  const modal=document.getElementById('cardModal');
-  modal.classList.add('character-view');
-  const img=document.getElementById('cardModalImg');
-  img.onerror=null;
-  img.src=src;
-  img.alt=nome;
-  document.getElementById('cardModalName').textContent=nome;
-  document.getElementById('cardModalClasse').textContent=detalhe||'';
-  document.getElementById('cardModalAbilities').innerHTML='';
-  document.getElementById('shareCardBtn').style.display='none';
-  modal.classList.add('show');
-  modal.setAttribute('aria-hidden','false');
-  document.getElementById('closeCardModal').focus();
-}
-
-function closeCardModalFn(){
-  const modal=document.getElementById('cardModal');
-  modal.classList.remove('show','character-view');
-  modal.setAttribute('aria-hidden','true');
-  document.getElementById('shareCardBtn').style.display='block';
-}
-document.getElementById('closeCardModal').addEventListener('click', closeCardModalFn);
-document.getElementById('cardModal').addEventListener('click', (e)=>{
-  if(e.target.id==='cardModal') closeCardModalFn();
-});
-
-function renderCardStrip(){
-  const stripEl = document.getElementById('cardStrip');
-  stripEl.innerHTML = '';
-  computeBattleGemColors();
-  ACTIVE.forEach(idx=>{
-    const k = KINGDOMS[idx];
-    const ag = battleGemColors[idx];
-    const gemC=ag?ag.c:(k.orbColor||k.color), gemL=ag?ag.l:(k.orbColorLight||k.colorLight), gemD=ag?ag.d:(k.orbColorDark||k.colorDark);
-    const mini = document.createElement('div');
-    mini.className = 'mini-card';
-    mini.setAttribute('role','button');
-    mini.setAttribute('tabindex','0');
-    mini.setAttribute('aria-label',T(`Abrir carta de ${L(k.nome)}`,`Open ${L(k.nome)}'s card`,`Abrir la carta de ${L(k.nome)}`));
-    mini.innerHTML = `
-      <div class="mini-thumb"><img src="${THUMB(k.cardThumb||k.img)}"${THUMBF(k.cardThumb||k.img)} alt="${L(k.nome)}" decoding="async"></div>
-      <div class="mini-card-copy">
-        <div class="mini-name">${L(k.nome)}</div>
-        <div class="mini-dps" id="dps-${k.id}">‚öî 0</div>
-        <div class="mini-rarity"><span class="unit-gem" style="--ug:${gemC};--ug-l:${gemL};--ug-d:${gemD}" aria-hidden="true"></span>${L(k.rarity||'DIVINA')}</div>
-        <div class="mini-stars" aria-label="${k.stars||7} ${T('estrelas','stars','estrellas')}">${'‚òÖ'.repeat(k.stars||7)}</div>
-      </div>
-    `;
-    mini.addEventListener('click', ()=>openCardModal(idx));
-    mini.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openCardModal(idx); } });
-    stripEl.appendChild(mini);
-  });
-}
-
-function getSavedProgress(){
-  try{
-    const saved = JSON.parse(localStorage.getItem('12r_save')||'null');
-    if(!saved || !Number.isFinite(Number(saved.stage))) return null;
-    const team=Array.isArray(saved.team)?saved.team.filter(idx=>KINGDOMS[idx]).slice(0,4):[0,1,2,3];
-    return {...saved,version:8,team:team.length===4?team:[0,1,2,3]};
-  }catch(e){ return null; }
-}
-
-function saveProgress(forcedStage){
-  if(towerMode||worldRun.active) return; // torre e mundos n√£o tocam o save da campanha
-  if(ACTIVE.length!==4) return;
-  const safeStage = Math.max(0,Math.min(DUNGEON.length-1,forcedStage??stageIndex));
-  localStorage.setItem('12r_save',JSON.stringify({version:8,stage:safeStage,team:[...ACTIVE],hp:Math.max(1,playerHP),seed:seedText,updated:Date.now()}));
-  refreshContinueButton();
-}
-
-function refreshContinueButton(){
-  /* v9.1: sem fases demo ‚Äî Continuar aponta para o progresso do Reino dos Humanos */
-  const btn = document.getElementById('continueBtn');
-  const hint = document.getElementById('continueHint');
-  let fases;
-  try{ fases = WORLDS[0].fases; }
-  catch(err){ btn.disabled = true; return; } /* chamada anterior √† declara√ß√£o de WORLDS (boot) */
-  const prog = worldProg('humanos');
-  const faseIdx = Math.min(prog.unlocked, fases.length-1);
-  btn.disabled = false;
-  hint.textContent = `${T('Reino dos Humanos','Human Realm','Reino de los Humanos')} ¬∑ ${T('Fase','Stage','Fase')} ${faseIdx+1} ¬∑ ${L(fases[faseIdx].nome)}`;
-}
-
-function closeAllPanels(){
-  document.querySelectorAll('.pro-overlay.show').forEach(el=>el.classList.remove('show'));
-  document.getElementById('cardModal').classList.remove('show');
-}
-function showMainMenu(options={}){
-  /* Na inicializa√ß√£o n√£o existe toque anterior para vazar. Armar o bloqueio aqui
-     fazia o primeiro toque r√°pido em Op√ß√µes ser descartado no celular. */
-  if(options?.guard!==false) armTapGuard();
-  gamePaused=false;
-  clearInterval(tempoSombrioTimer); tempoSombrioTimer=null;
-  pendingDimensional=[];
-  incineratePhaseKey=null; incinerateActive=false; incinerateStacks=0;
-  stopMissionTimer();
-  skipStory(); /* di√°logos de miss√£o nunca sobrevivem √† volta ao menu */
-  /* Torre for√ßa Pesadelo: devolve a dificuldade escolhida pelo jogador ao sair */
-  if(towerPrevDifficulty){ difficulty=towerPrevDifficulty; towerPrevDifficulty=null; applyDifficultyUI(); }
-  towerMode=false;
-  setAutoBattle(false);
-  togglePhotoMode(false);
-  closeAllPanels(); stopMusic(); busy=false; setBattlePhase('idle');
-  document.getElementById('mainMenu').style.display='flex';
-  document.getElementById('selectScreen').style.display='none';
-  document.getElementById('gameScreen').style.display='none';
-  document.body.classList.remove('game-active');
-  sceneBgEl.dataset.screen='menu'; refreshContinueButton();
-}
-function showSelection(){
-  prepareStorySelection();
-  closeAllPanels(); stopMusic(); busy=false; setBattlePhase('idle');
-  document.getElementById('mainMenu').style.display='none';
-  document.getElementById('gameScreen').style.display='none';
-  document.getElementById('selectScreen').style.display='flex';
-  document.body.classList.remove('game-active');
-  sceneBgEl.dataset.screen='selection'; renderSelectGrid();
-}
-function beginGame(startAt=0,restoredHP=null){
-  armTapGuard();
-  resetRunStats();
-  pendingDimensional=[];
-  incineratePhaseKey=null; incinerateActive=false; incinerateStacks=0;
-  if(chosenIds.length!==4) return;
-  ensureAudio();
-  ACTIVE = [...chosenIds];
-  PLAYER_MAX_HP = computePlayerMaxHP();
-  playerHP = Math.max(1,Math.min(PLAYER_MAX_HP,restoredHP||PLAYER_MAX_HP));
-  heroProgress = {}; firedTiers = {}; heroReady = {}; heroActiveQueue = {};
-  pendingRoomPassives=[]; roomClearScheduled=false; golemAllies=0; harpyAllies=0; heroEmpower={};
-  eternalReviveCharges=0; coinDoubleRun=false; xpDoubleRun=false; bannerAtkRun=1; battleConsumablesDone=false;
-  selected=null; busy=false; comboStep=0; closeAllPanels();
-  battleHistory=[]; battleHistorySeq=0; qaRitualTriggered=false;
-  document.body.classList.add('game-active');
-  document.getElementById('mainMenu').style.display = 'none';
-  document.getElementById('selectScreen').style.display = 'none';
-  document.getElementById('gameScreen').style.display = 'flex';
-  sceneBgEl.dataset.screen='game';
-  renderPartyArena();
-  renderCardStrip();
-  updatePlayerHP();
-  if(allianceBonus.rotulos.length){
-    setTimeout(()=>setBattleStatus('‚öú '+T('B√¥nus de Alian√ßa','Alliance Bonus','Bono de Alianza')+': '+allianceBonus.rotulos.join(' ¬∑ '),'support'),700);
-  }
-  loadStage(Math.max(0,Math.min(DUNGEON.length-1,startAt)));
-  pendingStage=0;
-  if(!localStorage.getItem('12r_tutorial_seen')){
-    localStorage.setItem('12r_tutorial_seen','true');
-    setTimeout(()=>openPanel('helpScreen'),450);
-  }
-}
-
-var galleryDeckOpen={}; /* decks abertos na galeria */
-function renderGallery(){
-  const grid=document.getElementById('galleryGrid');
-  grid.innerHTML='';
-  { const tot=KINGDOMS.length;
-    const head=document.createElement('div');
-    head.className='gallery-count';
-    head.textContent=`üé¥ ${tot} ${T('cartas','cards','cartas')} ¬∑ 12 ${T('reinos','realms','reinos')}`;
-    grid.appendChild(head); }
-  document.getElementById('enemyGallerySection')?.remove();
-  /* v9.1 ¬∑ Galeria em DECKS por reino: cada reino agrupa seu her√≥i divino,
-     as cartas jog√°veis do deck (campo deck:'<reino>') e as cartas por vir.
-     Novas cartas de qualquer reino entram automaticamente no seu deck. */
-  const ordem=['humanos','luz','agua','fogo','natureza','terra','areia','sombras','raio','vento','chuvas','gelo'];
-  const nomesDeck={humanos:T('Reino Rosa ¬∑ Humanos','Rose Realm ¬∑ Humans','Reino Rosa ¬∑ Humanos')};
-  ordem.forEach(deckId=>{
-    const membros=KINGDOMS.filter(k=>(k.deck||k.id)===deckId);
-    if(!membros.length) return;
-    const lider=KINGDOMS.find(k=>k.id===deckId);
-    const emBreve=deckId==='humanos'?Object.values(HUMANOS_CARDS).filter(c=>c.isCard):[];
-    const section=document.createElement('div');
-    section.className='deck-section deck-'+deckId+(galleryDeckOpen[deckId]?' open':'');
-    section.innerHTML=`<div class="deck-header" role="button" tabindex="0" aria-expanded="${galleryDeckOpen[deckId]?'true':'false'}" style="--realm:${lider?.color||'#d4af5a'}">
-      <span class="deck-icon"><svg viewBox="0 0 24 24">${KINGDOM_ICON[deckId]||''}</svg></span>
-      <b>${nomesDeck[deckId]||L(lider?.reino||deckId)}</b>
-      <small>${membros.length+emBreve.length} ${(membros.length+emBreve.length)>1?T('cartas','cards','cartas'):T('carta','card','carta')}</small><span class="deck-caret" aria-hidden="true">‚ñ∏</span></div>`;
-    const gHeader=section.querySelector('.deck-header');
-    const gAlternar=()=>{ galleryDeckOpen[deckId]=!galleryDeckOpen[deckId]; section.classList.toggle('open',!!galleryDeckOpen[deckId]); gHeader.setAttribute('aria-expanded', galleryDeckOpen[deckId]?'true':'false'); };
-    gHeader.addEventListener('click',gAlternar);
-    gHeader.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); gAlternar(); } });
-    const dgrid=document.createElement('div');
-    dgrid.className='deck-grid';
-    const favs=(()=>{ try{ return JSON.parse(localStorage.getItem('12r_favs')||'[]'); }catch(e){ return []; } })();
-    /* Ordem: favoritas primeiro; depois maior raridade (estrelas) primeiro */
-    membros.sort((a,b)=>((favs.includes(b.id)?1:0)-(favs.includes(a.id)?1:0)) || ((b.stars||0)-(a.stars||0)));
-    membros.forEach(k=>{
-      const idx=KINGDOMS.indexOf(k);
-      const card=document.createElement('div');
-      card.className='gallery-card'+(favs.includes(k.id)?' fav':'');
-      card.style.setProperty('--realm',k.color); card.style.setProperty('--realm-dark',k.colorDark);
-      const vistos=(()=>{ try{ return JSON.parse(localStorage.getItem('12r_seen')||'[]'); }catch(e){ return []; } })();
-      card.innerHTML=`<div class="gallery-thumb-wrap">${vistos.includes(k.id)?'':'<span class="new-badge">'+T('NOVO!','NEW!','¬°NUEVO!')+'</span>'}<img src="${THUMB(k.cardThumb||k.img)}"${THUMBF(k.cardThumb||k.img)} alt="${k.nome}" loading="lazy" decoding="async"><button class="gallery-zoom" type="button" aria-label="${T('Ampliar carta de','Enlarge card of','Ampliar la carta de')} ${k.nome}">üîç</button></div><b><span class="realm-dot" style="--realm:${k.color};--realm-light:${k.colorLight};--realm-dark:${k.colorDark};margin-right:3px;"></span>${k.nome}</b><small>${L(k.rarity||'DIVINA')} ¬∑ ${'‚òÖ'.repeat(k.stars||7)}</small>`;
-      card.querySelector('.gallery-zoom').addEventListener('click',()=>openCardModal(idx));
-      const favBtn=document.createElement('button');
-      favBtn.type='button'; favBtn.className='fav-btn'; favBtn.setAttribute('aria-label',T('Favoritar','Favorite','Favorito'));
-      favBtn.textContent=favs.includes(k.id)?'‚ù§':'ü§ç';
-      favBtn.addEventListener('click',ev=>{
-        ev.stopPropagation();
-        let f2; try{ f2=JSON.parse(localStorage.getItem('12r_favs')||'[]'); }catch(e){ f2=[]; }
-        f2=f2.includes(k.id)?f2.filter(x=>x!==k.id):[...f2,k.id];
-        localStorage.setItem('12r_favs',JSON.stringify(f2));
-        renderGallery(); sfxSelect();
-      });
-      card.querySelector('.gallery-thumb-wrap').appendChild(favBtn);
-      dgrid.appendChild(card);
-    });
-    emBreve.forEach(c=>{
-      const card=document.createElement('div');
-      card.className='gallery-card deck-coming';
-      card.innerHTML=`<div class="gallery-thumb-wrap"><img src="${c.card}" alt="${c.nome}" loading="lazy"></div><b>${c.nome}</b><small>${T('em breve','coming soon','pr√≥ximamente')}</small>`;
-      dgrid.appendChild(card);
-    });
-    section.appendChild(dgrid);
-    grid.appendChild(section);
-  });
-  /* Personagens do Jogo: jog√°veis e inimigos registrados, com visualiza√ß√£o ampliada. */
-  const best=bestiary();
-  const personagens=KINGDOMS.map(k=>({
-    nome:L(k.nome),
-    spr:k.sprite||k.cardThumb||k.img,
-    detalhe:L(k.reino)+' ¬∑ '+T('Jog√°vel','Playable','Jugable')
-  }));
-  const nomesJogaveis=new Set(KINGDOMS.map(k=>L(k.nome)));
-  Object.keys(best).forEach(nm=>{
-    if(nomesJogaveis.has(L(nm))) return;
-    const spr=Object.values(HUMANOS_ETYPES).find(t=>t.n===nm)?.sprite||Object.values(HUMANOS_CARDS).find(c=>c.nome===nm)?.sprite;
-    personagens.push({nome:L(nm),spr,detalhe:T('Encontrado','Encountered','Encontrado')+' √ó'+best[nm]});
-  });
-  const bsec=document.createElement('div');
-  bsec.className='deck-section characters-game-section'+(galleryDeckOpen.__characters?' open':'');
-  bsec.innerHTML=`<div class="deck-header" role="button" tabindex="0" aria-expanded="${galleryDeckOpen.__characters?'true':'false'}" style="--realm:#9a6a3a">
-    <span class="deck-icon"><svg viewBox="0 0 24 24"><path d="M12 2 2 7v10l10 5 10-5V7Z" fill="#fff" fill-opacity=".9"/></svg></span>
-    <b>${T('Personagens do Jogo','Game Characters','Personajes del Juego')}</b>
-    <small>${personagens.length} ${T('personagens','characters','personajes')}</small><span class="deck-caret" aria-hidden="true">‚ñ∏</span></div>`;
-  const bh=bsec.querySelector('.deck-header');
-  const alternarPersonagens=()=>{
-    galleryDeckOpen.__characters=!galleryDeckOpen.__characters;
-    bsec.classList.toggle('open',!!galleryDeckOpen.__characters);
-    bh.setAttribute('aria-expanded',galleryDeckOpen.__characters?'true':'false');
-  };
-  bh.addEventListener('click',alternarPersonagens);
-  bh.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();alternarPersonagens();} });
-  const bgrid=document.createElement('div');
-  bgrid.className='deck-grid characters-game-grid';
-  personagens.forEach(personagem=>{
-    const bc=document.createElement('div');
-    bc.className='gallery-card beast-card character-game-card';
-    bc.setAttribute('role','button');
-    bc.setAttribute('tabindex','0');
-    bc.innerHTML=`<div class="gallery-thumb-wrap">${personagem.spr?`<img src="${personagem.spr}" alt="${personagem.nome}" loading="lazy">`:'<span style="font-size:34px">üë§</span>'}<span class="character-expand" aria-hidden="true">‚õ∂</span></div><b>${personagem.nome}</b><small>${personagem.detalhe}</small>`;
-    const ampliar=()=>{ if(personagem.spr) openCharacterModal(personagem.spr,personagem.nome,personagem.detalhe); };
-    bc.addEventListener('click',ampliar);
-    bc.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();ampliar();} });
-    bgrid.appendChild(bc);
-  });
-  bsec.appendChild(bgrid);
-  grid.appendChild(bsec);
-}
-const STAGE_ART=["assets/bg/bg-08.png","assets/bg/bg-09.png","assets/bg/bg-10.png","assets/bg/bg-11.png"];
-/* v9.1: jornada da masmorra removida (fases demo sairam do jogo) */
-function openPanel(id){
-  if(id==='galleryScreen') renderGallery();
-  if(id==='achScreen') renderAchievements();
-  if(id==='shopScreen') renderShop();
-  if(id==='mochilaScreen') renderMochila();
-  if(id==='worldScreen') renderWorldMap();
-  document.getElementById(id).classList.add('show');
-}
-function applySettings(){
-  document.body.classList.toggle('reduce-motion',reducedMotion);
-  document.body.classList.toggle('motion-enabled',!reducedMotion);
-  document.body.classList.toggle('high-contrast',highContrast);
-  document.body.classList.toggle('large-text',largeText);
-  document.body.classList.toggle('reduce-flashes',reduceFlashes);
-  document.body.classList.remove('quality-high','quality-medium','quality-economy');
-  document.body.classList.add('quality-'+resolvedGraphicsQuality());
-  document.getElementById('volumeRange').value=Math.round(masterVolume*100);
-  document.getElementById('musicVolumeRange').value=Math.round(musicVolume*100);
-  document.getElementById('sfxVolumeRange').value=Math.round(sfxVolume*100);
-  document.getElementById('qualitySelect').value=graphicsQuality;
-  document.getElementById('reduceMotionToggle').checked=reducedMotion;
-  document.getElementById('particlesToggle').checked=particlesEnabled;
-  document.getElementById('hapticsToggle').checked=hapticsEnabled;
-  document.getElementById('highContrastToggle').checked=highContrast;
-  document.getElementById('largeTextToggle').checked=largeText;
-  document.getElementById('reduceFlashesToggle').checked=reduceFlashes;
-  document.getElementById('muteBtn').textContent=musicMuted?'üîá':'üîä';
-}
-
-startBtnEl.addEventListener('click',()=>beginGame(pendingStage));
-document.getElementById('playBtn').addEventListener('click',()=>{ towerMode=false; worldRun.active=false; pendingStage=0; openMapScreen(); });
-document.getElementById('continueBtn').addEventListener('click',()=>{ const prog=worldProg('humanos'); startWorldFase(Math.min(prog.unlocked, WORLDS[0].fases.length-1)); });
-document.getElementById('replayStoryBtn')?.addEventListener('click',()=>{ if(pendingReplayPhase!==null) startWorldFase(pendingReplayPhase,{storyMode:true}); });
-document.getElementById('replayFreeBtn')?.addEventListener('click',()=>{ if(pendingReplayPhase!==null) startWorldFase(pendingReplayPhase,{storyMode:false}); });
-document.getElementById('replayHardBtn')?.addEventListener('click',()=>{ if(pendingReplayPhase!==null&&difficulty!=='pesadelo') startWorldFase(pendingReplayPhase,{storyMode:true,difficulty:nextDifficulty(difficulty)}); });
-document.getElementById('bossRushBtn')?.addEventListener('click',()=>{
-  /* v9.2: o Desafio dos Chefes agora passa pelo MAPA DE YGDRIA ‚Äî cada reino
-     conquistado libera o seu pr√≥prio desafio */
-  towerMode=false; worldRun.active=false; bossRushMode=false; pendingStage=0;
-  openMapScreen('boss');
-  sfxSelect();
-});
-document.getElementById('shakeToggle')?.addEventListener('click',()=>{
-  const lig=localStorage.getItem('12r_shake')!=='0';
-  localStorage.setItem('12r_shake', lig?'0':'1');
-  document.getElementById('shakeToggle').textContent=lig?T('Desligado','Off','Apagado'):T('Ligado','On','Encendido');
-  sfxSelect();
-});
-document.getElementById('autoActivesToggle')?.addEventListener('click',()=>{
-  autoActives=!autoActives;
-  localStorage.setItem('12r_autoactives', autoActives?'1':'0');
-  document.getElementById('autoActivesToggle').textContent=autoActives?T('Ligado','On','Encendido'):T('Desligado','Off','Apagado');
-  sfxSelect();
-});
-document.getElementById('restoreDefaultsBtn')?.addEventListener('click',()=>{
-  ['12r_shake','12r_autoactives','12r_difficulty','12r_lang_set','12r_volume','12r_music_volume','12r_sfx_volume','12r_quality','12r_high_contrast','12r_large_text','12r_reduce_flashes','12r_motion','12r_particles','12r_haptics'].forEach(k=>localStorage.removeItem(k));
-  setBattleStatus?.(T('Padr√µes restaurados. Recarregue o jogo.','Defaults restored. Reload the game.','Valores restaurados. Recarga el juego.'));
-  location.reload();
-});
-document.getElementById('galleryBtn').addEventListener('click',()=>openPanel('galleryScreen'));
-document.getElementById('selectGalleryBtn').addEventListener('click',()=>openPanel('galleryScreen'));
-// v9.1: bot√µes Jornada/Mundos removidos ‚Äî o fluxo agora √© Jogar ‚Üí Mapa de Ygdria
-document.getElementById('optionsBtn').addEventListener('click',()=>openPanel('optionsScreen'));
-document.getElementById('helpBtn').addEventListener('click',()=>openPanel('helpScreen'));
-document.getElementById('battleToolsToggle').addEventListener('click',()=>toggleBattleTools());
-document.getElementById('battleToolsClose').addEventListener('click',()=>toggleBattleTools(false));
-document.getElementById('cycleTargetTool').addEventListener('click',cycleBattleTarget);
-document.getElementById('autoTargetTool').addEventListener('click',toggleAutoTarget);
-document.getElementById('speedTool').addEventListener('click',cycleBattleSpeed);
-document.getElementById('musicMoodTool').addEventListener('click',cycleMusicMood);
-document.getElementById('hintTool').addEventListener('click',showBestMoveHint);
-document.getElementById('autoTool')?.addEventListener('click',()=>{ setAutoBattle(!autoBattle); sfxSelect(); });
-document.getElementById('photoModeBtn')?.addEventListener('click',()=>togglePhotoMode(true));
-document.getElementById('shareCardBtn')?.addEventListener('click',()=>{
-  const k=KINGDOMS[window.__modalIdx??0]; if(!k) return;
-  const linhas=[`üé¥ ${k.nome} ‚Äî ${L(k.reino)} ¬∑ ${L(k.classe)}`,`${L(k.rarity||'DIVINA')} ${'‚òÖ'.repeat(k.stars||7)} ¬∑ ATQ ${k.atk||12}`,
-    ...k.abilities.map(a=>`‚Ä¢ ${L(a.name)}: ${L(a.desc)}`),
-    k.stageAbility?`üó° ${T('Habilidade de Fase','Stage Ability','Habilidad de Fase')}: ${L(k.stageAbility.nome)} ‚Äî ${L(k.stageAbility.desc)}`:'',
-    k.frase?`‚Äú${L(k.frase)}‚Äù`:'' ,'‚Äî 12 Reinos ¬∑ Cr√¥nicas de Ygdria'].filter(Boolean);
-  navigator.clipboard?.writeText(linhas.join('\n')).then(()=>{
-    const b=document.getElementById('shareCardBtn'); const t0=b.textContent;
-    b.textContent='‚úÖ '+T('Copiado!','Copied!','¬°Copiado!');
-    setTimeout(()=>{ b.textContent=t0; },1600);
-  });
-});
-/* F10 ¬∑ Atalhos de teclado (desktop): 1-4 her√≥i, P pausa, H sugest√£o, A auto */
-document.addEventListener('keydown',e=>{
-  if(!document.body.classList.contains('game-active')) return;
-  if(/input|textarea/i.test(document.activeElement?.tagName||'')) return;
-  if(e.key>='1'&&e.key<='4'){ const i=ACTIVE[Number(e.key)-1]; if(i!==undefined) onHeroAvatarClick(i); }
-  else if(e.key==='h'||e.key==='H') showBestMoveHint();
-  else if(e.key==='a'||e.key==='A') setAutoBattle(!autoBattle);
-});
-document.getElementById('shuffleTool').addEventListener('click',useRoyalShuffle);
-document.getElementById('gridTool').addEventListener('click',toggleTacticalGrid);
-document.getElementById('formationTool').addEventListener('click',cycleHeroFormation);
-document.getElementById('fullscreenTool').addEventListener('click',toggleGameFullscreen);
-document.getElementById('historyBtn').addEventListener('click',openBattleHistory);
-document.getElementById('copyHistoryBtn').addEventListener('click',copyBattleHistory);
-document.getElementById('clearHistoryBtn').addEventListener('click',clearBattleHistory);
-document.getElementById('selectBackBtn').addEventListener('click',()=>{
-  if(worldRun.active){ // desistiu da fase: volta ao mapa com a lista de fases aberta
-    worldRun.active=false;
-    showMainMenu();
-    openMapScreen();
-    renderWorldMap();
-    openPanel('worldScreen');
-    return;
-  }
-  showMainMenu();
-});
-document.getElementById('autoTeamBtn').addEventListener('click',()=>{
-  let ult=null; try{ ult=JSON.parse(localStorage.getItem('12r_lastteam')||'null'); }catch(e){}
-  chosenIds=(Array.isArray(ult)&&ult.length===4&&ult.every(i=>KINGDOMS[i]))?[...ult]:[0,1,2,3];
-  renderSelectGrid(); sfxSelect();
-});
-
-swapBtnEl.addEventListener('click', ()=>{
-  showSelection();
-});
-
-document.querySelectorAll('[data-close]').forEach(btn=>{
-  btn.addEventListener('click',()=>{ btn.closest('.pro-overlay').classList.remove('show'); if(btn.closest('#helpScreen'))localStorage.setItem('12r_tutorial_seen','true'); });
-});
-document.querySelectorAll('.pro-overlay').forEach(panel=>{
-  panel.addEventListener('click',e=>{ if(e.target===panel && panel.id!=='pauseScreen')panel.classList.remove('show'); });
-});
-document.getElementById('pauseBtn').addEventListener('click',()=>{ gamePaused=true; setBattlePhase('paused'); pauseMissionClock(); stopMusic(); openPanel('pauseScreen'); });
-document.getElementById('resumeBtn').addEventListener('click',()=>{ gamePaused=false; setBattlePhase(busy?'resolving':'idle'); resumeMissionClock(); document.getElementById('pauseScreen').classList.remove('show'); if(!musicMuted)playStageMusic(stageIndex); });
-document.getElementById('pauseOptionsBtn').addEventListener('click',()=>{ openPanel('optionsScreen'); });
-document.getElementById('restartStageBtn').addEventListener('click',()=>{ document.getElementById('pauseScreen').classList.remove('show'); restartCurrentStage(); });
-document.getElementById('returnMenuBtn').addEventListener('click',showMainMenu);
-document.getElementById('volumeRange').addEventListener('input',e=>{ masterVolume=Number(e.target.value)/100; localStorage.setItem('12r_volume',String(e.target.value)); });
-document.getElementById('musicVolumeRange').addEventListener('input',e=>{ musicVolume=Number(e.target.value)/100; localStorage.setItem('12r_music_volume',String(e.target.value)); });
-document.getElementById('sfxVolumeRange').addEventListener('input',e=>{ sfxVolume=Number(e.target.value)/100; localStorage.setItem('12r_sfx_volume',String(e.target.value)); sfxSelect(); });
-document.getElementById('qualitySelect').addEventListener('change',e=>{ graphicsQuality=e.target.value; localStorage.setItem('12r_quality',graphicsQuality); applySettings(); });
-document.getElementById('reduceMotionToggle').addEventListener('change',e=>{ reducedMotion=e.target.checked; localStorage.setItem('12r_motion',reducedMotion?'reduced':'full'); applySettings(); });
-document.getElementById('particlesToggle').addEventListener('change',e=>{ particlesEnabled=e.target.checked; localStorage.setItem('12r_particles',String(particlesEnabled)); });
-document.getElementById('hapticsToggle').addEventListener('change',e=>{ hapticsEnabled=e.target.checked; localStorage.setItem('12r_haptics',String(hapticsEnabled)); });
-document.getElementById('highContrastToggle').addEventListener('change',e=>{ highContrast=e.target.checked; localStorage.setItem('12r_high_contrast',highContrast?'1':'0'); applySettings(); });
-document.getElementById('largeTextToggle').addEventListener('change',e=>{ largeText=e.target.checked; localStorage.setItem('12r_large_text',largeText?'1':'0'); applySettings(); });
-document.getElementById('reduceFlashesToggle').addEventListener('change',e=>{ reduceFlashes=e.target.checked; localStorage.setItem('12r_reduce_flashes',reduceFlashes?'1':'0'); applySettings(); });
-document.getElementById('resetProgressBtn').addEventListener('click',()=>{
-  if(!confirm(T('Apagar o progresso do Reino dos Humanos?','Erase Human Realm progress?','¬øBorrar el progreso del Reino de los Humanos?')))return;
-  localStorage.removeItem('12r_world_humanos'); localStorage.removeItem('12r_save'); localStorage.removeItem('12r_unlocked');
-  refreshContinueButton();
-});
-document.addEventListener('keydown',e=>{
-  if(e.key!=='Escape')return;
-  if(document.getElementById('cardModal').classList.contains('show')){closeCardModalFn();return;}
-  const open=[...document.querySelectorAll('.pro-overlay.show')].pop();
-  if(open && open.id!=='pauseScreen'){open.classList.remove('show');return;}
-  if(document.getElementById('gameScreen').style.display==='flex'){ gamePaused=true; setBattlePhase('paused'); pauseMissionClock(); openPanel('pauseScreen'); }
-});
-document.addEventListener('visibilitychange',()=>{
-  if(document.hidden && document.getElementById('gameScreen').style.display==='flex'){
-    gamePaused=true; setBattlePhase('paused'); pauseMissionClock();
-    stopMusic();
-    openPanel('pauseScreen');
-  }
-});
-function preloadOfficialAssets(){
-  const all=[...new Set([
-    ...KINGDOMS.flatMap(k=>[k.cardThumb||k.img,k.sprite]),
-    ...DUNGEON.flatMap(stage=>stage.enemies.map(enemy=>enemy.sprite))
-  ].filter(Boolean))];
-  const limit=V93.quality?.preload?.[resolvedGraphicsQuality()]||16;
-  const priority=[...new Set([
-    ...chosenIds.flatMap(i=>[KINGDOMS[i]?.cardThumb||KINGDOMS[i]?.img,KINGDOMS[i]?.sprite]),
-    ...all
-  ].filter(Boolean))];
-  const load=src=>new Promise(resolve=>{ const image=new Image(); image.onload=resolve; image.onerror=resolve; image.decoding='async'; image.src=src; });
-  const critical=priority.slice(0,limit);
-  const remaining=priority.slice(limit);
-  return Promise.allSettled(critical.map(load)).then(()=>{
-    document.body.classList.add('assets-ready');
-    if(resolvedGraphicsQuality()==='economy'||navigator.connection?.saveData) return;
-    const idle=window.requestIdleCallback||((cb)=>setTimeout(cb,700));
-    idle(()=>remaining.forEach((src,i)=>setTimeout(()=>load(src),i*80)),{timeout:3000});
-  });
-}
-preloadOfficialAssets();
-if(['127.0.0.1','localhost'].includes(location.hostname)){
-  window.__12rQA={
-    snapshot:()=>({
-      stageIndex,playerHP,enemyHP:enemies.map(e=>e.hp),heroProgress:{...heroProgress},
-      statuses:{playerShield,enemyBlindTurns,reflectTurns,invulnerableTurns,lifestealCharges,lastDragonRitual,incinerateActive,incinerateStacks,musicMoodMode},
-      busy,stageTransitioning,battlePhase,canAcceptPlayerInput:canAcceptPlayerInput(),graphicsQuality:resolvedGraphicsQuality(),version:APP_VERSION
-    }),
-    armTapGuard:(duration=2000)=>{ armTapGuard(duration); return performance.now()<tapGuardUntil; },
-    grantEnergy:(heroIdx,amount=100)=>{
-      heroProgress[heroIdx]=Math.max(0,Math.min(100,amount));
-      heroReady[heroIdx]=heroProgress[heroIdx]>=100;
-      updateHeroProgressUI(heroIdx);
-      return heroProgress[heroIdx];
-    },
-    triggerTier:(heroIdx,gems)=>{
-      const ability=KINGDOMS[heroIdx]?.abilities.find(a=>a.gems===gems);
-      if(!ability) throw new Error('Ability tier not found');
-      triggerAbility(heroIdx,ability);
-      return ability.name;
-    },
-    setQuality:(value)=>{ if(!V93.quality?.values?.includes(value)) throw new Error('Invalid quality'); graphicsQuality=value; applySettings(); return resolvedGraphicsQuality(); },
-    setPhase:(value)=>{ setBattlePhase(value); return battlePhase; }
-  };
-}
-setBattlePhase('idle');
-applySettings();
-renderSelectGrid();
-refreshContinueButton();
-const optionsPanelAtBoot=document.getElementById('optionsScreen');
-const reopenOptionsAfterBoot=optionsPanelAtBoot?.dataset.pendingBootOpen==='1';
-showMainMenu({guard:false});
-document.body.dataset.gameReady='1';
-if(reopenOptionsAfterBoot){
-  delete optionsPanelAtBoot.dataset.pendingBootOpen;
-  openPanel('optionsScreen');
-}
-if(['127.0.0.1','localhost'].includes(location.hostname)&&new URLSearchParams(location.search).get('qa')==='tapguard') armTapGuard(5000);
-
-/* ============================================================
-   v9.1 ¬∑ MUNDOS ‚Äî Reino dos Humanos (Terra dos Reguladores de Ygdria)
-   10 fases √ó 5 n√≠veis; o n√≠vel 5 de cada fase √© o CHEFE.
-   Cen√°rios: pasta assets/bg/humanos (troque o arquivo pelo mesmo nome
-   quando a arte pintada chegar ‚Äî nada mais precisa mudar).
-   ============================================================ */
-var activeStageData=null;
-var worldRun={active:false,fase:0,nivel:1};
-const ESPR={
-  slime:'assets/enemies/slime/single-1.png',
-  sentinel:'assets/enemies/stone-sentinel/single-1.png',
-  wolf:'assets/enemies/shadow-wolf/single-1.png',
-  wraith:'assets/enemies/cursed-wraith/single-1.png',
-  dragon:'assets/enemies/crimson-dragon/single-1.png'
-};
-const HUMANOS_ETYPES={
-  /* Fases 1-5 ¬∑ chibis oficiais (Reino Rosa). Bases calibradas para o ATK oficial
-     das cartas (2-4): time recomendado da fase 1 tem ~200-350 HP no Normal. */
-  /* VIRADA: os inimigos ficam sem flip quando a pr√≥pria arte j√° olha para a esquerda.
-     O Lobo Raivoso √© a exce√ß√£o: sua imagem olha para a direita e precisa ser espelhada. */
-  slimeCereja:{n:'Slime de Cerejeira', fera:true, sprite:'assets/enemies/humanos/slime-cerejeira.png', hp:45, atk:7},
-  loboRaivoso:{n:'Lobo Raivoso', fera:true, sprite:'assets/enemies/humanos/lobo-raivoso.png', hp:60, atk:9, flip:true},
-  soldado1:{n:'Soldado 1', sprite:'assets/enemies/humanos/soldado-1.png', hp:70, atk:10},
-  soldado2:{n:'Soldado 2', sprite:'assets/enemies/humanos/soldado-2.png', hp:78, atk:11},
-  capitao:{n:'Capit√£o dos Soldados', sprite:'assets/enemies/humanos/capitao.png', hp:105, atk:13},
-  /* Fases 6-10 ¬∑ gen√©ricos (sprites reutilizados at√© os chibis chegarem) */
-  vulto:{n:'Vulto Sombrio', sprite:'assets/enemies/humanos/vulto-sombrio.png', hp:85, atk:11},
-  espectro:{n:'Espectro Sombrio', sprite:'assets/enemies/humanos/espectro-sombrio.png', hp:95, atk:12},
-  morto:{n:'Cavaleiro Morto-Vivo', sprite:'assets/enemies/humanos/cavaleiro-morto-vivo.png', hp:120, atk:14},
-  soldBib1:{n:'Soldado da Biblioteca 1', sprite:'assets/enemies/humanos/soldado-biblioteca-1.png', hp:88, atk:11},
-  soldBib2:{n:'Soldado da Biblioteca 2', sprite:'assets/enemies/humanos/soldado-biblioteca-2.png', hp:96, atk:12},
-  soldBib3:{n:'Soldado da Biblioteca 3', sprite:'assets/enemies/humanos/soldado-biblioteca-3.png', hp:104, atk:13},
-  infantaria:{n:'Soldado de Infantaria', sprite:'assets/enemies/humanos/soldado-infantaria.png', hp:98, atk:12},
-  cavalaria:{n:'Soldado de Cavalaria', sprite:'assets/enemies/humanos/soldado-cavalaria.png', hp:104, atk:13},
-  comandante:{n:'Comandante dos Soldados', sprite:'assets/enemies/humanos/comandante.png', hp:150, atk:15},
-  trono:{n:'Soldado do Trono Real', sprite:'assets/enemies/humanos/soldado-trono.png', hp:135, atk:14}
-};
-/* Chefes de Carta: com chibi oficial lutam em campo como personagens
-   (a carta vai para a galeria do Reino Rosa); sem chibi ainda, aparecem
-   como carta no campo (isCard). Chefes recebem +30% HP e +15% ATK. */
-const HUMANOS_CARDS={
-  gareth:{nome:'Gareth', hp:130, atk:16, sprite:'assets/enemies/humanos/gareth.png', card:'assets/cards/enemies/gareth-card.png'},
-  cedric:{nome:'Cedric', hp:150, atk:18, sprite:'assets/enemies/humanos/cedric.png', card:'assets/cards/enemies/cedric-card.png'},
-  elizier:{nome:'Elizier', hp:160, atk:19, sprite:'assets/enemies/humanos/elizier.png', card:'assets/cards/enemies/elizier-card.png'},
-  roland:{nome:'Roland', hp:175, atk:20, sprite:'assets/enemies/humanos/roland.png', card:'assets/cards/enemies/roland-card.png'},
-  jules:{nome:'Jules, The Joker', hp:200, atk:22, sprite:'assets/enemies/humanos/jules.png', card:'assets/cards/enemies/jules-card.png'},
-  bernyce:{nome:'Bernyce', hp:220, atk:23, sprite:'assets/enemies/humanos/bernyce.png', card:'assets/cards/enemies/bernyce-card.png'},
-  kalander:{nome:'Kalander', hp:240, atk:24, sprite:'assets/enemies/humanos/kalander.png', card:'assets/cards/enemies/kalander-card.png'},
-  julius:{nome:'Julius', hp:280, atk:26, sprite:'assets/enemies/humanos/julius.png', card:'assets/cards/enemies/julius-card.png'}
-};
-const WORLDS=[{
-  id:'humanos', nome:'Reino dos Humanos', titulo:'Terra dos Reguladores de Ygdria',
-  fases:[
-    { nome:'Cidade das Cerejeiras', sub:'Capital de Ygdria', bg:'assets/bg/humanos/fase-01.jpg', chefe:'Gareth', rec:'4√ó carta 1‚òÖ',
-      dial:[{h:'humanos',t:'Minha capital... as cerejeiras choram p√©talas. Algo corrompeu a guarda da cidade.'}],
-      missoes:[['slimeCereja'],['slimeCereja','loboRaivoso'],['loboRaivoso','loboRaivoso'],['soldado1','soldado2'],['soldado1','soldado2','gareth']] },
-    { nome:'Catedral de Ygdria', sub:'Onde a f√© encontrou a magia', bg:'assets/bg/humanos/fase-02.jpg', chefe:'Cedric', rec:'4√ó carta 1‚òÖ',
-      dial:[{h:'luz',t:'Este lugar j√° foi sagrado. Os vitrais ainda cantam... mas h√° a√ßo entre os bancos.'}],
-      missoes:[['soldado1','soldado2'],['capitao'],['soldado2','capitao'],['soldado1','soldado2','capitao'],['soldado1','capitao','cedric']] },
-    { nome:'Pal√°cio dos Reguladores', sub:'A ordem acima de tudo', bg:'assets/bg/humanos/fase-03.jpg', chefe:'Elizier', rec:'1√ó 2‚òÖ + 3√ó 1‚òÖ',
-      dial:[{h:'humanos',t:'Os Reguladores mantinham o equil√≠brio entre os reinos. Quem os dobrou?'}],
-      missoes:[['soldado1','soldado2'],['capitao'],['soldado1','capitao'],['soldado1','soldado2','capitao'],['soldado1','soldado2','capitao','elizier']] },
-    { nome:'Academia Real de Magia e Combate', sub:'Onde nascem os magos-cavaleiros', bg:'assets/bg/humanos/fase-04.jpg', chefe:'Roland', rec:'1√ó 2‚òÖ + 3√ó 1‚òÖ',
-      dial:[{h:'raio',t:'Ha! Estudei aqui... e fui expulso. Hora de mostrar aos instrutores o que aprendi sozinho.'}],
-      missoes:[['soldado1','soldado2'],['capitao'],['soldado1','capitao'],['soldado1','soldado2','capitao'],['soldado2','capitao','roland']] },
-    { nome:'Mercado Central dos Reinos', sub:'Tudo tem um pre√ßo', bg:'assets/bg/humanos/fase-05.jpg', chefe:'Cedric, Elizier e Roland', rec:'2√ó 2‚òÖ + 2√ó 1‚òÖ',
-      dial:[{h:'areia',t:'Conhe√ßo mercados assim ‚Äî e emboscadas tamb√©m. Tr√™s l√¢minas nos esperam no fim desta rua.'}],
-      missoes:[['soldado1','soldado2'],['capitao'],['soldado2','capitao'],['soldado1','soldado2','capitao'],['cedric','elizier','roland']] },
-    { nome:'Pra√ßa das Doze Ess√™ncias', rec:'2√ó 2‚òÖ + 2√ó 1‚òÖ', sub:'Doze pilares, doze reinos', bg:'assets/bg/humanos/fase-06.jpg', chefe:'Jules, The Joker',
-      dial:[{h:'sombras',t:'Vultos entre os pilares... e um riso que n√£o √© humano. Ele acha que sombras s√£o um jogo.'}],
-      missoes:[['vulto'],['espectro'],['vulto','espectro'],['morto'],['jules']] },
-    { nome:'Biblioteca da Eternidade', rec:'2√ó 2‚òÖ + 2√ó 1‚òÖ', sub:'Todo saber, um s√≥ sil√™ncio', bg:'assets/bg/humanos/fase-07.jpg', chefe:'Bernyce',
-      dial:[{h:'chuvas',t:'S√©culos de conhecimento vigiados por soldados... e por ela. Bernyce n√£o empresta livros.'}],
-      missoes:[['soldBib1'],['soldBib1','soldBib2'],['soldBib1','soldBib2','soldBib3'],['cedric','elizier','roland'],['bernyce']] },
-    { nome:'Muralha dos Her√≥is', rec:'3√ó 2‚òÖ + 1√ó 1‚òÖ', sub:'Eles ainda vigiam', bg:'assets/bg/humanos/fase-08.jpg', chefe:'Kalander',
-      dial:[{h:'terra',t:'Infantaria, cavalaria, comando... e no topo da muralha, Kalander. Esta pedra vai tremer.'}],
-      missoes:[['infantaria'],['cavalaria'],['comandante'],['infantaria','cavalaria','comandante'],['kalander']] },
-    { nome:'Lend√°ria Torre de Acesso √† Eternidade', rec:'3√ó 2‚òÖ + 1√ó 1‚òÖ', sub:'O c√©u √© a porta', bg:'assets/bg/humanos/fase-09.jpg', chefe:'Julius',
-      dial:[{h:'sombras',t:'Esta torre toca a Eternidade... e Julius desceu dela. Sinto o v√©u se rasgar.'}],
-      missoes:[['vulto','espectro'],['morto'],['vulto','espectro','morto'],['jules'],['julius']] },
-    { nome:'Castelo da Coroa Humana', rec:'4√ó carta 2‚òÖ', sub:'O trono espera seu verdadeiro rei', bg:'assets/bg/humanos/fase-10.jpg', chefe:'Julius',
-      dial:[{h:'humanos',t:'O castelo da minha linhagem. Todos os campe√µes dele nos aguardam... e Julius por tr√°s de tudo.'},{h:'fogo',t:'Cinco cartas contra n√≥s? √ìtimo. Sempre quis um baralho em chamas.'}],
-      missoes:[['trono'],['cedric','jules'],['kalander','cedric','jules'],['kalander','bernyce'],['julius']] }
-  ]
-}];
-
-/* v9.3.7 ¬∑ Roteiro can√¥nico da primeira parte. As frases foram revisadas
-   para concord√¢ncia e ficam centralizadas aqui para facilitar a expans√£o. */
-const HUMAN_STORY=(()=>{
-  const n=(name,t)=>({name,t});
-  const h=(id,t)=>({h:id,t});
-  const M=(before,missions,after,allowed,fixed)=>({before,missions,after,allowed,fixed});
-  const A=['adriel-jovem','berenice-jovem','galateia-jovem','acqua-jovem'];
-  const B=['adriel-jovem','berenice-jovem','galateia-jovem','gareth'];
-  const C=['adriel-jovem','berenice-jovem','galateia-jovem','acqua-jovem','gareth'];
-  return [
-    M('√Äs margens da Cidade das Cerejeiras, Berenice, Galat√©ia e Acqua brincavam quando um slime e lobos ferozes surgiram. Um jovem com uma espada de madeira apareceu para proteg√™-las.',[
-      [h('adriel-jovem','Fiquem atr√°s de mim. Vou proteg√™-las.'),h('berenice-jovem','N√≥s tamb√©m sabemos lutar!')],[],[],[n('Soldado 1','O que est√° fazendo? Fique longe das princesas!')],[h('adriel-jovem','Esta √© minha chance de mostrar que posso me tornar um cavaleiro!'),n('Gareth','S√≥ se me derrotar primeiro, moleque!')]],'Depois de derrotar Gareth, Adriel e as meninas se esconderam na Catedral de Ygdria.',A,A),
-    M('O capit√£o dos soldados chamou as crian√ßas para fora da Catedral: aquele lugar era sagrado. Adriel, tomado pelo desejo de se tornar cavaleiro, desafiou todos os soldados.',[
-      [n('Soldado 2','Voc√™ nunca ser√° um cavaleiro!'),h('adriel-jovem','Venham para cima!')],[n('Capit√£o dos Soldados','Mostre-me do que √© capaz; quem sabe voc√™ se torna meu subordinado!')],[n('Soldado 2','Deixe-me ter uma revanche, capit√£o.')],[n('Capit√£o dos Soldados','Peguem-no!')],[n('Cedric','Que confus√£o √© essa diante da Catedral sagrada? Terei de punir essas crian√ßas malcriadas!'),h('adriel-jovem','Pode vir, velhote!')]],'Adriel derrotou Cedric √† for√ßa e deixou todos os soldados boquiabertos.',A,A),
-    M('As crian√ßas pareciam se divertir, mas guardas e cavaleiros foram mobilizados no Pal√°cio dos Reguladores, onde as decis√µes dos doze reinos eram tomadas pela Rainha Bernyce ‚Äî que estava ausente.',[
-      [n('Soldado 1','Capturem esse fedelho!')],[n('Capit√£o dos Soldados','Desta vez voc√™ ser√° executado.')],[h('adriel-jovem','Derrotarei todos voc√™s e me tornarei um cavaleiro.')],[n('Capit√£o dos Soldados','Chamem refor√ßos!')],[n('Elizier','Tolos, foram derrotados por uma crian√ßa! Vou mostrar como se faz!')]],'Uma flecha feriu o bra√ßo de Adriel. Impressionada com a aud√°cia do jovem, Elizier o levou para a Academia Real de Magia e Combate.',A,A),
-    M('Ao final da tarde, Acqua retornou para o grande Lago de Ygdria. Adriel treinaria com Berenice e Galat√©ia; Gareth tamb√©m decidiu evoluir depois de perder para o jovem.',[
-      [n('Soldado 2','Vou me conter um pouco. Pode vir com tudo!'),h('adriel-jovem','N√£o pegue leve.')],[n('Capit√£o dos Soldados','Voc√™ tem potencial, garoto.')],[n('Soldado 1','Agora ver√° meu verdadeiro poder!')],[h('adriel-jovem','Voc√™s s√£o mais fortes do que pensei, mas vou conseguir.')],[n('Roland','Muito bem, jovenzinho. Quero ver do que √© capaz contra um cavaleiro de verdade!')]],'Ap√≥s o treinamento, todos descansaram no alojamento e as crian√ßas foram para o castelo.',B,B),
-    M('Adriel, Gareth, Berenice e Galat√©ia foram ao Mercado Central dos Reinos e acabaram cercados pelos soldados.',[
-      [n('Soldado 1','Hora do treinamento final...'),h('adriel-jovem','O qu√™? Aqui, no meio do mercado?!')],[n('Capit√£o dos Soldados','O inimigo n√£o escolhe lugar para atacar...'),h('berenice-jovem','Deixe comigo. Eu cuido deles!')],[h('galateia-jovem','Estamos bem mais fortes.')],[n('Gareth','Tragam os mais fortes do reino... glup.')],[n('Roland','Voc√™s que pediram...'),h('adriel-jovem','Para que foi abrir a boca, Gareth?')]],'Depois do treinamento surpresa, todos fizeram uma refei√ß√£o nos arredores do mercado. Adriel estava feliz com seu progresso.',B,B),
-    M('Depois do treinamento pesado, os jovens foram √† Pra√ßa das Doze Ess√™ncias. Uma n√©voa sombria cobriu a pra√ßa sem que percebessem o mal que se aproximava.',[
-      [h('berenice-jovem','Que frio... por que escureceu de repente?'),h('galateia-jovem','Um fantasma!'),n('Vulto Sombrio','Huahuahuahua...')],[n('Espectro Sombrio','Voc√™s n√£o s√£o p√°reo para n√≥s!'),h('adriel-jovem','Vamos dar conta deste tamb√©m.')],[n('Gareth','Est√° vindo mais...')],[n('Cavaleiro Morto-Vivo','Todos voc√™s morrer√£o!')],[h('berenice-jovem','Oba... √© o Jules, nosso bobo da corte. Ele vai nos ajudar.'),n('Jules','Princesa tola... n√£o estou aqui por voc√™s!')]],'Jules derrotou os jovens, mas fugiu quando a n√©voa se dissipou. Eles correram em busca de ajuda e entraram na Biblioteca da Eternidade.',B,B),
-    M('Ao chegarem √† Biblioteca da Eternidade, os jovens foram barrados pelos soldados. Berenice precisava falar com sua m√£e, mas ningu√©m permitia a entrada.',[
-      [h('berenice-jovem','R√°pido, deixem-nos passar! Preciso ver minha m√£e!'),n('Soldado da Biblioteca 1','Voc√™s precisam ser repreendidos; n√£o pensem que somos aqueles soldadinhos da cidade.')],[h('adriel-jovem','Se n√£o sa√≠rem da frente, vamos derrubar geral!')],[n('Soldado da Biblioteca 3','Prendam-nos!')],[n('Cedric','O que est√° acontecendo aqui? Que confus√£o √© essa?')],[h('berenice-jovem','Mam√£e!'),n('Bernyce','Voc√™ precisa se comportar como a futura rainha maga!')]],'Berenice explicou que Jules os havia atacado. A rainha, apreensiva, levou-os at√© Kalander, que sugeriu trein√°-los.',B,B),
-    M('Alguns dias se passaram. Kalander, o cavaleiro mais poderoso do Reino dos Humanos, treinava os jovens enquanto Bernyce voltava ao castelo em busca de respostas. Acqua retornou para brincar e acabou entrando no treinamento.',[
-      [n('Soldado de Infantaria','Preparem-se: agora o treino sobe de n√≠vel.')],[h('adriel-jovem','√â imposs√≠vel... ele tem um cavalo!')],[n('Comandante dos Soldados','Mostrem todo o seu potencial!')],[h('galateia-jovem','Vamos unir nossos ataques!')],[n('Kalander','Muito bem. Se me fizerem sair do lugar, voc√™s vencem!')]],'Depois de mais um dia de treinamento, os jovens fizeram Kalander sair do lugar usando uma estrat√©gia inteligente. Kalander riu: ‚ÄúHahahaha... esses pirralhos!‚Äù.',C,A),
-    M('Os jovens caminhavam felizes pela cidade depois de serem aceitos por Kalander. De repente, tudo escureceu e uma n√©voa g√©lida tomou conta do local.',[
-      [n('Espectro Sombrio','Agora voc√™s n√£o escapam!'),h('galateia-jovem','De novo, n√£o!')],[h('berenice-jovem','Vamos dar uma surra nesse puro osso.')],[h('adriel-jovem','Podem vir todos de uma vez!')],[n('Jules','Desta vez vou cumprir minha miss√£o.'),h('adriel-jovem','Somos mais fortes do que antes, seu palha√ßo!')],[n('???','Berenice! Venha comigo...'),h('berenice-jovem','Quem √© voc√™?'),n('???','Seu pai quer v√™-la.')]],'Julius derrotou todos. Roland e Elizier chegaram a tempo, mas Berenice foi levada. Um soldado levou Galat√©ia e Acqua para seus reinos; Adriel partiu com Gareth e os cavaleiros para avisar a Rainha.',C,A),
-    M('Ao chegarem ao castelo, os soldados j√° sabiam do ocorrido e acusaram o grupo de arquitetar o sequestro da princesa. Jules havia articulado tudo ‚Äî e uma batalha come√ßou.',[
-      [n('Soldado do Trono Real','Ser√£o todos executados!')],[n('Roland','Cedric, afaste-se. Jules √© o inimigo!'),n('Cedric','Roland! E pensar que seu pai tamb√©m foi um cavaleiro.')],[n('Jules','Libertem a princesa, desertores!'),n('Kalander','N√£o acredito... eu confiei e treinei voc√™s!')],[n('Bernyce','Devolvam minha filha!!!'),h('adriel-jovem','Rainha! Jules √© o culpado, mas h√° outro inimigo tamb√©m.')],[n('Julius','Morram todos! Corte Sombrio!'),h('adriel-jovem','Rainha! Kalander!')]],'Julius venceu e matou os defensores. Gareth sacrificou-se para salvar Adriel; Cedric o envolveu em magia e o teletransportou para longe. Assim termina a primeira parte: o que acontecer√° com Adriel, onde est√° Berenice e quem √© Julius?', ['adriel-jovem','gareth','roland','elizier'],['adriel-jovem','gareth','roland','elizier'])
-  ].map((x,i)=>({...x,index:i}));
-})();
-
-const STORY_RULES=HUMAN_STORY.map((s)=>({allowed:s.allowed,fixed:s.fixed}));
-/* A revis√£o 9.3.10 reabre a campanha narrativa uma vez para perfis que
-   conclu√≠ram miss√µes enquanto as cenas estavam bloqueadas pelo tutorial. */
-const STORY_CAMPAIGN_VERSION='9.3.10';
-function storyMissionKey(f,n){ return `12r_story_${STORY_CAMPAIGN_VERSION}_humanos_${f+1}_${n}`; }
-function storyPhaseKey(f){ return `12r_story_phase_${STORY_CAMPAIGN_VERSION}_humanos_${f+1}`; }
-function storyPhaseDone(f){ return localStorage.getItem(storyPhaseKey(f))==='1'; }
-function storyMissionDone(f,n){
-  if(worldRun?.storyMode===true) return false;
-  return storyPhaseDone(f);
-}
-function markStoryMissionDone(f,n){ localStorage.setItem(storyMissionKey(f,n),'1'); }
-function markStoryPhaseDone(f){ localStorage.setItem(storyPhaseKey(f),'1'); }
-function prepareStorySelection(){
-  if(!worldRun.active||worldRun.storyMode===false) return;
-  const rule=STORY_RULES[worldRun.fase];
-  if(!rule||storyMissionDone(worldRun.fase,worldRun.nivel)) return;
-  const allowedIdx=rule.allowed.map(id=>KINGDOMS.findIndex(k=>k.id===id)).filter(i=>i>=0);
-  const fixedIdx=rule.fixed.map(id=>KINGDOMS.findIndex(k=>k.id===id)).filter(i=>i>=0);
-  chosenIds=chosenIds.filter(i=>allowedIdx.includes(i));
-  fixedIdx.forEach(i=>{ if(!chosenIds.includes(i)&&chosenIds.length<4) chosenIds.push(i); });
-  if(rule.fixed.length===4) chosenIds=fixedIdx;
-}
-function storySelectionAllowed(idx){
-  /* renderSelectGrid() √© executado no boot, antes da declara√ß√£o de worldRun
-     e do roteiro de campanha; nessa etapa todo o roster deve permanecer ativo. */
-  if(typeof worldRun==='undefined'||!worldRun.active||worldRun.storyMode===false||typeof STORY_RULES==='undefined') return true;
-  const rule=STORY_RULES[worldRun.fase];
-  if(!rule||storyMissionDone(worldRun.fase,worldRun.nivel)) return true;
-  return rule.allowed.includes(KINGDOMS[idx]?.id);
-}
-/* v9.1 ¬∑ Mapa de Ygdria: 12 reinos tra√ßados; s√≥ o Reino dos Humanos liberado */
-/* Pins √† ESQUERDA do nome pintado de cada reino, centrados na altura do t√≠tulo */
-const REALMS_MAP=[
-  {id:'raio',     x:17.5, y:13.5},
-  {id:'sombras',  x:39,   y:13.5},
-  {id:'gelo',     x:64.5, y:14},
-  {id:'vento',    x:5.5,  y:34},
-  {id:'chuvas',   x:71.5, y:33},
-  {id:'humanos',  x:36,   y:41.5, unlocked:true},
-  {id:'fogo',     x:5,    y:57},
-  {id:'natureza', x:72,   y:57},
-  {id:'agua',     x:36.5, y:65.5},
-  {id:'terra',    x:4.8,  y:73.5},
-  {id:'areia',    x:68.5, y:81.5},
-  {id:'luz',      x:36.5, y:83.5}
-];
-let mapMode='world'; /* 'world' = jogar fases ¬∑ 'boss' = escolher reino do Desafio dos Chefes */
-function realmComplete(id){
-  if(id!=='humanos') return false; /* demais reinos chegam com seus mundos */
-  const prog=worldProg('humanos');
-  return !!(prog.stars&&prog.stars[9]); /* fase 10 vencida = reino finalizado */
-}
-function openMapScreen(mode){
-  armTapGuard();
-  mapMode=mode==='boss'?'boss':'world';
-  const sub=document.getElementById('mapSubtitle');
-  if(sub) sub.textContent=mapMode==='boss'
-    ? T('Desafio dos Chefes ‚Äî escolha um reino CONQUISTADO','Boss Challenge ‚Äî pick a CONQUERED realm','Desaf√≠o de Jefes ‚Äî elige un reino CONQUISTADO')
-    : T('Escolha um reino para explorar','Choose a realm to explore','Elige un reino para explorar');
-  renderMapScreen();
-  document.getElementById('mapScreen')?.classList.add('show');
-}
-function closeMapScreen(){ document.getElementById('mapScreen')?.classList.remove('show'); }
-function renderMapScreen(){
-  const canvas=document.getElementById('mapCanvas');
-  if(!canvas) return;
-  canvas.innerHTML='';
-  REALMS_MAP.forEach(r=>{
-    const k=KINGDOMS.find(kk=>kk.id===r.id);
-    if(!k) return;
-    const liberado=mapMode==='boss'?realmComplete(r.id):!!r.unlocked;
-    const pin=document.createElement('button');
-    pin.type='button';
-    pin.className='realm-pin'+(liberado?' unlocked':' locked')+(mapMode==='boss'?' pin-boss':'');
-    pin.style.left=Math.max(4.5,Math.min(94,r.x))+'%';
-    pin.style.top=Math.max(5,Math.min(95,r.y))+'%';
-    pin.style.setProperty('--realm-c',k.color);
-    pin.setAttribute('aria-label',L(k.reino)+(liberado?'':' ‚Äî '+(mapMode==='boss'?T('finalize o reino para liberar','finish the realm to unlock','termina el reino para desbloquear'):T('em breve','coming soon','pr√≥ximamente'))));
-    pin.innerHTML=`
-      <span class="pin-gem"><svg viewBox="0 0 24 24">${KINGDOM_ICON[r.id]||''}</svg>${liberado?(mapMode==='boss'?'<i class="pin-crown">üèÜ</i>':''):'<i class="pin-lock">üîí</i>'}</span>
-      ${liberado?`<span class="pin-label">${mapMode==='boss'?T('DESAFIAR','CHALLENGE','DESAFIAR'):T('ENTRAR','ENTER','ENTRAR')}</span>`:''}`;
-    pin.addEventListener('click',()=>{
-      if(!liberado){
-        sfxInvalid();
-        pin.classList.remove('deny'); void pin.offsetWidth; pin.classList.add('deny');
-        showMapTip(mapMode==='boss'
-          ? T('Finalize o ','Finish the ','Termina el ')+L(k.reino)+T(' para liberar o Desafio dos Chefes.',' to unlock its Boss Challenge.',' para desbloquear su Desaf√≠o de Jefes.')
-          : T('Em breve: ','Coming soon: ','Pr√≥ximamente: ')+L(k.reino));
-        return;
-      }
-      sfxSelect();
-      if(mapMode==='boss'){
-        /* üèÜ Desafio dos Chefes do reino escolhido */
-        bossRushMode=true; bossRushIdx=0; towerMode=false; worldRun.active=false; pendingStage=0;
-        closeMapScreen();
-        showSelection();
-        return;
-      }
-      renderWorldMap();
-      openPanel('worldScreen');
-    });
-    canvas.appendChild(pin);
-  });
-}
-function showMapTip(text){
-  let tip=document.getElementById('mapTip');
-  if(!tip){
-    tip=document.createElement('div');
-    tip.id='mapTip';
-    tip.className='map-tip';
-    document.getElementById('mapScreen')?.appendChild(tip);
-  }
-  tip.textContent=text;
-  tip.classList.remove('show'); void tip.offsetWidth; tip.classList.add('show');
-  clearTimeout(tip._t);
-  tip._t=setTimeout(()=>tip.classList.remove('show'),2200);
-}
-
-function worldProg(worldId){
-  try{
-    const value=JSON.parse(localStorage.getItem('12r_world_'+worldId)||'{"unlocked":0,"stars":{}}');
-    value.unlocked=Number.isFinite(value.unlocked)?value.unlocked:0;
-    value.stars=value.stars||{};
-    value.starsByDifficulty=value.starsByDifficulty||{};
-    for(const d of ['facil','normal','dificil','pesadelo']) value.starsByDifficulty[d]=value.starsByDifficulty[d]||{};
-    return value;
-  }catch(e){ return {unlocked:0,stars:{},starsByDifficulty:{facil:{},normal:{},dificil:{},pesadelo:{}}}; }
-}
-function saveWorldProg(worldId,prog){ localStorage.setItem('12r_world_'+worldId,JSON.stringify(prog)); }
-function buildWorldLevel(){
-  const world=WORLDS[0];
-  const fase=world.fases[worldRun.fase];
-  const f=worldRun.fase, n=worldRun.nivel;
-  /* Curva oficial: o jogador N√ÉO fica mais forte por fase (mesmas cartas), ent√£o
-     HP inimigo cresce devagar (+18%/fase) e ATK mais devagar ainda (+8%/fase);
-     dentro da fase: +10% HP e +5% ATK por miss√£o. In√≠cio f√°cil, chefe desafiador. */
-  const hpMult=(1+f*0.18)*(1+(n-1)*0.10);
-  const atkMult=(1+f*0.08)*(1+(n-1)*0.05);
-  const keys=fase.missoes[n-1]||['soldado1'];
-  const enemies=keys.map((key)=>{
-    const c=HUMANOS_CARDS[key];
-    if(c){
-      const e={name:c.nome, hp:Math.round(c.hp*hpMult), atk:Math.round(c.atk*atkMult), cardId:key};
-      if(c.isCard){ e.sprite=c.card; e.isCard=true; }
-      else{ e.sprite=c.sprite; if(c.flip) e.flip=true; }
-      return e;
-    }
-    const tpl=HUMANOS_ETYPES[key]||HUMANOS_ETYPES.soldado1;
-    const e={name:tpl.n, hp:Math.round(tpl.hp*hpMult), atk:Math.round(tpl.atk*atkMult), etype:key};
-    if(tpl.sprite){ e.sprite=tpl.sprite; if(tpl.flip) e.flip=true; }
-    else{ e.sprite=ESPR[tpl.s]; e.tint=tpl.t; }
-    return e;
-  });
-  if(n===5&&enemies.length){
-    const chefe=enemies[enemies.length-1];
-    chefe.isBoss=true;
-    chefe.hp=Math.round(chefe.hp*1.35);   // chefes de fase s√£o mais fortes
-    chefe.atk=Math.round(chefe.atk*1.2);
-    /* 10.5 ¬∑ Julius com TODO o seu potencial (SUPER... ULTRA RARO): invenc√≠vel por design */
-    if(f===9&&chefe.cardId==='julius'){
-      chefe.hp=3200; chefe.maxHp=3200; chefe.atk=64; chefe.fullPower=true;
-    }
-  }
-  return {
-    title:`${L(fase.nome)} ¬∑ ${T('Miss√£o','Mission','Misi√≥n')} ${n}/5${n===5?` ¬∑ ${T('CHEFE','BOSS','JEFE')}`:''}`,
-    scene:n===5?4:(f%4),
-    bgUrl:fase.bg,
-    enemies,
-    dial:n===1?fase.dial:null
-  };
-}
-let pendingReplayPhase=null;
-const DIFFICULTY_ORDER=['facil','normal','dificil','pesadelo'];
-const DIFFICULTY_RANKS={facil:'Bronze',normal:'Prata',dificil:'Ouro',pesadelo:'Cristal'};
-function nextDifficulty(value){ const i=DIFFICULTY_ORDER.indexOf(value); return DIFFICULTY_ORDER[Math.min(DIFFICULTY_ORDER.length-1,Math.max(0,i+1))]||'normal'; }
-function difficultyLabel(value){ return {facil:'F√°cil',normal:'Normal',dificil:'Dif√≠cil',pesadelo:'Pesadelo'}[value]||'Normal'; }
-function startWorldFase(faseIdx,options={}){
-  armTapGuard();
-  const prog=worldProg('humanos');
-  if(faseIdx>prog.unlocked){ sfxInvalid(); return; }
-  worldRun={active:true,fase:faseIdx,nivel:1,storyMode:options.storyMode!==false};
-  if(options.difficulty){ difficulty=options.difficulty; localStorage.setItem('12r_difficulty',difficulty); applyDifficultyUI(); }
-  towerMode=false;
-  closeAllPanels();
-  pendingReplayPhase=null;
-  closeMapScreen();
-  pendingStage=0;
-  showSelection(); // o jogador escolhe a equipe e toca em "Iniciar a Aventura!"
-}
-function renderWorldMap(){
-  const world=WORLDS[0];
-  const head=document.getElementById('worldHead');
-  if(head){
-    const wstars=Object.values(worldProg('humanos').stars||{}).reduce((a,b)=>a+b,0);
-    head.innerHTML=`<b>${L(world.nome)}</b><small>${L(world.titulo)} ¬∑ ‚òÖ ${wstars}/30</small>`;
-  }
-  const map=document.getElementById('worldMap');
-  if(!map) return;
-  const prog=worldProg('humanos');
-  map.innerHTML='';
-  const fb=faseBest();
-  const ft=faseTime();
-  world.fases.forEach((fase,idx)=>{
-    const locked=idx>prog.unlocked;
-    const stars=prog.stars[idx]||0;
-    const rankHtml=DIFFICULTY_ORDER.map(d=>`<small class="fase-rank rank-${d}">${DIFFICULTY_RANKS[d]} ${'‚òÖ'.repeat(prog.starsByDifficulty?.[d]?.[idx]||0)}${'‚òÜ'.repeat(3-(prog.starsByDifficulty?.[d]?.[idx]||0))}</small>`).join('');
-    const node=document.createElement('button');
-    node.className='fase-node'+(locked?' locked':'');
-    node.style.setProperty('--fase-c', (KINGDOMS.find(k=>k.id===world.id)||{}).color||'#d4af5a');
-    node.disabled=locked;
-    node.style.backgroundImage=`linear-gradient(rgba(4,2,8,.25),rgba(4,2,8,.9)),url('${fase.bg}')`;
-    node.innerHTML=`<span class="fase-num">${idx+1}</span>
-      <span class="fase-copy"><b>${L(fase.nome)}</b><small>${L(fase.sub)}</small>
-      ${fase.rec?`<small class="fase-rec">üé¥ ${T('Recomendado','Recommended','Recomendado')}: ${L(fase.rec)}</small>`:''}
-      ${fb[idx]?`<small class="fase-best">‚è± ${T('Recorde','Record','R√©cord')}: ${fb[idx]} ${T('turnos','turns','turnos')}${ft[idx]?` ¬∑ üïê ${fmtTempo(ft[idx])}`:''}</small>`:''}
-      ${!locked?`<span class="fase-diffs" role="group" aria-label="${T('Dificuldade','Difficulty','Dificultad')}"><i data-d="facil" class="${difficulty==='facil'?'on':''}">F</i><i data-d="normal" class="${difficulty==='normal'?'on':''}">N</i><i data-d="dificil" class="${difficulty==='dificil'?'on':''}">D</i><i data-d="pesadelo" class="${difficulty==='pesadelo'?'on':''}">P</i></span>`:''}
-      <div class="fase-ranks">${locked?'':rankHtml}</div><em>${locked?'üîí '+T('Bloqueada','Locked','Bloqueada'):(stars?'‚òÖ'.repeat(stars)+'‚òÜ'.repeat(3-stars):T('5 miss√µes ¬∑ chefe no final','5 missions ¬∑ boss at the end','5 misiones ¬∑ jefe al final'))}</em></span>`;
-    node.querySelectorAll('.fase-diffs i').forEach(pill=>pill.addEventListener('click',ev=>{
-      ev.stopPropagation();
-      difficulty=pill.dataset.d;
-      localStorage.setItem('12r_difficulty',difficulty);
-      node.querySelectorAll('.fase-diffs i').forEach(x=>x.classList.toggle('on',x===pill));
-      sfxSelect();
-    }));
-    node.addEventListener('click',()=>storyPhaseDone(idx)?openMissionReplay(idx):startWorldFase(idx));
-    map.appendChild(node);
-  });
-}
-
-/* v9.1 ¬∑ Modos, dificuldade e economia: inicializa√ß√£o */
-function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
-(function initV91(){
-  document.querySelectorAll('#diffGroup [data-diff]').forEach(b=>b.addEventListener('click',()=>{
-    if(towerMode){ sfxInvalid(); return; } /* a Torre trava no Pesadelo */
-    difficulty=b.dataset.diff;
-    localStorage.setItem('12r_difficulty',difficulty);
-    applyDifficultyUI();
-  }));
-  applyDifficultyUI();
-  const dailyHint=document.getElementById('dailyHint');
-  let rec={}; try{ rec=JSON.parse(localStorage.getItem('12r_daily')||'{}'); }catch(e){}
-  if(dailyHint) dailyHint.textContent = rec.date===todayKey() ? T(`Conclu√≠do hoje ‚úì ¬∑ combo √ó${rec.combo||0}`,`Completed today ‚úì ¬∑ combo √ó${rec.combo||0}`,`Completado hoy ‚úì ¬∑ combo √ó${rec.combo||0}`) : `${T('Tabuleiro do dia','Daily board','Tablero del d√≠a')} ${todayKey().slice(8,10)}/${todayKey().slice(5,7)}`;
-  document.getElementById('dailyBtn')?.addEventListener('click',()=>{
-    const url=new URL(location.href);
-    url.searchParams.set('seed','12R-'+todayKey());
-    url.searchParams.set('daily','1');
-    location.href=url.toString();
-  });
-  { const bossHint=document.getElementById('bossRushHint');
-    if(bossHint) bossHint.textContent=realmComplete('humanos')
-      ? T('Reino dos Humanos liberado!','Human Realm unlocked!','¬°Reino de los Humanos desbloqueado!')
-      : T('Conquiste um reino para liberar','Conquer a realm to unlock','Conquista un reino para desbloquear'); }
-  const towerHint=document.getElementById('towerHint');
-  const bestT=Number(localStorage.getItem('12r_tower_best')||0);
-  if(towerHint) towerHint.textContent = bestT>0 ? T(`(Torre Infinita) ¬∑ Recorde: andar ${bestT}`,`(Infinite Tower) ¬∑ Best: floor ${bestT}`,`(Torre Infinita) ¬∑ R√©cord: piso ${bestT}`) : T('(Torre Infinita) ¬∑ Survivor no Pesadelo','(Infinite Tower) ¬∑ Nightmare survivor','(Torre Infinita) ¬∑ Survivor en Pesadilla');
-  /* üóº Torre de Acesso √† Eternidade: painel com regras + ranking mensal antes de escalar */
-  function renderTowerScreen(){
-    const rules=document.getElementById('towerRules');
-    if(rules) rules.textContent=T(
-      'Modo SURVIVOR sem fim: enfrente TODOS os personagens do jogo, um por miss√£o, na ordem em que surgiram em Ygdria. Ao vencer o √∫ltimo, o ciclo recome√ßa mais forte. S√≥ no PESADELO, a vida N√ÉO renova entre as miss√µes ‚Äî mas a mochila de consum√≠veis est√° liberada.',
-      'Endless SURVIVOR mode: face ALL game characters, one per mission, in order of appearance. Beat the last one and the cycle restarts stronger. NIGHTMARE only, HP does NOT refresh between missions ‚Äî but your consumables bag is allowed.',
-      'Modo SURVIVOR sin fin: enfrenta a TODOS los personajes, uno por misi√≥n, en orden de aparici√≥n. Al vencer al √∫ltimo, el ciclo reinicia m√°s fuerte. Solo PESADILLA, la vida NO se renueva ‚Äî pero la mochila est√° permitida.');
-    const box=document.getElementById('towerRankBox');
-    if(box){
-      const tm=towerMonthly(); const mk=towerMonthKey();
-      box.innerHTML='<div class="quests-box"><b>üèÜ '+T('Ranking mensal','Monthly ranking','Ranking mensual')+' ¬∑ '+mk+'</b>'
-        +'<div class="quest-row"><span>'+T('Seu recorde do m√™s','Your record this month','Tu r√©cord del mes')+'</span><span>'+(tm[mk]||0)+' '+T('andares','floors','pisos')+'</span></div>'
-        +TOWER_RANK_REWARDS.map(r=>'<div class="quest-row"><span>'+r[0]+'</span><span>'+r[1]+'</span></div>').join('')
-        +'<small style="opacity:.7">'+T('O ranking global e a entrega dos pr√™mios ser√£o ativados junto com o servidor.','Global ranking and prize delivery activate with the server.','El ranking global se activa con el servidor.')+'</small></div>';
-    }
-  }
-  document.getElementById('towerBtn')?.addEventListener('click',()=>{ renderTowerScreen(); openPanel('towerScreen'); sfxSelect(); });
-  document.getElementById('towerStartBtn')?.addEventListener('click',()=>{
-    document.getElementById('towerScreen')?.classList.remove('show');
-    towerMode=true; worldRun.active=false; bossRushMode=false; towerFloor=1; pendingStage=0;
-    if(difficulty!=='pesadelo'){ towerPrevDifficulty=difficulty; difficulty='pesadelo'; applyDifficultyUI(); }
-    showSelection();
-    sfxSelect();
-  });
-  document.getElementById('mapBackBtn')?.addEventListener('click',()=>{ closeMapScreen(); sfxSelect(); });
-  document.getElementById('shopBtn')?.addEventListener('click',()=>openPanel('shopScreen'));
-  document.getElementById('mochilaBtn')?.addEventListener('click',()=>{ openPanel('mochilaScreen'); sfxSelect(); });
-  document.getElementById('mochilaShopBtn')?.addEventListener('click',()=>{ openPanel('shopScreen'); sfxSelect(); });
-  /* üëÅ Visualiza√ß√£o: nomes, superf√≠cies do HUD e indicadores persistentes */
-  const vizCycle={bottom:'top',top:'off',off:'bottom'};
-  const vizSurfaceCycle={solid:'transparent',transparent:'off',off:'solid'};
-  const syncVizLabels=()=>{
-    const h=document.getElementById('vizHeroNames'); if(h) h.textContent=vizNameLabel(vizPrefs.heroNames);
-    const e2=document.getElementById('vizEnemyNames'); if(e2) e2.textContent=vizNameLabel(vizPrefs.enemyNames);
-    const d=document.getElementById('vizDmg'); if(d) d.textContent=vizOnOff(vizPrefs.dmg);
-    const p=document.getElementById('vizDps'); if(p) p.textContent=vizOnOff(vizPrefs.dps);
-    const t2=document.getElementById('vizTimer'); if(t2) t2.textContent=vizOnOff(vizPrefs.timer);
-    const turn=document.getElementById('vizTurnInfo'); if(turn) turn.textContent=vizOnOff(vizPrefs.turnInfo);
-    const hud=document.getElementById('vizTopHud'); if(hud) hud.textContent=vizSurfaceLabel(vizPrefs.topHud);
-    const info=document.getElementById('vizInfoBar'); if(info) info.textContent=vizSurfaceLabel(vizPrefs.infoBar);
-  };
-  document.getElementById('vizHeroNames')?.addEventListener('click',()=>{ vizPrefs.heroNames=vizCycle[vizPrefs.heroNames]||'bottom'; saveViz(); syncVizLabels(); refreshVizBattle(); sfxSelect(); });
-  document.getElementById('vizEnemyNames')?.addEventListener('click',()=>{ vizPrefs.enemyNames=vizCycle[vizPrefs.enemyNames]||'bottom'; saveViz(); syncVizLabels(); refreshVizBattle(); sfxSelect(); });
-  document.getElementById('vizDmg')?.addEventListener('click',()=>{ vizPrefs.dmg=!vizPrefs.dmg; saveViz(); syncVizLabels(); sfxSelect(); });
-  document.getElementById('vizDps')?.addEventListener('click',()=>{ vizPrefs.dps=!vizPrefs.dps; saveViz(); syncVizLabels(); sfxSelect(); });
-  document.getElementById('vizTimer')?.addEventListener('click',()=>{ vizPrefs.timer=!vizPrefs.timer; saveViz(); syncVizLabels(); sfxSelect(); });
-  document.getElementById('vizTurnInfo')?.addEventListener('click',()=>{ vizPrefs.turnInfo=!vizPrefs.turnInfo; saveViz(); syncVizLabels(); sfxSelect(); });
-  document.getElementById('vizTopHud')?.addEventListener('click',()=>{ vizPrefs.topHud=vizSurfaceCycle[vizPrefs.topHud]||'solid'; saveViz(); syncVizLabels(); sfxSelect(); });
-  document.getElementById('vizInfoBar')?.addEventListener('click',()=>{ vizPrefs.infoBar=vizSurfaceCycle[vizPrefs.infoBar]||'transparent'; saveViz(); syncVizLabels(); sfxSelect(); });
-  document.getElementById('arena')?.addEventListener('click',event=>{
-    if(vizPrefs.topHud!=='off') return;
-    if(event.target.closest('button,[role="button"],.unit,.battle-feed-row,.status-tray,.battle-tools-panel,.mission-topbar')) return;
-    document.body.classList.toggle('hud-peek');
-  });
-  syncVizLabels();
-  applyVizSettings();
-  document.getElementById('achBtn')?.addEventListener('click',()=>openPanel('achScreen'));
-  document.getElementById('coachNext')?.addEventListener('click',()=>{ coachStep++; renderCoach(); sfxSelect(); });
-  document.getElementById('storyLayer')?.addEventListener('click',(e)=>{ if(e.target.id!=='storySkip') advanceStory(); });
-  document.getElementById('storySkip')?.addEventListener('click',()=>skipStory(true));
-  document.getElementById('shareDailyBtn')?.addEventListener('click',async(e)=>{
-    await copyTextToClipboard(buildDailyShareText());
-    e.target.textContent=T('‚úì Copiado! Cole no grupo','‚úì Copied! Paste it anywhere','‚úì ¬°Copiado! P√©galo donde quieras');
-    sfxSelect();
-  });
-  document.getElementById('exportSaveBtn')?.addEventListener('click',()=>{ exportSave(); sfxSelect(); });
-  document.getElementById('importSaveBtn')?.addEventListener('click',()=>importSave());
-  document.querySelectorAll('#langGroup [data-lang]').forEach(b=>b.addEventListener('click',()=>{
-    lang=VALID_LANGS.includes(b.dataset.lang)?b.dataset.lang:'pt';
-    localStorage.setItem('12r_lang',lang);
-    localStorage.setItem('12r_lang_set','1');
-    applyLanguage();
-    renderIntroTexts();
-    renderCoach();
-    refreshContinueButton(); renderWorldMap(); renderGallery(); renderShop(); renderAchievements(); renderProfileStats();
-  }));
-  applyLanguage();
-  checkLoginReward();
-  if(IS_DAILY_RUN && difficulty!=='pesadelo'){ towerPrevDifficulty=difficulty; difficulty='pesadelo'; applyDifficultyUI(); }
-  if(IS_DAILY_RUN){ towerMode=true; towerFloor=1; worldRun.active=false; pendingStage=0; showSelection(); } /* Di√°rio = torre seeded de 5 andares */
-  updateCoinBadge();
-
-  // v9.1 ¬∑ Fluxo de abertura: Introdu√ß√£o da hist√≥ria -> Idioma (1¬™ vez) -> Menu
-  renderIntroTexts();
-  const bootParams=new URLSearchParams(location.search);
-  const skipBoot=bootParams.get('qa')||bootParams.get('daily')==='1';
-  if(!skipBoot) document.getElementById('introScreen')?.classList.add('show');
-  function maybeShowLogin(){
-    if(!hasAccountDecision()) document.getElementById('loginScreen')?.classList.add('show');
-  }
-  document.getElementById('introNext')?.addEventListener('click',()=>{
-    stopIntroMusic();
-    document.getElementById('introScreen')?.classList.remove('show');
-    if(!localStorage.getItem('12r_lang_set')) document.getElementById('langScreen')?.classList.add('show');
-    else maybeShowLogin();
-    sfxSelect();
-  });
-  /* Letreiro: m√∫sica come√ßa no 1¬∫ toque (regra de √°udio dos navegadores) e a
-     abertura avan√ßa sozinha quando o texto termina de subir */
-  document.getElementById('introScreen')?.addEventListener('pointerdown',()=>startIntroMusic(),{once:true});
-  document.getElementById('crawlScroll')?.addEventListener('animationend',()=>{
-    if(document.getElementById('introScreen')?.classList.contains('show')) document.getElementById('introNext')?.click();
-  });
-  document.querySelectorAll('#langScreen [data-lang]').forEach(b=>b.addEventListener('click',()=>{
-    lang=VALID_LANGS.includes(b.dataset.lang)?b.dataset.lang:'pt';
-    localStorage.setItem('12r_lang',lang);
-    localStorage.setItem('12r_lang_set','1');
-    applyLanguage();
-    renderIntroTexts();
-    renderCoach();
-    document.getElementById('langScreen')?.classList.remove('show');
-    maybeShowLogin();
-    sfxSelect();
-  }));
-
-  // ---- Contas: convidado, email+senha local, Google (aguarda backend) ----
-  document.getElementById('guestBtn')?.addEventListener('click',()=>{
-    localStorage.setItem('12r_guest','1');
-    document.getElementById('loginScreen')?.classList.remove('show');
-    renderAccountChip();
-    sfxSelect();
-  });
-  document.getElementById('loginForm')?.addEventListener('submit',async(ev)=>{
-    ev.preventDefault();
-    const res=await loginOrRegister(document.getElementById('loginEmail').value,document.getElementById('loginPass').value);
-    const err=document.getElementById('loginError');
-    if(res.erro){ if(err) err.textContent=res.erro; sfxInvalid(); return; }
-    if(err) err.textContent='';
-    renderAccountChip();
-    sfxSelect();
-    if(res.precisaOnboarding) openOnboarding();
-    else document.getElementById('loginScreen')?.classList.remove('show');
-  });
-  document.getElementById('googleBtn')?.addEventListener('click',()=>{
-    const note=document.getElementById('googleNote');
-    if(note) note.textContent=T('O login Google chega junto com o servidor (Firebase) ‚Äî a estrutura j√° est√° pronta. Por enquanto, use e-mail/senha ou jogue como Convidado.','Google sign-in arrives with the server (Firebase) ‚Äî the structure is ready. For now, use e-mail/password or play as Guest.','El acceso con Google llega con el servidor (Firebase). Por ahora, usa correo/contrase√±a o juega como Invitado.');
-  });
-  // ---- Onboarding ----
-  document.getElementById('obNext1')?.addEventListener('click',()=>{
-    const v=document.getElementById('obBirth')?.value;
-    const err=document.getElementById('obErr1');
-    if(!v){ if(err) err.textContent=T('Escolha a data de nascimento.','Pick your birth date.','Elige tu fecha de nacimiento.'); return; }
-    const [y,m,d]=v.split('-').map(Number);
-    onboardState.birth={d,m,y};
-    showOnboardStep(2);
-    sfxSelect();
-  });
-  document.querySelectorAll('.title-opt').forEach(b=>b.addEventListener('click',()=>{
-    onboardState.title=b.dataset.title;
-    showOnboardStep(3);
-    sfxSelect();
-  }));
-  document.getElementById('obName')?.addEventListener('input',updateNamePreview);
-  document.getElementById('obFinish')?.addEventListener('click',finishOnboarding);
-  // ---- Painel de conta ----
-  document.getElementById('accountChip')?.addEventListener('click',()=>{ renderAccountPanel(); openPanel('accountScreen'); });
-  document.getElementById('accountLoginBtn')?.addEventListener('click',()=>{
-    document.getElementById('accountScreen')?.classList.remove('show');
-    document.getElementById('loginScreen')?.classList.add('show');
-  });
-  document.getElementById('logoutBtn')?.addEventListener('click',logoutAccount);
-  renderAccountChip();
-})();
-
-/* ============================================================
-   v9.1 ¬∑ SISTEMA DE CONTAS (local-first, pronto para Firebase)
-   Convidado: joga sem conta (sem ranking/nuvem/PVP futuros).
-   Email+senha: conta LOCAL neste aparelho (hash SHA-256).
-   Google: aguarda backend (Firebase) ‚Äî bot√£o informativo.
-   ============================================================ */
-var account=null; // var: o initV91 roda antes deste bloco no arquivo (fun√ß√µes s√£o hoisted)
-try{ account=JSON.parse(localStorage.getItem('12r_account')||'null'); }catch(e){}
-renderAccountChip();
-function isGuest(){ return !account && localStorage.getItem('12r_guest')==='1'; }
-function hasAccountDecision(){ return !!account || localStorage.getItem('12r_guest')==='1'; }
-
-async function sha256Hex(text){
-  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text));
-  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-
-/* Gerador de username: T√≠tulo+Nome com fallbacks na ordem exata:
-   Nome, Nome+Dia, Nome+M√™s, Nome+Ano, Nome+Dia+M√™s, Nome+Dia+Ano, Nome+M√™s+Ano, Nome+Dia+M√™s+Ano */
-function sanitizeNamePart(text){
-  return (text||'').normalize('NFD').replace(/[ÃÄ-ÕØ]/g,'')
-    .replace(/[^A-Za-z0-9 ]/g,'').trim().split(/\s+/)
-    .map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join('');
-}
-function usernameCandidates(title,name,birth){
-  const base=sanitizeNamePart(title)+sanitizeNamePart(name);
-  const dd=String(birth.d).padStart(2,'0'), mm=String(birth.m).padStart(2,'0'), yy=String(birth.y);
-  return [base, base+dd, base+mm, base+yy, base+dd+mm, base+dd+yy, base+mm+yy, base+dd+mm+yy];
-}
-function takenUsernames(){
-  try{ return JSON.parse(localStorage.getItem('12r_usernames')||'[]'); }catch(e){ return []; }
-}
-function claimUsername(title,name,birth){
-  const taken=takenUsernames();
-  const candidate=usernameCandidates(title,name,birth).find(c=>!taken.includes(c));
-  if(!candidate) return null; // todos ocupados (rar√≠ssimo)
-  taken.push(candidate);
-  localStorage.setItem('12r_usernames',JSON.stringify(taken));
-  return candidate;
-}
-
-function localUsers(){
-  try{ return JSON.parse(localStorage.getItem('12r_localusers')||'{}'); }catch(e){ return {}; }
-}
-async function loginOrRegister(email,pass){
-  email=(email||'').trim().toLowerCase();
-  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return {erro:T('E-mail inv√°lido.','Invalid e-mail.','Correo inv√°lido.')};
-  if((pass||'').length<4) return {erro:T('Senha muito curta (m√≠n. 4).','Password too short (min 4).','Contrase√±a muy corta (m√≠n. 4).')};
-  const users=localUsers();
-  const hash=await sha256Hex(pass);
-  if(users[email]){
-    if(users[email].passHash!==hash) return {erro:T('Senha incorreta para este e-mail.','Wrong password for this e-mail.','Contrase√±a incorrecta para este correo.')};
-    account=users[email].account||{email};
-  }else{
-    users[email]={passHash:hash,account:null};
-    localStorage.setItem('12r_localusers',JSON.stringify(users));
-    account={email};
-  }
-  localStorage.setItem('12r_account',JSON.stringify(account));
-  localStorage.removeItem('12r_guest');
-  return {ok:true, precisaOnboarding:!account.username};
-}
-function persistAccount(){
-  localStorage.setItem('12r_account',JSON.stringify(account));
-  const users=localUsers();
-  if(account?.email&&users[account.email]){ users[account.email].account=account; localStorage.setItem('12r_localusers',JSON.stringify(users)); }
-  renderAccountChip();
-}
-function logoutAccount(){
-  account=null;
-  localStorage.removeItem('12r_account');
-  localStorage.removeItem('12r_guest');
-  renderAccountChip();
-  document.getElementById('accountScreen')?.classList.remove('show');
-  document.getElementById('loginScreen')?.classList.add('show');
-}
-function renderAccountChip(){
-  const chip=document.getElementById('accountChip');
-  if(!chip) return;
-  if(account?.username) chip.innerHTML=`üëë <b>${account.username}</b>`;
-  else chip.innerHTML=`üé≠ ${T('Convidado ‚Äî toque para entrar','Guest ‚Äî tap to sign in','Invitado ‚Äî toca para entrar')}`;
-}
-
-/* Onboarding p√≥s-login: nascimento -> t√≠tulo -> nome -> username */
-const TITLES=['Rei Mago','Rainha Maga','Cavaleiro Mago','Cavaleira Maga'];
-var onboardState={};
-function openOnboarding(){
-  onboardState={};
-  document.getElementById('loginScreen')?.classList.remove('show');
-  document.getElementById('onboardScreen')?.classList.add('show');
-  showOnboardStep(1);
-}
-function showOnboardStep(n){
-  [1,2,3].forEach(i=>document.getElementById('obStep'+i)?.classList.toggle('show',i===n));
-  if(n===3) updateNamePreview();
-}
-function updateNamePreview(){
-  const nome=document.getElementById('obName')?.value||'';
-  const prev=document.getElementById('obPreview');
-  if(prev) prev.textContent=onboardState.title&&nome?`${L(onboardState.title)} ${nome.trim()}`:'‚Äî';
-}
-async function finishOnboarding(){
-  const nome=(document.getElementById('obName')?.value||'').trim();
-  const err=document.getElementById('obError');
-  if(!nome||sanitizeNamePart(nome).length<2){ if(err) err.textContent=T('Digite um nome v√°lido.','Enter a valid name.','Escribe un nombre v√°lido.'); return; }
-  const username=claimUsername(onboardState.title,nome,onboardState.birth);
-  if(!username){ if(err) err.textContent=T('Nome indispon√≠vel ‚Äî tente outro.','Name unavailable ‚Äî try another.','Nombre no disponible ‚Äî prueba otro.'); return; }
-  account={...account, birth:onboardState.birth, title:onboardState.title, displayName:`${onboardState.title} ${nome}`, username, createdAt:Date.now()};
-  persistAccount();
-  document.getElementById('onboardScreen')?.classList.remove('show');
-  setBattleStatus(T(`Bem-vindo(a), ${account.displayName}!`,`Welcome, ${account.displayName}!`,`¬°Bienvenido(a), ${account.displayName}!`),'support');
-}
-function renderAccountPanel(){
-  const el=document.getElementById('accountInfo');
-  if(!el) return;
-  if(account?.username){
-    el.innerHTML=`
-      <div class="pstat"><small>${T('Usu√°rio (ranking)','Username (ranking)','Usuario (ranking)')}</small><b>${account.username}</b></div>
-      <div class="pstat"><small>${T('Tratamento','Title','Tratamiento')}</small><b>${L(account.title)}</b></div>
-      <div class="pstat"><small>E-mail</small><b>${account.email||'‚Äî'}</b></div>
-      <div class="pstat"><small>${T('Nascimento','Birth date','Nacimiento')}</small><b>${String(account.birth.d).padStart(2,'0')}/${String(account.birth.m).padStart(2,'0')}/${account.birth.y}</b></div>`;
-  }else{
-    el.innerHTML=`<p class="account-note">${T('Voc√™ joga como Convidado: sem ranking, sem salvamento na nuvem e sem PVP (em breve). Entre para garantir seu nome de usu√°rio!','You play as a Guest: no ranking, no cloud save and no PVP (soon). Sign in to claim your username!','Juegas como Invitado: sin ranking, sin guardado en la nube y sin PVP (pronto). ¬°Inicia sesi√≥n para reclamar tu usuario!')}</p>`;
-  }
-  const lb=document.getElementById('accountLoginBtn'), ob=document.getElementById('logoutBtn');
-  if(lb) lb.style.display=account?.username?'none':'inline-block';
-  if(ob) ob.style.display=account?'inline-block':'none';
-}
-
-/* v9.2 ¬∑ ABERTURA EM LETREIRO: a hist√≥ria oficial sobe linha a linha do rodap√©,
-   com m√∫sica de introdu√ß√£o e bot√£o Pular. Texto oficial definido pelo criador. */
-function introStoryParagraphs(){
-  return [
-    T('Ygdria era um mundo tomado por guerras, caos e destrui√ß√£o. Feras m√°gicas, guerreiros implac√°veis e magos poderosos, travavam batalhas por soberania.',
-      'Ygdria was a world consumed by war, chaos and destruction. Magical beasts, relentless warriors and powerful mages waged battles for sovereignty.',
-      'Ygdria era un mundo tomado por guerras, caos y destrucci√≥n. Bestias m√°gicas, guerreros implacables y magos poderosos libraban batallas por la soberan√≠a.'),
-    T('Foi quando um ser chamado Eternidade, resolveu colocar um fim a esse caos. Escolhendo uma tribo de humanos para serem seus reguladores.',
-      'That was when a being called Eternity decided to put an end to this chaos. Choosing a tribe of humans to be her regulators.',
-      'Fue cuando un ser llamado Eternidad decidi√≥ poner fin a ese caos. Eligiendo a una tribu de humanos como sus reguladores.'),
-    T('Ela separou o mundo em 12 reinos, colocando o que chamou de Reino Humano no centro de todos os outros.',
-      'She divided the world into 12 realms, placing what she called the Human Realm at the center of all the others.',
-      'Ella separ√≥ el mundo en 12 reinos, colocando el que llam√≥ Reino Humano en el centro de todos los dem√°s.'),
-    T('Luz, Sombras, Fogo, √Ågua, Vento, Terra, Natureza, Raios, Areia, Chuva, Gelo e o Reino dos Humanos.',
-      'Light, Shadows, Fire, Water, Wind, Earth, Nature, Lightning, Sand, Rain, Ice and the Realm of Humans.',
-      'Luz, Sombras, Fuego, Agua, Viento, Tierra, Naturaleza, Rayos, Arena, Lluvia, Hielo y el Reino de los Humanos.'),
-    T('Esses s√£o, os 12 Reinos!','These are, the 12 Realms!','¬°Esos son, los 12 Reinos!'),
-    T('E assim, Ygdria viveu em paz por s√©culos. Cada reino governado por seu Rei Mago ou Rainha Maga e protegidos por seus cavaleiros.',
-      'And so, Ygdria lived in peace for centuries. Each realm ruled by its Mage King or Mage Queen and protected by its knights.',
-      'Y as√≠, Ygdria vivi√≥ en paz durante siglos. Cada reino gobernado por su Rey Mago o Reina Maga y protegido por sus caballeros.'),
-    T('Mas o que a Eternidade n√£o esperava, √© que algu√©m de fora dos 12 reinos surgiria...',
-      'But what Eternity did not expect... is that someone from beyond the 12 realms would appear...',
-      'Pero lo que la Eternidad no esperaba... es que alguien de fuera de los 12 reinos aparecer√≠a...')
-  ];
-}
-function renderIntroTexts(){
-  const crawl=document.getElementById('crawlText');
-  if(crawl) crawl.innerHTML=introStoryParagraphs().map(p=>`<p>${p}</p>`).join('');
-  const eyebrow=document.getElementById('introEyebrow');
-  if(eyebrow) eyebrow.textContent=T('AS CR√îNICAS DE YGDRIA','THE CHRONICLES OF YGDRIA','LAS CR√ìNICAS DE YGDRIA');
-  const btn=document.getElementById('introNext');
-  if(btn) btn.textContent=T('Pular ‚è≠','Skip ‚è≠','Saltar ‚è≠');
-}
-/* üéµ M√∫sica da introdu√ß√£o: arpejo suave gerado no WebAudio (para no Pular/fim) */
-let introMusicOn=false, introMusicTimer=null;
-function startIntroMusic(){
-  if(introMusicOn) return;
-  const ctx=ensureAudio(); if(!ctx) return;
-  introMusicOn=true;
-  const acordes=[[220,277.2,329.6],[196,246.9,293.7],[174.6,220,261.6],[196,246.9,293.7]];
-  let barra=0;
-  const loop=()=>{
-    if(!introMusicOn) return;
-    const notas=acordes[barra%acordes.length]; barra++;
-    beep(notas[0]/2,1.9,'sine',.045);
-    notas.forEach((f,i)=>{ beep(f,0.95,'triangle',.05,i*0.55); beep(f*2,0.55,'sine',.026,i*0.55+0.28); });
-    introMusicTimer=setTimeout(loop,1800);
-  };
-  loop();
-}
-function stopIntroMusic(){ introMusicOn=false; clearTimeout(introMusicTimer); introMusicTimer=null; }
-
-/* v9.1 ¬∑ Smoke test automatizado de gameplay: abra com ?qa=smoke
-   Joga de verdade: escala time, entra em batalha, dispara habilidade,
-   vence a fase e confere obst√°culos/objetivos. Banner PASS/FAIL. */
-async function runSmokeTest(){
-  const results=[];
-  const ok=(name,cond)=>results.push({name,pass:!!cond});
-  const wait=(ms)=>new Promise(r=>setTimeout(r,ms));
-  try{
-    localStorage.setItem('12r_tutorial','1');
-    ok('12 her√≥is divinos + cartas jog√°veis', KINGDOMS.filter(k=>k.rarity==='DIVINA').length===12 && KINGDOMS.length>=16);
-    ok('4 jovens aprendizes com cartas e chibis', ['berenice-jovem','galateia-jovem','adriel-jovem','acqua-jovem'].every(id=>{
-      const k=KINGDOMS.find(card=>card.id===id);
-      return k&&k.rarity==='NORMAL'&&k.stars===1&&k.atk===2&&k.img&&k.sprite;
-    }));
-    /* Tabela oficial de estrelas: 1‚òÖ=0P/0A 2‚òÖ=1P/0A 3‚òÖ=2P/0A 4‚òÖ=3P/0A 5‚òÖ=3P/1A 6‚òÖ=3P/2A 7‚òÖ=3P/3A */
-    const STAR_KIT={1:[0,0],2:[1,0],3:[2,0],4:[3,0],5:[3,1],6:[3,2],7:[3,3]};
-    ok('contrato de habilidades por estrelas', KINGDOMS.every(k=>{
-      if(k.artKit) return k.abilities.length>0; /* kit impresso na arte da carta prevalece */
-      const [p,a]=STAR_KIT[k.stars||7]||[3,3];
-      return k.abilities.filter(x=>x.kind==='passive').length===p&&k.abilities.filter(x=>x.kind==='active').length===a;
-    }));
-    ok('10 fases no Reino dos Humanos', WORLDS[0].fases.length===10);
-    ok('50 miss√µes oficiais', WORLDS[0].fases.every(f=>f.missoes.length===5));
-    chosenIds=[0,3,7,11]; pendingStage=0; towerMode=false;
-    worldRun={active:true,fase:0,nivel:1};
-    beginGame(0);
-    await wait(600);
-    ok('tabuleiro completo', document.querySelectorAll('#board .cell').length===SIZE*SIZE);
-    ok('4 her√≥is na arena', document.querySelectorAll('#partyArena .hero-unit').length===4);
-    const hpAntes=enemies[0].hp;
-    triggerAbility(11,KINGDOMS[11].abilities[3]);
-    await wait(300);
-    ok('habilidade causou dano', enemies[0].hp<hpAntes);
-    enemies.forEach((e,i)=>{ if(e.hp>0) applyDamageToEnemy(e.hp,3,i); });
-    finishRoomIfCleared();
-    await wait(900);
-    ok('miss√£o conclu√≠da', document.getElementById('stageClearOverlay').classList.contains('show')||worldRun.nivel>1);
-    await wait(1200);
-    /* Habilidade de Fase: motor executa efeito de inimigo-carta sem quebrar o tabuleiro */
-    placeObstacles({stone:2,ice:1});
-    ok('obst√°culos operantes', Object.keys(obstaclesMeta).length===3);
-    const fakeSA={nome:'QA',cd:1,tipo:'trocarCores',qtd:2};
-    execStageAbility(enemies[0]||{}, fakeSA);
-    ok('habilidade de fase executa', document.querySelectorAll('#board .cell').length===SIZE*SIZE);
-    ok('20 habilidades de fase definidas', KINGDOMS.filter(k=>k.stageAbility&&k.stageAbility.nome).length>=20);
-    /* Reiniciar fase NUNCA volta √† demo (Port√£o do P√¢ntano) */
-    restartCurrentStage();
-    await wait(500);
-    const nomesDemo=['Limo R√∫nico','Sentinela de Pedra','Lobo Batedor','Espectro Menor','Servo das Trevas','Drag√£o Carmesim','Drag√£o das Sombras'];
-    ok('reiniciar fase fica no mundo oficial', worldRun.active===true && enemies.every(e2=>!nomesDemo.includes(e2.name)));
-    ok('f√≥rmula de HP 50/30/15', DIFFICULTY_MULTS.facil.hpFactor===50 && DIFFICULTY_MULTS.normal.hpFactor===30 && DIFFICULTY_MULTS.pesadelo.hpFactor===15);
-    /* 12 escadas c√≠clicas de cores aliadas: cada reino inicia a pr√≥pria rota√ß√£o de 4 */
-    ok('12 alian√ßas c√≠clicas de gemas', Object.keys(ALLIED_ORDER).length===12 && Object.entries(ALLIED_ORDER).every(([id,seq])=>seq.length===4&&seq[0]===id&&seq.every(r=>KINGDOMS.some(k=>k.id===r))));
-    ok('gemas usam a cor-base do reino e s√≥ mudam com repeti√ß√£o',(()=>{
-      const original=[...ACTIVE];
-      const jovem=KINGDOMS.findIndex(k=>k.id==='berenice-jovem');
-      const adriel=KINGDOMS.findIndex(k=>k.id==='adriel-jovem');
-      const acqua=KINGDOMS.findIndex(k=>k.id==='acqua-jovem');
-      const fogo=KINGDOMS.findIndex(k=>k.id==='fogo');
-      ACTIVE=[jovem,acqua,fogo,KINGDOMS.findIndex(k=>k.id==='gelo')];
-      computeBattleGemColors();
-      const solo=battleGemColors[jovem]?.c===realmOrb('humanos')?.c && battleGemColors[acqua]?.c===realmOrb('agua')?.c;
-      ACTIVE=[jovem,adriel,acqua,fogo];
-      computeBattleGemColors();
-      const repetida=battleGemColors[jovem]?.c===realmOrb('humanos')?.c && battleGemColors[adriel]?.c===realmOrb('luz')?.c && battleGemColors[adriel]?.icon===KINGDOMS.find(k=>k.id==='humanos')?.color;
-      ACTIVE=original;
-      computeBattleGemColors();
-      return solo&&repetida;
-    })());
-    /* v9.2 ¬∑ contratos novos */
-    ok('dificuldade Dif√≠cil (4 n√≠veis)', !!DIFFICULTY_MULTS.dificil && DIFFICULTY_MULTS.dificil.hpFactor===30 && typeof allEnemiesAttackMode==='function');
-    ok('3 grandes alian√ßas nomeadas', ALLIANCES.length===3 && ALLIANCES.every(a=>a.membros.length===4) && ALLIANCES[0].nome.includes('Lago') && ALLIANCES[1].nome.includes('Drag√£o') && ALLIANCES[2].nome.includes('Barion'));
-    ok('loja com 20 consum√≠veis', SHOP_ITEMS.length===20 && SHOP_ITEMS.filter(i=>i.uso==='batalha').length>=12 && typeof usarItemBatalha==='function');
-    ok('login di√°rio: ciclo de 7 dias', LOGIN_REWARDS.length===7 && LOGIN_REWARDS[6].c===80);
-    ok('Torre da Eternidade: 1 personagem/andar + cen√°rio fase 9', (()=>{ const t2=buildTowerStage(1); return t2.enemies.length===1 && t2.bgUrl==='assets/bg/humanos/fase-09.jpg' && buildTowerStage(1+KINGDOMS.length).enemies[0].hp>t2.enemies[0].hp; })());
-    ok('timer de miss√£o + mochila em batalha', !!document.getElementById('missionTimer') && !!document.getElementById('mochilaBtn') && !!document.getElementById('mochilaScreen'));
-    ok('letreiro da hist√≥ria (7 par√°grafos)', !!document.getElementById('crawlScroll') && introStoryParagraphs().length===7);
-    ok('falas de entrada dos inimigos', Object.keys(ENEMY_LINES).length>=23 && typeof enemyLineFor==='function');
-    ok('Lobo Raivoso encara o centro da arena', HUMANOS_ETYPES.loboRaivoso.flip===true);
-    ok('moedas e XP de perfil operantes', typeof coins==='number'&&typeof profileLevel()==='number');
-    /* v9.3 ¬∑ contratos de estabilidade, apresenta√ß√£o e acessibilidade */
-    ok('v9.3 usa configura√ß√£o central dos 12 reinos', APP_VERSION==='v9.3' && V93.realms?.length===12);
-    ok('coordenador de fases da batalha', typeof canAcceptPlayerInput==='function' && BATTLE_PHASES.has('idle') && BATTLE_PHASES.has('enemies') && BATTLE_PHASES.has('paused'));
-    ok('√°udio separado em m√∫sica e efeitos', !!document.getElementById('musicVolumeRange') && !!document.getElementById('sfxVolumeRange'));
-    ok('4 perfis de qualidade gr√°fica', V93.quality?.values?.length===4 && !!document.getElementById('qualitySelect'));
-    ok('3 recursos de acessibilidade', ['highContrastToggle','largeTextToggle','reduceFlashesToggle'].every(id=>!!document.getElementById(id)));
-    ok('HUD superior e barra de informa√ß√µes configur√°veis', ['vizTurnInfo','vizTopHud','vizInfoBar'].every(id=>!!document.getElementById(id)) && !!document.getElementById('missionClockGroup'));
-    worldRun.active=false;
-  }catch(e){
-    results.push({name:'exce√ß√£o: '+e.message, pass:false});
-  }
-  const failed=results.filter(r=>!r.pass);
-  const banner=document.createElement('div');
-  banner.id='smokeBanner';
-  banner.style.cssText='position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:999;padding:10px 18px;border-radius:10px;font:700 13px Georgia,serif;color:#fff;box-shadow:0 4px 18px rgba(0,0,0,.6);background:'+(failed.length?'#8e1b1b':'#1b6e2f');
-  banner.textContent=failed.length?`SMOKE FAIL ${failed.length}/${results.length}: `+failed.map(f=>f.name).join(' | '):`SMOKE PASS ${results.length}/${results.length}`;
-  banner.title='Relat√≥rio do teste automatizado (?qa=smoke). Toque para fechar.';
-  banner.style.cursor='pointer';
-  banner.addEventListener('click',()=>banner.remove());
-  window.setTimeout(()=>banner.remove(),8000);
-  document.body.appendChild(banner);
-  console.log('[SMOKE]',JSON.stringify(results));
-  localStorage.setItem('12r_smoke',JSON.stringify({t:Date.now(),results}));
-  return results;
-}
-refreshContinueButton(); /* WORLDS j√° inicializado neste ponto do arquivo */
-if(new URLSearchParams(location.search).get('qa')==='smoke'){
-  window.addEventListener('load',()=>setTimeout(runSmokeTest,400));
-}
-
-/* v9.1 ¬∑ PWA: registra o service worker (apenas em http/https) */
-/* O jogo n√£o mant√©m cache offline durante a fase de desenvolvimento. Removemos
-   workers/cache antigos para que cada publica√ß√£o seja carregada diretamente. */
-if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.getRegistrations().then(regs=>regs.forEach(reg=>reg.unregister())).catch(()=>{});
-    if(window.caches) caches.keys().then(keys=>keys.forEach(key=>caches.delete(key))).catch(()=>{});
-  });
-}
-function openMissionReplay(faseIdx){
-  pendingReplayPhase=faseIdx;
-  const next=nextDifficulty(difficulty);
-  const hard=document.getElementById('replayHardBtn');
-  const hint=document.getElementById('replayHardHint');
-  if(hard) hard.disabled=difficulty==='pesadelo';
-  if(hint) hint.textContent=difficulty==='pesadelo'
-    ? 'Voc√™ j√° est√° na dificuldade m√°xima.'
-    : `Repetir a hist√≥ria em ${difficultyLabel(next)}.`;
-  openPanel('missionReplayScreen');
-}
+    img:'assets/cards/sophitia-card.png', cardThumb:'assets/cards/sophitia-card.◊éwÎ€hëÈÏ∂ªßq´^t]Kù]K\‹^Sò[YNò	€€òõÿ\ô›]Kù]_H	€õ€Y_X\Ÿ\õò[YK‹ôX]Y]ë]Kõõ› 
+_N√Bà\ú⁄\›Xÿ€›[ù
+
+N√Bàÿ›[Y[ùôŸ][[Y[ùûRY
+	€€òõÿ\ôÿ‹ôY[â OÀò€\‹”\›úô[[›ôJ	‹⁄›… N√BàŸ]ò]T›]\ 
+ô[K]ö[ô JK	ÿXÿ€›[ùô\‹^Sò[Y_HXŸ[€€YK	ÿXÿ€›[ùô\‹^Sò[Y_HX0®PöY[ùô[öY JK	ÿXÿ€›[ùô\‹^Sò[Y_HX
+K	‹›\‹ù	 N√BüCBôù[ò›[€àô[ô\êXÿ€›[ù[ô[
+
+^√Bà€€ú›[Yÿ›[Y[ùôŸ][[Y[ùûRY
+	ÿXÿ€›[ù[ôõ… N√BàYäY[
+Hô]\õé√BàYäXÿ€›[ùÀù\Ÿ\õò[YJ^√Bà[ö[õô\íSXBà]à€\‹œHú›]èè€X[â’
+	’\›pË\ö[»
+ò[ö⁄[ô IÀ	’\Ÿ\õò[YH
+ò[ö⁄[ô IÀ	’\›X\ö[»
+ò[ö⁄[ô I _O‹€X[èèâÿXÿ€›[ùù\Ÿ\õò[Y_OÿèèŸ]èÉBà]à€\‹œHú›]èè€X[â’
+	’ò][Y[ù…À	’]IÀ	’ò][ZY[ù… _O‹€X[èèâ”
+Xÿ€›[ùù]J_OÿèèŸ]èÉBà]à€\‹œHú›]èè€X[ëK[XZ[‹€X[èèâÿXÿ€›[ùô[XZ[	¯†%	ﬂOÿèèŸ]èÉBà]à€\‹œHú›]èè€X[â’
+	”ò\ÿ⁄[Y[ù…À	–ö\ù]IÀ	”òX⁄[ZY[ù… _O‹€X[èèâ‘›ö[ô Xÿ€›[ùòö\ùô
+KúY›\ù
+ã	Ã	 _K…‘›ö[ô Xÿ€›[ùòö\ùõJKúY›\ù
+ã	Ã	 _K…ÿXÿ€›[ùòö\ùû_OÿèèŸ]èò√BàY[Ÿ^√Bà[ö[õô\íSX€\‹œHòXÿ€›[ù[õ›Hèâ’
+	’õÿÍàõŸÿH€€[»€€ùöYYŒàŸ[Hò[ö⁄[ôÀŸ[Hÿ[ò[Y[ù»òHù]ô[HHŸ[Hî
+[Húô]ôJKà[ùôH\òHÿ\ò[ù\àŸ]Hõ€YHH\›pË\ö[»IÀ	÷[›H^H\»H›Y\›àõ»ò[ö⁄[ôÀõ»€›Yÿ]ôH[ôõ»î
+€€€äKà⁄Y€à[à»€Z[H[›\à\Ÿ\õò[YHIÀ	“ùYYÿ\»€€[»[ùö]YŒà⁄[àò[ö⁄[ôÀ⁄[à›X\ôY»[àHùXôHH⁄[àî
+õ€ù Kà0®R[öX⁄XHŸ\⁄pÏ€à\òHôX€[X\àH\›X\ö[»I _O‹ò√BàCBà€€ú›èYÿ›[Y[ùôŸ][[Y[ùûRY
+	ÿXÿ€›[ùŸ⁄[êùâ KÿèYÿ›[Y[ùôŸ][[Y[ùûRY
+	€Ÿ€›]ùâ N√BàYääHãú›[Kô\‹^OXXÿ€›[ùÀù\Ÿ\õò[YO…€õ€ôIŒâ⁄[õ[ôKXõÿ⁄…Œ√BàYäÿäHÿãú›[Kô\‹^OXXÿ€›[ù…⁄[õ[ôKXõÿ⁄…Œâ€õ€ôIŒ√BüCBÉBã àéKåà0≠»PëTïTêHSHUëRTìŒàH\›0Ï‹öXHŸöX⁄X[€ÿôH[öHH[öH»õŸ\0ÍKBà€€HpÓú⁄XÿHH[ùõŸpÈË€»Hõ›0Ë€»[\ãà^»ŸöX⁄X[Yö[öY»[»‹öXY‹ãà
+ã√Bôù[ò›[€à[ùõ‘›‹ûT\òY‹ò\ 
+^√Bàô]\õà√Bà
+	÷YŸöXH\òH[H][ô»€XY»‹à›Y\úò\Àÿ[‹»H\›ùZpÈË€Ààô\ò\»pËY⁄Xÿ\À›Y\úôZ\õ‹»[\XË]ôZ\»HXY€‹»Ÿ\õ‹€‹Àò]ò]ò[Hò][\»‹à€ÿô\ò[öXKâÀBà	÷YŸöXHÿ\»H€‹õ€€ú›[YYûHÿ\ã⁄[‹»[ô\›ùX›[€ãàXY⁄Xÿ[ôX\›Àô[[ù\‹»ÿ\úö[‹ú»[ô›Ÿ\ôù[XYŸ\»ÿYŸYò]\»õ‹à€›ô\ôZY€ùKâÀBà	÷YŸöXH\òH[à][ô»€XY»‹à›Y\úò\Àÿ[‹»H\›ùXÿ⁄pÏ€ãàô\›X\»pËY⁄Xÿ\À›Y\úô\õ‹»[\XÿXõ\»HXY€‹»Ÿ\õ‹€‹»XúòXò[àò][\»‹àH€ÿô\ò[∞ÎXKâ KBà
+	—õ⁄H]X[ô»[HŸ\à⁄[XY»]\õöYYKô\€€ô]H€€ÿÿ\à[Hö[HH\‹ŸHÿ[‹Àà\ÿ€€[ô»[XHöXõ»H[X[õ‹»\òHŸ\ô[HŸ]\»ôY›[Y‹ô\ÀâÀBà	’]ÿ\»⁄[àHôZ[ô»ÿ[Y]\õö]HX⁄YY»][à[ô»\»⁄[‹Àà⁄€‹⁄[ô»HöXôHŸà[X[ú»»ôH\àôY›[]‹úÀâÀBà	—ùYH›X[ô»[àŸ\à[XY»]\õöYYX⁄YpÏ»€ô\àö[àH\ŸHÿ[‹Àà[Y⁄Y[ô»H[òHöXùHH[X[õ‹»€€[»›\»ôY›[Y‹ô\Àâ KBà
+	—[HŸ\\õ›H»][ô»[HLàôZ[õ‹À€€ÿÿ[ô»»]YH⁄[[›HHôZ[õ»[X[õ»õ»Ÿ[ùõ»HŸ‹»‹»›]õ‹ÀâÀBà	‘⁄H]öYYH€‹õ[ù»LàôX[\ÀX⁄[ô»⁄]⁄Hÿ[YH[X[àôX[H]HŸ[ù\àŸà[H›\úÀâÀBà	—[HŸ\\∞Ï»[][ô»[àLàôZ[õ‹À€€ÿÿ[ô»[]YH[pÏ»ôZ[õ»[X[õ»[à[Ÿ[ùõ»HŸ‹»‹»[pË\Àâ KBà
+	”^ã€€Xúò\ÀõŸ€À0‡Y›XKô[ùÀ\úòKò]\ô^òKòZ[‹À\ôZXK⁄]òKŸ[»H»ôZ[õ»‹»[X[õ‹ÀâÀBà	”Y⁄⁄Y›‹Àö\ôKÿ]\ã⁄[ôX\ùò]\ôKY⁄ö[ôÀÿ[ôòZ[ãXŸH[ôHôX[HŸà[X[úÀâÀBà	”^ã€€Xúò\ÀùYY€ÀY›XKöY[ùÀY\úòKò]\ò[^òKò^[‹À\ô[òK]öXKY[»H[ôZ[õ»H‹»[X[õ‹Àâ KBà
+	—\‹Ÿ\»Ë€À‹»LàôZ[õ‹»IÀ	’\ŸH\ôKHLàôX[\»IÀ	®Q\€‹»€€ã‹»LàôZ[õ‹»I KBà
+	—H\‹⁄[KYŸöXHö]ô]H[H^à‹àÍX›[‹ÀàÿYHôZ[õ»€›ô\õòY»‹àŸ]HôZHXY€»›HòZ[öHXYÿHHõ›Y⁄Y‹»‹àŸ]\»ÿ]ò[Z\õ‹ÀâÀBà	–[ô€ÀYŸöXH]ôY[àXXŸHõ‹àŸ[ù\öY\ÀàXX⁄ôX[Hù[YûH]»XYŸH⁄[ô»‹àXYŸH]YY[à[ôõ›X›YûH]»€öY⁄ÀâÀBà	÷H\ÎKYŸöXHö]öpÏ»[à^à\ò[ùH⁄Y€‹ÀàÿYHôZ[õ»€ÿô\õòY»‹à›Hô^HXY€»»ôZ[òHXYÿHHõ›Y⁄Y»‹à›\»ÿXò[\õ‹Àâ KBà
+	”X\»»]YHH]\õöYYH∞Ë€»\‹\ò]òK0ÍH]YH[›pÍ[HHõ‹òH‹»LàôZ[õ‹»›\ô⁄\öXKããâÀBà	–ù]⁄]]\õö]HYõ›^X›ããà\»]€€Y[€ôHúõ€Hô^[€ôHLàôX[\»€›[\X\ãããâÀBà	‘\õ»»]YHH]\õöYYõ»\‹\òXòKããà\»]YH[›ZY[àHùY\òHH‹»LàôZ[õ‹»\\ôXŸ\∞ÎXKããâ CBàN√BüCBôù[ò›[€àô[ô\í[ùõ’^ 
+^√Bà€€ú›‹ò]€Yÿ›[Y[ùôŸ][[Y[ùûRY
+	ÿ‹ò]€^	 N√BàYä‹ò]€
+H‹ò]€ö[õô\íSZ[ùõ‘›‹ûT\òY‹ò\ 
+KõX\
+Oòâ‹O‹ò
+Köõ⁄[ä	… N√Bà€€ú›^YXúõ›œYÿ›[Y[ùôŸ][[Y[ùûRY
+	⁄[ùõ—^YXúõ›… N√BàYä^YXúõ› H^YXúõ›Àù^€€ù[ùU
+	–T»‘∞ÂíP–T»HQ—íPIÀ	’H“ì”íP”T»—àQ—íPIÀ	”T»‘∞‰”íP–T»HQ—íPI N√Bà€€ú›ùèYÿ›[Y[ùôŸ][[Y[ùûRY
+	⁄[ùõ”ô^	 N√BàYäùäHùãù^€€ù[ùU
+	‘[\à8£ÎIÀ	‘⁄⁄\8£ÎIÀ	‘ÿ[\à8£ÎI N√BüCBã à<'„≠HpÓú⁄XÿHH[ùõŸpÈË€Œà\úZõ»›X]ôHŸ\òY»õ»ŸXê]Y[»
+\òHõ»[\ãŸö[JH
+ã√Bõ][ùõ”]\⁄X”€èYò[ŸK[ùõ”]\⁄X’[Y\è[ù[√Bôù[ò›[€à›\ù[ùõ”]\⁄X 
+^√BàYä[ùõ”]\⁄X”€äHô]\õé√Bà€€ú››Y[ú›\ôP]Y[ 
+N»YäX›
+Hô]\õé√Bà[ùõ”]\⁄X”€è]ùYN√Bà€€ú›X€‹ô\œV÷ÃååçÕÀåãÃéKçóKÃNMãçãéKéLÀç◊KÃMÕçãååçåKçóKÃNMãçãéKéLÀç◊WN√Bà]ò\úòOL√Bà€€ú›€‹J
+OOû√BàYäZ[ùõ”]\⁄X”€äHô]\õé√Bà€€ú›õ›\œXX€‹ô\÷ÿò\úòIXX€‹ô\Àõ[ô›N»ò\úòJ Œ√BàôY\
+õ›\÷ÃKÃãKéK	‹⁄[ôIÀåJN√Bàõ›\Àôõ‹ëXX⁄
+
+ãJOOû»ôY\
+ãéMK	›öX[ô€IÀåKJåçMJN»ôY\
+äåãçMK	‹⁄[ôIÀåçãJåçMJÃåé
+N»JN√Bà[ùõ”]\⁄X’[Y\è\Ÿ][Y[›]
+€‹N
+N√BàN√Bà€‹
+
+N√BüCBôù[ò›[€à›‹[ùõ”]\⁄X 
+^»[ùõ”]\⁄X”€èYò[ŸN»€X\ï[Y[›]
+[ùõ”]\⁄X’[Y\äN»[ùõ”]\⁄X’[Y\è[ù[»CBÉBã àéKåH0≠»€[⁄ŸH\›]]€X]^òY»Hÿ[Y\^NàXúòH€€H‹XO\€[⁄ŸCBàõŸÿHHô\ôYNà\ÿÿ[H[YK[ùòH[Hò][K\‹\òHXö[YYKBàô[òŸHHò\ŸHH€€ôô\ôHÿú›0ËX›[‹À€ÿöô]]õ‹Ààò[õô\àT‘À—êRSà
+ã√Bò\ﬁ[ò»ù[ò›[€àù[î€[⁄ŸU\›
+
+^√Bà€€ú›ô\›[œV◊N√Bà€€ú›⁄œJò[YK€€ô
+OOúô\›[Àú\⁄
+€ò[YK\‹ŒàHX€€ôJN√Bà€€ú›ÿZ]J\ OOõô]»õ€Z\ŸJèOúŸ][Y[›]
+ã\ JN√Bàû^√Bàÿÿ[›‹òYŸKúŸ]][J	ÃLúó›]‹öX[	À	ÃI N√Bà⁄ 	ÃLà\∞Ï⁄\»]ö[õ‹»
+»ÿ\ù\»õŸË]ôZ\…À“Së—”TÀôö[\äœOöÀúò\ö]OOOI—UíSêI Kõ[ô›OOLLà	âà“Së—”TÀõ[ô›èLMäN¬à⁄ 	Õõ›ô[ú»\ô[ô^ô\»€€Hÿ\ù\»H⁄Xö\…À…ÿô\ô[öXŸKZõ›ô[IÀ	Ÿÿ[]ZXKZõ›ô[IÀ	ÿYöY[Zõ›ô[IÀ	ÿX‹]XKZõ›ô[I◊Kô]ô\ûJYOû¬à€€ú›œR“Së—”TÀôö[ô
+ÿ\ôOòÿ\ôöYOOZY
+N¬àô]\õà…âöÀúò\ö]OOOI”ì‘ìPS	…âöÀú›\úœOOLIâöÀò]œOOLââöÀö[Y…âöÀú‹ö]N¬àJJN¬à àXô[HŸöX⁄X[H\›ô[\Œàx¶!OLÃH∏¶!OLTÃH¯¶!OLîÃH8¶!OL‘ÃHx¶!OL‘ÃPH∏¶!OL‘ÃêH¯¶!OL‘Ã–H
+ã√Bà€€ú›’Tó““U^ÃNñÃKéñÃKKŒñÃãKñÃÀKNñÃÀWKéñÃÀóKŒñÃÀ◊_N√Bà⁄ 	ÿ€€ùò]»HXö[YY\»‹à\›ô[\…À“Së—”TÀô]ô\ûJœOû√BàYäÀò\ù⁄]
+Hô]\õàÀòXö[]Y\Àõ[ô›å» à⁄][\ô\‹€»òH\ùHHÿ\ùHô]ò[XŸH
+ã√Bà€€ú›‹WOT’Tó““U⁄Àú›\úﬂ◊_ÃÀ◊N√Bàô]\õàÀòXö[]Y\Àôö[\äOûö⁄[ôOOI‹\‹⁄]ôI Kõ[ô›OO\	âöÀòXö[]Y\Àôö[\äOûö⁄[ôOOIÿX›]ôI Kõ[ô›OOXN√BàJJN√Bà⁄ 	ÃLò\Ÿ\»õ»ôZ[õ»‹»[X[õ‹…À”‘ì÷ÃKôò\Ÿ\Àõ[ô›OOLL
+N√Bà⁄ 	ÕLZ\‹ÌY\»ŸöX⁄XZ\…À”‘ì÷ÃKôò\Ÿ\Àô]ô\ûJèOôãõZ\‹€Ÿ\Àõ[ô›OOMJJN√Bà⁄‹Ÿ[íYœVÃÀÀLWN»[ô[ô‘›YŸOL»›Ÿ\ì[ŸOYò[ŸN√Bà€‹õù[è^ÿX›]ôNùùYKò\ŸNåö]ô[å_N√BàôY⁄[ëÿ[YJ
+N√Bà]ÿZ]ÿZ]
+å
+N√Bà⁄ 	›Xù[Z\õ»€€\]…Àÿ›[Y[ùú]Y\ûTŸ[X›‹ê[
+	»ÿõÿ\ôòŸ[	 Kõ[ô›OOT“VëJî“VëJN√Bà⁄ 	Õ\∞Ï⁄\»òH\ô[òIÀÿ›[Y[ùú]Y\ûTŸ[X›‹ê[
+	»‹\ùP\ô[òHö\õÀ][ö]	 Kõ[ô›OOM
+N√Bà€€ú›[ù\œY[ô[ZY\÷ÃKö√BàöYŸŸ\êXö[]JLK“Së—”T÷ÃLWKòXö[]Y\÷Ã◊JN√Bà]ÿZ]ÿZ]
+Ã
+N√Bà⁄ 	⁄Xö[YYHÿ]\€›H[õ…À[ô[ZY\÷ÃKö[ù\ N√Bà[ô[ZY\Àôõ‹ëXX⁄
+
+KJOOû»YäKöå
+H\Q[XYŸU—[ô[^JKöÀJN»JN√Bàö[ö\⁄õ€€RYê€X\ôY
+
+N√Bà]ÿZ]ÿZ]
+L
+N√Bà⁄ 	€Z\‹Ë€»€€ò€pÎYIÀÿ›[Y[ùôŸ][[Y[ùûRY
+	‹›YŸP€X\ì›ô\õ^I Kò€\‹”\›ò€€ùZ[ú 	‹⁄›… _€‹õù[ãõö]ô[åJN√Bà]ÿZ]ÿZ]
+Lå
+N√Bà àXö[YYHHò\ŸNà[›‹à^X›]HYôZ]»H[ö[ZY€ÀXÿ\ùHŸ[H]YXúò\à»Xù[Z\õ»
+ã√BàXŸSÿú›X€\ ‹›€ôNåãXŸNå_JN√Bà⁄ 	€ÿú›0ËX›[‹»‹\ò[ù\…ÀÿöôX›öŸ^\ ÿú›X€\”Y]JKõ[ô›OOL N√Bà€€ú›òZŸT–O^€õ€YNâ‘PIÀŸåK\Œâ›õÿÿ\ê€‹ô\…À]åüN√Bà^X‘›YŸPXö[]J[ô[ZY\÷Ã_ﬂKòZŸT–JN√Bà⁄ 	⁄Xö[YYHHò\ŸH^X›]IÀÿ›[Y[ùú]Y\ûTŸ[X›‹ê[
+	»ÿõÿ\ôòŸ[	 Kõ[ô›OOT“VëJî“VëJN√Bà⁄ 	ÃåXö[YY\»Hò\ŸHYö[öY\…À“Së—”TÀôö[\äœOöÀú›YŸPXö[]IâöÀú›YŸPXö[]Kõõ€YJKõ[ô›èLå
+N√Bà àôZ[öX⁄X\àò\ŸHïSê–Hõ€H0Ë[[»
+‹ù0Ë€»»0Ëõù[õ H
+ã√Bàô\›\ù›\úô[ù›YŸJ
+N√Bà]ÿZ]ÿZ]
+L
+N√Bà€€ú›õ€Y\—[[œV…”[[»∞ÓõöX€…À	‘Ÿ[ù[ô[HHYòIÀ	”ÿõ»ò]Y‹âÀ	—\‹X›õ»Y[õ‹âÀ	‘Ÿ\ùõ»\»ô]ò\…À	—òYË€»ÿ\õY\⁄[IÀ	—òYË€»\»€€Xúò\…◊N√Bà⁄ 	‹ôZ[öX⁄X\àò\ŸHöXÿHõ»][ô»ŸöX⁄X[	À€‹õù[ãòX›]ôOOO]ùYH	âà[ô[ZY\Àô]ô\ûJLèOà[õ€Y\—[[Àö[ò€Y\ Lãõò[YJJJN√Bà⁄ 	Ÿ∞Ï‹õ][HHLÃÃÃMIÀQëíP’SW”USÀôòX⁄[öòX›‹èOOML	âàQëíP’SW”USÀõõ‹õX[öòX›‹èOOLÃ	âàQëíP’SW”USÀú\ÿY[ÀöòX›‹èOOLMJN√Bà àLà\ÿÿY\»ÎX€Xÿ\»H€‹ô\»[XY\ŒàÿYHôZ[õ»[öX⁄XHH∞Ï‹öXHõ›pÈË€»H
+ã√Bà⁄ 	ÃLà[X[∞Èÿ\»ÎX€Xÿ\»HŸ[X\…ÀÿöôX›öŸ^\ SQQ”‘ëTäKõ[ô›OOLLà	âàÿöôX›ô[ùöY\ SQQ”‘ëTäKô]ô\ûJ
+⁄YŸ\WJOOúŸ\Kõ[ô›OOM	âúŸ\VÃOOOZY	âúŸ\Kô]ô\ûJèOí“Së—”TÀú€€YJœOöÀöYOO\äJJJN¬à⁄ 	ŸŸ[X\»\ÿ[HH€‹ãXò\ŸH»ôZ[õ»HÏ»]Y[H€€Hô\]pÈË€…À
+
+
+OOû¬à€€ú›‹öY⁄[ò[VÀããêP’UëWN¬à€€ú›õ›ô[OR“Së—”TÀôö[ô[ô^
+œOöÀöYOOIÿô\ô[öXŸKZõ›ô[I N¬à€€ú›YöY[R“Së—”TÀôö[ô[ô^
+œOöÀöYOOIÿYöY[Zõ›ô[I N¬à€€ú›X‹]XOR“Së—”TÀôö[ô[ô^
+œOöÀöYOOIÿX‹]XKZõ›ô[I N¬à€€ú›õŸ€œR“Së—”TÀôö[ô[ô^
+œOöÀöYOOIŸõŸ€… N¬àP’UëOV⁄õ›ô[KX‹]XKõŸ€À“Së—”TÀôö[ô[ô^
+œOöÀöYOOIŸŸ[… WN¬à€€\]Pò]QŸ[P€€‹ú 
+N¬à€€ú›€€œXò]QŸ[P€€‹ú÷⁄õ›ô[WOÀòœOO\ôX[S‹òä	⁄[X[õ‹… OÀò»	âàò]QŸ[P€€‹ú÷ÿX‹]XWOÀòœOO\ôX[S‹òä	ÿY›XI OÀòŒ¬àP’UëOV⁄õ›ô[KYöY[X‹]XKõŸ€◊N¬à€€\]Pò]QŸ[P€€‹ú 
+N¬à€€ú›ô\]YOXò]QŸ[P€€‹ú÷⁄õ›ô[WOÀòœOO\ôX[S‹òä	⁄[X[õ‹… OÀò»	âàò]QŸ[P€€‹ú÷ÿYöY[OÀòœOO\ôX[S‹òä	€^â OÀò»	âàò]QŸ[P€€‹ú÷ÿYöY[OÀöX€€èOOR“Së—”TÀôö[ô
+œOöÀöYOOI⁄[X[õ‹… OÀò€€‹é¬àP’UëO[‹öY⁄[ò[¬à€€\]Pò]QŸ[P€€‹ú 
+N¬àô]\õà€€…âúô\]YN¬àJJ
+JN¬à àéKåà0≠»€€ùò]‹»õ›õ‹»
+ã√Bà⁄ 	ŸYöX›[YHY∞ÎX⁄[
+∞Î]ôZ\ IÀHQQëíP’SW”USÀôYöX⁄[	âàQëíP’SW”USÀôYöX⁄[öòX›‹èOOLÃ	âà\[Ÿà[[ô[ZY\–]X⁄”[ŸOOOIŸù[ò›[€â N√Bà⁄ 	Ã»‹ò[ô\»[X[∞Èÿ\»õ€YXY\…ÀSPSê—TÀõ[ô›OOL»	âàSPSê—TÀô]ô\ûJOOòKõY[Xúõ‹Àõ[ô›OOM
+H	âàSPSê—T÷ÃKõõ€YKö[ò€Y\ 	”Y€… H	âàSPSê—T÷ÃWKõõ€YKö[ò€Y\ 	—òYË€… H	âàSPSê—T÷ÃóKõõ€YKö[ò€Y\ 	–ò\ö[€â JN√Bà⁄ 	€⁄òH€€Hå€€ú›[pÎ]ôZ\…À“‘“USTÀõ[ô›OOLå	âà“‘“USTÀôö[\äOOöKù\€œOOIÿò][I Kõ[ô›èLLà	âà\[Ÿà\ÿ\í][Pò][OOOIŸù[ò›[€â N√Bà⁄ 	€Ÿ⁄[àpË\ö[Œà⁄X€»H»X\…À—“Só‘ëU–TëÀõ[ô›OOM»	âà—“Só‘ëU–Të÷ÕóKòœOON
+N√Bà⁄ 	’‹úôHH]\õöYYNàH\ú€€òYŸ[Kÿ[ô\à
+»Ÿ[∞Ë\ö[»ò\ŸHIÀ
+
+
+OOû»€€ú›èXùZ[›Ÿ\î›YŸJJN»ô]\õàãô[ô[ZY\Àõ[ô›OOLH	âàãòô’\õOOIÿ\‹Ÿ]ÀÿôÀ⁄[X[õ‹ÀŸò\ŸKLKöú…»	âàùZ[›Ÿ\î›YŸJJ““Së—”TÀõ[ô›
+Kô[ô[ZY\÷ÃKöùãô[ô[ZY\÷ÃKö»JJ
+JN√Bà⁄ 	›[Y\àHZ\‹Ë€»
+»[ÿ⁄[H[Hò][IÀHYÿ›[Y[ùôŸ][[Y[ùûRY
+	€Z\‹⁄[€ï[Y\â H	âàHYÿ›[Y[ùôŸ][[Y[ùûRY
+	€[ÿ⁄[Pùâ H	âàHYÿ›[Y[ùôŸ][[Y[ùûRY
+	€[ÿ⁄[Tÿ‹ôY[â JN√Bà⁄ 	€]ôZ\õ»H\›0Ï‹öXH
+»\∞ËY‹òYõ‹ IÀHYÿ›[Y[ùôŸ][[Y[ùûRY
+	ÿ‹ò]€ÿ‹õ€	 H	âà[ùõ‘›‹ûT\òY‹ò\ 
+Kõ[ô›OOM N√Bà⁄ 	Ÿò[\»H[ùòYH‹»[ö[ZY€‹…ÀÿöôX›öŸ^\ SëSVW”SëT Kõ[ô›èLå»	âà\[Ÿà[ô[^S[ôQõ‹èOOIŸù[ò›[€â N√Bà⁄ 	”ÿõ»òZ]õ‹€»[òÿ\òH»Ÿ[ùõ»H\ô[òIÀSPSì‘◊—UTTÀõÿõ‘òZ]õ‹€Àôõ\OO]ùYJN¬à⁄ 	€[ŸY\»HH\ôö[‹\ò[ù\…À\[Ÿà€⁄[úœOOI€ù[Xô\â…âù\[ŸàõŸö[S]ô[
+
+OOOI€ù[Xô\â N¬à àéKå»0≠»€€ùò]‹»H\›Xö[YYK\ô\Ÿ[ùpÈË€»HXŸ\‹⁄Xö[YYH
+ã¬à⁄ 	›éKå»\ÿH€€ôöY›\òpÈË€»Ÿ[ùò[‹»LàôZ[õ‹…ÀT’ëTî“S”èOOI›éKå…»	âàéLÀúôX[\œÀõ[ô›OOLLäN¬à⁄ 	ÿ€€‹ô[òY‹àHò\Ÿ\»Hò][IÀ\[Ÿàÿ[êXÿŸ\^Y\í[ú]OOIŸù[ò›[€â»	âàêUW‘T—TÀö\ 	⁄YI H	âàêUW‘T—TÀö\ 	Ÿ[ô[ZY\… H	âàêUW‘T—TÀö\ 	‹]\ŸY	 JN¬à⁄ 	Ë]Y[»Ÿ\\òY»[HpÓú⁄XÿHHYôZ]‹…ÀHYÿ›[Y[ùôŸ][[Y[ùûRY
+	€]\⁄X’õ€[YTò[ôŸI H	âàHYÿ›[Y[ùôŸ][[Y[ùûRY
+	‹Ÿûõ€[YTò[ôŸI JN¬à⁄ 	Õ\ôö\»H]X[YYH‹∞ËYöXÿIÀéLÀú]X[]OÀùò[Y\œÀõ[ô›OOM	âàHYÿ›[Y[ùôŸ][[Y[ùûRY
+	‹]X[]TŸ[X›	 JN¬à⁄ 	Ã»ôX›\ú€‹»HXŸ\‹⁄Xö[YYIÀ…⁄Y⁄€€ùò\›ŸŸ€IÀ	€\ôŸU^ŸŸ€IÀ	‹ôYXŸQõ\⁄\’ŸŸ€I◊Kô]ô\ûJYOàHYÿ›[Y[ùôŸ][[Y[ùûRY
+Y
+JJN¬à⁄ 	“Q›\\ö[‹àHò\úòHH[ôõ‹õXpÈÌY\»€€ôöY›\∞Ë]ôZ\…À…›ö^ï\õí[ôõ…À	›ö^ï‹Y	À	›ö^í[ôõ–ò\â◊Kô]ô\ûJYOàHYÿ›[Y[ùôŸ][[Y[ùûRY
+Y
+JH	âàHYÿ›[Y[ùôŸ][[Y[ùûRY
+	€Z\‹⁄[€ê€ÿ⁄—‹õ›\	 JN¬à€‹õù[ãòX›]ôOYò[ŸN¬àXÿ]⁄
+J^√Bàô\›[Àú\⁄
+€ò[YNâŸ^ŸpÈË€Œà	 ŸKõY\‹ÿYŸK\‹Œôò[Ÿ_JN√BàCBà€€ú›òZ[Y\ô\›[Àôö[\äèOà\ãú\‹ N√Bà€€ú›ò[õô\èYÿ›[Y[ùò‹ôX]Q[[Y[ù
+	Ÿ]â N√Bàò[õô\ãöYI‹€[⁄ŸPò[õô\âŒ√Bàò[õô\ãú›[Kò‹‹’^I‹‹⁄][€éôö^Y›‹é€YùçL	N›ò[úŸõ‹õNùò[ú€]V
+ML	JNﬁãZ[ô^éNNN‹Y[ôŒåLNÿõ‹ô\ã\òY]\ŒåLŸõ€ùçÃL‹Ÿ[‹ô⁄XKŸ\öYéÿ€€‹éàŸôôéÿõﬁ\⁄Y›ŒåNôÿòJçäNÿòX⁄Ÿ‹õ›[ôâ  òZ[Yõ[ô›…»ŒLXåXâŒâ»ÃXçôLôâ N√Bàò[õô\ãù^€€ù[ùYòZ[Yõ[ô›ÿ”S“—HêRS	ŸòZ[Yõ[ô›K…‹ô\›[Àõ[ô›Nà
+ŸòZ[YõX\
+èOôãõò[YJKöõ⁄[ä	»	 Nò”S“—HT‘»	‹ô\›[Àõ[ô›K…‹ô\›[Àõ[ô›X√Bàò[õô\ãù]OI‘ô[]0Ï‹ö[»»\›H]]€X]^òY»
+‹XO\€[⁄ŸJKà‹]YH\òHôX⁄\ãâŒ√Bàò[õô\ãú›[Kò›\ú€‹èI‹⁄[ù\âŒ√Bàò[õô\ãòY]ô[ù\›[ô\ä	ÿ€X⁄…À
+
+OOòò[õô\ãúô[[›ôJ
+JN√Bà⁄[ô›ÀúŸ][Y[›]
+
+
+OOòò[õô\ãúô[[›ôJ
+K
+N√Bàÿ›[Y[ùòõŸKò\[ô⁄[
+ò[õô\äN√Bà€€ú€€KõŸ 	÷‘”S“—WIÀî””ãú›ö[ô⁄YûJô\›[ JN√Bàÿÿ[›‹òYŸKúŸ]][J	ÃLúó‹€[⁄ŸIÀî””ãú›ö[ô⁄YûJ›ë]Kõõ› 
+Kô\›[ﬂJJN√Bàô]\õàô\›[Œ√BüCBúôYúô\⁄€€ù[ùYPù]€ä
+N» à”‘ì»∞ËH[öX⁄X[^òY»ô\›H€ù»»\ú]Z]õ»
+ã√BöYäô]»TìŸX\ò⁄\ò[\ ÿÿ][€ãúŸX\ò⁄
+KôŸ]
+	‹XI OOOI‹€[⁄ŸI ^√Bà⁄[ô›ÀòY]ô[ù\›[ô\ä	€ÿY	À
+
+OOúŸ][Y[›]
+ù[î€[⁄ŸU\›
+JN√BüCBÉBã àéKåH0≠»–NàôY⁄\›òH»Ÿ\ùöXŸH€‹öŸ\à
+\[ò\»[H⁄ H
+ã√Bã à»õŸ€»∞Ë€»X[ù0Í[HÿX⁄HŸôõ[ôH\ò[ùHHò\ŸHH\Ÿ[ùõ€ö[Y[ùÀàô[[›ô[[‹¬à€‹öŸ\úÀÿÿX⁄H[ùY€‹»\òH]YHÿYHXõXÿpÈË€»ŸZòHÿ\úôYÿYH\ô][Y[ùKà
+ã¬öYà
+	‹Ÿ\ùöXŸU€‹öŸ\â»[àò]öYÿ]‹à	âàÿÿ][€ãúõ›ÿ€€ú›\ù’⁄]
+	⁄	 JH¬à⁄[ô›ÀòY]ô[ù\›[ô\ä	€ÿY	À
+
+HOà¬àò]öYÿ]‹ãúŸ\ùöXŸU€‹öŸ\ãôŸ]ôY⁄\›ò][€ú 
+Kù[äôY‹œOúôY‹Àôõ‹ëXX⁄
+ôYœOúôYÀù[úôY⁄\›\ä
+JJKòÿ]⁄
+
+
+OOûﬂJN¬àYä⁄[ô›ÀòÿX⁄\ HÿX⁄\ÀöŸ^\ 
+Kù[äŸ^\œOöŸ^\Àôõ‹ëXX⁄
+Ÿ^OOòÿX⁄\Àô[]JŸ^JJJKòÿ]⁄
+
+
+OOûﬂJN¬àJN¬üBôù[ò›[€à‹[ìZ\‹⁄[€îô\^Jò\ŸRY
+^¬à[ô[ô‘ô\^T\ŸOYò\ŸRY¬à€€ú›ô^[ô^YôöX›[JYôöX›[JN¬à€€ú›\ôYÿ›[Y[ùôŸ][[Y[ùûRY
+	‹ô\^R\ôùâ N¬à€€ú›[ùYÿ›[Y[ùôŸ][[Y[ùûRY
+	‹ô\^R\ô[ù	 N¬àYä\ô
+H\ôô\ÿXõYYYôöX›[OOOI‹\ÿY[…Œ¬àYä[ù
+H[ùù^€€ù[ùYYôöX›[OOOI‹\ÿY[…¬à»	’õÿÍà∞ËH\›0ËHòHYöX›[YHpË^[XKâ¬ààô\]\àH\›0Ï‹öXH[H	ŸYôöX›[SXô[
+ô^
+_Kò¬à‹[î[ô[
+	€Z\‹⁄[€îô\^Tÿ‹ôY[â N¬üB
