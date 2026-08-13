@@ -3220,3 +3220,61 @@ body.quality-economy .unit-ground-shadow,body.quality-economy .arena-floor{filte
 .motion-showcase-actions button:hover,.motion-showcase-actions button.active{border-color:#f0cf77;background:rgba(212,175,90,.18);color:#fff4c7}
 .motion-showcase-actions button:focus-visible{outline:2px solid #fff1a7;outline-offset:2px}
 @media (max-width:520px){.motion-showcase-actions{grid-template-columns:repeat(3,minmax(0,1fr))}.motion-showcase-stage{height:142px}.motion-showcase-avatar{width:130px;height:130px}}
+
+/* v10.0.1 · Leitura de combate: escala anterior restaurada e a energia ativa
+   nasce do corpo, em vez de desenhar uma moldura quadrada ao redor do avatar. */
+body.game-active .party-row .hero-sprite-sheet,
+body.game-active .enemy-row .enemy-character-sheet{scale:1.18;transform-origin:50% 100%}
+body.game-active .hero-unit.hero-young .hero-sprite-sheet{scale:1.11}
+body.game-active .party-row .unit-stage{height:clamp(118px,20vh,148px)!important}
+body.game-active .enemy-row .unit-stage{height:clamp(112px,18vh,142px)!important}
+@media (max-width:600px){
+  body.game-active .party-row .unit-stage{height:124px!important}
+  body.game-active .enemy-row .unit-stage{height:118px!important}
+}
+
+.unit.ready .avatar-circle{animation:none!important;box-shadow:none!important;cursor:pointer}
+.unit-charge-aura{
+  position:absolute;z-index:1;left:50%;bottom:0;width:82%;height:96%;
+  transform:translateX(-50%) scale(.72,.58);transform-origin:50% 100%;
+  opacity:0;pointer-events:none;filter:blur(.15px);
+  transition:opacity .18s ease;
+}
+.unit-charge-aura::before,.unit-charge-aura::after{content:"";position:absolute;inset:0;pointer-events:none}
+.unit-charge-aura::before{
+  border-radius:50% 50% 42% 42% / 68% 68% 34% 34%;
+  background:
+    radial-gradient(ellipse at 50% 82%,color-mix(in srgb,var(--aura-inner-light,#fff5aa) 84%,transparent) 0 7%,transparent 23%),
+    radial-gradient(ellipse at 50% 72%,color-mix(in srgb,var(--aura-inner,#ffd66e) 56%,transparent) 0 27%,transparent 67%),
+    linear-gradient(90deg,transparent 0 20%,color-mix(in srgb,var(--aura-outer,#ffbf5a) 58%,transparent) 38%,color-mix(in srgb,var(--aura-inner-light,#fff5aa) 78%,transparent) 50%,color-mix(in srgb,var(--aura-outer,#ffbf5a) 58%,transparent) 62%,transparent 80%);
+  clip-path:polygon(50% 0,60% 18%,72% 25%,68% 43%,87% 57%,69% 75%,75% 100%,25% 100%,31% 75%,13% 57%,32% 43%,28% 25%,40% 18%);
+  filter:blur(5px) saturate(1.35);mix-blend-mode:screen;
+}
+.unit-charge-aura::after{
+  inset:-8% 0 4%;border-radius:50%;
+  background:
+    radial-gradient(circle at 34% 70%,var(--aura-inner-light,#fff5aa) 0 2px,transparent 3px),
+    radial-gradient(circle at 66% 54%,var(--aura-inner-light,#fff5aa) 0 1.5px,transparent 2.5px),
+    radial-gradient(circle at 50% 30%,var(--aura-inner-light,#fff5aa) 0 1px,transparent 2px);
+  background-size:46px 66px,38px 58px,29px 44px;opacity:.88;filter:drop-shadow(0 0 5px var(--aura-inner,#ffd66e));
+}
+.unit.ready .unit-charge-aura,.enemy-unit.charging .unit-charge-aura{opacity:1;animation:bodyAuraEmanate 1.35s ease-in-out infinite}
+.unit.ready .unit-charge-aura::before,.enemy-unit.charging .unit-charge-aura::before{animation:bodyAuraFlame .82s ease-in-out infinite alternate}
+.unit.ready .unit-charge-aura::after,.enemy-unit.charging .unit-charge-aura::after{animation:bodyAuraSparks 1.8s linear infinite}
+.enemy-unit.charging .unit-charge-aura{--aura-inner:#da78ff;--aura-inner-light:#ffe3ff;--aura-outer:#8e4cff}
+@keyframes bodyAuraEmanate{0%,100%{transform:translateX(-50%) scale(.7,.56);filter:blur(.2px);opacity:.72}50%{transform:translateX(-50%) scale(1.06,1.1);filter:blur(.55px);opacity:1}}
+@keyframes bodyAuraFlame{from{clip-path:polygon(50% 8%,59% 23%,72% 25%,66% 45%,85% 58%,67% 77%,73% 100%,27% 100%,33% 77%,15% 58%,34% 45%,28% 25%,41% 23%)}to{clip-path:polygon(50% 0,63% 20%,75% 34%,70% 48%,91% 64%,68% 79%,77% 100%,23% 100%,32% 79%,9% 64%,30% 48%,25% 34%,37% 20%)}}
+@keyframes bodyAuraSparks{to{background-position:0 -66px,0 -58px,0 -44px}}
+
+/* Inimigos de arte unica recebem movimento de respiracao, investida, conjuro e
+   impacto; inimigos-personagem usam acima as folhas v10 de cinco acoes. */
+.enemy-static-avatar .enemy-sprite-image{animation:enemyIdleBreath 3.1s ease-in-out infinite!important;will-change:transform}
+.enemy-static-avatar[data-action="attack"] .enemy-sprite-image{animation:enemyStrike .62s cubic-bezier(.24,.76,.2,1) both!important}
+.enemy-static-avatar[data-action="cast"] .enemy-sprite-image{animation:enemyCast .78s ease-in-out both!important}
+.enemy-static-avatar[data-action="hit"] .enemy-sprite-image{animation:enemyHit .45s ease-out both!important}
+.enemy-avatar.motion-paused .enemy-sprite-image{animation-play-state:paused!important}
+@keyframes enemyIdleBreath{0%,100%{transform:translateY(0) rotate(-1deg) scale(1)}50%{transform:translateY(-3px) rotate(1deg) scale(1.018,1.035)}}
+@keyframes enemyStrike{0%{transform:translate(0,0) scale(1)}45%{transform:translate(-12px,-7px) rotate(-5deg) scale(1.13)}70%{transform:translate(-4px,-2px) rotate(2deg) scale(1.06)}100%{transform:translate(0,0) scale(1)}}
+@keyframes enemyCast{0%,100%{transform:translateY(0) scale(1)}42%{transform:translateY(-8px) scale(1.07);filter:brightness(1.35) saturate(1.6) drop-shadow(0 0 10px var(--aura-outer,#bb72ff))}70%{transform:translateY(-2px) scale(1.03)}}
+@keyframes enemyHit{0%,100%{transform:translateX(0) scale(1)}28%{transform:translateX(8px) rotate(3deg) scale(.94)}58%{transform:translateX(-5px) rotate(-2deg) scale(.98)}}
+@media (prefers-reduced-motion:reduce){.unit-charge-aura,.unit-charge-aura::before,.unit-charge-aura::after,.enemy-static-avatar .enemy-sprite-image{animation:none!important;transition:none!important}}

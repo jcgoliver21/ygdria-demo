@@ -2,6 +2,13 @@
 
 Data: 2026-08-13
 
+## v10.0.1 — Arena e inimigos animados
+
+- Escala de combate restaurada para os chibis, mantendo os pés ancorados no cenário em desktop e celular.
+- Personagens enfrentados como inimigos agora usam suas folhas v10 de idle, ataque, conjuração, impacto e vitória.
+- Inimigos exclusivos recebem idle, investida, conjuração e impacto com movimento de combate, sem custo extra de download.
+- A habilidade carregada agora emite uma aura viva do corpo com partículas ascendentes; a moldura quadrada foi removida.
+
 ## Destaques
 
 - Cinco movimentos corporais em folhas 2.5D para os 24 personagens jogáveis: idle, ataque, conjuração, impacto e vitória.

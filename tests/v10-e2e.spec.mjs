@@ -42,6 +42,30 @@ test('fluxo real abre seletor, monta equipe e inicia tabuleiro',async({page})=>{
   expect(errors).toEqual([]);
 });
 
+test('v10.0.1 restaura escala e anima inimigos-personagem e inimigos comuns',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
+  const probe=await page.evaluate(()=>window.__12rQA.enemyAnimationProbe());
+  expect(probe).toMatchObject({characterSheet:true,characterAction:'attack',genericAction:'cast',genericMotion:true,chargeAura:true});
+  expect(probe.rectangularGlow).toBe('none');
+  const dimensions=await page.evaluate(()=>{
+    const hero=document.querySelector('.hero-unit');
+    const enemy=document.querySelector('.enemy-unit');
+    return {hero:Number.parseFloat(getComputedStyle(hero).width),enemy:Number.parseFloat(getComputedStyle(enemy).width)};
+  });
+  expect(dimensions.hero).toBeGreaterThan(100);
+  expect(dimensions.enemy).toBeGreaterThan(100);
+  expect(errors).toEqual([]);
+});
+
+test('aura de habilidade carregada emana do corpo, sem moldura quadrada',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
+  const aura=await page.evaluate(()=>window.__12rQA.heroAuraProbe());
+  expect(aura).toEqual({ready:true,aura:true,rectangularGlow:'none'});
+  expect(errors).toEqual([]);
+});
+
 test('save v8 continua legível e é migrado na próxima gravação',async({page})=>{
   await page.addInitScript(()=>localStorage.setItem('12r_save',JSON.stringify({version:8,stage:2,team:[0,1,2,3],hp:321})));
   const errors=await boot(page,'flow');
@@ -729,7 +753,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.0');
+  expect(registration.caches).toContain('12r-v10.0.1');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});

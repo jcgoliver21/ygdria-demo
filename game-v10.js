@@ -1781,19 +1781,21 @@ function heroIsFlipped(k){
   return Boolean(k.heroFlip) !== heroFacingOverrides.has(k.id);
 }
 
-function spriteMarkup(k, action='idle'){
+function spriteMarkup(k, action='idle', options={}){
   const spec = k.sprites?.[action];
+  const flipped=options.flip??heroIsFlipped(k);
+  const roleClass=options.enemy?' enemy-character-sheet':'';
   if(spec?.src&&!failedSpriteAssets.has(spec.src)){
     const meta = {...HERO_ACTIONS[action], ...spec};
     if(meta.format==='sheet'){
       const cols=Math.max(1,Number(meta.cols||meta.frames||1));
       const rows=Math.max(1,Number(meta.rows||1));
-      return `<div class="hero-sprite-sheet grid-sheet${heroIsFlipped(k)?' flip':''}" aria-hidden="true" style="--sprite-url:url('${meta.src}');--sprite-cols:${cols};--sprite-rows:${rows};--sprite-scale:${Number(meta.displayScale||1)};--sprite-duration:${Number(meta.duration||520)}ms;--sprite-bg-x:0%;--sprite-bg-y:0%"></div>`;
+      return `<div class="hero-sprite-sheet grid-sheet${roleClass}${flipped?' flip':''}" aria-hidden="true" style="--sprite-url:url('${meta.src}');--sprite-cols:${cols};--sprite-rows:${rows};--sprite-scale:${Number(meta.displayScale||1)};--sprite-duration:${Number(meta.duration||520)}ms;--sprite-bg-x:0%;--sprite-bg-y:0%"></div>`;
     }
     const steps = Math.max(1, Number(meta.frames||1)-1);
-    return `<div class="hero-sprite-sheet${heroIsFlipped(k)?' flip':''}" aria-hidden="true" style="--sprite-url:url('${meta.src}');--sprite-frames:${Math.max(1,Number(meta.frames||1))};--sprite-steps:${steps};--sprite-scale:${Number(meta.displayScale||1)};--sprite-duration:${Number(meta.duration||520)}ms"></div>`;
+    return `<div class="hero-sprite-sheet${roleClass}${flipped?' flip':''}" aria-hidden="true" style="--sprite-url:url('${meta.src}');--sprite-frames:${Math.max(1,Number(meta.frames||1))};--sprite-steps:${steps};--sprite-scale:${Number(meta.displayScale||1)};--sprite-duration:${Number(meta.duration||520)}ms"></div>`;
   }
-  if(k.sprite) return `<img class="hero-sprite-image${heroIsFlipped(k)?' flip':''}" src="${k.sprite}" alt="${L(k.nome)}">`;
+  if(k.sprite) return `<img class="hero-sprite-image${roleClass}${flipped?' flip':''}" src="${k.sprite}" alt="${L(k.nome)}">`;
   return CHIBI_SVG[k.id] ? scopeSvg(CHIBI_SVG[k.id],k.id) : '';
 }
 
@@ -1852,8 +1854,9 @@ function animateHeroAvatar(avatar,k,action='idle',options={}){
   const meta={...(HERO_ACTIONS[requested]||HERO_ACTIONS.idle),...spec};
   stopHeroAnimation(avatar);
   avatar.dataset.action=action;
-  if(spec?.src) avatar.innerHTML=spriteMarkup(k,requested);
-  else if(!avatar.firstElementChild) avatar.innerHTML=spriteMarkup(k,'idle');
+  const overlayMarkup=options.overlayMarkup||'';
+  if(spec?.src) avatar.innerHTML=spriteMarkup(k,requested,options)+overlayMarkup;
+  else if(!avatar.firstElementChild) avatar.innerHTML=spriteMarkup(k,'idle',options)+overlayMarkup;
   avatar.classList.toggle('hero-action',requested!=='idle');
   const loop=options.loop??Boolean(meta.loop);
   const duration=Math.max(80,Number(meta.duration||520));
@@ -1884,7 +1887,7 @@ function animateHeroAvatar(avatar,k,action='idle',options={}){
       if(loop||state.elapsed<duration) avatar.__actionFrameRaf=requestAnimationFrame(tick);
       else{
         avatar.__actionFrameRaf=null;
-        if(!options.hold&&avatar.__heroAnimationState===state) animateHeroAvatar(avatar,k,'idle',{loop:true});
+        if(!options.hold&&avatar.__heroAnimationState===state) animateHeroAvatar(avatar,k,'idle',{loop:true,flip:options.flip,enemy:options.enemy,overlayMarkup});
       }
     };
     state.tick=tick;
@@ -1893,7 +1896,7 @@ function animateHeroAvatar(avatar,k,action='idle',options={}){
   if(!loop&&!options.hold&&!(spec?.format==='sheet'&&frames>1&&!reducedMotion)){
     const finish=()=>{
       if(!avatar.isConnected||avatar.dataset.action!==action) return;
-      animateHeroAvatar(avatar,k,'idle',{loop:true});
+      animateHeroAvatar(avatar,k,'idle',{loop:true,flip:options.flip,enemy:options.enemy,overlayMarkup});
     };
     state.finish=finish;
     state.timerRemaining=duration;
@@ -1909,6 +1912,62 @@ function playHeroAction(idx, action='attack'){
   const avatar=k&&document.getElementById('party-'+k.id+'-avatar');
   if(!avatar) return;
   animateHeroAvatar(avatar,k,action,{hold:action==='victory'});
+}
+
+/* Inimigos que tambem pertencem ao elenco usam a mesma animacao v10 do
+   personagem. Os inimigos exclusivos continuam recebendo movimento de combate
+   pelo avatar CSS, sem inventar uma folha diferente da arte original. */
+function enemyCharacterFor(e){
+  if(!e) return null;
+  const candidates=[e.heroId,e.characterId,e.cardId,e.id,e.etype,e.name]
+    .filter(Boolean).map(value=>String(value).trim().toLowerCase());
+  return KINGDOMS.find(k=>candidates.some(value=>value===k.id||value===String(k.nome).trim().toLowerCase()))||null;
+}
+
+function enemyAvatarOverlay(e){
+  return `<span class="enemy-intent" aria-label="${T(`Próximo ataque: aproximadamente ${e.atk} de dano`,`Next attack: about ${e.atk} damage`,`Próximo ataque: aproximadamente ${e.atk} de dano`)}">⚔ ${e.atk}</span>`;
+}
+
+function enemyFallbackMarkup(e, action='idle'){
+  const flip=e.flip||e.isCard?' flip':'';
+  const actionClass=` enemy-motion-${action}`;
+  return `<img class="enemy-sprite-image${flip}${e.etype==='soldado2'?' soldado2-clean':''}${actionClass}" src="${e.sprite}" alt="${L(e.name)}"${e.tint?` style="filter:${e.tint}"`:''}>${enemyAvatarOverlay(e)}`;
+}
+
+function animateEnemyAvatar(avatar,e,action='idle',options={}){
+  if(!avatar||!e) return false;
+  const character=enemyCharacterFor(e);
+  const overlayMarkup=enemyAvatarOverlay(e);
+  if(character?.sprites?.idle?.src){
+    avatar.classList.add('enemy-avatar');
+    return animateHeroAvatar(avatar,character,action,{...options,enemy:true,flip:Boolean(e.flip||e.isCard),overlayMarkup});
+  }
+  stopHeroAnimation(avatar);
+  avatar.dataset.action=action;
+  avatar.classList.add('enemy-avatar','enemy-static-avatar');
+  avatar.innerHTML=enemyFallbackMarkup(e,action);
+  avatar.classList.toggle('hero-action',action!=='idle');
+  const meta=HERO_ACTIONS[action]||HERO_ACTIONS.idle;
+  if(action!=='idle'&&!options.hold){
+    avatar.__actionTimer=window.setTimeout(()=>{
+      if(avatar.isConnected&&avatar.dataset.action===action) animateEnemyAvatar(avatar,e,'idle',{loop:true});
+    },Math.max(160,Number(meta.duration||520)));
+  }
+  return false;
+}
+
+function playEnemyAction(idx,action='attack'){
+  const e=enemies[idx];
+  const avatar=e&&document.getElementById('enemyPortrait-'+idx);
+  if(avatar) animateEnemyAvatar(avatar,e,action,{hold:action==='victory'});
+}
+
+function pauseEnemyAnimations(){
+  enemyArenaEl?.querySelectorAll('.avatar-circle').forEach(avatar=>{ avatar.classList.add('motion-paused'); pauseHeroAnimation(avatar); });
+}
+
+function resumeEnemyAnimations(){
+  enemyArenaEl?.querySelectorAll('.avatar-circle').forEach(avatar=>{ avatar.classList.remove('motion-paused'); resumeHeroAnimation(avatar); });
 }
 
 function resetPartyAnimationState(){
@@ -2034,6 +2093,7 @@ function renderPartyArena(){
     const stageHtml=`
       <div class="unit-stage">
         <div class="unit-ground-shadow"></div>
+        <div class="unit-charge-aura" aria-hidden="true"></div>
         <div class="avatar-circle" id="party-${k.id}-avatar" data-hero-id="${k.id}" data-action="idle">${avatarContent}</div>
       </div>`;
     const nomeHtml=vizPrefs.heroNames==='off'?'':`
@@ -2297,8 +2357,11 @@ function applyFormationSlot(unit,slot,width){
     ? (enemySlot?Math.max(8,Math.min(92,slot.x)):Math.max(15,Math.min(85,50+(slot.x-50)*0.72)))
     : slot.x;
   const y=estreito?50+(slot.y-50)*0.9:slot.y;
-  const s=estreito?slot.s*0.8:slot.s;
-  const w=estreito?Math.round(width*(enemySlot?0.9:0.84)):width;
+  /* v10.0.1: a compressao anterior encolhia a formacao e ainda diminuia a
+     largura do avatar. Mantemos a posicao segura, mas devolvemos a escala
+     visual original dos chibis e inimigos. */
+  const s=estreito?slot.s*0.96:slot.s;
+  const w=estreito?Math.round(width*(enemySlot?1.05:1.04)):width;
   /* ATERRISSAGEM: re-mapeia a profundidade (y 0..46) para a banda de chão da arte da
      fase — todos os pés (heróis, inimigos, golens, harpias) pisam no piso pintado.
      bottom% = ((1-F)·alturaArena − gap − UI sob os pés) / alturaRow  (cover = 100% da
@@ -2531,7 +2594,7 @@ function renderEnemies(){
   enemies.forEach((e, idx)=>{
     const unit = document.createElement('div');
     const isBoss=e.isBoss===true || idx===enemies.length-1;
-    unit.className = 'unit enemy-unit' + (e.hp<=0 ? ' dead' : (idx===activeIdx ? ' target' : '')) + (selectable && e.hp>0 ? ' selectable' : '') + (isBoss?' boss-unit':'') + (e.isCard?' enemy-card-unit':'');
+    unit.className = 'unit enemy-unit' + (e.hp<=0 ? ' dead' : (idx===activeIdx ? ' target' : '')) + (selectable && e.hp>0 ? ' selectable' : '') + (isBoss?' boss-unit':'') + (e.isCard?' enemy-card-unit':'') + (e.saCounter?' charging':'');
     unit.id = 'enemy-'+idx;
     const palette=enemyAuraPalette(e);
     unit.style.setProperty('--aura-inner',palette[0]);
@@ -2542,10 +2605,8 @@ function renderEnemies(){
       <div class="unit-stage">
         <div class="target-arrow"></div>
         <div class="unit-ground-shadow"></div>
-        <div class="avatar-circle" id="enemyPortrait-${idx}">
-          <img class="enemy-sprite-image${(e.flip||e.isCard)?' flip':''}${e.etype==='soldado2'?' soldado2-clean':''}" src="${e.sprite}" alt="${L(e.name)}"${e.tint?` style="filter:${e.tint}"`:''}>
-          <span class="enemy-intent" aria-label="${T(`Próximo ataque: aproximadamente ${e.atk} de dano`,`Next attack: about ${e.atk} damage`,`Próximo ataque: aproximadamente ${e.atk} de daño`)}">⚔ ${e.atk}</span>
-        </div>
+        <div class="unit-charge-aura" aria-hidden="true"></div>
+        <div class="avatar-circle enemy-avatar" id="enemyPortrait-${idx}" data-action="idle">${enemyFallbackMarkup(e)}</div>
       </div>`;
     const nomeHtml=vizPrefs.enemyNames==='off'?'':`
       <div class="unit-name${e.isBoss?' boss-name':''}${vizPrefs.enemyNames==='top'?' name-top':''}">${e.isBoss?'👑 ':''}${L(e.name)}</div>`;
@@ -2561,6 +2622,7 @@ function renderEnemies(){
       unit.addEventListener('keydown',ev=>{ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); selectTarget(idx); } });
     }
     enemyArenaEl.appendChild(unit);
+    animateEnemyAvatar(document.getElementById('enemyPortrait-'+idx),e,'idle',{loop:true});
   });
   applyBattleFormation();
 }
@@ -2771,8 +2833,11 @@ function runStageAbilities(){
       let bdg=anc?.querySelector('.sa-count');
       if(anc&&!bdg){ bdg=document.createElement('div'); bdg.className='sa-count'; anc.appendChild(bdg); }
       if(bdg) bdg.textContent='🗡'+Math.max(0,sa.cd-e.saCounter); }
+    document.getElementById('enemy-'+enemies.indexOf(e))?.classList.toggle('charging',e.saCounter>0);
     if(e.saCounter<sa.cd) return;
     e.saCounter=0;
+    document.getElementById('enemy-'+enemies.indexOf(e))?.classList.remove('charging');
+    playEnemyAction(enemies.indexOf(e),'cast');
     try{ execStageAbility(e,sa); saAnnounce(e,sa); }catch(err){ console.warn('stageAbility', err); }
   });
 }
@@ -5372,6 +5437,7 @@ function applyDamageToEnemy(dmg, colorIdx, targetIdxOverride){
   const enemyUnit = document.getElementById('enemy-'+idx);
   if(enemyUnit){
     enemyUnit.classList.remove('hit'); void enemyUnit.offsetWidth; enemyUnit.classList.add('hit');
+    playEnemyAction(idx,'hit');
     const hitColor = colorIdx!==null && colorIdx!==undefined && KINGDOMS[colorIdx] ? KINGDOMS[colorIdx].colorLight : '#fff';
     spawnCombatFx('hit',enemyUnit,hitColor,520);
     if(colorIdx!==null && colorIdx!==undefined && KINGDOMS[colorIdx]) spawnRealmParticles(KINGDOMS[colorIdx].iconId||KINGDOMS[colorIdx].id,enemyUnit,8);
@@ -5550,6 +5616,7 @@ function enemyCounterAttack(){
     if(enemy.timeStopped && enemy.hp<=enemy.maxHp*0.25){ enemy.timeStopped=false; }
     const enemyUnit = document.getElementById('enemy-'+idx);
     if(enemyUnit){ enemyUnit.classList.remove('attacking'); void enemyUnit.offsetWidth; enemyUnit.classList.add('attacking'); }
+    playEnemyAction(idx,'attack');
     const variance = 0.85 + gameRandom()*0.3;
     let dmg = Math.round(enemy.atk * variance * Math.pow(0.8, damageReductionStacks));
     if(invulnerableTurns>0){
@@ -6552,12 +6619,12 @@ let phaseBeforePause='idle';
 function pauseBattle(){
   if(gamePaused||battlePhase==='paused') return;
   if(!gamePaused&&battlePhase!=='paused') phaseBeforePause=battlePhase;
-  gamePaused=true; pauseCombatTimers(); pausePartyAnimations(); setBattlePhase('paused'); pauseMissionClock(); stopMusic(); openPanel('pauseScreen');
+  gamePaused=true; pauseCombatTimers(); pausePartyAnimations(); pauseEnemyAnimations(); setBattlePhase('paused'); pauseMissionClock(); stopMusic(); openPanel('pauseScreen');
 }
 function resumeBattle(){
   gamePaused=false;
   const resumePhase=BATTLE_PHASES.has(phaseBeforePause)&&phaseBeforePause!=='paused'?phaseBeforePause:(busy?'resolving':'idle');
-  setBattlePhase(resumePhase); resumeCombatTimers(); resumePartyAnimations(); resumeMissionClock();
+  setBattlePhase(resumePhase); resumeCombatTimers(); resumePartyAnimations(); resumeEnemyAnimations(); resumeMissionClock();
   document.getElementById('pauseScreen').classList.remove('show');
   if(!musicMuted) playStageMusic(activeStageData?.scene ?? stageIndex);
 }
@@ -6678,6 +6745,32 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
     },
     setQuality:(value)=>{ if(!V10.quality?.values?.includes(value)) throw new Error('Invalid quality'); graphicsQuality=value; applySettings(); return resolvedGraphicsQuality(); },
     setPhase:(value)=>{ setBattlePhase(value); return battlePhase; },
+    enemyAnimationProbe:()=>{
+      enemies=[
+        {name:'Gareth',cardId:'gareth',hp:180,maxHp:180,atk:20,sprite:'assets/enemies/humanos/gareth.png',isBoss:true},
+        {name:'Slime de Cerejeira',etype:'slimeCereja',hp:80,maxHp:80,atk:9,sprite:'assets/enemies/slime/single-1.png'}
+      ];
+      renderEnemies();
+      const character=document.getElementById('enemyPortrait-0');
+      const generic=document.getElementById('enemyPortrait-1');
+      playEnemyAction(0,'attack'); playEnemyAction(1,'cast');
+      return {
+        characterSheet:Boolean(character?.querySelector('.hero-sprite-sheet.grid-sheet')),
+        characterAction:character?.dataset.action,
+        genericAction:generic?.dataset.action,
+        genericMotion:Boolean(generic?.querySelector('.enemy-motion-cast')),
+        chargeAura:Boolean(document.querySelector('#enemy-0 .unit-charge-aura')),
+        rectangularGlow:getComputedStyle(character).boxShadow
+      };
+    },
+    heroAuraProbe:()=>{
+      const heroIdx=ACTIVE[0];
+      const active=KINGDOMS[heroIdx]?.abilities.find(ability=>ability.kind==='active');
+      heroActiveQueue[heroIdx]=active?[active]:[]; heroReady[heroIdx]=Boolean(active); updateHeroProgressUI(heroIdx);
+      const unit=document.getElementById('party-'+KINGDOMS[heroIdx]?.id);
+      const avatar=unit?.querySelector('.avatar-circle');
+      return {ready:Boolean(unit?.classList.contains('ready')),aura:Boolean(unit?.querySelector('.unit-charge-aura')),rectangularGlow:getComputedStyle(avatar).boxShadow};
+    },
     openCard:(heroIdx)=>{ openCardModal(heroIdx); return KINGDOMS[heroIdx]?.id||null; },
     playHeroAction:(heroIdx,action)=>{ playHeroAction(heroIdx,action); return document.getElementById('party-'+KINGDOMS[heroIdx]?.id+'-avatar')?.dataset.action||null; },
     testRevive:(kind='tear')=>{
@@ -7594,7 +7687,7 @@ async function runSmokeTest(){
     ok('Lobo Raivoso encara o centro da arena', HUMANOS_ETYPES.loboRaivoso.flip===true);
     ok('moedas e XP de perfil operantes', typeof coins==='number'&&typeof profileLevel()==='number');
     /* v9.3 · contratos de estabilidade, apresentação e acessibilidade */
-    ok('v10 usa configuração central dos 12 reinos', APP_VERSION==='v10' && V10.realms?.length===12);
+    ok('v10 usa configuração central dos 12 reinos', APP_VERSION.startsWith('v10') && V10.realms?.length===12);
     ok('coordenador de fases da batalha', typeof canAcceptPlayerInput==='function' && BATTLE_PHASES.has('idle') && BATTLE_PHASES.has('enemies') && BATTLE_PHASES.has('paused'));
     ok('áudio separado em música e efeitos', !!document.getElementById('musicVolumeRange') && !!document.getElementById('sfxVolumeRange'));
     ok('4 perfis de qualidade gráfica', V10.quality?.values?.length===4 && !!document.getElementById('qualitySelect'));
