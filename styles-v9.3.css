@@ -781,6 +781,16 @@
     animation:spriteSheetPlay var(--sprite-duration,520ms) steps(var(--sprite-steps,5)) 1 both;
     filter:drop-shadow(0 5px 5px rgba(0,0,0,.55));
   }
+  .avatar-circle .hero-sprite-sheet.grid-sheet{
+    background-size:calc(var(--sprite-cols,3) * 100%) calc(var(--sprite-rows,2) * 100%);
+    background-position:var(--sprite-bg-x,0%) var(--sprite-bg-y,0%);
+    animation:none;
+  }
+  .avatar-circle .adriel-attack-runtime{
+    width:100%; height:100%; background-image:url('assets/characters/runtime-v7/adriel-jovem/attack-2x3.png');
+    background-repeat:no-repeat; background-size:300% 200%; background-position:0 0;
+    filter:drop-shadow(0 5px 5px rgba(0,0,0,.55)); transform:scaleX(-1); transform-origin:50% 100%;
+  }
   @keyframes spriteSheetPlay{ from{background-position:0 0;} to{background-position:100% 0;} }
   .attack-telegraph{
     position:absolute; width:42px; height:42px; border:2px solid currentColor; border-radius:50%;

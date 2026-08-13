@@ -262,6 +262,7 @@ const KINGDOMS = [
     color:'#ff6fa5', colorLight:'#ffd7e8', colorDark:'#7c1f4b', gem:'gemPink', atk:2,
     img:'assets/cards/adriel-jovem-card.webp', cardThumb:'assets/cards/adriel-jovem-card.webp',
     sprite:'assets/characters/runtime-v7/adriel-jovem/single-1.webp', heroFlip:true, fxTheme:'rose', rarity:'NORMAL', stars:1,
+    sprites:{attack:{src:'assets/characters/runtime-v7/adriel-jovem/attack-2x3.png',frames:6,rows:2,cols:3,duration:720,loop:false,format:'sheet'}},
     frase:'Um dia me tornarei o cavaleiro mais forte de toda Ygdria.',
     abilities:[]
   },
@@ -1613,6 +1614,11 @@ function spriteMarkup(k, action='idle'){
   const spec = k.sprites?.[action];
   if(spec?.src){
     const meta = {...HERO_ACTIONS[action], ...spec};
+    if(meta.format==='sheet'){
+      const cols=Math.max(1,Number(meta.cols||meta.frames||1));
+      const rows=Math.max(1,Number(meta.rows||1));
+      return `<div class="hero-sprite-sheet grid-sheet${heroIsFlipped(k)?' flip':''}" aria-hidden="true" style="--sprite-url:url('${meta.src}');--sprite-cols:${cols};--sprite-rows:${rows};--sprite-duration:${Number(meta.duration||520)}ms;--sprite-bg-x:0%;--sprite-bg-y:0%"></div>`;
+    }
     const steps = Math.max(1, Number(meta.frames||1)-1);
     return `<div class="hero-sprite-sheet${heroIsFlipped(k)?' flip':''}" aria-hidden="true" style="--sprite-url:url('${meta.src}');--sprite-frames:${Math.max(1,Number(meta.frames||1))};--sprite-steps:${steps};--sprite-duration:${Number(meta.duration||520)}ms"></div>`;
   }
@@ -1625,15 +1631,40 @@ function playHeroAction(idx, action='attack'){
   const avatar = document.getElementById('party-'+k.id+'-avatar');
   if(!avatar) return;
   const meta = HERO_ACTIONS[action] || HERO_ACTIONS.attack;
+  if(avatar.__actionFrameRaf) cancelAnimationFrame(avatar.__actionFrameRaf);
+  if(avatar.__actionTimer) clearTimeout(avatar.__actionTimer);
   avatar.dataset.action = action;
   if(k.sprites?.[action]?.src) avatar.innerHTML = spriteMarkup(k,action);
   avatar.classList.remove('hero-action'); void avatar.offsetWidth; avatar.classList.add('hero-action');
-  window.setTimeout(()=>{
+  const spec=k.sprites?.[action];
+  const duration=Math.max(80,Number(spec?.duration||meta.duration||520));
+  if(spec?.format==='sheet'){
+    const sheet=avatar.querySelector('.hero-sprite-sheet.grid-sheet');
+    const frames=Math.max(1,Number(spec.frames||1));
+    const cols=Math.max(1,Number(spec.cols||frames));
+    const rows=Math.max(1,Number(spec.rows||1));
+    const positions=Array.from({length:frames},(_,frame)=>({
+      x:cols<=1?0:(frame%cols)*100/(cols-1),
+      y:rows<=1?0:Math.floor(frame/cols)*100/(rows-1)
+    }));
+    const started=performance.now();
+    const tick=(now)=>{
+      if(!sheet||!sheet.isConnected||avatar.dataset.action!==action) return;
+      const frame=Math.min(frames-1,Math.floor(((now-started)/duration)*frames));
+      sheet.style.setProperty('--sprite-bg-x',positions[frame].x+'%');
+      sheet.style.setProperty('--sprite-bg-y',positions[frame].y+'%');
+      if(now-started<duration){ avatar.__actionFrameRaf=requestAnimationFrame(tick); }
+    };
+    avatar.__actionFrameRaf=requestAnimationFrame(tick);
+  }
+  avatar.__actionTimer=window.setTimeout(()=>{
     if(!avatar.isConnected || avatar.dataset.action!==action) return;
     avatar.dataset.action='idle';
     if(k.sprites?.[action]?.src) avatar.innerHTML = spriteMarkup(k,'idle');
     avatar.classList.remove('hero-action');
-  }, Math.max(80,Number(meta.duration||520)));
+    avatar.__actionFrameRaf=null;
+    avatar.__actionTimer=null;
+  }, duration);
 }
 
 function trimCombatFx(){
