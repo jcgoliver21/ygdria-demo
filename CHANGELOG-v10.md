@@ -2,6 +2,12 @@
 
 Data: 2026-08-13
 
+## v10.0.6 — Torre aterrissada e animações publicadas
+
+- A Torre de Acesso à Eternidade agora usa a faixa real do pátio da arte: heróis e inimigos ficam ancorados no mármore, com perspectiva e grade tática próprias.
+- Publicada a matriz completa de animações v10: 24 personagens, cinco movimentos por personagem (idle, ataque, conjuração, impacto e vitória), incluindo quando cartas aparecem como inimigas.
+- Cache/PWA renovado para garantir que o navegador baixe a atualização.
+
 ## v10.0.1 — Arena e inimigos animados
 
 - Escala de combate restaurada para os chibis, mantendo os pés ancorados no cenário em desktop e celular.

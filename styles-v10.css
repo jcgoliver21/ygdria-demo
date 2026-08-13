@@ -1504,6 +1504,9 @@ body.game-active .arena::before{
 .scene-2{--floor-rgb:52,105,69;--horizon:34%;background-position:center 47%!important}
 .scene-3{--floor-rgb:88,75,110;--horizon:29%;background-position:center 43%!important}
 .scene-4{--floor-rgb:129,67,51;--horizon:27%;background-position:center 39%!important}
+/* A Torre tem a própria perspectiva: a praça começa perto da base da arte.
+   A grade táctica só aparece sobre o mármore, não sobre a cidade ao fundo. */
+body.game-active .arena.tower-stage{--horizon:66%;background-position:center 50%!important}
 body.game-active .arena-row{z-index:5!important}
 body.game-active .unit{
   width:var(--slot-w,112px)!important;

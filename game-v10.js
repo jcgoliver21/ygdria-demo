@@ -2312,7 +2312,10 @@ function renderStageProgress(){
     stageLabelEl.textContent = bossRushMode ? `${T('Chefe','Boss','Jefe')} ${bossRushIdx+1}/8` : '';
     dungeonTitleEl.textContent = activeStageData?.title || '';
   }
-  arenaEl.className = 'arena scene-'+((activeStageData&&Number.isFinite(activeStageData.scene))?activeStageData.scene:4);
+  /* A Torre usa uma arte com um pátio bem mais baixo que os cenários comuns.
+     A classe própria mantém a banda de aterrissagem e a malha tática presas ao
+     piso pintado, sem deslocar os demais cenários que também usam scene-4. */
+  arenaEl.className = 'arena scene-'+((activeStageData&&Number.isFinite(activeStageData.scene))?activeStageData.scene:4)+(towerMode?' tower-stage':'');
   if(activeStageData?.bgUrl){
     arenaEl.style.setProperty('background-image',`linear-gradient(rgba(6,3,13,.22),rgba(6,3,13,.5)),url('${activeStageData.bgUrl}')`,'important');
     arenaEl.style.setProperty('background-size','cover');
@@ -2365,9 +2368,14 @@ const SCENE_GROUND={
   humanos:[ [0.60,1],[0.63,1],[0.64,1],[0.64,1],[0.65,1],
             [0.60,1],[0.62,1],[0.63,0.86],[0.75,1],[0.66,1] ]
 };
+/* A praça da Torre de Acesso à Eternidade começa visualmente mais abaixo na
+   composição. Sem esta faixa dedicada, o fallback genérico (55%) suspendia as
+   unidades sobre a cidade e encurtava artificialmente o piso jogável. */
+const TOWER_GROUND=[0.70,1];
 function groundBand(){
   let top=0.55, bot=1;
   if(worldRun.active){ const g=SCENE_GROUND.humanos[worldRun.fase]; if(g){ top=g[0]; bot=g[1]; } }
+  else if(towerMode){ [top,bot]=TOWER_GROUND; }
   return {top,bot};
 }
 function applyFormationSlot(unit,slot,width){

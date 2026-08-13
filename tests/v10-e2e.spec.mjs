@@ -58,6 +58,33 @@ test('v10.0.1 restaura escala e anima inimigos-personagem e inimigos comuns',asy
   expect(errors).toEqual([]);
 });
 
+test('Torre ancora personagens no pátio real da arte',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.setViewportSize({width:570,height:684});
+  const layout=await page.evaluate(()=>{
+    towerMode=true; towerFloor=1; bossRushMode=false; worldRun.active=false;
+    chosenIds=[0,1,2,3]; beginGame(0); skipStory();
+    const arena=document.getElementById('arena');
+    const arenaRect=arena.getBoundingClientRect();
+    const feet=[...document.querySelectorAll('.hero-unit .unit-stage,.enemy-unit .unit-stage')].map(stage=>{
+      const rect=stage.getBoundingClientRect();
+      return (rect.bottom-arenaRect.top)/arenaRect.height;
+    });
+    return {
+      towerClass:arena.classList.contains('tower-stage'),
+      horizon:getComputedStyle(arena).getPropertyValue('--horizon').trim(),
+      band:groundBand(),
+      feet
+    };
+  });
+  expect(layout.towerClass).toBe(true);
+  expect(layout.horizon).toBe('66%');
+  expect(layout.band).toEqual({top:.70,bot:1});
+  expect(Math.min(...layout.feet)).toBeGreaterThanOrEqual(.64);
+  expect(Math.max(...layout.feet)).toBeLessThanOrEqual(1.02);
+  expect(errors).toEqual([]);
+});
+
 test('aura de habilidade carregada emana do corpo, sem moldura quadrada',async({page})=>{
   const errors=await boot(page,'flow');
   await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
@@ -753,7 +780,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.5');
+  expect(registration.caches).toContain('12r-v10.0.6');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
