@@ -3,6 +3,11 @@
 const V10 = window.YGDRIA_V10 || {};
 const APP_VERSION = V10.version || 'v10';
 const APP_VERSION_LABEL = V10.label || 'VERSÃO 10';
+function animationAssetUrl(src){
+  if(!src) return '';
+  if(/^(?:data|blob):/i.test(src)) return src;
+  return `${src}${src.includes('?')?'&':'?'}v=${encodeURIComponent(APP_VERSION)}`;
+}
 try {
   const _mv = document.getElementById('menuVersion');
   if (_mv) _mv.textContent = `${APP_VERSION_LABEL} · DEMO OFICIAL MOBILE`;
@@ -1801,10 +1806,10 @@ function spriteMarkup(k, action='idle', options={}){
     if(meta.format==='sheet'){
       const cols=Math.max(1,Number(meta.cols||meta.frames||1));
       const rows=Math.max(1,Number(meta.rows||1));
-      return `<div class="hero-sprite-sheet grid-sheet${roleClass}${flipped?' flip':''}" aria-hidden="true" style="--sprite-url:url('${meta.src}');--sprite-cols:${cols};--sprite-rows:${rows};--sprite-scale:${Number(meta.displayScale||1)};--sprite-duration:${Number(meta.duration||520)}ms;--sprite-bg-x:0%;--sprite-bg-y:0%"></div>`;
+      return `<div class="hero-sprite-sheet grid-sheet${roleClass}${flipped?' flip':''}" aria-hidden="true" style="--sprite-url:url('${animationAssetUrl(meta.src)}');--sprite-cols:${cols};--sprite-rows:${rows};--sprite-scale:${Number(meta.displayScale||1)};--sprite-duration:${Number(meta.duration||520)}ms;--sprite-bg-x:0%;--sprite-bg-y:0%"></div>`;
     }
     const steps = Math.max(1, Number(meta.frames||1)-1);
-    return `<div class="hero-sprite-sheet${roleClass}${flipped?' flip':''}" aria-hidden="true" style="--sprite-url:url('${meta.src}');--sprite-frames:${Math.max(1,Number(meta.frames||1))};--sprite-steps:${steps};--sprite-scale:${Number(meta.displayScale||1)};--sprite-duration:${Number(meta.duration||520)}ms"></div>`;
+    return `<div class="hero-sprite-sheet${roleClass}${flipped?' flip':''}" aria-hidden="true" style="--sprite-url:url('${animationAssetUrl(meta.src)}');--sprite-frames:${Math.max(1,Number(meta.frames||1))};--sprite-steps:${steps};--sprite-scale:${Number(meta.displayScale||1)};--sprite-duration:${Number(meta.duration||520)}ms"></div>`;
   }
   if(k.sprite) return `<img class="hero-sprite-image${roleClass}${flipped?' flip':''}" src="${k.sprite}" alt="${L(k.nome)}">`;
   return CHIBI_SVG[k.id] ? scopeSvg(CHIBI_SVG[k.id],k.id) : '';
@@ -6749,7 +6754,7 @@ function preloadSpriteSource(src){
     image.onload=()=>resolve(src);
     image.onerror=()=>{ markSpriteFailed(src); spritePreloadCache.delete(src); reject(new Error('Falha ao carregar '+src)); };
     image.decoding='async';
-    image.src=src;
+    image.src=animationAssetUrl(src);
   });
   spritePreloadCache.set(src,pending);
   return pending;

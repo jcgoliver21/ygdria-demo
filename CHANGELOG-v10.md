@@ -2,6 +2,12 @@
 
 Data: 2026-08-13
 
+## v10.0.7 — Animações aprovadas promovidas
+
+- Promovidas para o runtime público as 120 folhas aprovadas da matriz v10 (24 personagens × idle, ataque, conjuração, impacto e vitória).
+- Cada folha é validada como PNG RGBA com transparência, grade, âncora e escala consistentes antes da publicação.
+- URLs dos sprites e cache/PWA receberam revisão própria para forçar a atualização em instalações já existentes.
+
 ## v10.0.6 — Torre aterrissada e animações publicadas
 
 - A Torre de Acesso à Eternidade agora usa a faixa real do pátio da arte: heróis e inimigos ficam ancorados no mármore, com perspectiva e grade tática próprias.
