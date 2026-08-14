@@ -300,7 +300,7 @@
       "frames": 4,
       "cols": 2,
       "rows": 2,
-      "duration": 2400,
+      "duration": 4400,
       "loop": true,
       "format": "sheet",
       "src": "assets/characters/runtime-v10/areia/idle-2x2.png",

@@ -1,7 +1,8 @@
 # Production sprite masters and local QA artifacts. Runtime-ready exports live
 # under assets/characters/runtime-v10 and remain tracked.
 assets/characters/v10/
-previews/
+previews/*
+!previews/vitrine-animacoes-em-movimento.html
 qa-server*.log
 debug.log
 test-results/

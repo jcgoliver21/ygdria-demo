@@ -1,6 +1,12 @@
 # 12 Reinos v10
 
-Data: 2026-08-13
+Data: 2026-08-14
+
+## v10.0.8 — Ajustes finais de animação e vitrine pública
+
+- Atualizadas somente as animações aprovadas: ataques e conjurações de reinos específicos, o ritmo do idle de Rashid e a nova Conjuração de Lucius com cetro e fogo.
+- A vitrine em movimento passa a acompanhar a publicação para revisão direta das 120 ações.
+- Cache/PWA renovado para que instalações existentes baixem as folhas desta revisão.
 
 ## v10.0.7 — Animações aprovadas promovidas
 
