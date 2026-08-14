@@ -3,7 +3,7 @@
   "mode": "attack",
   "prompt": "",
   "role": "",
-  "input": "C:\\Users\\jcgol\\OneDrive\\Documentos\\TCG Dev\\ygdria-demo\\assets\\characters\\v10\\julius\\attack\\review-user-20260814-main\\raw-user-normalized-2x3.png",
+  "input": "source-redacted",
   "threshold": 100,
   "edge_threshold": 150,
   "duration": 720,
@@ -64,8 +64,8 @@
       "body_core_area": 54231,
       "body_area_fraction": 0.21349442554799697,
       "anchor_source": [
-        246.0,
-        456.0
+        246,
+        456
       ],
       "source_edge_touch": false,
       "output_edge_touch": false,
@@ -93,16 +93,16 @@
         182,
         235
       ],
-      "scale_adjustment": 1.0,
+      "scale_adjustment": 1,
       "source_to_output_scale": 0.3961904761904762,
       "bbox_scale_applied": false,
       "scale_changed": false,
       "anchor_target": [
-        128.0,
+        128,
         228
       ],
       "scale_strategy": "preserve",
-      "shared_center_x": 128.0,
+      "shared_center_x": 128,
       "shared_feet_y": 228
     },
     {
@@ -140,8 +140,8 @@
       "body_core_area": 52402,
       "body_area_fraction": 0.20629409171075838,
       "anchor_source": [
-        221.0,
-        449.0
+        221,
+        449
       ],
       "source_edge_touch": false,
       "output_edge_touch": false,
@@ -169,16 +169,16 @@
         180,
         235
       ],
-      "scale_adjustment": 1.0,
+      "scale_adjustment": 1,
       "source_to_output_scale": 0.3961904761904762,
       "bbox_scale_applied": false,
       "scale_changed": false,
       "anchor_target": [
-        128.0,
+        128,
         228
       ],
       "scale_strategy": "preserve",
-      "shared_center_x": 128.0,
+      "shared_center_x": 128,
       "shared_feet_y": 228
     },
     {
@@ -216,8 +216,8 @@
       "body_core_area": 50572,
       "body_area_fraction": 0.19908982111363063,
       "anchor_source": [
-        204.0,
-        436.0
+        204,
+        436
       ],
       "source_edge_touch": false,
       "output_edge_touch": false,
@@ -245,16 +245,16 @@
         206,
         240
       ],
-      "scale_adjustment": 1.0,
+      "scale_adjustment": 1,
       "source_to_output_scale": 0.3961904761904762,
       "bbox_scale_applied": false,
       "scale_changed": false,
       "anchor_target": [
-        128.0,
+        128,
         228
       ],
       "scale_strategy": "preserve",
-      "shared_center_x": 128.0,
+      "shared_center_x": 128,
       "shared_feet_y": 228
     },
     {
@@ -292,8 +292,8 @@
       "body_core_area": 47623,
       "body_area_fraction": 0.1874803162005543,
       "anchor_source": [
-        273.0,
-        387.0
+        273,
+        387
       ],
       "source_edge_touch": false,
       "output_edge_touch": false,
@@ -321,16 +321,16 @@
         205,
         235
       ],
-      "scale_adjustment": 1.0,
+      "scale_adjustment": 1,
       "source_to_output_scale": 0.3961904761904762,
       "bbox_scale_applied": false,
       "scale_changed": false,
       "anchor_target": [
-        128.0,
+        128,
         228
       ],
       "scale_strategy": "preserve",
-      "shared_center_x": 128.0,
+      "shared_center_x": 128,
       "shared_feet_y": 228
     },
     {
@@ -368,8 +368,8 @@
       "body_core_area": 51614,
       "body_area_fraction": 0.20319192491811539,
       "anchor_source": [
-        235.0,
-        393.0
+        235,
+        393
       ],
       "source_edge_touch": false,
       "output_edge_touch": false,
@@ -397,16 +397,16 @@
         181,
         235
       ],
-      "scale_adjustment": 1.0,
+      "scale_adjustment": 1,
       "source_to_output_scale": 0.3961904761904762,
       "bbox_scale_applied": false,
       "scale_changed": false,
       "anchor_target": [
-        128.0,
+        128,
         228
       ],
       "scale_strategy": "preserve",
-      "shared_center_x": 128.0,
+      "shared_center_x": 128,
       "shared_feet_y": 228
     },
     {
@@ -444,8 +444,8 @@
       "body_core_area": 47998,
       "body_area_fraction": 0.1889566011589821,
       "anchor_source": [
-        213.0,
-        394.0
+        213,
+        394
       ],
       "source_edge_touch": false,
       "output_edge_touch": false,
@@ -473,16 +473,16 @@
         178,
         235
       ],
-      "scale_adjustment": 1.0,
+      "scale_adjustment": 1,
       "source_to_output_scale": 0.3961904761904762,
       "bbox_scale_applied": false,
       "scale_changed": false,
       "anchor_target": [
-        128.0,
+        128,
         228
       ],
       "scale_strategy": "preserve",
-      "shared_center_x": 128.0,
+      "shared_center_x": 128,
       "shared_feet_y": 228
     }
   ],
@@ -506,11 +506,11 @@
     "profile_body_scale_drift": 0.22846688536240656
   },
   "output_origin": [
-    128.0,
+    128,
     228
   ],
   "scale_profile": {
-    "path": "C:\\Users\\jcgol\\OneDrive\\Documentos\\TCG Dev\\ygdria-demo\\assets\\characters\\v10\\julius\\character-scale-profile.json",
+    "path": "source-redacted",
     "version": 1,
     "name": "julius",
     "reference_mode": "idle",

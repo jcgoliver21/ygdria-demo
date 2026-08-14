@@ -3,7 +3,7 @@
   "mode": "attack",
   "prompt": "",
   "role": "",
-  "input": "C:\\Users\\jcgol\\OneDrive\\Documentos\\TCG Dev\\ygdria-demo\\assets\\characters\\v10\\gelo\\attack\\review-user-20260814-main\\raw-user-normalized-2x3.png",
+  "input": "source-redacted",
   "threshold": 100,
   "edge_threshold": 150,
   "duration": 720,
@@ -64,8 +64,8 @@
       "body_core_area": 66218,
       "body_area_fraction": 0.2606843663391282,
       "anchor_source": [
-        279.0,
-        463.0
+        279,
+        463
       ],
       "source_edge_touch": false,
       "output_edge_touch": false,
@@ -93,16 +93,16 @@
         200,
         234
       ],
-      "scale_adjustment": 1.0,
+      "scale_adjustment": 1,
       "source_to_output_scale": 0.3961904761904762,
       "bbox_scale_applied": false,
       "scale_changed": false,
       "anchor_target": [
-        128.0,
+        128,
         228
       ],
       "scale_strategy": "preserve",
-      "shared_center_x": 128.0,
+      "shared_center_x": 128,
       "shared_feet_y": 228
     },
     {
@@ -140,8 +140,8 @@
       "body_core_area": 65633,
       "body_area_fraction": 0.25838136180398086,
       "anchor_source": [
-        274.0,
-        464.0
+        274,
+        464
       ],
       "source_edge_touch": false,
       "output_edge_touch": false,
@@ -169,16 +169,16 @@
         193,
         233
       ],
-      "scale_adjustment": 1.0,
+      "scale_adjustment": 1,
       "source_to_output_scale": 0.3961904761904762,
       "bbox_scale_applied": false,
       "scale_changed": false,
       "anchor_target": [
-        128.0,
+        128,
         228
       ],
       "scale_strategy": "preserve",
-      "shared_center_x": 128.0,
+      "shared_center_x": 128,
       "shared_feet_y": 228
     },
     {
@@ -216,8 +216,8 @@
       "body_core_area": 55927,
       "body_area_fraction": 0.22017117031997985,
       "anchor_source": [
-        235.0,
-        467.0
+        235,
+        467
       ],
       "source_edge_touch": false,
       "output_edge_touch": false,
@@ -245,16 +245,16 @@
         208,
         233
       ],
-      "scale_adjustment": 1.0,
+      "scale_adjustment": 1,
       "source_to_output_scale": 0.3961904761904762,
       "bbox_scale_applied": false,
       "scale_changed": false,
       "anchor_target": [
-        128.0,
+        128,
         228
       ],
       "scale_strategy": "preserve",
-      "shared_center_x": 128.0,
+      "shared_center_x": 128,
       "shared_feet_y": 228
     },
     {
@@ -292,8 +292,8 @@
       "body_core_area": 55528,
       "body_area_fraction": 0.21860040312421264,
       "anchor_source": [
-        265.0,
-        418.0
+        265,
+        418
       ],
       "source_edge_touch": true,
       "output_edge_touch": false,
@@ -321,16 +321,16 @@
         222,
         233
       ],
-      "scale_adjustment": 1.0,
+      "scale_adjustment": 1,
       "source_to_output_scale": 0.3961904761904762,
       "bbox_scale_applied": false,
       "scale_changed": false,
       "anchor_target": [
-        128.0,
+        128,
         228
       ],
       "scale_strategy": "preserve",
-      "shared_center_x": 128.0,
+      "shared_center_x": 128,
       "shared_feet_y": 228
     },
     {
@@ -368,8 +368,8 @@
       "body_core_area": 52264,
       "body_area_fraction": 0.20575081884605695,
       "anchor_source": [
-        213.0,
-        415.0
+        213,
+        415
       ],
       "source_edge_touch": false,
       "output_edge_touch": false,
@@ -397,16 +397,16 @@
         228,
         236
       ],
-      "scale_adjustment": 1.0,
+      "scale_adjustment": 1,
       "source_to_output_scale": 0.3961904761904762,
       "bbox_scale_applied": false,
       "scale_changed": false,
       "anchor_target": [
-        128.0,
+        128,
         228
       ],
       "scale_strategy": "preserve",
-      "shared_center_x": 128.0,
+      "shared_center_x": 128,
       "shared_feet_y": 228
     },
     {
@@ -444,8 +444,8 @@
       "body_core_area": 63955,
       "body_area_fraction": 0.2517754787100025,
       "anchor_source": [
-        265.0,
-        403.0
+        265,
+        403
       ],
       "source_edge_touch": false,
       "output_edge_touch": false,
@@ -473,16 +473,16 @@
         197,
         233
       ],
-      "scale_adjustment": 1.0,
+      "scale_adjustment": 1,
       "source_to_output_scale": 0.3961904761904762,
       "bbox_scale_applied": false,
       "scale_changed": false,
       "anchor_target": [
-        128.0,
+        128,
         228
       ],
       "scale_strategy": "preserve",
-      "shared_center_x": 128.0,
+      "shared_center_x": 128,
       "shared_feet_y": 228
     }
   ],
@@ -516,11 +516,11 @@
     "profile_body_scale_drift": 0.18362631541401364
   },
   "output_origin": [
-    128.0,
+    128,
     228
   ],
   "scale_profile": {
-    "path": "C:\\Users\\jcgol\\OneDrive\\Documentos\\TCG Dev\\ygdria-demo\\assets\\characters\\v10\\gelo\\character-scale-profile.json",
+    "path": "source-redacted",
     "version": 1,
     "name": "gelo",
     "reference_mode": "idle",

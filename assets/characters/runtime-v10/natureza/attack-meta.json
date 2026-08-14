@@ -3,7 +3,7 @@
   "mode": "attack",
   "prompt": "",
   "role": "",
-  "input": "C:\\Users\\jcgol\\OneDrive\\Documentos\\TCG Dev\\ygdria-demo\\assets\\characters\\v10\\ninfa-queen\\attack\\review-user-20260814-main\\raw-user-normalized-2x3.png",
+  "input": "source-redacted",
   "threshold": 100,
   "edge_threshold": 150,
   "duration": 720,
@@ -64,8 +64,8 @@
       "body_core_area": 43010,
       "body_area_fraction": 0.1693200428319476,
       "anchor_source": [
-        245.0,
-        486.0
+        245,
+        486
       ],
       "source_edge_touch": false,
       "output_edge_touch": false,
@@ -93,16 +93,16 @@
         168,
         238
       ],
-      "scale_adjustment": 1.0,
+      "scale_adjustment": 1,
       "source_to_output_scale": 0.40634920634920635,
       "bbox_scale_applied": false,
       "scale_changed": false,
       "anchor_target": [
-        128.0,
+        128,
         231
       ],
       "scale_strategy": "preserve",
-      "shared_center_x": 128.0,
+      "shared_center_x": 128,
       "shared_feet_y": 231
     },
     {
@@ -140,8 +140,8 @@
       "body_core_area": 17590,
       "body_area_fraction": 0.0692476064499874,
       "anchor_source": [
-        148.0,
-        486.0
+        148,
+        486
       ],
       "source_edge_touch": false,
       "output_edge_touch": false,
@@ -169,16 +169,16 @@
         252,
         238
       ],
-      "scale_adjustment": 1.0,
+      "scale_adjustment": 1,
       "source_to_output_scale": 0.40634920634920635,
       "bbox_scale_applied": false,
       "scale_changed": false,
       "anchor_target": [
-        128.0,
+        128,
         231
       ],
       "scale_strategy": "preserve",
-      "shared_center_x": 128.0,
+      "shared_center_x": 128,
       "shared_feet_y": 231
     },
     {
@@ -216,8 +216,8 @@
       "body_core_area": 32408,
       "body_area_fraction": 0.1275825144872764,
       "anchor_source": [
-        177.0,
-        432.0
+        177,
+        432
       ],
       "source_edge_touch": false,
       "output_edge_touch": false,
@@ -245,16 +245,16 @@
         255,
         237
       ],
-      "scale_adjustment": 1.0,
+      "scale_adjustment": 1,
       "source_to_output_scale": 0.40634920634920635,
       "bbox_scale_applied": false,
       "scale_changed": false,
       "anchor_target": [
-        128.0,
+        128,
         231
       ],
       "scale_strategy": "preserve",
-      "shared_center_x": 128.0,
+      "shared_center_x": 128,
       "shared_feet_y": 231
     },
     {
@@ -292,8 +292,8 @@
       "body_core_area": 18553,
       "body_area_fraction": 0.07303870622323003,
       "anchor_source": [
-        145.0,
-        424.0
+        145,
+        424
       ],
       "source_edge_touch": false,
       "output_edge_touch": false,
@@ -321,16 +321,16 @@
         253,
         237
       ],
-      "scale_adjustment": 1.0,
+      "scale_adjustment": 1,
       "source_to_output_scale": 0.40634920634920635,
       "bbox_scale_applied": false,
       "scale_changed": false,
       "anchor_target": [
-        128.0,
+        128,
         231
       ],
       "scale_strategy": "preserve",
-      "shared_center_x": 128.0,
+      "shared_center_x": 128,
       "shared_feet_y": 231
     },
     {
@@ -368,8 +368,8 @@
       "body_core_area": 32286,
       "body_area_fraction": 0.1271022297808012,
       "anchor_source": [
-        178.0,
-        370.0
+        178,
+        370
       ],
       "source_edge_touch": false,
       "output_edge_touch": false,
@@ -397,16 +397,16 @@
         248,
         237
       ],
-      "scale_adjustment": 1.0,
+      "scale_adjustment": 1,
       "source_to_output_scale": 0.40634920634920635,
       "bbox_scale_applied": false,
       "scale_changed": false,
       "anchor_target": [
-        128.0,
+        128,
         231
       ],
       "scale_strategy": "preserve",
-      "shared_center_x": 128.0,
+      "shared_center_x": 128,
       "shared_feet_y": 231
     },
     {
@@ -444,8 +444,8 @@
       "body_core_area": 27099,
       "body_area_fraction": 0.10668225623582767,
       "anchor_source": [
-        171.0,
-        380.0
+        171,
+        380
       ],
       "source_edge_touch": false,
       "output_edge_touch": false,
@@ -473,16 +473,16 @@
         162,
         237
       ],
-      "scale_adjustment": 1.0,
+      "scale_adjustment": 1,
       "source_to_output_scale": 0.40634920634920635,
       "bbox_scale_applied": false,
       "scale_changed": false,
       "anchor_target": [
-        128.0,
+        128,
         231
       ],
       "scale_strategy": "preserve",
-      "shared_center_x": 128.0,
+      "shared_center_x": 128,
       "shared_feet_y": 231
     }
   ],
@@ -506,11 +506,11 @@
     "profile_body_scale_drift": 0.293187791158912
   },
   "output_origin": [
-    128.0,
+    128,
     231
   ],
   "scale_profile": {
-    "path": "C:\\Users\\jcgol\\OneDrive\\Documentos\\TCG Dev\\ygdria-demo\\assets\\characters\\v10\\ninfa-queen\\character-scale-profile.json",
+    "path": "source-redacted",
     "version": 1,
     "name": "ninfa-queen",
     "reference_mode": "idle",

@@ -158,7 +158,12 @@ for(const bundle of bundles){
   const outputSheet=path.join(outputDir,`${stem}.png`);
   const outputMeta=path.join(outputDir,`${bundle.action}-meta.json`);
   fs.copyFileSync(bundle.sheet,outputSheet);
-  fs.copyFileSync(bundle.metadata,outputMeta);
+  const runtimeMeta=structuredClone(bundle.meta);
+  /* Metadados públicos descrevem a folha entregue, nunca o caminho local do
+     computador que participou do processamento. */
+  if('input' in runtimeMeta) runtimeMeta.input='source-redacted';
+  if(runtimeMeta.scale_profile?.path) runtimeMeta.scale_profile.path='source-redacted';
+  fs.writeFileSync(outputMeta,JSON.stringify(runtimeMeta,null,2)+'\n');
   const relativeSheet=path.relative(repo,outputSheet).replaceAll(path.sep,'/');
   manifest.characters[bundle.characterId][bundle.action]={
     ...bundle.contract,format:'sheet',src:relativeSheet,bytes:bundle.bytes,
