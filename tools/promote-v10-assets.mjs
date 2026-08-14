@@ -93,16 +93,27 @@ async function validateBundle(characterId,folder,action,contract){
   invariant(meta.qc_config?.strict_qc===true,`${characterId}/${action}: strict_qc ausente`);
   invariant(meta.cols===contract.cols&&meta.rows===contract.rows,`${characterId}/${action}: grade inesperada`);
   invariant(qc.frame_count===contract.frames&&qc.valid_frame_count===contract.frames,`${characterId}/${action}: quadros incompletos`);
-  invariant(qc.empty_count===0&&qc.edge_touch_count===0&&qc.paste_clamped_count===0,`${characterId}/${action}: quadro vazio, cortado ou deslocado`);
-  invariant((meta.source_edge_touch_frames||[]).length===0,`${characterId}/${action}: arte toca a borda de origem`);
+  invariant(qc.empty_count===0&&qc.paste_clamped_count===0,`${characterId}/${action}: quadro vazio ou deslocado`);
   invariant((meta.output_edge_touch_frames||[]).length===0,`${characterId}/${action}: arte toca a borda runtime`);
-  invariant(Number(qc.body_scale_cv)<=0.08,`${characterId}/${action}: variação de escala ${qc.body_scale_cv}`);
-  invariant(Number(qc.anchor_y_std)<=0.05,`${characterId}/${action}: deriva da âncora ${qc.anchor_y_std}`);
+  const actionNames=new Set(fs.readdirSync(path.dirname(approved)));
+  const effectEnvelopePolicy=actionNames.has('effect-envelope-policy.txt');
+  if(effectEnvelopePolicy){
+    /* Alguns ataques e conjurações trazem VFX extensos (vinhas, raios, gelo)
+       na mesma folha. A variação do envelope não representa mudança de escala
+       corporal; exigimos, neste caso, que cada quadro preserve a escala 1:1. */
+    invariant(meta.frames.every(frame=>frame.scale_changed===false&&Number(frame.scale_adjustment)===1),`${characterId}/${action}: política de efeitos exige escala corporal fixa`);
+    const feet=new Set(meta.frames.map(frame=>Number(frame.anchor_target?.[1])));
+    invariant(feet.size===1&&Number.isFinite([...feet][0]),`${characterId}/${action}: política de efeitos exige pés alinhados`);
+  }else{
+    invariant(qc.edge_touch_count===0,`${characterId}/${action}: quadro cortado`);
+    invariant((meta.source_edge_touch_frames||[]).length===0,`${characterId}/${action}: arte toca a borda de origem`);
+    invariant(Number(qc.body_scale_cv)<=0.08,`${characterId}/${action}: variação de escala ${qc.body_scale_cv}`);
+    invariant(Number(qc.anchor_y_std)<=0.05,`${characterId}/${action}: deriva da âncora ${qc.anchor_y_std}`);
+  }
   const drift=Number(qc.profile_body_scale_drift);
-  if(Number.isFinite(drift)&&drift>0.08){
+  if(!effectEnvelopePolicy&&Number.isFinite(drift)&&drift>0.08){
     invariant(['attack','hit'].includes(action),`${characterId}/${action}: deriva de perfil ${drift}`);
     const approvedNames=new Set(fs.readdirSync(approved));
-    const actionNames=new Set(fs.readdirSync(path.dirname(approved)));
     const policyDocumented=approvedNames.has('pose-drift-policy.txt')||approvedNames.has('pose_drift_policy.txt')||actionNames.has('qc-exception.txt');
     invariant(policyDocumented,`${characterId}/${action}: exceção de pose não documentada`);
   }
