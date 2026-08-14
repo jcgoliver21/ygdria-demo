@@ -1,8 +1,8 @@
 {
   "version": 10,
-  "generatedAt": "2026-08-14T10:38:11.017Z",
+  "generatedAt": "2026-08-14T14:49:02.601Z",
   "totalSheets": 120,
-  "totalBytes": 23255170,
+  "totalBytes": 23333422,
   "displayScales": {
     "luz": 1.0221,
     "humanos": 1.0237,
@@ -328,11 +328,11 @@
         "duration": 720,
         "format": "sheet",
         "src": "assets/characters/runtime-v10/natureza/attack-3x2.png",
-        "bytes": 163866,
+        "bytes": 163510,
         "width": 768,
         "height": 512,
         "displayScale": 1.0681,
-        "sha256": "b6711cc3ff866d9d907ef7fc34568025384a62bbbabcc41440b173fd17f28541"
+        "sha256": "1ece89b3924ad01a25e3f1a7476eb74f727651b6083b0868430e72ea3180072b"
       },
       "cast": {
         "frames": 6,
@@ -341,11 +341,11 @@
         "duration": 840,
         "format": "sheet",
         "src": "assets/characters/runtime-v10/natureza/cast-3x2.png",
-        "bytes": 188658,
+        "bytes": 174870,
         "width": 768,
         "height": 512,
         "displayScale": 1.0681,
-        "sha256": "e2251f9a5a0aaf82a698447bebedc903e4db9fea4d4a8fe38e74d0795b5535c5"
+        "sha256": "57ffd93098fb8996281dc52105d05e85f32588bbcc691cd8c6957a2db8da61db"
       },
       "hit": {
         "frames": 4,
@@ -604,11 +604,11 @@
         "duration": 720,
         "format": "sheet",
         "src": "assets/characters/runtime-v10/raio/attack-3x2.png",
-        "bytes": 230786,
+        "bytes": 235897,
         "width": 768,
         "height": 512,
         "displayScale": 0.9808,
-        "sha256": "cdb40eab1960379727f02e47c9432d0eb3943bcc39ffcd9075e40d44ae905734"
+        "sha256": "8d3100ffab3650801bd9e8aa2e842c1e017d97919bd1ab73abe47667eafcb7f1"
       },
       "cast": {
         "frames": 6,
@@ -617,11 +617,11 @@
         "duration": 840,
         "format": "sheet",
         "src": "assets/characters/runtime-v10/raio/cast-3x2.png",
-        "bytes": 179350,
+        "bytes": 195420,
         "width": 768,
         "height": 512,
         "displayScale": 0.9808,
-        "sha256": "e694c4b6dd03b989b83704f67ee9df06d7c150127ae5b2b1edddb09e55521712"
+        "sha256": "62f61f8c95350355d4421ad8db47b8b8bcf7904761967a8f1a5b34b2dc8b5215"
       },
       "hit": {
         "frames": 4,
@@ -755,11 +755,11 @@
         "duration": 840,
         "format": "sheet",
         "src": "assets/characters/runtime-v10/chuvas/cast-3x2.png",
-        "bytes": 246741,
+        "bytes": 251543,
         "width": 768,
         "height": 512,
         "displayScale": 0.9078,
-        "sha256": "b81d642355b4f30af3786a4cc3e7e35b3cccae4fd44bd04b1ba8999d5ad756cd"
+        "sha256": "9206b69e6d9cf4f3733b6390f81ded8637fdc9797ed0e8ccff26436ad412b096"
       },
       "hit": {
         "frames": 4,
@@ -811,11 +811,11 @@
         "duration": 720,
         "format": "sheet",
         "src": "assets/characters/runtime-v10/gelo/attack-3x2.png",
-        "bytes": 249786,
+        "bytes": 269846,
         "width": 768,
         "height": 512,
         "displayScale": 0.88,
-        "sha256": "44f25e353a2ab818c09168d54751777d19bf96509ec70a62bd3bf1833a41778b"
+        "sha256": "75561b64f2ff8d6fa0af90212e9f2da72f2b79bf11bcf2cb5f1cec5c87c4a637"
       },
       "cast": {
         "frames": 6,
@@ -824,11 +824,11 @@
         "duration": 840,
         "format": "sheet",
         "src": "assets/characters/runtime-v10/gelo/cast-3x2.png",
-        "bytes": 247133,
+        "bytes": 258103,
         "width": 768,
         "height": 512,
         "displayScale": 0.88,
-        "sha256": "b601c67cfdad3b465d85167a7cf83b2125e9d1b26346fa8770f9d4a330d38933"
+        "sha256": "8a175ae9e8fd596674fb1871fa2804ba11116ff94d5eaf52c20303666fa2744b"
       },
       "hit": {
         "frames": 4,
@@ -1639,11 +1639,11 @@
         "duration": 720,
         "format": "sheet",
         "src": "assets/characters/runtime-v10/julius/attack-3x2.png",
-        "bytes": 188777,
+        "bytes": 209048,
         "width": 768,
         "height": 512,
         "displayScale": 0.88,
-        "sha256": "e60507008cf379ad7e4386482d838439652b5b06cfeac8809441a5d145e3e17b"
+        "sha256": "51c1766a5081cd195366920e09734182733fa0dea70a1576a13425d967fdf17f"
       },
       "cast": {
         "frames": 6,
@@ -1652,11 +1652,11 @@
         "duration": 840,
         "format": "sheet",
         "src": "assets/characters/runtime-v10/julius/cast-3x2.png",
-        "bytes": 160870,
+        "bytes": 175982,
         "width": 768,
         "height": 512,
         "displayScale": 0.88,
-        "sha256": "c63d104aa23caa0b54f0bf39c4b4eb2e9826570b98274933d54354d6b181c591"
+        "sha256": "10d561bdae441eef9c08e8aa7b5a14645bad2b6a53bfb5b8079b374ca8dc8a9b"
       },
       "hit": {
         "frames": 4,
