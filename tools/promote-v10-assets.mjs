@@ -148,6 +148,23 @@ for(const [characterId] of Object.entries(characters)){
   displayScales[characterId]=Number(Math.max(0.88,Math.min(1.12,target/bodyScale)).toFixed(4));
 }
 
+/* Algumas ações vieram com o corpo corretamente ancorado dentro da própria
+   folha, mas em uma escala-base menor que o idle aprovado. O multiplicador é
+   aplicado à folha inteira no renderizador (sem redesenhar poses ou VFX), com
+   origem nos pés. Assim trocar de Idle para Ataque/Conjuração não encolhe nem
+   cresce o personagem. Valores auditados contra o corpo denso do idle. */
+const actionDisplayScaleMultiplier=Object.freeze({
+  chuvas:{cast:1.1544},
+  gelo:{attack:1.2539,cast:1.3375},
+  julius:{attack:1.3830,cast:1.4531},
+  natureza:{attack:1.3131,cast:1.0849},
+  raio:{attack:1.1801,cast:1.2490}
+});
+function actionDisplayScale(characterId,action){
+  const multiplier=actionDisplayScaleMultiplier[characterId]?.[action]||1;
+  return Number((displayScales[characterId]*multiplier).toFixed(4));
+}
+
 const manifest={version:10,generatedAt:new Date().toISOString(),totalSheets:bundles.length,totalBytes,displayScales,characters:{}};
 for(const characterId of Object.keys(characters)) manifest.characters[characterId]={};
 
@@ -167,7 +184,7 @@ for(const bundle of bundles){
   const relativeSheet=path.relative(repo,outputSheet).replaceAll(path.sep,'/');
   manifest.characters[bundle.characterId][bundle.action]={
     ...bundle.contract,format:'sheet',src:relativeSheet,bytes:bundle.bytes,
-    width:bundle.png.width,height:bundle.png.height,displayScale:displayScales[bundle.characterId],sha256:bundle.hash
+    width:bundle.png.width,height:bundle.png.height,displayScale:actionDisplayScale(bundle.characterId,bundle.action),sha256:bundle.hash
   };
 }
 

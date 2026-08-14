@@ -61,6 +61,25 @@ function verifyCells(characterId,action,decoded,frames,cols,rows){
   }
 }
 
+function medianDenseBodyHeight(decoded,frames,cols,rows){
+  const cellW=decoded.width/cols,cellH=decoded.height/rows;
+  const heights=[];
+  for(let frame=0;frame<frames;frame++){
+    const ox=(frame%cols)*cellW,oy=Math.floor(frame/cols)*cellH;
+    const rowsWithBody=[];
+    for(let y=0;y<cellH;y++){
+      let dense=0;
+      for(let x=80;x<176;x++) if(decoded.rgba[((oy+y)*decoded.width+ox+x)*4+3]>24) dense++;
+      if(dense>=9) rowsWithBody.push(y);
+    }
+    assert.ok(rowsWithBody.length>=24,'corpo denso ausente');
+    heights.push(rowsWithBody.at(-1)-rowsWithBody[0]+1);
+  }
+  heights.sort((a,b)=>a-b);
+  const middle=heights.length/2;
+  return (heights[middle-1]+heights[middle])/2;
+}
+
 assert.equal(manifest.version,10);
 assert.equal(Object.keys(manifest.characters).length,24,'o manifesto precisa conter 24 personagens');
 assert.equal(manifest.totalSheets,120,'o manifesto precisa conter 120 folhas');
@@ -87,7 +106,7 @@ for(const [characterId,characterActions] of Object.entries(manifest.characters))
     assert.equal(spec.cols,cols);
     assert.equal(spec.rows,rows);
     assert.equal(fs.statSync(file).size,spec.bytes);
-    assert.ok(spec.displayScale>=.88&&spec.displayScale<=1.12,`${characterId}/${action}: escala visual fora do limite`);
+    assert.ok(spec.displayScale>=.88&&spec.displayScale<=1.5,`${characterId}/${action}: escala visual fora do limite`);
     const hash=crypto.createHash('sha256').update(bytes).digest('hex');
     assert.equal(hash,spec.sha256,`${characterId}/${action}: hash divergente`);
     assert.equal(hashes.has(hash),false,`${characterId}/${action}: folha duplicada`);
@@ -101,5 +120,28 @@ assert.equal(sheets,120);
 assert.equal(computedBytes,manifest.totalBytes);
 assert.equal(hashes.size,120,'cada movimento precisa de uma folha própria');
 assert.equal(fs.readdirSync(runtime,{recursive:true}).filter(file=>String(file).endsWith('.gif')).length,0,'GIFs de preview não pertencem ao runtime');
+
+/* As ações abaixo têm VFX amplos, porém o corpo precisa preservar a mesma
+   estatura que o Idle. O render aplica um multiplicador de escala ancorado
+   nos pés; esta verificação impede a regressão vista na vitrine do catálogo. */
+const crossActionStature={
+  chuvas:{cast:1.1544},
+  gelo:{attack:1.2539,cast:1.3375},
+  julius:{attack:1.3830,cast:1.4531},
+  natureza:{attack:1.3131,cast:1.0849},
+  raio:{attack:1.1801,cast:1.2490}
+};
+for(const [characterId,actionsToLock] of Object.entries(crossActionStature)){
+  const idle=manifest.characters[characterId].idle;
+  const idleDecoded=decodeRgba(fs.readFileSync(path.join(root,...idle.src.split('/'))));
+  const idleBody=medianDenseBodyHeight(idleDecoded,idle.frames,idle.cols,idle.rows)*idle.displayScale;
+  for(const [action,expectedMultiplier] of Object.entries(actionsToLock)){
+    const spec=manifest.characters[characterId][action];
+    assert.ok(Math.abs(spec.displayScale/idle.displayScale-expectedMultiplier)<.001,`${characterId}/${action}: multiplicador corporal divergente`);
+    const decoded=decodeRgba(fs.readFileSync(path.join(root,...spec.src.split('/'))));
+    const body=medianDenseBodyHeight(decoded,spec.frames,spec.cols,spec.rows)*spec.displayScale;
+    assert.ok(Math.abs(body-idleBody)<=3,`${characterId}/${action}: troca de ação altera a estatura (${body.toFixed(1)} vs ${idleBody.toFixed(1)})`);
+  }
+}
 
 console.log(`v10 assets: ${sheets}/120 folhas válidas, ${(computedBytes/1024/1024).toFixed(2)} MiB`);

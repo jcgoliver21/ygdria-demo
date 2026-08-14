@@ -1,6 +1,6 @@
 {
   "version": 10,
-  "generatedAt": "2026-08-14T14:49:02.601Z",
+  "generatedAt": "2026-08-14T16:21:26.332Z",
   "totalSheets": 120,
   "totalBytes": 23333422,
   "displayScales": {
@@ -331,7 +331,7 @@
         "bytes": 163510,
         "width": 768,
         "height": 512,
-        "displayScale": 1.0681,
+        "displayScale": 1.4025,
         "sha256": "1ece89b3924ad01a25e3f1a7476eb74f727651b6083b0868430e72ea3180072b"
       },
       "cast": {
@@ -344,7 +344,7 @@
         "bytes": 174870,
         "width": 768,
         "height": 512,
-        "displayScale": 1.0681,
+        "displayScale": 1.1588,
         "sha256": "57ffd93098fb8996281dc52105d05e85f32588bbcc691cd8c6957a2db8da61db"
       },
       "hit": {
@@ -607,7 +607,7 @@
         "bytes": 235897,
         "width": 768,
         "height": 512,
-        "displayScale": 0.9808,
+        "displayScale": 1.1574,
         "sha256": "8d3100ffab3650801bd9e8aa2e842c1e017d97919bd1ab73abe47667eafcb7f1"
       },
       "cast": {
@@ -620,7 +620,7 @@
         "bytes": 195420,
         "width": 768,
         "height": 512,
-        "displayScale": 0.9808,
+        "displayScale": 1.225,
         "sha256": "62f61f8c95350355d4421ad8db47b8b8bcf7904761967a8f1a5b34b2dc8b5215"
       },
       "hit": {
@@ -758,7 +758,7 @@
         "bytes": 251543,
         "width": 768,
         "height": 512,
-        "displayScale": 0.9078,
+        "displayScale": 1.048,
         "sha256": "9206b69e6d9cf4f3733b6390f81ded8637fdc9797ed0e8ccff26436ad412b096"
       },
       "hit": {
@@ -814,7 +814,7 @@
         "bytes": 269846,
         "width": 768,
         "height": 512,
-        "displayScale": 0.88,
+        "displayScale": 1.1034,
         "sha256": "75561b64f2ff8d6fa0af90212e9f2da72f2b79bf11bcf2cb5f1cec5c87c4a637"
       },
       "cast": {
@@ -827,7 +827,7 @@
         "bytes": 258103,
         "width": 768,
         "height": 512,
-        "displayScale": 0.88,
+        "displayScale": 1.177,
         "sha256": "8a175ae9e8fd596674fb1871fa2804ba11116ff94d5eaf52c20303666fa2744b"
       },
       "hit": {
@@ -1642,7 +1642,7 @@
         "bytes": 209048,
         "width": 768,
         "height": 512,
-        "displayScale": 0.88,
+        "displayScale": 1.217,
         "sha256": "51c1766a5081cd195366920e09734182733fa0dea70a1576a13425d967fdf17f"
       },
       "cast": {
@@ -1655,7 +1655,7 @@
         "bytes": 175982,
         "width": 768,
         "height": 512,
-        "displayScale": 0.88,
+        "displayScale": 1.2787,
         "sha256": "10d561bdae441eef9c08e8aa7b5a14645bad2b6a53bfb5b8079b374ca8dc8a9b"
       },
       "hit": {

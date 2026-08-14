@@ -215,7 +215,7 @@
       "duration": 720,
       "format": "sheet",
       "src": "assets/characters/runtime-v10/natureza/attack-3x2.png",
-      "displayScale": 1.0681
+      "displayScale": 1.4025
     },
     "cast": {
       "frames": 6,
@@ -224,7 +224,7 @@
       "duration": 840,
       "format": "sheet",
       "src": "assets/characters/runtime-v10/natureza/cast-3x2.png",
-      "displayScale": 1.0681
+      "displayScale": 1.1588
     },
     "hit": {
       "frames": 4,
@@ -300,7 +300,7 @@
       "frames": 4,
       "cols": 2,
       "rows": 2,
-      "duration": 4400,
+      "duration": 2400,
       "loop": true,
       "format": "sheet",
       "src": "assets/characters/runtime-v10/areia/idle-2x2.png",
@@ -411,7 +411,7 @@
       "duration": 720,
       "format": "sheet",
       "src": "assets/characters/runtime-v10/raio/attack-3x2.png",
-      "displayScale": 0.9808
+      "displayScale": 1.1574
     },
     "cast": {
       "frames": 6,
@@ -420,7 +420,7 @@
       "duration": 840,
       "format": "sheet",
       "src": "assets/characters/runtime-v10/raio/cast-3x2.png",
-      "displayScale": 0.9808
+      "displayScale": 1.225
     },
     "hit": {
       "frames": 4,
@@ -518,7 +518,7 @@
       "duration": 840,
       "format": "sheet",
       "src": "assets/characters/runtime-v10/chuvas/cast-3x2.png",
-      "displayScale": 0.9078
+      "displayScale": 1.048
     },
     "hit": {
       "frames": 4,
@@ -558,7 +558,7 @@
       "duration": 720,
       "format": "sheet",
       "src": "assets/characters/runtime-v10/gelo/attack-3x2.png",
-      "displayScale": 0.88
+      "displayScale": 1.1034
     },
     "cast": {
       "frames": 6,
@@ -567,7 +567,7 @@
       "duration": 840,
       "format": "sheet",
       "src": "assets/characters/runtime-v10/gelo/cast-3x2.png",
-      "displayScale": 0.88
+      "displayScale": 1.177
     },
     "hit": {
       "frames": 4,
@@ -1146,7 +1146,7 @@
       "duration": 720,
       "format": "sheet",
       "src": "assets/characters/runtime-v10/julius/attack-3x2.png",
-      "displayScale": 0.88
+      "displayScale": 1.217
     },
     "cast": {
       "frames": 6,
@@ -1155,7 +1155,7 @@
       "duration": 840,
       "format": "sheet",
       "src": "assets/characters/runtime-v10/julius/cast-3x2.png",
-      "displayScale": 0.88
+      "displayScale": 1.2787
     },
     "hit": {
       "frames": 4,
