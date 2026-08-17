@@ -780,7 +780,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.11');
+  expect(registration.caches).toContain('12r-v10.0.12');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});

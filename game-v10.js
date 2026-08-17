@@ -6412,11 +6412,12 @@ function beginGame(startAt=0,restoredHP=null){
 var galleryDeckOpen={}; /* decks abertos na galeria */
 function renderGallery(){
   const grid=document.getElementById('galleryGrid');
+  grid.classList.add('gallery-showcase');
   grid.innerHTML='';
   { const tot=KINGDOMS.length;
     const head=document.createElement('div');
-    head.className='gallery-count';
-    head.textContent=`🎴 ${tot} ${T('cartas','cards','cartas')} · 12 ${T('reinos','realms','reinos')}`;
+    head.className='gallery-count gallery-showcase-intro';
+    head.innerHTML=`<span>${T('Coleção de Ygdria','Ygdria Collection','Colección de Ygdria')}</span><small>🎴 ${tot} ${T('cartas','cards','cartas')} · 12 ${T('reinos','realms','reinos')}</small>`;
     grid.appendChild(head); }
   document.getElementById('enemyGallerySection')?.remove();
   /* v9.1 · Galeria em DECKS por reino: cada reino agrupa seu herói divino,
@@ -6930,12 +6931,12 @@ const HUMANOS_ETYPES={
 const HUMANOS_CARDS={
   gareth:{nome:'Gareth', hp:130, atk:16, sprite:'assets/enemies/humanos/gareth.png', card:'assets/cards/enemies/gareth-card.png'},
   cedric:{nome:'Cedric', hp:150, atk:18, sprite:'assets/enemies/humanos/cedric.png', card:'assets/cards/enemies/cedric-card.png'},
-  elizier:{nome:'Elizier', hp:160, atk:19, sprite:'assets/enemies/humanos/elizier.png', card:'assets/cards/enemies/elizier-card.png'},
-  roland:{nome:'Roland', hp:175, atk:20, sprite:'assets/enemies/humanos/roland.png', card:'assets/cards/enemies/roland-card.png'},
+  elizier:{nome:'Elizier', hp:160, atk:19, sprite:'assets/enemies/humanos/elizier.png', card:'assets/cards/enemies/elizier-card.png', flip:true},
+  roland:{nome:'Roland', hp:175, atk:20, sprite:'assets/enemies/humanos/roland.png', card:'assets/cards/enemies/roland-card.png', flip:true},
   jules:{nome:'Jules, The Joker', hp:200, atk:22, sprite:'assets/enemies/humanos/jules.png', card:'assets/cards/enemies/jules-card.png'},
   bernyce:{nome:'Bernyce', hp:220, atk:23, sprite:'assets/enemies/humanos/bernyce.png', card:'assets/cards/enemies/bernyce-card.png'},
   kalander:{nome:'Kalander', hp:240, atk:24, sprite:'assets/enemies/humanos/kalander.png', card:'assets/cards/enemies/kalander-card.png'},
-  julius:{nome:'Julius', hp:280, atk:26, sprite:'assets/enemies/humanos/julius.png', card:'assets/cards/enemies/julius-card.png'}
+  julius:{nome:'Julius', hp:280, atk:26, sprite:'assets/enemies/humanos/julius.png', card:'assets/cards/enemies/julius-card.png', flip:true}
 };
 const WORLDS=[{
   id:'humanos', nome:'Reino dos Humanos', titulo:'Terra dos Reguladores de Ygdria',
