@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Ygdria · Vitrine de inimigos do Capítulo 1</title>
+  <style>
+    :root{color-scheme:dark;--ink:#f6e8bd;--muted:#c6b995;--line:#be9b4b;--panel:#171225;--panel2:#241a36;--pink:#e68fb7}
+    *{box-sizing:border-box} body{margin:0;min-width:320px;background:radial-gradient(circle at 50% -10%,#5e3158 0,#1b1529 36%,#0d0b16 78%);font-family:Georgia,serif;color:var(--ink)}
+    main{max-width:1540px;margin:auto;padding:26px 18px 52px}.eyebrow{color:#f1c967;font-size:12px;font-weight:bold;letter-spacing:.2em;text-transform:uppercase}.hero{border:1px solid var(--line);border-radius:16px;padding:21px 24px;margin-bottom:22px;background:linear-gradient(115deg,#251634e6,#140f22e6);box-shadow:0 12px 38px #0008}.hero h1{margin:5px 0 8px;font-size:clamp(26px,5vw,46px);letter-spacing:.04em}.hero p{max-width:950px;margin:0;color:var(--muted);line-height:1.55}.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}.tag{border:1px solid #8e7540;border-radius:999px;padding:5px 10px;color:#f6e5b0;font-size:12px;background:#110d1ad9}
+    section{margin:24px 0}.section-title{display:flex;align-items:baseline;gap:10px;border-bottom:1px solid #80642f;padding:0 2px 9px;margin:0 0 13px}.section-title h2{font-size:22px;margin:0}.section-title span{color:var(--muted);font-size:13px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(176px,1fr));gap:12px}.unit{position:relative;min-height:264px;padding:10px 10px 11px;overflow:hidden;border:1px solid #67513d;border-radius:12px;background:linear-gradient(155deg,#34243d,#16121f 75%);box-shadow:0 7px 20px #0007}.unit::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(130deg,#ffffff11,transparent 38%)}.portrait{height:200px;display:grid;place-items:center;border-radius:8px;background:radial-gradient(ellipse at center,#71466566 0,transparent 65%);overflow:hidden}.portrait img{width:100%;height:100%;object-fit:contain;image-rendering:auto;filter:drop-shadow(0 7px 5px #000a)}.label{position:relative;margin-top:9px;font-weight:bold;font-size:16px;line-height:1.15}.code{position:relative;color:var(--muted);font:11px/1.2 ui-monospace,Consolas,monospace;margin-top:5px;word-break:break-word}.boss{border-color:#bc71b8;background:linear-gradient(155deg,#43213f,#201126 75%)}.boss .portrait{background:radial-gradient(ellipse at center,#a1429a66 0,transparent 67%)}.boss .label::after{content:"CHEFE";display:inline-block;margin-left:7px;padding:2px 5px;border:1px solid #e3a4df;border-radius:4px;color:#ffd1f4;font:9px ui-sans-serif,Arial,sans-serif;letter-spacing:.08em;vertical-align:2px}.notice{color:#bdae8d;font-size:13px;margin:0 0 12px}@media(max-width:520px){main{padding:15px 10px 38px}.hero{padding:17px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.unit{min-height:219px;padding:7px}.portrait{height:163px}.label{font-size:14px}.code{font-size:9px}}
+  </style>
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <div class="eyebrow">Ygdria · revisão visual</div>
+      <h1>Inimigos do Capítulo 1</h1>
+      <p>Elenco que pode aparecer na campanha do Reino dos Humanos. Esta vitrine mostra os arquivos usados em batalha, sem filtros, para avaliarmos direção, silhueta, proporção e orientação. Não inclui invocações nem os inimigos da masmorra-demo antiga.</p>
+      <div class="legend"><span class="tag">23 inimigos únicos</span><span class="tag">15 tropas e criaturas</span><span class="tag">8 chefes de carta</span><span class="tag">Arquivos reais de runtime</span></div>
+    </header>
+
+    <section>
+      <div class="section-title"><h2>Criaturas e guarda inicial</h2><span>Fases 1–5</span></div>
+      <div class="grid">
+        <article class="unit"><div class="portrait"><img src="../assets/enemies/humanos/slime-cerejeira.png" alt="Slime de Cerejeira"></div><div class="label">Slime de Cerejeira</div><div class="code">slimeCereja</div></article>
+        <article class="unit"><div class="portrait"><img src="../assets/enemies/humanos/lobo-raivoso.png" alt="Lobo Raivoso"></div><div class="label">Lobo Raivoso</div><div class="code">loboRaivoso · flip no jogo</div></article>
+        <article class="unit"><div class="portrait"><img src="../assets/enemies/humanos/soldado-1.png" alt="Soldado 1"></div><div class="label">Soldado 1</div><div class="code">soldado1</div></article>
+        <article class="unit"><div class="portrait"><img src="../assets/enemies/humanos/soldado-2.png" alt="Soldado 2"></div><div class="label">Soldado 2</div><div class="code">soldado2</div></article>
+        <article class="unit"><div class="portrait"><img src="../assets/enemies/humanos/capitao.png" alt="Capitão dos Soldados"></div><div class="label">Capitão dos Soldados</div><div class="code">capitao</div></article>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title"><h2>Inimigos sombrios e da Biblioteca</h2><span>Fases 6–7</span></div>
+      <div class="grid">
+        <article class="unit"><div class="portrait"><img src="../assets/enemies/humanos/vulto-sombrio.png" alt="Vulto Sombrio"></div><div class="label">Vulto Sombrio</div><div class="code">vulto</div></article>
+        <article class="unit"><div class="portrait"><img src="../assets/enemies/humanos/espectro-sombrio.png" alt="Espectro Sombrio"></div><div class="label">Espectro Sombrio</div><div class="code">espectro</div></article>
+        <article class="unit"><div class="portrait"><img src="../assets/enemies/humanos/cavaleiro-morto-vivo.png" alt="Cavaleiro Morto-Vivo"></div><div class="label">Cavaleiro Morto-Vivo</div><div class="code">morto</div></article>
+        <article class="unit"><div class="portrait"><img src="../assets/enemies/humanos/soldado-biblioteca-1.png" alt="Soldado da Biblioteca 1"></div><div class="label">Soldado da Biblioteca 1</div><div class="code">soldBib1</div></article>
+        <article class="unit"><div class="portrait"><img src="../assets/enemies/humanos/soldado-biblioteca-2.png" alt="Soldado da Biblioteca 2"></div><div class="label">Soldado da Biblioteca 2</div><div class="code">soldBib2</div></article>
+        <article class="unit"><div class="portrait"><img src="../assets/enemies/humanos/soldado-biblioteca-3.png" alt="Soldado da Biblioteca 3"></div><div class="label">Soldado da Biblioteca 3</div><div class="code">soldBib3</div></article>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title"><h2>Muralha e Coroa</h2><span>Fases 8–10</span></div>
+      <div class="grid">
+        <article class="unit"><div class="portrait"><img src="../assets/enemies/humanos/soldado-infantaria.png" alt="Soldado de Infantaria"></div><div class="label">Soldado de Infantaria</div><div class="code">infantaria</div></article>
+        <article class="unit"><div class="portrait"><img src="../assets/enemies/humanos/soldado-cavalaria.png" alt="Soldado de Cavalaria"></div><div class="label">Soldado de Cavalaria</div><div class="code">cavalaria</div></article>
+        <article class="unit"><div class="portrait"><img src="../assets/enemies/humanos/comandante.png" alt="Comandante dos Soldados"></div><div class="label">Comandante dos Soldados</div><div class="code">comandante</div></article>
+        <article class="unit"><div class="portrait"><img src="../assets/enemies/humanos/soldado-trono.png" alt="Soldado do Trono Real"></div><div class="label">Soldado do Trono Real</div><div class="code">trono</div></article>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title"><h2>Chefes de carta</h2><span>Também retornam em encontros da Torre</span></div>
+      <p class="notice">Os chefes aparecem com a orientação que será usada como inimigo. Eles pertencem ao elenco de cartas, mas aqui são exibidos como adversários da campanha.</p>
+      <div class="grid">
+        <article class="unit boss"><div class="portrait"><img src="../assets/enemies/humanos/gareth.png" alt="Gareth"></div><div class="label">Gareth</div><div class="code">gareth</div></article>
+        <article class="unit boss"><div class="portrait"><img src="../assets/enemies/humanos/cedric.png" alt="Cedric"></div><div class="label">Cedric</div><div class="code">cedric</div></article>
+        <article class="unit boss"><div class="portrait"><img src="../assets/enemies/humanos/elizier.png" alt="Elizier"></div><div class="label">Elizier</div><div class="code">elizier</div></article>
+        <article class="unit boss"><div class="portrait"><img src="../assets/enemies/humanos/roland.png" alt="Roland"></div><div class="label">Roland</div><div class="code">roland</div></article>
+        <article class="unit boss"><div class="portrait"><img src="../assets/enemies/humanos/jules.png" alt="Jules"></div><div class="label">Jules</div><div class="code">jules</div></article>
+        <article class="unit boss"><div class="portrait"><img src="../assets/enemies/humanos/bernyce.png" alt="Bernyce"></div><div class="label">Bernyce</div><div class="code">bernyce</div></article>
+        <article class="unit boss"><div class="portrait"><img src="../assets/enemies/humanos/kalander.png" alt="Kalander"></div><div class="label">Kalander</div><div class="code">kalander</div></article>
+        <article class="unit boss"><div class="portrait"><img src="../assets/enemies/humanos/julius.png" alt="Julius"></div><div class="label">Julius</div><div class="code">julius</div></article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
