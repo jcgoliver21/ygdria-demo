@@ -3305,7 +3305,7 @@ body.game-active .enemy-row .unit-stage{height:clamp(112px,18vh,142px)!important
 
 /* Galeria: mesma leitura em blocos da vitrine, sem retirar reino, raridade,
    favoritos, cartas novas, zoom ou a coleção de personagens encontrados. */
-#galleryGrid.gallery-showcase{display:grid!important;gap:12px;padding-bottom:8px}
+#galleryGrid.gallery-showcase{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:12px;width:100%;min-width:0;padding-bottom:8px}
 #galleryGrid.gallery-showcase .gallery-showcase-intro{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:0;padding:12px 14px;border:1px solid rgba(235,205,125,.36);border-radius:13px;background:linear-gradient(135deg,rgba(116,46,78,.46),rgba(17,11,29,.94) 62%);box-shadow:inset 0 1px rgba(255,255,255,.08)}
 #galleryGrid.gallery-showcase .gallery-showcase-intro>span{color:#fff0bf;font:700 14px/1.05 Georgia,serif;letter-spacing:1.3px;text-transform:uppercase}
 #galleryGrid.gallery-showcase .gallery-showcase-intro small{color:#efdcb3;font-size:9px;letter-spacing:.7px;text-align:right}
@@ -3315,4 +3315,27 @@ body.game-active .enemy-row .unit-stage{height:clamp(112px,18vh,142px)!important
 #galleryGrid.gallery-showcase .deck-grid{grid-template-columns:repeat(auto-fill,minmax(116px,1fr));gap:8px}
 #galleryGrid.gallery-showcase .gallery-card{padding:5px!important;border:1px solid color-mix(in srgb,var(--realm,#d4af5a) 38%,rgba(255,255,255,.08))!important;border-radius:10px!important;background:linear-gradient(160deg,rgba(255,255,255,.055),rgba(3,2,8,.76))!important;box-shadow:0 5px 15px rgba(0,0,0,.2)!important}
 #galleryGrid.gallery-showcase .gallery-card:hover{border-color:var(--realm,#f2d277)!important;transform:translateY(-1px)}
-@media (max-width:520px){#galleryGrid.gallery-showcase{gap:9px}#galleryGrid.gallery-showcase .gallery-showcase-intro{padding:10px;align-items:start;flex-direction:column;gap:4px}#galleryGrid.gallery-showcase .gallery-showcase-intro small{text-align:left}#galleryGrid.gallery-showcase .deck-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}}
+/* Galeria mobile: cada reino é um bloco vertical. Não herdar a antiga grade de
+   quatro colunas, que comprimia títulos, ícones e a coleção de personagens. */
+#galleryGrid.gallery-showcase>.deck-section,#galleryGrid.gallery-showcase>.gallery-showcase-intro{min-width:0;width:100%}
+#galleryGrid.gallery-showcase .deck-header{min-width:0}
+#galleryGrid.gallery-showcase .deck-header b{min-width:0;overflow-wrap:anywhere}
+@media (max-width:680px){
+  #galleryScreen{align-items:stretch!important;padding:max(8px,env(safe-area-inset-top)) 8px max(8px,env(safe-area-inset-bottom))!important}
+  #galleryScreen .pro-dialog{width:100%!important;max-width:none!important;max-height:calc(100dvh - 16px)!important;padding:12px!important;border-radius:18px!important}
+  #galleryGrid.gallery-showcase{gap:9px}
+  #galleryGrid.gallery-showcase .gallery-showcase-intro{padding:10px;align-items:start;flex-direction:column;gap:4px}
+  #galleryGrid.gallery-showcase .gallery-showcase-intro small{text-align:left}
+  #galleryGrid.gallery-showcase .deck-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  #galleryGrid.gallery-showcase .gallery-card{min-width:0;padding:6px!important}
+  #galleryGrid.gallery-showcase .gallery-card b{font-size:10px!important;line-height:1.12!important;white-space:normal!important;overflow-wrap:anywhere}
+  #galleryGrid.gallery-showcase .gallery-card small{font-size:8px!important;line-height:1.15!important;white-space:normal!important}
+  #galleryGrid.gallery-showcase .characters-game-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  #galleryGrid.gallery-showcase .character-game-card .gallery-thumb-wrap{height:132px!important}
+  #galleryGrid.gallery-showcase .character-game-card b{font-size:10px!important}
+  #galleryGrid.gallery-showcase .character-game-card small{font-size:8px!important}
+}
+@media (max-width:360px){
+  #galleryGrid.gallery-showcase .deck-grid,#galleryGrid.gallery-showcase .characters-game-grid{gap:6px!important}
+  #galleryGrid.gallery-showcase .character-game-card .gallery-thumb-wrap{height:116px!important}
+}

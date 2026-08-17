@@ -315,6 +315,31 @@ test('equipe sugerida rejeita lastteam duplicado e beginGame não entra em estad
   expect(errors).toEqual([]);
 });
 
+test('galeria mobile mantém blocos e cartas legíveis sem transbordamento',async({page})=>{
+  await page.setViewportSize({width:393,height:852});
+  const errors=await boot(page,'flow');
+  await page.locator('#galleryBtn').click();
+  await expect(page.locator('#galleryScreen')).toHaveClass(/show/);
+  const mobileLayout=await page.evaluate(()=>{
+    const gallery=document.getElementById('galleryGrid');
+    const firstSection=gallery.querySelector('.deck-section');
+    const dialog=document.querySelector('#galleryScreen .pro-dialog');
+    const galleryStyle=getComputedStyle(gallery);
+    const sectionRect=firstSection.getBoundingClientRect();
+    const dialogRect=dialog.getBoundingClientRect();
+    return {
+      columns:galleryStyle.gridTemplateColumns.split(' ').length,
+      sectionFits:sectionRect.left>=dialogRect.left-1&&sectionRect.right<=dialogRect.right+1,
+      pageFits:document.documentElement.scrollWidth<=window.innerWidth
+    };
+  });
+  expect(mobileLayout).toEqual({columns:1,sectionFits:true,pageFits:true});
+  const firstDeck=page.locator('#galleryGrid .deck-section').first();
+  await firstDeck.locator('.deck-header').click();
+  await expect(firstDeck.locator('.gallery-card').first()).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
 test('storage legado null não quebra boot, galeria, conquistas nem handlers',async({page})=>{
   await page.addInitScript(()=>{
     for(const key of ['12r_favs','12r_seen','12r_daily','12r_login','12r_ach']) localStorage.setItem(key,'null');
@@ -780,7 +805,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.12');
+  expect(registration.caches).toContain('12r-v10.0.13');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
