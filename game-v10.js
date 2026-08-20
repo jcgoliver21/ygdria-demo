@@ -1587,6 +1587,37 @@ KINGDOMS.forEach(character=>{
   if(animationSet) character.sprites=animationSet;
 });
 
+/* Escala canônica de leitura em combate. A escala da animação continua sendo
+   apenas a correção técnica do sheet; esta tabela define o porte do ser no mundo. */
+const UNIT_ART_SCALES=Object.freeze({
+  card:1.30,
+  cardYoungOrGareth:0.80,
+  soldier:1.00,
+  captain:1.10,
+  beastSmall:0.25,
+  beastMedium:0.50,
+  beastLarge:1.00,
+  beastGiant:2.00
+});
+const YOUNG_CARD_IDS=new Set(['berenice-jovem','galateia-jovem','adriel-jovem','acqua-jovem','gareth']);
+function cardArtScale(character){
+  return YOUNG_CARD_IDS.has(character?.id)?UNIT_ART_SCALES.cardYoungOrGareth:UNIT_ART_SCALES.card;
+}
+function enemyArtScale(enemy){
+  const card=KINGDOMS.find(character=>[
+    enemy?.heroId,enemy?.characterId,enemy?.cardId,enemy?.id,enemy?.etype,enemy?.name
+  ].filter(Boolean).some(value=>String(value).trim().toLowerCase()===character.id||String(value).trim().toLowerCase()===String(character.nome).trim().toLowerCase()));
+  if(card) return cardArtScale(card);
+  const descriptor=[enemy?.etype,enemy?.name,enemy?.sprite].filter(Boolean).join(' ').toLowerCase();
+  if(/dragon|drag[aã]o|kraken/.test(descriptor)) return UNIT_ART_SCALES.beastGiant;
+  if(/slime/.test(descriptor)) return UNIT_ART_SCALES.beastSmall;
+  if(/lobo|wolf/.test(descriptor)) return UNIT_ART_SCALES.beastMedium;
+  if(/espectro|vulto|wraith|morto-vivo|sentinel|golem/.test(descriptor)) return UNIT_ART_SCALES.beastLarge;
+  if(/capit[aã]o|comandante/.test(descriptor)) return UNIT_ART_SCALES.captain;
+  if(/soldado|infantaria|cavalaria|trono/.test(descriptor)) return UNIT_ART_SCALES.soldier;
+  return UNIT_ART_SCALES.beastLarge;
+}
+
 const seedText = new URLSearchParams(location.search).get('seed') || String(Date.now());
 const initialRngState=[...seedText].reduce((acc,ch)=>(Math.imul(acc,31)+ch.charCodeAt(0))>>>0,2166136261) || 1;
 let rngState = initialRngState;
@@ -2105,6 +2136,7 @@ function renderPartyArena(){
     unit.style.setProperty('--aura-inner-light',k.colorLight);
     unit.style.setProperty('--aura-outer',k.rarity==='DIVINA'?'#ffe58a':k.colorLight);
     unit.style.setProperty('--aura-outer-light',k.rarity==='DIVINA'?'#ffffff':k.color);
+    unit.style.setProperty('--unit-art-scale',String(cardArtScale(k)));
     const avatarContent = spriteMarkup(k,'idle');
     const stageHtml=`
       <div class="unit-stage">
@@ -2636,6 +2668,7 @@ function renderEnemies(){
     unit.style.setProperty('--aura-inner-light',palette[1]);
     unit.style.setProperty('--aura-outer',palette[2]);
     unit.style.setProperty('--aura-outer-light',palette[3]);
+    unit.style.setProperty('--unit-art-scale',String(enemyArtScale(e)));
     const stageHtml=`
       <div class="unit-stage">
         <div class="target-arrow"></div>

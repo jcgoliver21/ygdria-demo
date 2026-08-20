@@ -3016,6 +3016,17 @@ body.game-active .hero-unit.hero-young .hero-sprite-image{
 .hero-sprite-sheet{transform:scale(var(--sprite-scale,1));transform-origin:50% 100%}
 .hero-sprite-sheet.flip{transform:scaleX(-1) scale(var(--sprite-scale,1));transform-origin:50% 100%}
 
+/* Escala de porte do elenco: fixa por categoria e aplicada separadamente da
+   animação. `scale` compõe com os transforms das poses, preservando pés, arma,
+   espelhamento e o tamanho em todos os frames. */
+body.game-active .hero-unit .hero-sprite-sheet,
+body.game-active .enemy-unit .enemy-character-sheet,
+body.game-active .hero-unit .hero-sprite-image,
+body.game-active .enemy-unit .enemy-sprite-image{
+  scale:var(--unit-art-scale,1)!important;
+  transform-origin:50% 100%;
+}
+
 /* A segunda linha do HUD usa toda a largura: objetivo e recorde à esquerda,
    controles agrupados no extremo direito. */
 .mission-metrics{
