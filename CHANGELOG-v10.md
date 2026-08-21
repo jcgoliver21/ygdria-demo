@@ -2,6 +2,14 @@
 
 Data: 2026-08-14
 
+## v10.0.18 — Direção épica de combate
+
+- Inimigos exclusivos agora lutam com folhas 2×3 transparentes de seis arquétipos: guarda humano, slime rúnico, lobo sombrio, espectro amaldiçoado, sentinela de pedra e dragão carmesim.
+- Cada arquétipo usa repouso, investida, conjuração, dano e vitória por sequência de quadros, sem ampliar o corpo entre ações. Terrestres são alinhados pelo contato com o chão; espectros preservam a suspensão.
+- Impactos de ataque, acerto crítico, telegráfo de chefe e aura de carregamento passaram a ter leitura própria, sempre sob orçamento de partículas e movimento reduzido.
+- A arena ganhou atmosfera viva por reino, presença de chefe e reforço visual de raridade/carga.
+- Cache/PWA renovado para distribuir todos os novos assets.
+
 ## v10.0.17 — Estatura estável entre animações
 
 - Corrigida a troca de escala entre as cinco ações do elenco, com Lucius como caso principal: a estatura é normalizada pelo idle e ancorada na linha dos pés.

@@ -46,7 +46,7 @@ test('v10.0.1 restaura escala e anima inimigos-personagem e inimigos comuns',asy
   const errors=await boot(page,'flow');
   await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
   const probe=await page.evaluate(()=>window.__12rQA.enemyAnimationProbe());
-  expect(probe).toMatchObject({characterSheet:true,characterAction:'attack',genericAction:'cast',genericMotion:true,chargeAura:true});
+  expect(probe).toMatchObject({characterSheet:true,characterAction:'attack',genericAction:'cast',genericMotion:true,genericSheet:true,chargeAura:true});
   expect(probe.rectangularGlow).toBe('none');
   const dimensions=await page.evaluate(()=>{
     const hero=document.querySelector('.hero-unit');
@@ -805,7 +805,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.17');
+  expect(registration.caches).toContain('12r-v10.0.18');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});

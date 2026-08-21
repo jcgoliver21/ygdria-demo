@@ -1538,6 +1538,35 @@ function buildTowerStage(floor){
 }
 const GOLEM_SPRITE = 'assets/enemies/stone-sentinel/single-1.png';
 const SUMMON_ANIMATIONS={golem:{src:'assets/summons/golem/attack-2x3.png',rows:3,cols:2,frames:6,idle:[0,5],attack:[0,1,2,3,4,5],duration:640},harpy:{src:'assets/summons/harpy/attack-2x3.png',rows:2,cols:3,frames:6,idle:[0,5],attack:[0,1,2,3,4,5],duration:560}};
+/* Inimigos exclusivos usam folhas transparentes reais, separadas por arquétipo.
+   Cada ação escolhe a própria sequência da grade 2×3, sem simular ataque por CSS. */
+const ENEMY_ANIMATION_LIBRARY=Object.freeze({
+  'human-guard':{src:'assets/enemies/runtime-v10/human-guard/processed/sheet-transparent.png',cols:2,rows:3,frames:6,duration:720},
+  'rune-slime':{src:'assets/enemies/runtime-v10/rune-slime/processed/sheet-transparent.png',cols:2,rows:3,frames:6,duration:650},
+  'shadow-wolf':{src:'assets/enemies/runtime-v10/shadow-wolf/processed/sheet-transparent.png',cols:2,rows:3,frames:6,duration:700},
+  'cursed-wraith':{src:'assets/enemies/runtime-v10/cursed-wraith/processed/sheet-transparent.png',cols:2,rows:3,frames:6,duration:680,flying:true},
+  'stone-sentinel':{src:'assets/enemies/runtime-v10/stone-sentinel/processed/sheet-transparent.png',cols:2,rows:3,frames:6,duration:780},
+  'crimson-dragon':{src:'assets/enemies/runtime-v10/crimson-dragon/processed/sheet-transparent.png',cols:2,rows:3,frames:6,duration:820}
+});
+const ENEMY_FRAME_SEQUENCES=Object.freeze({idle:[0,1],attack:[2,3,1],cast:[1,2,3],hit:[4,5],victory:[5]});
+function enemyAnimationKey(e){
+  const descriptor=[e?.etype,e?.name,e?.sprite].filter(Boolean).join(' ').toLowerCase();
+  if(/dragon|drag[aã]o/.test(descriptor)) return 'crimson-dragon';
+  if(/slime|limo/.test(descriptor)) return 'rune-slime';
+  if(/lobo|wolf|chacal/.test(descriptor)) return 'shadow-wolf';
+  if(/espectro|vulto|wraith|trevas|vazio|morto/.test(descriptor)) return 'cursed-wraith';
+  if(/sentinela|golem|guardião/.test(descriptor)) return 'stone-sentinel';
+  return e?.etype||/assets\/enemies\/humanos\//.test(String(e?.sprite||''))?'human-guard':null;
+}
+function enemyAnimationCharacter(e){
+  const key=enemyAnimationKey(e),library=key&&ENEMY_ANIMATION_LIBRARY[key];
+  if(!library) return null;
+  const sprites={};
+  Object.entries(ENEMY_FRAME_SEQUENCES).forEach(([action,frameOrder])=>{
+    sprites[action]={...library,format:'sheet',sheetFrames:library.frames,frameOrder,loop:action==='idle',duration:action==='idle'?Math.max(1500,library.duration*2):library.duration};
+  });
+  return {id:`enemy-${key}`,nome:e?.name||key,sprites,heroFlip:false,enemyRuntime:true,flying:library.flying===true};
+}
 let autoTargetMode = false;
 let battleSpeedIndex = 0;
 let royalShuffles = 1;
@@ -1880,7 +1909,7 @@ function heroIsFlipped(k){
 function spriteMarkup(k, action='idle', options={}){
   const spec = k.sprites?.[action];
   const flipped=options.flip??heroIsFlipped(k);
-  const roleClass=options.enemy?' enemy-character-sheet':'';
+  const roleClass=(options.enemy?' enemy-character-sheet':'')+(options.enemyRuntime?' enemy-runtime-sheet':'');
   if(spec?.src&&!failedSpriteAssets.has(spec.src)){
     const meta = {...HERO_ACTIONS[action], ...spec};
     const displayScale=normalizedActionDisplayScale(k,action,meta.displayScale);
@@ -1957,14 +1986,16 @@ function animateHeroAvatar(avatar,k,action='idle',options={}){
   avatar.classList.toggle('hero-action',requested!=='idle');
   const loop=options.loop??Boolean(meta.loop);
   const duration=Math.max(80,Number(meta.duration||520));
-  const frames=Math.max(1,Number(meta.frames||1));
+  const frameOrder=Array.isArray(meta.frameOrder)&&meta.frameOrder.length?meta.frameOrder:null;
+  const frames=frameOrder?frameOrder.length:Math.max(1,Number(meta.frames||1));
   const state={paused:false,lastTick:null,elapsed:0,timerRemaining:null,timerDeadline:0,tick:null,finish:null};
   avatar.__heroAnimationState=state;
   if(spec?.format==='sheet'&&frames>1&&!reducedMotion){
     const sheet=avatar.querySelector('.hero-sprite-sheet.grid-sheet');
     const cols=Math.max(1,Number(meta.cols||frames));
     const rows=Math.max(1,Number(meta.rows||1));
-    const positions=Array.from({length:frames},(_,frame)=>({
+    const sheetFrames=Math.max(1,Number(meta.sheetFrames||meta.frames||1));
+    const positions=Array.from({length:sheetFrames},(_,frame)=>({
       x:cols<=1?0:(frame%cols)*100/(cols-1),
       y:rows<=1?0:Math.floor(frame/cols)*100/(rows-1)
     }));
@@ -1979,8 +2010,9 @@ function animateHeroAvatar(avatar,k,action='idle',options={}){
          action change never indexes positions[-1]. */
       const progress=Math.max(0,loop?(state.elapsed%duration)/duration:Math.min(.999999,state.elapsed/duration));
       const frame=Math.min(frames-1,Math.floor(progress*frames));
-      sheet.style.setProperty('--sprite-bg-x',positions[frame].x+'%');
-      sheet.style.setProperty('--sprite-bg-y',positions[frame].y+'%');
+      const sourceFrame=frameOrder?frameOrder[frame]:frame;
+      sheet.style.setProperty('--sprite-bg-x',positions[sourceFrame].x+'%');
+      sheet.style.setProperty('--sprite-bg-y',positions[sourceFrame].y+'%');
       if(loop||state.elapsed<duration) avatar.__actionFrameRaf=requestAnimationFrame(tick);
       else{
         avatar.__actionFrameRaf=null;
@@ -2033,11 +2065,11 @@ function enemyFallbackMarkup(e, action='idle'){
 
 function animateEnemyAvatar(avatar,e,action='idle',options={}){
   if(!avatar||!e) return false;
-  const character=enemyCharacterFor(e);
+  const character=enemyCharacterFor(e)||enemyAnimationCharacter(e);
   const overlayMarkup=enemyAvatarOverlay(e);
   if(character?.sprites?.idle?.src){
     avatar.classList.add('enemy-avatar');
-    return animateHeroAvatar(avatar,character,action,{...options,enemy:true,flip:Boolean(e.flip||e.isCard),overlayMarkup});
+    return animateHeroAvatar(avatar,character,action,{...options,enemy:true,enemyRuntime:Boolean(character.enemyRuntime),flip:Boolean(e.flip||e.isCard),overlayMarkup});
   }
   stopHeroAnimation(avatar);
   avatar.dataset.action=action;
@@ -2114,7 +2146,8 @@ function spawnCombatFx(kind,target,color='#fff',duration=650){
   const layer = document.getElementById('specialFxLayer');
   if(!layer || !target || !particlesEnabled || reducedMotion) return;
   const lr=layer.getBoundingClientRect(), tr=target.getBoundingClientRect();
-  const fx=acquireCombatFx(kind==='hit'?'fx-hit-spark':'attack-telegraph');
+  const fxClass=kind==='hit'?'fx-hit-spark':kind==='impact'?'fx-impact-burst':kind==='critical'?'fx-critical-impact':'attack-telegraph';
+  const fx=acquireCombatFx(fxClass);
   const lease=fx.__fxLease;
   fx.dataset.fx=kind;
   fx.style.color=color;
@@ -2405,6 +2438,11 @@ function renderStageProgress(){
      A classe própria mantém a banda de aterrissagem e a malha tática presas ao
      piso pintado, sem deslocar os demais cenários que também usam scene-4. */
   arenaEl.className = 'arena scene-'+((activeStageData&&Number.isFinite(activeStageData.scene))?activeStageData.scene:4)+(towerMode?' tower-stage':'');
+  const mood=worldRun.active?'humanos':towerMode?'eternidade':bossRushMode?'boss':`scene-${activeStageData?.scene??4}`;
+  arenaEl.dataset.realmMood=mood;
+  arenaEl.classList.toggle('boss-presence',Boolean(bossRushMode||worldRun.active&&worldRun.nivel===5));
+  let atmosphere=arenaEl.querySelector('.arena-atmosphere');
+  if(!atmosphere){ atmosphere=document.createElement('div'); atmosphere.className='arena-atmosphere'; atmosphere.setAttribute('aria-hidden','true'); arenaEl.prepend(atmosphere); }
   if(activeStageData?.bgUrl){
     arenaEl.style.setProperty('background-image',`linear-gradient(rgba(6,3,13,.22),rgba(6,3,13,.5)),url('${activeStageData.bgUrl}')`,'important');
     arenaEl.style.setProperty('background-size','cover');
@@ -2726,6 +2764,7 @@ function renderEnemies(){
         <div class="target-arrow"></div>
         <div class="unit-ground-shadow"></div>
         <div class="unit-charge-aura" aria-hidden="true"></div>
+        ${isBoss?'<div class="boss-presence-mark" aria-hidden="true">✦</div>':''}
         <div class="avatar-circle enemy-avatar" id="enemyPortrait-${idx}" data-action="idle">${enemyFallbackMarkup(e)}</div>
       </div>`;
     const nomeHtml=vizPrefs.enemyNames==='off'?'':`
@@ -5045,7 +5084,8 @@ function launchSpecialFx(idx,a){
     scheduleCombat(()=>arenaEl.classList.remove('fx-flash'), 500);
   }
   scheduleCombat(()=>{
-    spawnCombatFx('hit',target,k.colorLight,520);
+    spawnCombatFx('impact',target,k.colorLight,520);
+    spawnCombatFx('hit',target,k.colorLight,440);
     spawnRealmParticles(realmFx,target,a.kind==='active'?22:12);
     ring.remove();
   },560);
@@ -5559,7 +5599,8 @@ function applyDamageToEnemy(dmg, colorIdx, targetIdxOverride){
     enemyUnit.classList.remove('hit'); void enemyUnit.offsetWidth; enemyUnit.classList.add('hit');
     playEnemyAction(idx,'hit');
     const hitColor = colorIdx!==null && colorIdx!==undefined && KINGDOMS[colorIdx] ? KINGDOMS[colorIdx].colorLight : '#fff';
-    spawnCombatFx('hit',enemyUnit,hitColor,520);
+    spawnCombatFx(finalDamage>=100?'critical':'impact',enemyUnit,hitColor,560);
+    spawnCombatFx('hit',enemyUnit,hitColor,440);
     if(colorIdx!==null && colorIdx!==undefined && KINGDOMS[colorIdx]) spawnRealmParticles(KINGDOMS[colorIdx].iconId||KINGDOMS[colorIdx].id,enemyUnit,8);
   }
 
@@ -5742,6 +5783,7 @@ function enemyCounterAttack(){
     const enemyUnit = document.getElementById('enemy-'+idx);
     if(enemyUnit){ enemyUnit.classList.remove('attacking'); void enemyUnit.offsetWidth; enemyUnit.classList.add('attacking'); }
     playEnemyAction(idx,'attack');
+    if(enemy.isBoss) spawnCombatFx('telegraph',document.getElementById('playerHpAnchor'),enemyAuraPalette(enemy)[1],500);
     const variance = 0.85 + gameRandom()*0.3;
     let dmg = Math.round(enemy.atk * variance * Math.pow(0.8, damageReductionStacks));
     if(invulnerableTurns>0){
@@ -5773,6 +5815,7 @@ function enemyCounterAttack(){
     if(dmg>0) ACTIVE.forEach(heroIdx=>playHeroAction(heroIdx,'hit'));
     if(dmg>0&&partyArenaEl){ partyArenaEl.classList.remove('party-hurt'); void partyArenaEl.offsetWidth; partyArenaEl.classList.add('party-hurt');
       scheduleCombat(()=>partyArenaEl.classList.remove('party-hurt'),480); }
+    if(dmg>0) spawnCombatFx(enemy.isBoss?'critical':'impact',document.getElementById('playerHpAnchor'),enemyAuraPalette(enemy)[1],560);
     sfxCombatAttack(enemy.etype||enemy.id||enemy.name,'enemy');
     haptic([25,20,25]);
     if(dmg>0) setBattleStatus(T(`${L(enemy.name)} contra-atacou e causou ${dmg} de dano.`,`${L(enemy.name)} counterattacked for ${dmg} damage.`,`${L(enemy.name)} contraatacó y causó ${dmg} de daño.`));
@@ -6884,7 +6927,8 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
         characterSheet:Boolean(character?.querySelector('.hero-sprite-sheet.grid-sheet')),
         characterAction:character?.dataset.action,
         genericAction:generic?.dataset.action,
-        genericMotion:Boolean(generic?.querySelector('.enemy-motion-cast')),
+        genericMotion:Boolean(generic?.querySelector('.enemy-runtime-sheet,.enemy-motion-cast')),
+        genericSheet:Boolean(generic?.querySelector('.enemy-runtime-sheet.grid-sheet')),
         chargeAura:Boolean(document.querySelector('#enemy-0 .unit-charge-aura')),
         rectangularGlow:getComputedStyle(character).boxShadow
       };

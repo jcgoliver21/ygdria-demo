@@ -121,6 +121,23 @@ assert.equal(computedBytes,manifest.totalBytes);
 assert.equal(hashes.size,120,'cada movimento precisa de uma folha própria');
 assert.equal(fs.readdirSync(runtime,{recursive:true}).filter(file=>String(file).endsWith('.gif')).length,0,'GIFs de preview não pertencem ao runtime');
 
+/* Inimigos exclusivos também entram como sprites de runtime: seis folhas
+   RGBA, 2×3 e sem alfa na borda. Isso bloqueia a volta de fundos pintados ou
+   de recortes borrados no campo de batalha. */
+const enemySheets=['human-guard','rune-slime','shadow-wolf','cursed-wraith','stone-sentinel','crimson-dragon'];
+let enemyBytes=0;
+for(const id of enemySheets){
+  const file=path.join(root,'assets','enemies','runtime-v10',id,'processed','sheet-transparent.png');
+  assert.ok(fs.existsSync(file),`${id}: folha de combate ausente`);
+  const bytes=fs.readFileSync(file);
+  assert.equal(bytes[25],6,`${id}: PNG precisa preservar alfa`);
+  const decoded=decodeRgba(bytes);
+  assert.deepEqual([decoded.width,decoded.height],[512,768],`${id}: grade 2×3 precisa ter células de 256px`);
+  verifyCells(id,'combat',decoded,6,2,3);
+  enemyBytes+=bytes.length;
+}
+assert.ok(enemyBytes<=2*1024*1024,'folhas de inimigos excederam orçamento de 2 MiB');
+
 /* As ações abaixo têm VFX amplos, porém o corpo precisa preservar a mesma
    estatura que o Idle. O render aplica um multiplicador de escala ancorado
    nos pés; esta verificação impede a regressão vista na vitrine do catálogo. */
@@ -144,4 +161,4 @@ for(const [characterId,actionsToLock] of Object.entries(crossActionStature)){
   }
 }
 
-console.log(`v10 assets: ${sheets}/120 folhas válidas, ${(computedBytes/1024/1024).toFixed(2)} MiB`);
+console.log(`v10 assets: ${sheets}/120 folhas válidas, ${(computedBytes/1024/1024).toFixed(2)} MiB + ${(enemyBytes/1024/1024).toFixed(2)} MiB de inimigos`);
