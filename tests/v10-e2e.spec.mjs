@@ -924,6 +924,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.18');
 
     // Produção não expõe __12rQA: este trecho percorre somente controles reais.
     if(await page.locator('#introScreen').isVisible()) await page.locator('#introNext').click();
@@ -940,6 +941,7 @@ test.describe('@production publicação real',()=>{
     await page.click('#startBtn');
     await expect(page.locator('.hero-unit')).toHaveCount(4);
     await expect(page.locator('.board .gem')).toHaveCount(36);
+    await expect(page.locator('#enemyPortrait-0 .enemy-runtime-sheet.grid-sheet')).toHaveCount(1);
     if(await page.locator('#storySkip').isVisible()) await page.locator('#storySkip').click();
 
     await page.locator('.mini-card').first().click();
