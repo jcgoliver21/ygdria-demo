@@ -32,6 +32,7 @@
     <button id="toggle" type="button">Pausar animações</button>
   </header>
   <main id="gallery" aria-live="polite"></main>
+  <script src="../v10-animations.js?v=10.0.17"></script>
   <script>
     const characters = [
       ['Galatéia','luz'],['Berenice','humanos'],['Maril','agua'],['Lucius','fogo'],['Ninfa Queen','natureza'],['Kallendra','terra'],
@@ -43,6 +44,18 @@
       ['Idle','idle',4,2,2,2400], ['Ataque','attack',6,3,2,720], ['Conjuração','cast',6,3,2,840], ['Dano','hit',4,2,2,360], ['Vitória','victory',4,2,2,1200]
     ];
     const changed = new Set(['luz:attack','luz:cast','humanos:attack','humanos:cast','fogo:attack','fogo:cast','natureza:attack','natureza:cast','areia:idle','sombras:attack','sombras:cast','raio:attack','raio:cast','chuvas:attack','chuvas:cast','gelo:attack','gelo:cast','gareth:attack','julius:attack','julius:cast']);
+    /* Mesmo contrato de normalização aplicado pelo jogo: base é o repouso;
+       a origem é sempre a linha dos pés. */
+    const actionScale = {
+      'acqua-jovem':{attack:.8398,hit:.7652,victory:.9396},agua:{attack:1.0344,cast:1.07,hit:1.0982},areia:{attack:1.0834,cast:1.0858,hit:1.0285,victory:1.0535},
+      'berenice-jovem':{victory:.9662},bernyce:{attack:1.0272,cast:1.0315,hit:.9305,victory:1.0499},cedric:{attack:1.1456,cast:1.0793,hit:1.0518,victory:1.0545},
+      chuvas:{attack:.805,hit:1.2485},elizier:{attack:1.1281,cast:1.034,hit:1.0853,victory:1.0381},fogo:{attack:.6287,cast:1.0441,hit:.9568},
+      'galateia-jovem':{attack:.9742,cast:.972,victory:1.0391},gareth:{attack:.8071,cast:1.0367,hit:1.0212},gelo:{attack:.9769,cast:.8805,hit:1.1637,victory:1.0698},
+      humanos:{attack:.6331,cast:.6236,hit:1.0629,victory:1.0763},jules:{attack:1.0333,cast:1.0342,hit:.9361,victory:1.037},julius:{attack:.9372,cast:.9849,hit:1.0165},
+      kalander:{attack:1.0338,hit:.9806,victory:1.043},luz:{attack:.7015,cast:.6793},natureza:{attack:1.0775,cast:1.1599,hit:.9549,victory:.9489},
+      raio:{attack:.9437,cast:.9503,hit:1.2453,victory:.9597},roland:{attack:1.124,cast:1.0538,hit:1.1173},sombras:{attack:.6597,cast:.6563,hit:.9757},
+      terra:{attack:1.0811,hit:1.0352},vento:{cast:1.0319,hit:1.1514,victory:1.0431}
+    };
     const gallery = document.getElementById('gallery');
     const sprites = [];
     for (const [name, id] of characters) {
@@ -57,6 +70,10 @@
         const grid = cols === 3 ? '3x2' : '2x2';
         sprite.style.backgroundImage = `url('../assets/characters/runtime-v10/${id}/${action}-${grid}.png')`;
         sprite.style.backgroundSize = `${cols * 100}% ${rows * 100}%`;
+        const base = window.YGDRIA_V10_ANIMATIONS?.[id]?.[action]?.displayScale || 1;
+        const normalized = base * (actionScale[id]?.[action] || 1);
+        sprite.style.transform = `scale(${normalized})`;
+        sprite.style.transformOrigin = '50% 100%';
         sprites.push({ sprite, frames, cols, rows, duration, frame: -1 }); actionsEl.append(card);
       }
       gallery.append(section);

@@ -1815,6 +1815,41 @@ const HERO_ACTIONS = Object.freeze({
   hit:     { frames:4, cols:2, rows:2, duration:360, loop:false },
   victory: { frames:4, cols:2, rows:2, duration:1200, loop:false, holdLast:true }
 });
+
+/* v10.0.17 · As folhas de cada ação foram exportadas em enquadramentos
+   diferentes. Esta tabela normaliza o tamanho corporal contra o repouso de
+   cada personagem, sempre com transform-origin nos pés. Ela não redimensiona
+   quadros individuais: a silhueta continua estável durante a ação e a pose
+   não "cresce" ao trocar de idle para ataque, magia, dano ou vitória. */
+const ACTION_BODY_SCALE_NORMALIZATION = Object.freeze({
+  'acqua-jovem': Object.freeze({attack:.8398,hit:.7652,victory:.9396}),
+  agua: Object.freeze({attack:1.0344,cast:1.0700,hit:1.0982}),
+  areia: Object.freeze({attack:1.0834,cast:1.0858,hit:1.0285,victory:1.0535}),
+  'berenice-jovem': Object.freeze({victory:.9662}),
+  bernyce: Object.freeze({attack:1.0272,cast:1.0315,hit:.9305,victory:1.0499}),
+  cedric: Object.freeze({attack:1.1456,cast:1.0793,hit:1.0518,victory:1.0545}),
+  chuvas: Object.freeze({attack:.8050,hit:1.2485}),
+  elizier: Object.freeze({attack:1.1281,cast:1.0340,hit:1.0853,victory:1.0381}),
+  fogo: Object.freeze({attack:.6287,cast:1.0441,hit:.9568}),
+  'galateia-jovem': Object.freeze({attack:.9742,cast:.9720,victory:1.0391}),
+  gareth: Object.freeze({attack:.8071,cast:1.0367,hit:1.0212}),
+  gelo: Object.freeze({attack:.9769,cast:.8805,hit:1.1637,victory:1.0698}),
+  humanos: Object.freeze({attack:.6331,cast:.6236,hit:1.0629,victory:1.0763}),
+  jules: Object.freeze({attack:1.0333,cast:1.0342,hit:.9361,victory:1.0370}),
+  julius: Object.freeze({attack:.9372,cast:.9849,hit:1.0165}),
+  kalander: Object.freeze({attack:1.0338,hit:.9806,victory:1.0430}),
+  luz: Object.freeze({attack:.7015,cast:.6793}),
+  natureza: Object.freeze({attack:1.0775,cast:1.1599,hit:.9549,victory:.9489}),
+  raio: Object.freeze({attack:.9437,cast:.9503,hit:1.2453,victory:.9597}),
+  roland: Object.freeze({attack:1.1240,cast:1.0538,hit:1.1173}),
+  sombras: Object.freeze({attack:.6597,cast:.6563,hit:.9757}),
+  terra: Object.freeze({attack:1.0811,hit:1.0352}),
+  vento: Object.freeze({cast:1.0319,hit:1.1514,victory:1.0431})
+});
+function normalizedActionDisplayScale(character,action,displayScale){
+  const correction=ACTION_BODY_SCALE_NORMALIZATION[character?.id]?.[action]||1;
+  return Number((Number(displayScale||1)*correction).toFixed(4));
+}
 const MAX_ACTIVE_FX = 28;
 const failedSpriteAssets = new Set();
 let spriteFallbackRenderTimer=0;
@@ -1848,13 +1883,14 @@ function spriteMarkup(k, action='idle', options={}){
   const roleClass=options.enemy?' enemy-character-sheet':'';
   if(spec?.src&&!failedSpriteAssets.has(spec.src)){
     const meta = {...HERO_ACTIONS[action], ...spec};
+    const displayScale=normalizedActionDisplayScale(k,action,meta.displayScale);
     if(meta.format==='sheet'){
       const cols=Math.max(1,Number(meta.cols||meta.frames||1));
       const rows=Math.max(1,Number(meta.rows||1));
-      return `<div class="hero-sprite-sheet grid-sheet${roleClass}${flipped?' flip':''}" aria-hidden="true" style="--sprite-url:url('${animationAssetUrl(meta.src)}');--sprite-cols:${cols};--sprite-rows:${rows};--sprite-scale:${Number(meta.displayScale||1)};--sprite-duration:${Number(meta.duration||520)}ms;--sprite-bg-x:0%;--sprite-bg-y:0%"></div>`;
+      return `<div class="hero-sprite-sheet grid-sheet${roleClass}${flipped?' flip':''}" aria-hidden="true" style="--sprite-url:url('${animationAssetUrl(meta.src)}');--sprite-cols:${cols};--sprite-rows:${rows};--sprite-scale:${displayScale};--sprite-duration:${Number(meta.duration||520)}ms;--sprite-bg-x:0%;--sprite-bg-y:0%"></div>`;
     }
     const steps = Math.max(1, Number(meta.frames||1)-1);
-    return `<div class="hero-sprite-sheet${roleClass}${flipped?' flip':''}" aria-hidden="true" style="--sprite-url:url('${animationAssetUrl(meta.src)}');--sprite-frames:${Math.max(1,Number(meta.frames||1))};--sprite-steps:${steps};--sprite-scale:${Number(meta.displayScale||1)};--sprite-duration:${Number(meta.duration||520)}ms"></div>`;
+    return `<div class="hero-sprite-sheet${roleClass}${flipped?' flip':''}" aria-hidden="true" style="--sprite-url:url('${animationAssetUrl(meta.src)}');--sprite-frames:${Math.max(1,Number(meta.frames||1))};--sprite-steps:${steps};--sprite-scale:${displayScale};--sprite-duration:${Number(meta.duration||520)}ms"></div>`;
   }
   if(k.sprite) return `<img class="hero-sprite-image${roleClass}${flipped?' flip':''}" src="${k.sprite}" alt="${L(k.nome)}">`;
   return CHIBI_SVG[k.id] ? scopeSvg(CHIBI_SVG[k.id],k.id) : '';

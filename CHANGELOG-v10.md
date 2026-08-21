@@ -2,6 +2,13 @@
 
 Data: 2026-08-14
 
+## v10.0.17 — Estatura estável entre animações
+
+- Corrigida a troca de escala entre as cinco ações do elenco, com Lucius como caso principal: a estatura é normalizada pelo idle e ancorada na linha dos pés.
+- A vitrine de animações agora usa a mesma regra do runtime para revisão confiável das poses.
+- Removidos máscara e recorte que suavizavam inimigos estáticos; a arte fonte preserva os pixels e a sombra é aplicada externamente.
+- Cache/PWA renovado para distribuir a correção.
+
 ## v10.0.16 — Escala corporal revisada
 
 - Equalizadas as referências aprovadas da Ninfa e de Adriel Jovem.
