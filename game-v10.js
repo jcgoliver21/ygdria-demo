@@ -1591,12 +1591,12 @@ KINGDOMS.forEach(character=>{
    apenas a correção técnica do sheet; esta tabela define o porte do ser no mundo. */
 const UNIT_ART_SCALES=Object.freeze({
   card:1.30,
-  cardYoungOrGareth:0.80,
-  soldier:1.00,
-  captain:1.10,
-  beastSmall:0.25,
-  beastMedium:0.50,
-  beastLarge:1.00,
+  cardYoungOrGareth:1.00,
+  soldier:1.20,
+  captain:1.20,
+  beastSmall:0.60,
+  beastMedium:0.80,
+  beastLarge:1.20,
   beastGiant:2.00
 });
 const YOUNG_CARD_IDS=new Set(['berenice-jovem','galateia-jovem','adriel-jovem','acqua-jovem','gareth']);

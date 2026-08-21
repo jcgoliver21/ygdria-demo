@@ -2,6 +2,12 @@
 
 Data: 2026-08-14
 
+## v10.0.15 — Nova escala visual de unidades
+
+- Ajustadas as escalas canônicas de cartas jovens, soldados, capitães e criaturas.
+- Mantida a escala adulta em 1.30 e gigante em 2.00.
+- Cache/PWA renovado para distribuir a alteração aos jogadores.
+
 ## v10.0.8 — Ajustes finais de animação e vitrine pública
 
 - Atualizadas somente as animações aprovadas: ataques e conjurações de reinos específicos, o ritmo do idle de Rashid e a nova Conjuração de Lucius com cetro e fogo.
