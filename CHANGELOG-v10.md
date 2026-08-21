@@ -2,6 +2,13 @@
 
 Data: 2026-08-14
 
+## v10.0.19 — Identidade dos inimigos e arenas reforçadas
+
+- Inimigos do Reino dos Humanos voltaram a usar sua arte oficial individual; o runtime não os substitui mais por um guarda genérico.
+- As artes oficiais recebem idle, ataque, conjuração, impacto e vitória por movimento rígido, sem variar a escala corporal.
+- Arenas receberam raios móveis, névoa em primeiro plano, motes ascendentes e presença de chefe mais intensa, com alternativa de movimento reduzido.
+- Cache/PWA renovado para distribuir a correção.
+
 ## v10.0.18 — Direção épica de combate
 
 - Inimigos exclusivos agora lutam com folhas 2×3 transparentes de seis arquétipos: guarda humano, slime rúnico, lobo sombrio, espectro amaldiçoado, sentinela de pedra e dragão carmesim.

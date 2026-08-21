@@ -1538,8 +1538,10 @@ function buildTowerStage(floor){
 }
 const GOLEM_SPRITE = 'assets/enemies/stone-sentinel/single-1.png';
 const SUMMON_ANIMATIONS={golem:{src:'assets/summons/golem/attack-2x3.png',rows:3,cols:2,frames:6,idle:[0,5],attack:[0,1,2,3,4,5],duration:640},harpy:{src:'assets/summons/harpy/attack-2x3.png',rows:2,cols:3,frames:6,idle:[0,5],attack:[0,1,2,3,4,5],duration:560}};
-/* Inimigos exclusivos usam folhas transparentes reais, separadas por arquétipo.
-   Cada ação escolhe a própria sequência da grade 2×3, sem simular ataque por CSS. */
+/* Criaturas sem elenco próprio usam folhas transparentes reais, separadas por
+   espécie. Os inimigos humanos mantêm a sua própria ilustração oficial até
+   receberem uma folha animada criada a partir dessa identidade — nunca uma
+   arte genérica de outro combatente. */
 const ENEMY_ANIMATION_LIBRARY=Object.freeze({
   'human-guard':{src:'assets/enemies/runtime-v10/human-guard/processed/sheet-transparent.png',cols:2,rows:3,frames:6,duration:720},
   'rune-slime':{src:'assets/enemies/runtime-v10/rune-slime/processed/sheet-transparent.png',cols:2,rows:3,frames:6,duration:650},
@@ -1556,7 +1558,7 @@ function enemyAnimationKey(e){
   if(/lobo|wolf|chacal/.test(descriptor)) return 'shadow-wolf';
   if(/espectro|vulto|wraith|trevas|vazio|morto/.test(descriptor)) return 'cursed-wraith';
   if(/sentinela|golem|guardião/.test(descriptor)) return 'stone-sentinel';
-  return e?.etype||/assets\/enemies\/humanos\//.test(String(e?.sprite||''))?'human-guard':null;
+  return e?.etype||null;
 }
 function enemyAnimationCharacter(e){
   const key=enemyAnimationKey(e),library=key&&ENEMY_ANIMATION_LIBRARY[key];
@@ -2442,7 +2444,13 @@ function renderStageProgress(){
   arenaEl.dataset.realmMood=mood;
   arenaEl.classList.toggle('boss-presence',Boolean(bossRushMode||worldRun.active&&worldRun.nivel===5));
   let atmosphere=arenaEl.querySelector('.arena-atmosphere');
-  if(!atmosphere){ atmosphere=document.createElement('div'); atmosphere.className='arena-atmosphere'; atmosphere.setAttribute('aria-hidden','true'); arenaEl.prepend(atmosphere); }
+  if(!atmosphere){
+    atmosphere=document.createElement('div');
+    atmosphere.className='arena-atmosphere';
+    atmosphere.setAttribute('aria-hidden','true');
+    atmosphere.innerHTML='<span class="arena-light-rays"></span><span class="arena-moving-mist"></span><span class="arena-living-motes"></span>';
+    arenaEl.prepend(atmosphere);
+  }
   if(activeStageData?.bgUrl){
     arenaEl.style.setProperty('background-image',`linear-gradient(rgba(6,3,13,.22),rgba(6,3,13,.5)),url('${activeStageData.bgUrl}')`,'important');
     arenaEl.style.setProperty('background-size','cover');
