@@ -98,7 +98,7 @@ jobs:
             if [ "${published_sha}" = "${GITHUB_SHA}" ] && \
                curl --fail --silent --show-error \
                  "https://jcgoliver21.github.io/ygdria-demo/play.html?ci=${GITHUB_SHA}" \
-                 | grep -q 'game-v10.js?v=10.0.14'; then
+                 | grep -q 'game-v10.js?v=10.0.19'; then
               exit 0
             fi
             sleep 5
