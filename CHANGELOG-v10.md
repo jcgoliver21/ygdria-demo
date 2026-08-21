@@ -2,6 +2,13 @@
 
 Data: 2026-08-14
 
+## v10.0.16 — Escala corporal revisada
+
+- Equalizadas as referências aprovadas da Ninfa e de Adriel Jovem.
+- Corrigidos Lucius, Mardogear, Blizzardo e os jovens selecionados.
+- Invocações mantidas na escala `1.00`.
+- Cache/PWA renovado para a publicação.
+
 ## v10.0.15 — Nova escala visual de unidades
 
 - Ajustadas as escalas canônicas de cartas jovens, soldados, capitães e criaturas.

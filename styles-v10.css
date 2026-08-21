@@ -3026,6 +3026,7 @@ body.game-active .enemy-unit .enemy-sprite-image{
   scale:var(--unit-art-scale,1)!important;
   transform-origin:50% 100%;
 }
+body.game-active .summon-unit .hero-sprite-sheet{scale:var(--unit-art-scale,1)!important;transform-origin:50% 100%}
 
 /* A segunda linha do HUD usa toda a largura: objetivo e recorde à esquerda,
    controles agrupados no extremo direito. */

@@ -1590,18 +1590,31 @@ KINGDOMS.forEach(character=>{
 /* Escala canônica de leitura em combate. A escala da animação continua sendo
    apenas a correção técnica do sheet; esta tabela define o porte do ser no mundo. */
 const UNIT_ART_SCALES=Object.freeze({
-  card:1.30,
+  card:1.50,
   cardYoungOrGareth:1.00,
   soldier:1.20,
   captain:1.20,
   beastSmall:0.60,
-  beastMedium:0.80,
-  beastLarge:1.20,
-  beastGiant:2.00
+  beastMedium:1.00,
+  beastLarge:1.50,
+  beastGiant:2.00,
+  summon:1.00
 });
 const YOUNG_CARD_IDS=new Set(['berenice-jovem','galateia-jovem','adriel-jovem','acqua-jovem','gareth']);
+/* Correções de leitura aprovadas no comparativo: Lucius, Mardogear e Blizzardo
+   igualam a referência adulta da Ninfa; jovens igualam Adriel Jovem. */
+const UNIT_ART_SCALE_CORRECTIONS=Object.freeze({
+  fogo:1.0370,
+  raio:1.0890,
+  gelo:1.2696,
+  'berenice-jovem':0.9733,
+  'acqua-jovem':1.0425,
+  'galateia-jovem':1.2321,
+  gareth:1.1590
+});
 function cardArtScale(character){
-  return YOUNG_CARD_IDS.has(character?.id)?UNIT_ART_SCALES.cardYoungOrGareth:UNIT_ART_SCALES.card;
+  const base=YOUNG_CARD_IDS.has(character?.id)?UNIT_ART_SCALES.cardYoungOrGareth:UNIT_ART_SCALES.card;
+  return Number((base*(UNIT_ART_SCALE_CORRECTIONS[character?.id]||1)).toFixed(4));
 }
 function enemyArtScale(enemy){
   const card=KINGDOMS.find(character=>[
@@ -1612,7 +1625,8 @@ function enemyArtScale(enemy){
   if(/dragon|drag[aã]o|kraken/.test(descriptor)) return UNIT_ART_SCALES.beastGiant;
   if(/slime/.test(descriptor)) return UNIT_ART_SCALES.beastSmall;
   if(/lobo|wolf/.test(descriptor)) return UNIT_ART_SCALES.beastMedium;
-  if(/espectro|vulto|wraith|morto-vivo|sentinel|golem/.test(descriptor)) return UNIT_ART_SCALES.beastLarge;
+  if(/harpia|harpy|golem|invoca|summon/.test(descriptor)) return UNIT_ART_SCALES.summon;
+  if(/espectro|vulto|wraith|morto-vivo|sentinel/.test(descriptor)) return UNIT_ART_SCALES.beastLarge;
   if(/capit[aã]o|comandante/.test(descriptor)) return UNIT_ART_SCALES.captain;
   if(/soldado|infantaria|cavalaria|trono/.test(descriptor)) return UNIT_ART_SCALES.soldier;
   return UNIT_ART_SCALES.beastLarge;
@@ -2177,6 +2191,7 @@ function renderGolemUnits(spawned=false){
     unit.style.setProperty('--aura-inner-light','#f0bd78');
     unit.style.setProperty('--aura-outer','#c98f4b');
     unit.style.setProperty('--aura-outer-light','#ffe0a1');
+    unit.style.setProperty('--unit-art-scale',String(UNIT_ART_SCALES.summon));
     unit.innerHTML=`
       <div class="unit-stage">
         <div class="unit-ground-shadow"></div>
@@ -2209,6 +2224,7 @@ function renderHarpyUnits(spawned=false){
       unit.style.setProperty('--aura-inner-light','#e6f7ff');
       unit.style.setProperty('--aura-outer','#9fd6f5');
       unit.style.setProperty('--aura-outer-light','#ffffff');
+      unit.style.setProperty('--unit-art-scale',String(UNIT_ART_SCALES.summon));
       unit.innerHTML=`
         <div class="unit-stage">
           <div class="unit-ground-shadow"></div>
