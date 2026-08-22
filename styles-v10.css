@@ -3372,45 +3372,29 @@ body.game-active .enemy-row .unit-stage{height:clamp(112px,18vh,142px)!important
 .enemy-unit.dead .enemy-runtime-sheet{background-position:0 0!important}
 .enemy-unit.dead .enemy-intent{display:none!important}
 
-/* Idle humano com raiz fixa. A imagem base nunca sofre transform: os pés,
-   arma, contorno e sombra permanecem no mesmo pixel. Só a faixa macia do
-   tórax se desloca 1 px para a respiração; o tecido varia luz, não posição. */
+/* Idle humano com raiz fixa. O primeiro quadro fica imóvel; os quadros 3×3
+   entram apenas nas regiões de cabelo, rosto, tórax e capa. Assim, piscada,
+   respiração e tecido aparecem sem deslocar pés, arma, corpo inteiro ou sombra. */
 .enemy-rooted-idle .enemy-rooted-idle-art{
   position:relative;display:block;width:100%;height:100%;isolation:isolate;
   transform-origin:50% 100%;
 }
 .enemy-rooted-idle .enemy-rooted-idle-art.flip{transform:scaleX(-1)}
-.enemy-rooted-idle .enemy-rooted-idle-art img{
+.enemy-rooted-idle .enemy-rooted-base,.enemy-rooted-idle .enemy-idle-motion{
   position:absolute;inset:0;width:100%!important;height:100%!important;
-  max-width:none!important;max-height:none!important;object-fit:contain!important;
-  object-position:50% 100%!important;pointer-events:none;
+  background-image:var(--rooted-idle-url);background-repeat:no-repeat;
+  background-size:300% 300%;background-position:0 0;pointer-events:none;
 }
-.enemy-rooted-idle .enemy-rooted-base{animation:none!important;transform:none!important;z-index:1}
-.enemy-rooted-idle .enemy-idle-layer{z-index:2;animation:none!important;will-change:transform,filter}
-.enemy-rooted-idle .enemy-idle-breath{
-  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,transparent 25%,#000 36%,#000 66%,transparent 78%,transparent 100%);
-  mask-image:linear-gradient(to bottom,transparent 0%,transparent 25%,#000 36%,#000 66%,transparent 78%,transparent 100%);
-  animation:enemyRootedBreath 3.8s ease-in-out infinite!important;
+.enemy-rooted-idle .enemy-rooted-base{z-index:1}
+.enemy-rooted-idle .enemy-idle-motion{
+  z-index:2;will-change:background-position;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,transparent 9%,#000 15%,#000 35%,transparent 44%,transparent 48%,#000 53%,#000 81%,transparent 91%,transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0%,transparent 9%,#000 15%,#000 35%,transparent 44%,transparent 48%,#000 53%,#000 81%,transparent 91%,transparent 100%);
 }
-.enemy-rooted-idle .enemy-idle-cloth{
-  -webkit-mask-image:linear-gradient(135deg,transparent 0 22%,#000 39% 71%,transparent 86%);
-  mask-image:linear-gradient(135deg,transparent 0 22%,#000 39% 71%,transparent 86%);
-  animation:enemyRootedClothLight 4.7s ease-in-out infinite!important;
-  mix-blend-mode:screen;opacity:.11;
-}
-@keyframes enemyRootedBreath{
-  0%,100%{transform:translateY(0) scaleY(1);filter:none}
-  45%{transform:translateY(-1px) scaleY(1.006);filter:brightness(1.025)}
-  60%{transform:translateY(-1px) scaleY(1.004);filter:brightness(1.018)}
-}
-@keyframes enemyRootedClothLight{
-  0%,100%{transform:none;filter:brightness(.92)}
-  48%{transform:none;filter:brightness(1.24)}
-}
-.enemy-unit.dead .enemy-rooted-idle-art,.enemy-unit.dead .enemy-rooted-idle-art *{animation:none!important;transform:none!important}
+.enemy-unit.dead .enemy-rooted-idle-art,.enemy-unit.dead .enemy-rooted-idle-art *{animation:none!important;transform:none!important;background-position:0 0!important}
 .enemy-unit.dead .enemy-rooted-idle-art.flip{transform:scaleX(-1)!important}
 @media (prefers-reduced-motion:reduce){
-  .enemy-rooted-idle .enemy-idle-layer{animation:none!important}
+  .enemy-rooted-idle .enemy-idle-motion{background-position:0 0!important}
 }
 
 /* Galeria: mesma leitura em blocos da vitrine, sem retirar reino, raridade,

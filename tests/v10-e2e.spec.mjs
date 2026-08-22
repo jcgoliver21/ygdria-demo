@@ -49,7 +49,8 @@ test('v10.0.1 restaura escala e anima inimigos-personagem e inimigos comuns',asy
   expect(probe).toMatchObject({characterSheet:true,characterAction:'attack',genericAction:'cast',genericMotion:true,genericSheet:true,chargeAura:true});
   expect(probe.idleSource).toContain('/slime-cereja/idle/processed/sheet-transparent.png');
   expect(probe.idleFrameCount).toBe(10);
-  expect(probe.rootedIdle).toMatchObject({active:true,baseAnimation:'none',breathAnimation:'enemyRootedBreath',source:'assets/enemies/humanos/capitao.png'});
+  expect(probe.rootedIdle).toMatchObject({active:true,baseAnimation:'none',breathAnimation:'none'});
+  expect(probe.rootedIdle.source).toContain('/capitao/idle-v2/processed/sheet-transparent.png');
   expect(probe.rootedIdle.baseTransform).toBe('none');
   const rootedAction=await page.evaluate(()=>window.__12rQA.rootedEnemyActionProbe());
   expect(rootedAction).toMatchObject({before:{rooted:true,action:'idle'},rooted:true,action:'idle',baseAnimation:'none',baseTransform:'none'});
@@ -814,7 +815,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.24');
+  expect(registration.caches).toContain('12r-v10.0.25');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -933,7 +934,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.24');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.25');
 
     // Produção não expõe __12rQA: este trecho percorre somente controles reais.
     if(await page.locator('#introScreen').isVisible()) await page.locator('#introNext').click();

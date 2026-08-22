@@ -1572,6 +1572,9 @@ const HUMAN_ENEMY_IDLE_IDS=new Set([
   'capitao','soldado1','soldado2','sold-bib1','sold-bib2','sold-bib3',
   'infantaria','cavalaria','comandante','trono'
 ]);
+const ROOTED_HUMAN_IDLE_LIBRARY=Object.freeze(Object.fromEntries([...HUMAN_ENEMY_IDLE_IDS].map(id=>[
+  id,{src:`assets/enemies/runtime-v10/${id}/idle-v2/processed/sheet-transparent.png`,cols:3,rows:3,frames:9}
+])));
 const ENEMY_IDLE_LIBRARY=Object.freeze(Object.fromEntries([
   'morto','vulto','espectro',
   'slime-cereja','lobo-raivoso','human-guard','rune-slime','shadow-wolf','cursed-wraith',
@@ -1980,8 +1983,10 @@ function spriteMarkup(k, action='idle', options={}){
 function stopHeroAnimation(avatar){
   if(!avatar) return;
   if(avatar.__actionFrameRaf) cancelAnimationFrame(avatar.__actionFrameRaf);
+  if(avatar.__rootedIdleRaf) cancelAnimationFrame(avatar.__rootedIdleRaf);
   if(avatar.__actionTimer) clearTimeout(avatar.__actionTimer);
   avatar.__actionFrameRaf=null;
+  avatar.__rootedIdleRaf=null;
   avatar.__actionTimer=null;
   avatar.__heroAnimationState=null;
 }
@@ -2003,6 +2008,10 @@ function pauseHeroAnimation(avatar){
     avatar.__actionTimer=null;
     state.timerRemaining=Math.max(0,state.timerDeadline-performance.now());
   }
+  if(avatar.__rootedIdleRaf){
+    cancelAnimationFrame(avatar.__rootedIdleRaf);
+    avatar.__rootedIdleRaf=null;
+  }
 }
 
 function resumeHeroAnimation(avatar){
@@ -2011,6 +2020,7 @@ function resumeHeroAnimation(avatar){
   state.paused=false;
   state.lastTick=null;
   if(state.tick) avatar.__actionFrameRaf=requestAnimationFrame(state.tick);
+  if(state.rootedTick) avatar.__rootedIdleRaf=requestAnimationFrame(state.rootedTick);
   if(state.finish&&Number.isFinite(state.timerRemaining)){
     state.timerDeadline=performance.now()+state.timerRemaining;
     avatar.__actionTimer=window.setTimeout(state.finish,state.timerRemaining);
@@ -2124,12 +2134,33 @@ function enemyFallbackMarkup(e, action='idle'){
    ganham microvida sem arrastar pés, arma, contorno inteiro ou a sombra. */
 function rootedEnemyIdleMarkup(e){
   const flip=e.flip||e.isCard?' flip':'';
-  const src=e.sprite;
-  return `<span class="enemy-rooted-idle-art${flip}" aria-hidden="true">
-    <img class="enemy-sprite-image enemy-rooted-base" src="${src}" alt="">
-    <img class="enemy-idle-layer enemy-idle-breath" src="${src}" alt="">
-    <img class="enemy-idle-layer enemy-idle-cloth" src="${src}" alt="">
+  const idle=ROOTED_HUMAN_IDLE_LIBRARY[enemyAnimationKey(e)];
+  if(!idle) return enemyFallbackMarkup(e,'idle');
+  return `<span class="enemy-rooted-idle-art${flip}" style="--rooted-idle-url:url('${idle.src}')" aria-hidden="true">
+    <span class="enemy-rooted-base"></span>
+    <span class="enemy-idle-motion"></span>
   </span>${enemyAvatarOverlay(e)}`;
+}
+
+function startRootedEnemyIdle(avatar){
+  const layer=avatar?.querySelector('.enemy-idle-motion');
+  if(!layer) return;
+  const sequence=[0,1,2,1,0,3,4,5,4,3,6,7,8,7,6,3,0];
+  const duration=4200;
+  let last=null,elapsed=0;
+  const state=avatar.__heroAnimationState;
+  const tick=now=>{
+    if(!layer.isConnected||avatar.dataset.action!=='idle'||avatar.__heroAnimationState===null) return;
+    if(state?.paused) return;
+    if(last===null) last=now;
+    elapsed+=Math.max(0,now-last); last=now;
+    const frame=sequence[Math.floor((elapsed%duration)/duration*sequence.length)];
+    const x=(frame%3)*50,y=Math.floor(frame/3)*50;
+    layer.style.backgroundPosition=`${x}% ${y}%`;
+    avatar.__rootedIdleRaf=requestAnimationFrame(tick);
+  };
+  if(state) state.rootedTick=tick;
+  avatar.__rootedIdleRaf=requestAnimationFrame(tick);
 }
 
 function usesRootedHumanIdle(e){
@@ -2144,6 +2175,8 @@ function animateEnemyAvatar(avatar,e,action='idle',options={}){
     avatar.classList.remove('hero-action','motion-paused');
     avatar.classList.add('enemy-avatar','enemy-static-avatar','enemy-rooted-idle');
     avatar.innerHTML=rootedEnemyIdleMarkup(e);
+    avatar.__heroAnimationState={paused:false};
+    startRootedEnemyIdle(avatar);
     return true;
   }
   const character=enemyCharacterFor(e)||enemyAnimationCharacter(e);
@@ -7037,13 +7070,14 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
       document.body.appendChild(rootedHost);
       animateEnemyAvatar(rootedHost,{name:'Capitão',etype:'capitao',hp:180,maxHp:180,atk:20,sprite:'assets/enemies/humanos/capitao.png'},'idle');
       const rootedBase=rootedHost.querySelector('.enemy-rooted-base');
-      const rootedBreath=rootedHost.querySelector('.enemy-idle-breath');
+      const rootedBreath=rootedHost.querySelector('.enemy-idle-motion');
+      const rootedArt=rootedHost.querySelector('.enemy-rooted-idle-art');
       const rootedIdle={
         active:rootedHost.classList.contains('enemy-rooted-idle'),
         baseAnimation:getComputedStyle(rootedBase).animationName,
         breathAnimation:getComputedStyle(rootedBreath).animationName,
         baseTransform:getComputedStyle(rootedBase).transform,
-        source:rootedBase?.getAttribute('src')||''
+        source:rootedArt?.style.getPropertyValue('--rooted-idle-url')||''
       };
       rootedHost.remove();
       const bossStarCount=document.querySelectorAll('.boss-presence-mark').length;
