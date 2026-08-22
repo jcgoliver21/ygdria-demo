@@ -1568,16 +1568,23 @@ const ENEMY_ANIMATION_LIBRARY=Object.freeze({
 /* O repouso ganhou folhas próprias. Elas não reutilizam poses de ataque: cada
    inimigo respira, ajusta a postura e volta à guarda sem alterar a sua arte
    oficial, escala ou ponto de apoio. */
+const HUMAN_ENEMY_IDLE_IDS=new Set([
+  'capitao','soldado1','soldado2','sold-bib1','sold-bib2','sold-bib3',
+  'infantaria','cavalaria','comandante','trono'
+]);
 const ENEMY_IDLE_LIBRARY=Object.freeze(Object.fromEntries([
   'capitao','soldado1','soldado2','sold-bib1','sold-bib2','sold-bib3',
   'infantaria','cavalaria','comandante','trono','morto','vulto','espectro',
   'slime-cereja','lobo-raivoso','human-guard','rune-slime','shadow-wolf','cursed-wraith',
   'stone-sentinel','crimson-dragon'
-].map(id=>[id,{
-  src:`assets/enemies/runtime-v10/${id}/idle/processed/sheet-transparent.png`,
-  cols:3,rows:2,frames:6,duration:2100,
-  frameOrder:[0,1,2,3,4,5,4,3,2,1]
-}])));
+].map(id=>{
+  const humanIdle=HUMAN_ENEMY_IDLE_IDS.has(id);
+  return [id,{
+    src:`assets/enemies/runtime-v10/${id}/${humanIdle?'idle-v2':'idle'}/processed/sheet-transparent.png`,
+    cols:3,rows:humanIdle?3:2,frames:humanIdle?9:6,duration:humanIdle?2700:2100,
+    frameOrder:humanIdle?[0,1,2,3,4,5,6,7,8,7,6,5,4,3,2,1]:[0,1,2,3,4,5,4,3,2,1]
+  }];
+})));
 const ENEMY_FRAME_SEQUENCES=Object.freeze({idle:[0,1,2,3,4,5,4,3,2,1],attack:[2,3,1],cast:[1,2,3],hit:[4,5],victory:[5]});
 function enemyAnimationKey(e){
   const descriptor=[e?.etype,e?.name,e?.sprite].filter(Boolean).join(' ').toLowerCase();
@@ -2130,6 +2137,22 @@ function animateEnemyAvatar(avatar,e,action='idle',options={}){
     },Math.max(160,Number(meta.duration||520)));
   }
   return false;
+}
+
+/* Um inimigo derrotado não pode conservar RAF, transição de pose ou sombra
+   pulsante. Congelamos o retrato no primeiro quadro neutro antes de aplicar a
+   aparência de queda, para que o cadáver nunca pareça continuar respirando. */
+function freezeEnemyAvatar(avatar){
+  if(!avatar) return;
+  stopHeroAnimation(avatar);
+  avatar.dataset.action='dead';
+  avatar.classList.add('motion-paused','enemy-defeated-avatar');
+  const sheet=avatar.querySelector('.hero-sprite-sheet.grid-sheet');
+  if(sheet){
+    sheet.style.setProperty('--sprite-bg-x','0%');
+    sheet.style.setProperty('--sprite-bg-y','0%');
+  }
+  avatar.querySelectorAll('.enemy-sprite-image').forEach(image=>{ image.style.animation='none'; });
 }
 
 function playEnemyAction(idx,action='attack'){
@@ -2833,7 +2856,9 @@ function renderEnemies(){
       unit.addEventListener('keydown',ev=>{ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); selectTarget(idx); } });
     }
     enemyArenaEl.appendChild(unit);
-    animateEnemyAvatar(document.getElementById('enemyPortrait-'+idx),e,'idle',{loop:true});
+    const avatar=document.getElementById('enemyPortrait-'+idx);
+    if(e.hp>0) animateEnemyAvatar(avatar,e,'idle',{loop:true});
+    else freezeEnemyAvatar(avatar);
   });
   applyBattleFormation();
 }
@@ -5657,7 +5682,10 @@ function applyDamageToEnemy(dmg, colorIdx, targetIdxOverride){
   }
 
   if(enemy.hp<=0){
-    if(enemyUnit){ enemyUnit.classList.add('dead'); enemyUnit.classList.remove('selectable'); }
+    if(enemyUnit){
+      enemyUnit.classList.add('dead'); enemyUnit.classList.remove('selectable');
+      freezeEnemyAvatar(document.getElementById('enemyPortrait-'+idx));
+    }
     if(manualTarget===idx) manualTarget=null;
   }
   refreshTargetHighlight();
@@ -6976,6 +7004,7 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
       const generic=document.getElementById('enemyPortrait-1');
       const idleSource=generic?.querySelector('.enemy-runtime-sheet')?.style.getPropertyValue('--sprite-url')||'';
       const idleFrameCount=enemyAnimationCharacter(enemies[1])?.sprites?.idle?.frameOrder?.length||0;
+      const humanIdle=enemyAnimationCharacter({name:'Capitão',etype:'capitao'})?.sprites?.idle;
       const bossStarCount=document.querySelectorAll('.boss-presence-mark').length;
       playEnemyAction(0,'attack'); playEnemyAction(1,'cast');
       return {
@@ -6984,9 +7013,23 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
         genericAction:generic?.dataset.action,
         genericMotion:Boolean(generic?.querySelector('.enemy-runtime-sheet,.enemy-motion-cast')),
         genericSheet:Boolean(generic?.querySelector('.enemy-runtime-sheet.grid-sheet')),
-        idleSource,idleFrameCount,bossStarCount,
+        idleSource,idleFrameCount,humanIdleSource:humanIdle?.src||'',humanIdleFrameCount:humanIdle?.frameOrder?.length||0,bossStarCount,
         chargeAura:Boolean(document.querySelector('#enemy-0 .unit-charge-aura')),
         rectangularGlow:getComputedStyle(character).boxShadow
+      };
+    },
+    enemyDeathProbe:()=>{
+      enemies=[{name:'Capitão',etype:'capitao',hp:0,maxHp:180,atk:20,sprite:'assets/enemies/humanos/capitao.png'}];
+      renderEnemies();
+      const unit=document.getElementById('enemy-0');
+      const avatar=document.getElementById('enemyPortrait-0');
+      const shadow=unit?.querySelector('.unit-ground-shadow');
+      return {
+        dead:Boolean(unit?.classList.contains('dead')),
+        action:avatar?.dataset.action,
+        paused:Boolean(avatar?.classList.contains('motion-paused')),
+        shadowAnimation:getComputedStyle(shadow).animationName,
+        sheetAnimation:getComputedStyle(avatar?.querySelector('.hero-sprite-sheet')||avatar).animationName
       };
     },
     heroAuraProbe:()=>{

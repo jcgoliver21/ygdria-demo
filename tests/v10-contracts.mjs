@@ -16,15 +16,15 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=10\.0\.22/);
-  assert.match(html,/v10-config\.js\?v=10\.0\.22/);
-  assert.match(html,/v10-animations\.js\?v=10\.0\.22/);
-  assert.match(html,/game-v10\.js\?v=10\.0\.22/);
+  assert.match(html,/styles-v10\.css\?v=10\.0\.23/);
+  assert.match(html,/v10-config\.js\?v=10\.0\.23/);
+  assert.match(html,/v10-animations\.js\?v=10\.0\.23/);
+  assert.match(html,/game-v10\.js\?v=10\.0\.23/);
   assert.doesNotMatch(html,/game-v9|styles-v9|v9\.3-config/);
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v10\.0\.22/);
+  assert.match(sw,/12r-v10\.0\.23/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -87,7 +87,7 @@ check('Lobo Raivoso é espelhado para encarar o centro',()=>{
   assert.match(game,/roland:\{[^\n]+flip:true\}/);
   assert.match(game,/julius:\{[^\n]+flip:true\}/);
   assert.match(game,/const flip=e\.flip\|\|e\.isCard\?' flip':''/);
-  assert.match(css,/enemyIdleStanceFlip/);
+  assert.match(css,/enemy-static-avatar\[data-action="idle"\] \.enemy-sprite-image\.flip/);
 });
 
 check('inimigos usam animação por ação e aura corporal sem moldura',()=>{
@@ -101,15 +101,19 @@ check('inimigos exclusivos usam folhas reais, impactos e arena viva',()=>{
     assert.ok(game.includes(asset),`${id} sem folha no runtime`);
     assert.ok(fs.existsSync(path.join(root,...asset.split('/'))),`${id} sem asset`);
   }
+  for(const id of ['capitao','soldado1','soldado2','sold-bib1','sold-bib2','sold-bib3','infantaria','cavalaria','comandante','trono']){
+    const idleV2=`assets/enemies/runtime-v10/${id}/idle-v2/processed/sheet-transparent.png`;
+    assert.ok(fs.existsSync(path.join(root,...idleV2.split('/'))),`${id} sem idle humano ancorado`);
+  }
   for(const id of ['capitao','soldado1','soldado2','sold-bib1','sold-bib2','sold-bib3','infantaria','cavalaria','comandante','trono','morto','vulto','slime-cereja','lobo-raivoso','espectro','human-guard','rune-slime','shadow-wolf','cursed-wraith','stone-sentinel','crimson-dragon']){
     const idleAsset=`assets/enemies/runtime-v10/${id}/idle/processed/sheet-transparent.png`;
     assert.ok(fs.existsSync(path.join(root,...idleAsset.split('/'))),`${id} sem folha de idle`);
   }
-  for(const needle of ['ENEMY_ANIMATION_LIBRARY','ENEMY_IDLE_LIBRARY','runtime-v10/${id}/idle/processed/sheet-transparent.png','ENEMY_FRAME_SEQUENCES','actionFrames','function enemyAnimationCharacter','fx-impact-burst','fx-critical-impact','arena-atmosphere']) assert.ok(game.includes(needle)||css.includes(needle),`${needle} ausente`);
+  for(const needle of ['ENEMY_ANIMATION_LIBRARY','HUMAN_ENEMY_IDLE_IDS','ENEMY_IDLE_LIBRARY',"${humanIdle?'idle-v2':'idle'}",'ENEMY_FRAME_SEQUENCES','actionFrames','function enemyAnimationCharacter','freezeEnemyAvatar','fx-impact-burst','fx-critical-impact','arena-atmosphere']) assert.ok(game.includes(needle)||css.includes(needle),`${needle} ausente`);
   assert.doesNotMatch(game,/class="boss-presence-mark"|aria-hidden="true">✦/,'marcador de estrela não deve renderizar sobre inimigos');
   assert.match(game,/return e\?\.etype\|\|null;/,'arte humana individual não pode cair no guarda genérico');
   assert.doesNotMatch(game,/assets\\\/enemies\\\/humanos\\\/.+human-guard/,'arte humana não pode ser mapeada ao guarda genérico');
-  for(const needle of ['enemyOriginalIdle','enemyOriginalAttack','arena-light-rays','arena-moving-mist','arena-living-motes']) assert.ok(css.includes(needle),`${needle} ausente`);
+  for(const needle of ['enemyOriginalAttack','arena-light-rays','arena-moving-mist','arena-living-motes','.enemy-unit.dead .unit-ground-shadow']) assert.ok(css.includes(needle),`${needle} ausente`);
 });
 
 check('Torre usa cada encontro da campanha e invocações não bloqueiam heróis',()=>{
@@ -141,7 +145,7 @@ check('animações corporais não usam crescer ou encolher',()=>{
     }
     throw new Error(`${name} sem fechamento`);
   };
-  for(const keyframe of ['lungeAttack','lungeAttack9','castRise9','idleBreath','idleBreathFlip','enemySway','enemySwayFlip','enemyIdleStance','enemyWeaponAction','enemySpellGesture','enemyImpactRecoil','golemSpawn']){
+  for(const keyframe of ['lungeAttack','lungeAttack9','castRise9','idleBreath','idleBreathFlip','enemyWeaponAction','enemySpellGesture','enemyImpactRecoil','golemSpawn']){
     assert.doesNotMatch(keyframeBody(keyframe),/scale\(/,`${keyframe} não pode escalar o personagem`);
   }
 });
@@ -171,7 +175,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=10.0.22');
+  const deferredGame=html.indexOf('game-v10.js?v=10.0.23');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);

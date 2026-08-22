@@ -1134,12 +1134,10 @@
 }
 /* A arte oficial continua legível e sem filtros de "embalagem"; a animação
    acrescenta vida enquanto cada inimigo aguarda sua própria folha 2×3. */
-.enemy-static-avatar .enemy-sprite-image.enemy-motion-idle{transform-origin:50% 100%;animation:enemyOriginalIdle 2.7s ease-in-out infinite}
 .enemy-static-avatar .enemy-sprite-image.enemy-motion-attack{transform-origin:50% 84%;animation:enemyOriginalAttack .66s cubic-bezier(.22,.8,.24,1) both}
 .enemy-static-avatar .enemy-sprite-image.enemy-motion-cast{transform-origin:50% 84%;animation:enemyOriginalCast .72s cubic-bezier(.22,.8,.24,1) both}
 .enemy-static-avatar .enemy-sprite-image.enemy-motion-hit{transform-origin:50% 82%;animation:enemyOriginalHit .44s ease-out both}
 .enemy-static-avatar .enemy-sprite-image.enemy-motion-victory{transform-origin:50% 100%;animation:enemyOriginalVictory 1s ease-in-out both}
-@keyframes enemyOriginalIdle{0%,100%{transform:translate3d(0,0,0)}45%{transform:translate3d(-1px,-3px,0)}68%{transform:translate3d(1px,-1px,0)}}
 @keyframes enemyOriginalAttack{0%{transform:translate3d(0,0,0)}34%{transform:translate3d(-7px,2px,0) rotate(-1deg)}62%{transform:translate3d(13px,-2px,0) rotate(1deg);filter:brightness(1.18) drop-shadow(0 0 9px rgba(255,228,163,.72))}100%{transform:translate3d(0,0,0)}}
 @keyframes enemyOriginalCast{0%{transform:translate3d(0,0,0)}42%{transform:translate3d(0,-7px,0);filter:brightness(1.2) saturate(1.25) drop-shadow(0 0 11px rgba(168,120,255,.8))}100%{transform:translate3d(0,0,0)}}
 @keyframes enemyOriginalHit{0%{transform:translate3d(0,0,0)}32%{transform:translate3d(-8px,1px,0);filter:brightness(1.7) saturate(.72)}62%{transform:translate3d(5px,0,0)}100%{transform:translate3d(0,0,0)}}
@@ -2363,10 +2361,6 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
 .unit:nth-child(2n) .hero-sprite-image{ animation-duration:3.7s; animation-delay:.45s; }
 .unit:nth-child(3n) .hero-sprite-image{ animation-duration:2.9s; animation-delay:.9s; }
 @keyframes idleBreath{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-3px); } }
-.enemy-sprite-image{ animation:enemySway 4.2s ease-in-out infinite; transform-origin:50% 100%; }
-.enemy-row .unit:nth-child(2n) .enemy-sprite-image{ animation-duration:4.8s; animation-delay:.6s; }
-.enemy-row .unit:nth-child(3n) .enemy-sprite-image{ animation-duration:3.6s; animation-delay:1.1s; }
-@keyframes enemySway{ 0%,100%{ transform:rotate(-1.2deg) translateY(0); } 50%{ transform:rotate(1.2deg) translateY(-2.5px); } }
 .summon-sprite{ animation:idleBreath 2.6s ease-in-out infinite!important; }
 .unit-ground-shadow{ animation:shadowBreath 3.2s ease-in-out infinite; }
 @keyframes shadowBreath{ 0%,100%{ transform:scale(1); opacity:1; } 50%{ transform:scale(.94); opacity:.85; } }
@@ -2474,8 +2468,7 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
 .enemy-gallery-card img{ width:100%; border-radius:10px; border:1px solid rgba(255,157,196,.4); }
 .enemy-gallery-card b{ font-size:11px; }
 /* v9.1 · Inimigos espelhados (confrontando os heróis à esquerda) */
-.enemy-sprite-image.flip{ animation-name:enemySwayFlip; transform:scaleX(-1); }
-@keyframes enemySwayFlip{ 0%,100%{ transform:scaleX(-1) rotate(1.2deg) translateY(0); } 50%{ transform:scaleX(-1) rotate(-1.2deg) translateY(-2.5px); } }
+.enemy-sprite-image.flip{ transform:scaleX(-1); }
 /* Heróis-carta cuja arte olha para a esquerda: espelhados para encarar o centro */
 .hero-sprite-image.flip{ animation-name:idleBreathFlip; transform:scaleX(-1); }
 @keyframes idleBreathFlip{ 0%,100%{ transform:scaleX(-1) translateY(0); } 50%{ transform:scaleX(-1) translateY(-3px); } }
@@ -2903,7 +2896,6 @@ body.viz-timer-off .mission-timer{ display:none!important; }
 .status-chip small{display:block;margin-top:2px;color:#f4ead7;font-size:7px;line-height:1.15;white-space:normal}
 .unit-name{max-width:none!important;width:max-content!important;min-width:100%!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;line-height:1.08!important}
 .hero-sprite-image.flip{animation-name:idleBreathFlip!important}
-.enemy-sprite-image.flip{animation-name:enemySwayFlip!important}
 .deck-sombras .deck-icon svg path,.select-deck-section.deck-sombras .deck-icon svg path{fill:#050308!important;stroke:#000!important}
 .deck-sombras .deck-icon,.select-deck-section.deck-sombras .deck-icon{color:#050308!important;background:radial-gradient(circle,#6d6579,#17121d 72%)!important}
 .beast-card{min-height:0!important;padding:6px!important;border-radius:9px!important;display:grid!important;grid-template-columns:54px minmax(0,1fr)!important;grid-template-rows:auto auto!important;column-gap:7px!important;align-items:center!important}
@@ -3349,12 +3341,10 @@ body.game-active .enemy-row .unit-stage{height:clamp(112px,18vh,142px)!important
 
 /* Inimigos de arte unica recebem movimento de respiracao, investida, conjuro e
    impacto; inimigos-personagem usam acima as folhas v10 de cinco acoes. */
-.enemy-static-avatar .enemy-sprite-image{animation:enemyIdleStance 3.1s ease-in-out infinite!important;will-change:transform;transform-origin:50% 100%}
 .enemy-static-avatar[data-action="attack"] .enemy-sprite-image{animation:enemyWeaponAction .62s cubic-bezier(.24,.76,.2,1) both!important}
 .enemy-static-avatar[data-action="cast"] .enemy-sprite-image{animation:enemySpellGesture .78s ease-in-out both!important}
 .enemy-static-avatar[data-action="hit"] .enemy-sprite-image{animation:enemyImpactRecoil .45s ease-out both!important}
 .enemy-avatar.motion-paused .enemy-sprite-image{animation-play-state:paused!important}
-@keyframes enemyIdleStance{0%,100%{transform:translateY(0) rotate(-.6deg)}50%{transform:translateY(-2px) rotate(.6deg)}}
 @keyframes enemyWeaponAction{0%{transform:translate(0,0) rotate(0)}42%{transform:translate(-10px,-5px) rotate(-8deg)}68%{transform:translate(-15px,1px) rotate(7deg)}100%{transform:translate(0,0) rotate(0)}}
 @keyframes enemySpellGesture{0%,100%{transform:translateY(0) rotate(0)}42%{transform:translateY(-7px) rotate(5deg);filter:brightness(1.3) saturate(1.45) drop-shadow(0 0 10px var(--aura-outer,#bb72ff))}70%{transform:translateY(-2px) rotate(-2deg)}}
 @keyframes enemyImpactRecoil{0%,100%{transform:translateX(0) rotate(0)}32%{transform:translateX(7px) rotate(4deg)}65%{transform:translateX(-3px) rotate(-2deg)}}
@@ -3363,14 +3353,24 @@ body.game-active .enemy-row .unit-stage{height:clamp(112px,18vh,142px)!important
 /* O espelhamento precisa acompanhar cada pose do inimigo estático. Sem estas
    variantes, os keyframes de combate substituíam scaleX(-1), fazendo o Lobo
    Raivoso voltar a encarar para fora da arena ao animar. */
-.enemy-static-avatar .enemy-sprite-image.flip{animation-name:enemyIdleStanceFlip!important;transform:scaleX(-1)}
+.enemy-static-avatar .enemy-sprite-image.flip{transform:scaleX(-1)}
 .enemy-static-avatar[data-action="attack"] .enemy-sprite-image.flip{animation-name:enemyWeaponActionFlip!important}
 .enemy-static-avatar[data-action="cast"] .enemy-sprite-image.flip{animation-name:enemySpellGestureFlip!important}
 .enemy-static-avatar[data-action="hit"] .enemy-sprite-image.flip{animation-name:enemyImpactRecoilFlip!important}
-@keyframes enemyIdleStanceFlip{0%,100%{transform:scaleX(-1) translateY(0) rotate(.6deg)}50%{transform:scaleX(-1) translateY(-2px) rotate(-.6deg)}}
 @keyframes enemyWeaponActionFlip{0%{transform:scaleX(-1) translate(0,0) rotate(0)}42%{transform:scaleX(-1) translate(-10px,-5px) rotate(8deg)}68%{transform:scaleX(-1) translate(-15px,1px) rotate(-7deg)}100%{transform:scaleX(-1) translate(0,0) rotate(0)}}
 @keyframes enemySpellGestureFlip{0%,100%{transform:scaleX(-1) translateY(0) rotate(0)}42%{transform:scaleX(-1) translateY(-7px) rotate(-5deg);filter:brightness(1.3) saturate(1.45) drop-shadow(0 0 10px var(--aura-outer,#bb72ff))}70%{transform:scaleX(-1) translateY(-2px) rotate(2deg)}}
 @keyframes enemyImpactRecoilFlip{0%,100%{transform:scaleX(-1) translateX(0) rotate(0)}32%{transform:scaleX(-1) translateX(7px) rotate(-4deg)}65%{transform:scaleX(-1) translateX(-3px) rotate(2deg)}}
+
+/* Sem oscilação de CSS no repouso: inimigos que ainda não tenham uma folha
+   própria ficam imóveis, em vez de parecerem bonecos balançando. */
+.enemy-static-avatar[data-action="idle"] .enemy-sprite-image{animation:none!important;transform:none!important}
+.enemy-static-avatar[data-action="idle"] .enemy-sprite-image.flip{transform:scaleX(-1)!important}
+
+/* Estado terminal: sprite, sombra e intenção congelam juntos. */
+.enemy-unit.dead .unit-ground-shadow{animation:none!important;transform:translateX(-50%) scale(.84)!important;opacity:.24!important}
+.enemy-unit.dead .enemy-avatar,.enemy-unit.dead .enemy-avatar *{animation:none!important;transition:none!important}
+.enemy-unit.dead .enemy-runtime-sheet{background-position:0 0!important}
+.enemy-unit.dead .enemy-intent{display:none!important}
 
 /* Galeria: mesma leitura em blocos da vitrine, sem retirar reino, raridade,
    favoritos, cartas novas, zoom ou a coleção de personagens encontrados. */
