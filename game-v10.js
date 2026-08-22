@@ -1565,7 +1565,20 @@ const ENEMY_ANIMATION_LIBRARY=Object.freeze({
   'stone-sentinel':{src:'assets/enemies/runtime-v10/stone-sentinel/processed/sheet-transparent.png',cols:2,rows:3,frames:6,duration:780},
   'crimson-dragon':{src:'assets/enemies/runtime-v10/crimson-dragon/processed/sheet-transparent.png',cols:2,rows:3,frames:6,duration:820}
 });
-const ENEMY_FRAME_SEQUENCES=Object.freeze({idle:[0,1],attack:[2,3,1],cast:[1,2,3],hit:[4,5],victory:[5]});
+/* O repouso ganhou folhas próprias. Elas não reutilizam poses de ataque: cada
+   inimigo respira, ajusta a postura e volta à guarda sem alterar a sua arte
+   oficial, escala ou ponto de apoio. */
+const ENEMY_IDLE_LIBRARY=Object.freeze(Object.fromEntries([
+  'capitao','soldado1','soldado2','sold-bib1','sold-bib2','sold-bib3',
+  'infantaria','cavalaria','comandante','trono','morto','vulto','espectro',
+  'slime-cereja','lobo-raivoso','human-guard','rune-slime','shadow-wolf','cursed-wraith',
+  'stone-sentinel','crimson-dragon'
+].map(id=>[id,{
+  src:`assets/enemies/runtime-v10/${id}/idle/processed/sheet-transparent.png`,
+  cols:3,rows:2,frames:6,duration:2100,
+  frameOrder:[0,1,2,3,4,5,4,3,2,1]
+}])));
+const ENEMY_FRAME_SEQUENCES=Object.freeze({idle:[0,1,2,3,4,5,4,3,2,1],attack:[2,3,1],cast:[1,2,3],hit:[4,5],victory:[5]});
 function enemyAnimationKey(e){
   const descriptor=[e?.etype,e?.name,e?.sprite].filter(Boolean).join(' ').toLowerCase();
   if(/capit[aã]o/.test(descriptor)) return 'capitao';
@@ -1593,9 +1606,11 @@ function enemyAnimationKey(e){
 function enemyAnimationCharacter(e){
   const key=enemyAnimationKey(e),library=key&&ENEMY_ANIMATION_LIBRARY[key];
   if(!library) return null;
+  const idleLibrary=ENEMY_IDLE_LIBRARY[key];
   const sprites={};
   Object.entries(ENEMY_FRAME_SEQUENCES).forEach(([action,frameOrder])=>{
-    sprites[action]={...library,format:'sheet',sheetFrames:library.frames,frameOrder:library.actionFrames?.[action]||frameOrder,loop:action==='idle',duration:action==='idle'?Math.max(1500,library.duration*2):library.duration};
+    const source=action==='idle'&&idleLibrary?{...library,...idleLibrary}:library;
+    sprites[action]={...source,format:'sheet',sheetFrames:source.frames,frameOrder:action==='idle'&&idleLibrary?idleLibrary.frameOrder:(library.actionFrames?.[action]||frameOrder),loop:action==='idle',duration:action==='idle'?Number(source.duration):library.duration};
   });
   return {id:`enemy-${key}`,nome:e?.name||key,sprites,heroFlip:false,enemyRuntime:true,flying:library.flying===true};
 }
@@ -2802,7 +2817,6 @@ function renderEnemies(){
         <div class="target-arrow"></div>
         <div class="unit-ground-shadow"></div>
         <div class="unit-charge-aura" aria-hidden="true"></div>
-        ${isBoss?'<div class="boss-presence-mark" aria-hidden="true">✦</div>':''}
         <div class="avatar-circle enemy-avatar" id="enemyPortrait-${idx}" data-action="idle">${enemyFallbackMarkup(e)}</div>
       </div>`;
     const nomeHtml=vizPrefs.enemyNames==='off'?'':`
@@ -6960,6 +6974,9 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
       renderEnemies();
       const character=document.getElementById('enemyPortrait-0');
       const generic=document.getElementById('enemyPortrait-1');
+      const idleSource=generic?.querySelector('.enemy-runtime-sheet')?.style.getPropertyValue('--sprite-url')||'';
+      const idleFrameCount=enemyAnimationCharacter(enemies[1])?.sprites?.idle?.frameOrder?.length||0;
+      const bossStarCount=document.querySelectorAll('.boss-presence-mark').length;
       playEnemyAction(0,'attack'); playEnemyAction(1,'cast');
       return {
         characterSheet:Boolean(character?.querySelector('.hero-sprite-sheet.grid-sheet')),
@@ -6967,6 +6984,7 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
         genericAction:generic?.dataset.action,
         genericMotion:Boolean(generic?.querySelector('.enemy-runtime-sheet,.enemy-motion-cast')),
         genericSheet:Boolean(generic?.querySelector('.enemy-runtime-sheet.grid-sheet')),
+        idleSource,idleFrameCount,bossStarCount,
         chargeAura:Boolean(document.querySelector('#enemy-0 .unit-charge-aura')),
         rectangularGlow:getComputedStyle(character).boxShadow
       };
