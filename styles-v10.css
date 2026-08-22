@@ -3033,6 +3033,7 @@ body.game-active .hero-unit.hero-young .hero-sprite-image{
    espelhamento e o tamanho em todos os frames. */
 body.game-active .hero-unit .hero-sprite-sheet,
 body.game-active .enemy-unit .enemy-character-sheet,
+body.game-active .enemy-unit .enemy-rooted-idle-art,
 body.game-active .hero-unit .hero-sprite-image,
 body.game-active .enemy-unit .enemy-sprite-image{
   scale:var(--unit-art-scale,1)!important;

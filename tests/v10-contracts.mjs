@@ -16,15 +16,15 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=10\.0\.27/);
-  assert.match(html,/v10-config\.js\?v=10\.0\.27/);
-  assert.match(html,/v10-animations\.js\?v=10\.0\.27/);
-  assert.match(html,/game-v10\.js\?v=10\.0\.27/);
+  assert.match(html,/styles-v10\.css\?v=10\.0\.28/);
+  assert.match(html,/v10-config\.js\?v=10\.0\.28/);
+  assert.match(html,/v10-animations\.js\?v=10\.0\.28/);
+  assert.match(html,/game-v10\.js\?v=10\.0\.28/);
   assert.doesNotMatch(html,/game-v9|styles-v9|v9\.3-config/);
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v10\.0\.27/);
+  assert.match(sw,/12r-v10\.0\.28/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -163,8 +163,10 @@ check('folhas de ação preservam a estatura ancorada nos pés',()=>{
   assert.match(game,/function normalizedActionDisplayScale\(character,action,displayScale\)/);
   assert.doesNotMatch(game,/ACTION_BODY_SCALE_NORMALIZATION/);
   assert.match(game,/const idleScale=Number\(character\?\.sprites\?\.idle\?\.displayScale\)/);
+  assert.match(game,/const actionScale=Number\(displayScale\)/);
   assert.match(game,/const displayScale=normalizedActionDisplayScale\(k,action,meta\.displayScale\)/);
   assert.match(css,/\.hero-sprite-sheet\{transform:scale\(var\(--sprite-scale,1\)\);transform-origin:50% 100%\}/);
+  assert.match(css,/body\.game-active \.enemy-unit \.enemy-rooted-idle-art/);
 });
 
 check('IDs do HTML são únicos',()=>{
@@ -175,7 +177,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=10.0.27');
+  const deferredGame=html.indexOf('game-v10.js?v=10.0.28');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
@@ -324,6 +326,7 @@ check('carregamento de animação é sob demanda e possui fallback',()=>{
 check('escala corporal não varia entre ações e impacto não duplica animações',()=>{
   assert.doesNotMatch(game,/ACTION_BODY_SCALE_NORMALIZATION/);
   assert.match(game,/const idleScale=Number\(character\?\.sprites\?\.idle\?\.displayScale\)/);
+  assert.match(game,/const actionScale=Number\(displayScale\)/);
   assert.match(game,/playEnemyAction\(idx,'hit'\);/);
   assert.doesNotMatch(game,/enemyUnit\.classList\.remove\('hit'\);/);
   assert.doesNotMatch(game,/partyArenaEl\.classList\.add\('party-hurt'\);/);

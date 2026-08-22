@@ -1900,13 +1900,16 @@ const HERO_ACTIONS = Object.freeze({
   victory: { frames:4, cols:2, rows:2, duration:1200, loop:false, holdLast:true }
 });
 
-/* v10.0.27 · A escala corporal é uma propriedade do personagem, não da
-   ação. O idle é a âncora canônica já alinhada pelos pés; trocar para ataque,
-   magia, dano ou vitória nunca pode alterar o tamanho percebido. */
+/* v10.0.28 · A escala corporal do personagem é separada da correção técnica
+   de cada folha. O manifesto já traz a compensação auditada de cada pose para
+   que o corpo preserve a mesma leitura de pés e olhos entre ações. */
 function normalizedActionDisplayScale(character,action,displayScale){
   const idleScale=Number(character?.sprites?.idle?.displayScale);
   const fallback=Number(displayScale||1);
-  const fixed=Number.isFinite(idleScale)&&idleScale>0?idleScale:(Number.isFinite(fallback)&&fallback>0?fallback:1);
+  const actionScale=Number(displayScale);
+  const fixed=Number.isFinite(actionScale)&&actionScale>0
+    ? actionScale
+    : (Number.isFinite(idleScale)&&idleScale>0?idleScale:(Number.isFinite(fallback)&&fallback>0?fallback:1));
   return Number(fixed.toFixed(4));
 }
 const MAX_ACTIVE_FX = 28;
@@ -7093,6 +7096,35 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
         });
       },900));
     },
+    enemyScaleProbe:()=>{
+      const cases=[
+        ['soldado1','Soldado 1'],['soldado2','Soldado 2'],['capitao','Capitão'],
+        ['infantaria','Soldado de Infantaria'],['cavalaria','Soldado de Cavalaria'],
+        ['comandante','Comandante dos Soldados'],['trono','Soldado do Trono Real']
+      ];
+      return cases.map(([etype,name])=>{
+        const unit=document.createElement('div');
+        unit.className='unit enemy-unit';
+        const avatar=document.createElement('div');
+        avatar.className='avatar-circle';
+        unit.appendChild(avatar);
+        document.body.appendChild(unit);
+        const enemy={name,etype,hp:180,maxHp:180,atk:20,sprite:'assets/enemies/humanos/capitao.png'};
+        avatar.classList.add('enemy-avatar','enemy-rooted-idle');
+        avatar.dataset.action='idle';
+        avatar.innerHTML=rootedEnemyIdleMarkup(enemy);
+        const idleArt=avatar.querySelector('.enemy-rooted-idle-art');
+        const idleScale=getComputedStyle(idleArt).scale;
+        avatar.classList.remove('enemy-rooted-idle');
+        avatar.classList.add('enemy-static-avatar');
+        avatar.dataset.action='attack';
+        avatar.innerHTML=enemyFallbackMarkup(enemy,'attack');
+        const attackArt=avatar.querySelector('.enemy-sprite-image');
+        const attackScale=getComputedStyle(attackArt).scale;
+        unit.remove();
+        return {id:etype,idleScale,attackScale};
+      });
+    },
     heroAuraProbe:()=>{
       const heroIdx=ACTIVE[0];
       const active=KINGDOMS[heroIdx]?.abilities.find(ability=>ability.kind==='active');
@@ -8051,7 +8083,7 @@ if(new URLSearchParams(location.search).get('qa')==='smoke'){
    quando são solicitados pelo time ativo. */
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(error=>console.warn('[PWA] Service worker não registrado:',error));
+    navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'}).catch(error=>console.warn('[PWA] Service worker não registrado:',error));
   });
 }
 function openMissionReplay(faseIdx){

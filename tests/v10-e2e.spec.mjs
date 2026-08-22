@@ -68,7 +68,18 @@ test('v10.0.1 restaura escala e anima inimigos-personagem e inimigos comuns',asy
   expect(errors).toEqual([]);
 });
 
-test('escala do corpo permanece fixa ao trocar idle, ataque e dano',async({page})=>{
+test('inimigos humanos mantêm a escala entre idle enraizado e ação',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
+  const samples=await page.evaluate(()=>window.__12rQA.enemyScaleProbe());
+  for(const sample of samples){
+    expect(sample.idleScale).toBe(sample.attackScale);
+    expect(sample.idleScale).not.toBe('none');
+  }
+  expect(errors).toEqual([]);
+});
+
+test('escala do porte permanece fixa e folhas de ação preservam a correção corporal',async({page})=>{
   const errors=await boot(page,'flow');
   await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
   const result=await page.evaluate(()=>{
@@ -79,14 +90,15 @@ test('escala do corpo permanece fixa ao trocar idle, ataque e dano',async({page}
       const scales=[];
       for(const action of actions){
         window.__12rQA.playHeroAction(heroIdx,action);
-        scales.push({action,scale:avatar?.querySelector('.hero-sprite-sheet')?.style.getPropertyValue('--sprite-scale')||'',filter:getComputedStyle(avatar).filter});
+        const sheet=avatar?.querySelector('.hero-sprite-sheet');
+        scales.push({action,actionScale:sheet?.style.getPropertyValue('--sprite-scale')||'',unitScale:getComputedStyle(sheet).scale,filter:getComputedStyle(avatar).filter});
       }
       samples.push({id:KINGDOMS[heroIdx].id,scales});
     }
     return samples;
   });
   for(const sample of result){
-    expect(new Set(sample.scales.map(entry=>entry.scale)).size).toBe(1);
+    expect(new Set(sample.scales.map(entry=>entry.unitScale)).size).toBe(1);
     expect(sample.scales.find(entry=>entry.action==='hit')?.filter).toBe('none');
   }
   expect(errors).toEqual([]);
@@ -839,7 +851,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.27');
+  expect(registration.caches).toContain('12r-v10.0.28');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -958,7 +970,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.27');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.28');
 
     // Produção não expõe __12rQA: este trecho percorre somente controles reais.
     if(await page.locator('#introScreen').isVisible()) await page.locator('#introNext').click();
