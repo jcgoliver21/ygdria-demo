@@ -1,0 +1,77 @@
+{
+  "source": "assets/enemies/runtime-v10/cavalaria/idle-v2/processed/sheet-transparent.png",
+  "grid": "3x3",
+  "cell_size": 256,
+  "registration_region": [
+    70,
+    120,
+    190,
+    240
+  ],
+  "method": "fixed torso and feet registration against frame 0; no art generation",
+  "registrations": [
+    {
+      "frame": 0,
+      "score": 0.0,
+      "shift_x": 0,
+      "registration_shift_y": 0,
+      "foot_shift_y": 0
+    },
+    {
+      "frame": 1,
+      "score": 10.62,
+      "shift_x": 8,
+      "registration_shift_y": 1,
+      "foot_shift_y": 0
+    },
+    {
+      "frame": 2,
+      "score": 9.0745,
+      "shift_x": 16,
+      "registration_shift_y": 0,
+      "foot_shift_y": 0
+    },
+    {
+      "frame": 3,
+      "score": 11.1487,
+      "shift_x": 0,
+      "registration_shift_y": 0,
+      "foot_shift_y": 0
+    },
+    {
+      "frame": 4,
+      "score": 13.569,
+      "shift_x": 8,
+      "registration_shift_y": 0,
+      "foot_shift_y": 0
+    },
+    {
+      "frame": 5,
+      "score": 14.6325,
+      "shift_x": 15,
+      "registration_shift_y": 1,
+      "foot_shift_y": 0
+    },
+    {
+      "frame": 6,
+      "score": 13.9119,
+      "shift_x": 0,
+      "registration_shift_y": -1,
+      "foot_shift_y": 0
+    },
+    {
+      "frame": 7,
+      "score": 11.0682,
+      "shift_x": 8,
+      "registration_shift_y": 0,
+      "foot_shift_y": 0
+    },
+    {
+      "frame": 8,
+      "score": 10.8369,
+      "shift_x": 15,
+      "registration_shift_y": 0,
+      "foot_shift_y": 0
+    }
+  ]
+}

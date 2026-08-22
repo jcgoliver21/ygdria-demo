@@ -1,0 +1,77 @@
+{
+  "source": "assets/enemies/runtime-v10/infantaria/idle-v2/processed/sheet-transparent.png",
+  "grid": "3x3",
+  "cell_size": 256,
+  "registration_region": [
+    70,
+    120,
+    190,
+    240
+  ],
+  "method": "fixed torso and feet registration against frame 0; no art generation",
+  "registrations": [
+    {
+      "frame": 0,
+      "score": 0.0,
+      "shift_x": 0,
+      "registration_shift_y": 0,
+      "foot_shift_y": 0
+    },
+    {
+      "frame": 1,
+      "score": 13.3581,
+      "shift_x": 1,
+      "registration_shift_y": -1,
+      "foot_shift_y": 0
+    },
+    {
+      "frame": 2,
+      "score": 7.5681,
+      "shift_x": 3,
+      "registration_shift_y": 0,
+      "foot_shift_y": 0
+    },
+    {
+      "frame": 3,
+      "score": 12.7792,
+      "shift_x": -1,
+      "registration_shift_y": 11,
+      "foot_shift_y": -9
+    },
+    {
+      "frame": 4,
+      "score": 11.9304,
+      "shift_x": -1,
+      "registration_shift_y": 11,
+      "foot_shift_y": -9
+    },
+    {
+      "frame": 5,
+      "score": 12.7303,
+      "shift_x": 0,
+      "registration_shift_y": 11,
+      "foot_shift_y": -9
+    },
+    {
+      "frame": 6,
+      "score": 13.3364,
+      "shift_x": -2,
+      "registration_shift_y": 11,
+      "foot_shift_y": -9
+    },
+    {
+      "frame": 7,
+      "score": 14.4412,
+      "shift_x": -1,
+      "registration_shift_y": 11,
+      "foot_shift_y": -9
+    },
+    {
+      "frame": 8,
+      "score": 14.9472,
+      "shift_x": 1,
+      "registration_shift_y": 11,
+      "foot_shift_y": -9
+    }
+  ]
+}

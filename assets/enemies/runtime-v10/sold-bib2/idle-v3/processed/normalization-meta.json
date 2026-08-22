@@ -1,0 +1,77 @@
+{
+  "source": "assets/enemies/runtime-v10/sold-bib2/idle-v2/processed/sheet-transparent.png",
+  "grid": "3x3",
+  "cell_size": 256,
+  "registration_region": [
+    70,
+    120,
+    190,
+    240
+  ],
+  "method": "fixed torso and feet registration against frame 0; no art generation",
+  "registrations": [
+    {
+      "frame": 0,
+      "score": 0.0,
+      "shift_x": 0,
+      "registration_shift_y": 0,
+      "foot_shift_y": 0
+    },
+    {
+      "frame": 1,
+      "score": 5.6019,
+      "shift_x": 1,
+      "registration_shift_y": 0,
+      "foot_shift_y": 0
+    },
+    {
+      "frame": 2,
+      "score": 8.5041,
+      "shift_x": 1,
+      "registration_shift_y": 0,
+      "foot_shift_y": 0
+    },
+    {
+      "frame": 3,
+      "score": 5.2341,
+      "shift_x": 1,
+      "registration_shift_y": 0,
+      "foot_shift_y": 0
+    },
+    {
+      "frame": 4,
+      "score": 8.5819,
+      "shift_x": 1,
+      "registration_shift_y": 0,
+      "foot_shift_y": 0
+    },
+    {
+      "frame": 5,
+      "score": 6.9842,
+      "shift_x": 1,
+      "registration_shift_y": 1,
+      "foot_shift_y": 0
+    },
+    {
+      "frame": 6,
+      "score": 9.7458,
+      "shift_x": 0,
+      "registration_shift_y": 1,
+      "foot_shift_y": 0
+    },
+    {
+      "frame": 7,
+      "score": 9.0997,
+      "shift_x": 0,
+      "registration_shift_y": 1,
+      "foot_shift_y": 0
+    },
+    {
+      "frame": 8,
+      "score": 11.2656,
+      "shift_x": 1,
+      "registration_shift_y": 1,
+      "foot_shift_y": 0
+    }
+  ]
+}

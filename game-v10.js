@@ -1573,7 +1573,7 @@ const HUMAN_ENEMY_IDLE_IDS=new Set([
   'infantaria','cavalaria','comandante','trono'
 ]);
 const ROOTED_HUMAN_IDLE_LIBRARY=Object.freeze(Object.fromEntries([...HUMAN_ENEMY_IDLE_IDS].map(id=>[
-  id,{src:`assets/enemies/runtime-v10/${id}/idle-v2/processed/sheet-transparent.png`,cols:3,rows:3,frames:9}
+  id,{src:`assets/enemies/runtime-v10/${id}/idle-v3/processed/sheet-transparent.png`,cols:3,rows:3,frames:9}
 ])));
 const ENEMY_IDLE_LIBRARY=Object.freeze(Object.fromEntries([
   'morto','vulto','espectro',
@@ -2129,21 +2129,19 @@ function enemyFallbackMarkup(e, action='idle'){
   return `<img class="enemy-sprite-image${flip}${e.etype==='soldado2'?' soldado2-clean':''}${actionClass}" src="${e.sprite}" alt="${L(e.name)}"${e.tint?` style="filter:${e.tint}"`:''}>${enemyAvatarOverlay(e)}`;
 }
 
-/* Idle humano enraizado: a arte oficial é a base imóvel. As duas camadas
-   superiores são a mesma arte sob máscaras suaves; assim, peito e tecido
-   ganham microvida sem arrastar pés, arma, contorno inteiro ou a sombra. */
+/* Idle humano enraizado: a folha 3x3 já foi registrada pela base e pelos pés.
+   O runtime troca as poses completas, sem transform artificial no corpo. */
 function rootedEnemyIdleMarkup(e){
   const flip=e.flip||e.isCard?' flip':'';
   const idle=ROOTED_HUMAN_IDLE_LIBRARY[enemyAnimationKey(e)];
   if(!idle) return enemyFallbackMarkup(e,'idle');
   return `<span class="enemy-rooted-idle-art${flip}" style="--rooted-idle-url:url('${idle.src}')" aria-hidden="true">
-    <span class="enemy-rooted-base"></span>
-    <span class="enemy-idle-motion"></span>
+    <span class="enemy-rooted-idle-sheet"></span>
   </span>${enemyAvatarOverlay(e)}`;
 }
 
 function startRootedEnemyIdle(avatar){
-  const layer=avatar?.querySelector('.enemy-idle-motion');
+  const layer=avatar?.querySelector('.enemy-rooted-idle-sheet');
   if(!layer) return;
   const sequence=[0,1,2,1,0,3,4,5,4,3,6,7,8,7,6,3,0];
   const duration=4200;
@@ -7069,14 +7067,12 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
       const rootedHost=document.createElement('div');
       document.body.appendChild(rootedHost);
       animateEnemyAvatar(rootedHost,{name:'Capitão',etype:'capitao',hp:180,maxHp:180,atk:20,sprite:'assets/enemies/humanos/capitao.png'},'idle');
-      const rootedBase=rootedHost.querySelector('.enemy-rooted-base');
-      const rootedBreath=rootedHost.querySelector('.enemy-idle-motion');
+      const rootedSheet=rootedHost.querySelector('.enemy-rooted-idle-sheet');
       const rootedArt=rootedHost.querySelector('.enemy-rooted-idle-art');
       const rootedIdle={
         active:rootedHost.classList.contains('enemy-rooted-idle'),
-        baseAnimation:getComputedStyle(rootedBase).animationName,
-        breathAnimation:getComputedStyle(rootedBreath).animationName,
-        baseTransform:getComputedStyle(rootedBase).transform,
+        sheetAnimation:getComputedStyle(rootedSheet).animationName,
+        sheetTransform:getComputedStyle(rootedSheet).transform,
         source:rootedArt?.style.getPropertyValue('--rooted-idle-url')||''
       };
       rootedHost.remove();
@@ -7119,8 +7115,8 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
           before,
           rooted:settled?.classList.contains('enemy-rooted-idle'),
           action:settled?.dataset.action,
-          baseAnimation:getComputedStyle(settled?.querySelector('.enemy-rooted-base')).animationName,
-          baseTransform:getComputedStyle(settled?.querySelector('.enemy-rooted-base')).transform
+          sheetAnimation:getComputedStyle(settled?.querySelector('.enemy-rooted-idle-sheet')).animationName,
+          sheetTransform:getComputedStyle(settled?.querySelector('.enemy-rooted-idle-sheet')).transform
         });
       },900));
     },
