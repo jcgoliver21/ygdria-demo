@@ -1573,16 +1573,14 @@ const HUMAN_ENEMY_IDLE_IDS=new Set([
   'infantaria','cavalaria','comandante','trono'
 ]);
 const ENEMY_IDLE_LIBRARY=Object.freeze(Object.fromEntries([
-  'capitao','soldado1','soldado2','sold-bib1','sold-bib2','sold-bib3',
-  'infantaria','cavalaria','comandante','trono','morto','vulto','espectro',
+  'morto','vulto','espectro',
   'slime-cereja','lobo-raivoso','human-guard','rune-slime','shadow-wolf','cursed-wraith',
   'stone-sentinel','crimson-dragon'
 ].map(id=>{
-  const humanIdle=HUMAN_ENEMY_IDLE_IDS.has(id);
   return [id,{
-    src:`assets/enemies/runtime-v10/${id}/${humanIdle?'idle-v2':'idle'}/processed/sheet-transparent.png`,
-    cols:3,rows:humanIdle?3:2,frames:humanIdle?9:6,duration:humanIdle?2700:2100,
-    frameOrder:humanIdle?[0,1,2,3,4,5,6,7,8,7,6,5,4,3,2,1]:[0,1,2,3,4,5,4,3,2,1]
+    src:`assets/enemies/runtime-v10/${id}/idle/processed/sheet-transparent.png`,
+    cols:3,rows:2,frames:6,duration:2100,
+    frameOrder:[0,1,2,3,4,5,4,3,2,1]
   }];
 })));
 const ENEMY_FRAME_SEQUENCES=Object.freeze({idle:[0,1,2,3,4,5,4,3,2,1],attack:[2,3,1],cast:[1,2,3],hit:[4,5],victory:[5]});
@@ -2070,7 +2068,10 @@ function animateHeroAvatar(avatar,k,action='idle',options={}){
       if(loop||state.elapsed<duration) avatar.__actionFrameRaf=requestAnimationFrame(tick);
       else{
         avatar.__actionFrameRaf=null;
-        if(!options.hold&&avatar.__heroAnimationState===state) animateHeroAvatar(avatar,k,'idle',{loop:true,flip:options.flip,enemy:options.enemy,overlayMarkup});
+        if(!options.hold&&avatar.__heroAnimationState===state){
+          if(typeof options.returnToIdle==='function') options.returnToIdle();
+          else animateHeroAvatar(avatar,k,'idle',{loop:true,flip:options.flip,enemy:options.enemy,overlayMarkup});
+        }
       }
     };
     state.tick=tick;
@@ -2079,7 +2080,8 @@ function animateHeroAvatar(avatar,k,action='idle',options={}){
   if(!loop&&!options.hold&&!(spec?.format==='sheet'&&frames>1&&!reducedMotion)){
     const finish=()=>{
       if(!avatar.isConnected||avatar.dataset.action!==action) return;
-      animateHeroAvatar(avatar,k,'idle',{loop:true,flip:options.flip,enemy:options.enemy,overlayMarkup});
+      if(typeof options.returnToIdle==='function') options.returnToIdle();
+      else animateHeroAvatar(avatar,k,'idle',{loop:true,flip:options.flip,enemy:options.enemy,overlayMarkup});
     };
     state.finish=finish;
     state.timerRemaining=duration;
@@ -2117,13 +2119,40 @@ function enemyFallbackMarkup(e, action='idle'){
   return `<img class="enemy-sprite-image${flip}${e.etype==='soldado2'?' soldado2-clean':''}${actionClass}" src="${e.sprite}" alt="${L(e.name)}"${e.tint?` style="filter:${e.tint}"`:''}>${enemyAvatarOverlay(e)}`;
 }
 
+/* Idle humano enraizado: a arte oficial é a base imóvel. As duas camadas
+   superiores são a mesma arte sob máscaras suaves; assim, peito e tecido
+   ganham microvida sem arrastar pés, arma, contorno inteiro ou a sombra. */
+function rootedEnemyIdleMarkup(e){
+  const flip=e.flip||e.isCard?' flip':'';
+  const src=e.sprite;
+  return `<span class="enemy-rooted-idle-art${flip}" aria-hidden="true">
+    <img class="enemy-sprite-image enemy-rooted-base" src="${src}" alt="">
+    <img class="enemy-idle-layer enemy-idle-breath" src="${src}" alt="">
+    <img class="enemy-idle-layer enemy-idle-cloth" src="${src}" alt="">
+  </span>${enemyAvatarOverlay(e)}`;
+}
+
+function usesRootedHumanIdle(e){
+  return HUMAN_ENEMY_IDLE_IDS.has(enemyAnimationKey(e));
+}
+
 function animateEnemyAvatar(avatar,e,action='idle',options={}){
   if(!avatar||!e) return false;
+  if(action==='idle'&&usesRootedHumanIdle(e)){
+    stopHeroAnimation(avatar);
+    avatar.dataset.action='idle';
+    avatar.classList.remove('hero-action','motion-paused');
+    avatar.classList.add('enemy-avatar','enemy-static-avatar','enemy-rooted-idle');
+    avatar.innerHTML=rootedEnemyIdleMarkup(e);
+    return true;
+  }
   const character=enemyCharacterFor(e)||enemyAnimationCharacter(e);
   const overlayMarkup=enemyAvatarOverlay(e);
   if(character?.sprites?.idle?.src){
+    avatar.classList.remove('enemy-static-avatar','enemy-rooted-idle');
     avatar.classList.add('enemy-avatar');
-    return animateHeroAvatar(avatar,character,action,{...options,enemy:true,enemyRuntime:Boolean(character.enemyRuntime),flip:Boolean(e.flip||e.isCard),overlayMarkup});
+    return animateHeroAvatar(avatar,character,action,{...options,enemy:true,enemyRuntime:Boolean(character.enemyRuntime),flip:Boolean(e.flip||e.isCard),overlayMarkup,
+      returnToIdle:action==='idle'?undefined:()=>animateEnemyAvatar(avatar,e,'idle',{loop:true})});
   }
   stopHeroAnimation(avatar);
   avatar.dataset.action=action;
@@ -7004,7 +7033,19 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
       const generic=document.getElementById('enemyPortrait-1');
       const idleSource=generic?.querySelector('.enemy-runtime-sheet')?.style.getPropertyValue('--sprite-url')||'';
       const idleFrameCount=enemyAnimationCharacter(enemies[1])?.sprites?.idle?.frameOrder?.length||0;
-      const humanIdle=enemyAnimationCharacter({name:'Capitão',etype:'capitao'})?.sprites?.idle;
+      const rootedHost=document.createElement('div');
+      document.body.appendChild(rootedHost);
+      animateEnemyAvatar(rootedHost,{name:'Capitão',etype:'capitao',hp:180,maxHp:180,atk:20,sprite:'assets/enemies/humanos/capitao.png'},'idle');
+      const rootedBase=rootedHost.querySelector('.enemy-rooted-base');
+      const rootedBreath=rootedHost.querySelector('.enemy-idle-breath');
+      const rootedIdle={
+        active:rootedHost.classList.contains('enemy-rooted-idle'),
+        baseAnimation:getComputedStyle(rootedBase).animationName,
+        breathAnimation:getComputedStyle(rootedBreath).animationName,
+        baseTransform:getComputedStyle(rootedBase).transform,
+        source:rootedBase?.getAttribute('src')||''
+      };
+      rootedHost.remove();
       const bossStarCount=document.querySelectorAll('.boss-presence-mark').length;
       playEnemyAction(0,'attack'); playEnemyAction(1,'cast');
       return {
@@ -7013,7 +7054,7 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
         genericAction:generic?.dataset.action,
         genericMotion:Boolean(generic?.querySelector('.enemy-runtime-sheet,.enemy-motion-cast')),
         genericSheet:Boolean(generic?.querySelector('.enemy-runtime-sheet.grid-sheet')),
-        idleSource,idleFrameCount,humanIdleSource:humanIdle?.src||'',humanIdleFrameCount:humanIdle?.frameOrder?.length||0,bossStarCount,
+        idleSource,idleFrameCount,rootedIdle,bossStarCount,
         chargeAura:Boolean(document.querySelector('#enemy-0 .unit-charge-aura')),
         rectangularGlow:getComputedStyle(character).boxShadow
       };
@@ -7031,6 +7072,23 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
         shadowAnimation:getComputedStyle(shadow).animationName,
         sheetAnimation:getComputedStyle(avatar?.querySelector('.hero-sprite-sheet')||avatar).animationName
       };
+    },
+    rootedEnemyActionProbe:()=>{
+      enemies=[{name:'Capitão',etype:'capitao',hp:180,maxHp:180,atk:20,sprite:'assets/enemies/humanos/capitao.png'}];
+      renderEnemies();
+      const avatar=document.getElementById('enemyPortrait-0');
+      const before={rooted:avatar?.classList.contains('enemy-rooted-idle'),action:avatar?.dataset.action};
+      playEnemyAction(0,'attack');
+      return new Promise(resolve=>window.setTimeout(()=>{
+        const settled=document.getElementById('enemyPortrait-0');
+        resolve({
+          before,
+          rooted:settled?.classList.contains('enemy-rooted-idle'),
+          action:settled?.dataset.action,
+          baseAnimation:getComputedStyle(settled?.querySelector('.enemy-rooted-base')).animationName,
+          baseTransform:getComputedStyle(settled?.querySelector('.enemy-rooted-base')).transform
+        });
+      },900));
     },
     heroAuraProbe:()=>{
       const heroIdx=ACTIVE[0];
