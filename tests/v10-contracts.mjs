@@ -16,15 +16,15 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=10\.0\.26/);
-  assert.match(html,/v10-config\.js\?v=10\.0\.26/);
-  assert.match(html,/v10-animations\.js\?v=10\.0\.26/);
-  assert.match(html,/game-v10\.js\?v=10\.0\.26/);
+  assert.match(html,/styles-v10\.css\?v=10\.0\.27/);
+  assert.match(html,/v10-config\.js\?v=10\.0\.27/);
+  assert.match(html,/v10-animations\.js\?v=10\.0\.27/);
+  assert.match(html,/game-v10\.js\?v=10\.0\.27/);
   assert.doesNotMatch(html,/game-v9|styles-v9|v9\.3-config/);
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v10\.0.26/);
+  assert.match(sw,/12r-v10\.0\.27/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -160,9 +160,9 @@ check('escala de porte usa a taxonomia oficial sem interferir nas poses',()=>{
 });
 
 check('folhas de ação preservam a estatura ancorada nos pés',()=>{
-  assert.match(game,/const ACTION_BODY_SCALE_NORMALIZATION\s*=\s*Object\.freeze\(/);
-  assert.match(game,/fogo: Object\.freeze\(\{attack:\.6287/,'Lucius precisa compensar a folha de ataque superdimensionada');
   assert.match(game,/function normalizedActionDisplayScale\(character,action,displayScale\)/);
+  assert.doesNotMatch(game,/ACTION_BODY_SCALE_NORMALIZATION/);
+  assert.match(game,/const idleScale=Number\(character\?\.sprites\?\.idle\?\.displayScale\)/);
   assert.match(game,/const displayScale=normalizedActionDisplayScale\(k,action,meta\.displayScale\)/);
   assert.match(css,/\.hero-sprite-sheet\{transform:scale\(var\(--sprite-scale,1\)\);transform-origin:50% 100%\}/);
 });
@@ -175,7 +175,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=10.0.26');
+  const deferredGame=html.indexOf('game-v10.js?v=10.0.27');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
@@ -319,6 +319,17 @@ check('carregamento de animação é sob demanda e possui fallback',()=>{
   const preloadBlock=game.slice(game.indexOf('function preloadOfficialAssets()'),game.indexOf('function preloadHeroActions('));
   assert.doesNotMatch(preloadBlock,/DUNGEON\.flatMap/);
   assert.match(game,/renderGolemUnits\(\);\s*renderHarpyUnits\(\);/);
+});
+
+check('escala corporal não varia entre ações e impacto não duplica animações',()=>{
+  assert.doesNotMatch(game,/ACTION_BODY_SCALE_NORMALIZATION/);
+  assert.match(game,/const idleScale=Number\(character\?\.sprites\?\.idle\?\.displayScale\)/);
+  assert.match(game,/playEnemyAction\(idx,'hit'\);/);
+  assert.doesNotMatch(game,/enemyUnit\.classList\.remove\('hit'\);/);
+  assert.doesNotMatch(game,/partyArenaEl\.classList\.add\('party-hurt'\);/);
+  assert.match(css,/\.avatar-circle\[data-action="hit"\]\{ filter:none!important; \}/);
+  assert.match(css,/\.unit\.hit \.avatar-circle\{ animation:none; \}/);
+  assert.match(css,/#partyArena\.party-hurt \.unit:not\(\.golem-unit\) \.avatar-circle\{ animation:none!important; \}/);
 });
 
 check('pool de VFX não recicla nós compostos e limpa a fase anterior',()=>{

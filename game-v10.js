@@ -1900,39 +1900,14 @@ const HERO_ACTIONS = Object.freeze({
   victory: { frames:4, cols:2, rows:2, duration:1200, loop:false, holdLast:true }
 });
 
-/* v10.0.17 · As folhas de cada ação foram exportadas em enquadramentos
-   diferentes. Esta tabela normaliza o tamanho corporal contra o repouso de
-   cada personagem, sempre com transform-origin nos pés. Ela não redimensiona
-   quadros individuais: a silhueta continua estável durante a ação e a pose
-   não "cresce" ao trocar de idle para ataque, magia, dano ou vitória. */
-const ACTION_BODY_SCALE_NORMALIZATION = Object.freeze({
-  'acqua-jovem': Object.freeze({attack:.8398,hit:.7652,victory:.9396}),
-  agua: Object.freeze({attack:1.0344,cast:1.0700,hit:1.0982}),
-  areia: Object.freeze({attack:1.0834,cast:1.0858,hit:1.0285,victory:1.0535}),
-  'berenice-jovem': Object.freeze({victory:.9662}),
-  bernyce: Object.freeze({attack:1.0272,cast:1.0315,hit:.9305,victory:1.0499}),
-  cedric: Object.freeze({attack:1.1456,cast:1.0793,hit:1.0518,victory:1.0545}),
-  chuvas: Object.freeze({attack:.8050,hit:1.2485}),
-  elizier: Object.freeze({attack:1.1281,cast:1.0340,hit:1.0853,victory:1.0381}),
-  fogo: Object.freeze({attack:.6287,cast:1.0441,hit:.9568}),
-  'galateia-jovem': Object.freeze({attack:.9742,cast:.9720,victory:1.0391}),
-  gareth: Object.freeze({attack:.8071,cast:1.0367,hit:1.0212}),
-  gelo: Object.freeze({attack:.9769,cast:.8805,hit:1.1637,victory:1.0698}),
-  humanos: Object.freeze({attack:.6331,cast:.6236,hit:1.0629,victory:1.0763}),
-  jules: Object.freeze({attack:1.0333,cast:1.0342,hit:.9361,victory:1.0370}),
-  julius: Object.freeze({attack:.9372,cast:.9849,hit:1.0165}),
-  kalander: Object.freeze({attack:1.0338,hit:.9806,victory:1.0430}),
-  luz: Object.freeze({attack:.7015,cast:.6793}),
-  natureza: Object.freeze({attack:1.0775,cast:1.1599,hit:.9549,victory:.9489}),
-  raio: Object.freeze({attack:.9437,cast:.9503,hit:1.2453,victory:.9597}),
-  roland: Object.freeze({attack:1.1240,cast:1.0538,hit:1.1173}),
-  sombras: Object.freeze({attack:.6597,cast:.6563,hit:.9757}),
-  terra: Object.freeze({attack:1.0811,hit:1.0352}),
-  vento: Object.freeze({cast:1.0319,hit:1.1514,victory:1.0431})
-});
+/* v10.0.27 · A escala corporal é uma propriedade do personagem, não da
+   ação. O idle é a âncora canônica já alinhada pelos pés; trocar para ataque,
+   magia, dano ou vitória nunca pode alterar o tamanho percebido. */
 function normalizedActionDisplayScale(character,action,displayScale){
-  const correction=ACTION_BODY_SCALE_NORMALIZATION[character?.id]?.[action]||1;
-  return Number((Number(displayScale||1)*correction).toFixed(4));
+  const idleScale=Number(character?.sprites?.idle?.displayScale);
+  const fallback=Number(displayScale||1);
+  const fixed=Number.isFinite(idleScale)&&idleScale>0?idleScale:(Number.isFinite(fallback)&&fallback>0?fallback:1);
+  return Number(fixed.toFixed(4));
 }
 const MAX_ACTIVE_FX = 28;
 const failedSpriteAssets = new Set();
@@ -5733,7 +5708,9 @@ function applyDamageToEnemy(dmg, colorIdx, targetIdxOverride){
   showFloatDamage(finalDamage, 'enemy-'+idx, false);
   const enemyUnit = document.getElementById('enemy-'+idx);
   if(enemyUnit){
-    enemyUnit.classList.remove('hit'); void enemyUnit.offsetWidth; enemyUnit.classList.add('hit');
+    /* A folha de hit já é a única coreografia do impacto. Reaplicar a classe
+       .hit com reflow disparava outro transform/filtro ao mesmo tempo e
+       produzia piscadas e uma falsa mudança de escala no celular. */
     playEnemyAction(idx,'hit');
     const hitColor = colorIdx!==null && colorIdx!==undefined && KINGDOMS[colorIdx] ? KINGDOMS[colorIdx].colorLight : '#fff';
     spawnCombatFx(finalDamage>=100?'critical':'impact',enemyUnit,hitColor,560);
@@ -5920,8 +5897,6 @@ function enemyCounterAttack(){
       return;
     }
     if(enemy.timeStopped && enemy.hp<=enemy.maxHp*0.25){ enemy.timeStopped=false; }
-    const enemyUnit = document.getElementById('enemy-'+idx);
-    if(enemyUnit){ enemyUnit.classList.remove('attacking'); void enemyUnit.offsetWidth; enemyUnit.classList.add('attacking'); }
     playEnemyAction(idx,'attack');
     if(enemy.isBoss) spawnCombatFx('telegraph',document.getElementById('playerHpAnchor'),enemyAuraPalette(enemy)[1],500);
     const variance = 0.85 + gameRandom()*0.3;
@@ -5953,8 +5928,6 @@ function enemyCounterAttack(){
     updatePlayerHP();
     if(dmg>0) pulseHpEffect('damage',800);
     if(dmg>0) ACTIVE.forEach(heroIdx=>playHeroAction(heroIdx,'hit'));
-    if(dmg>0&&partyArenaEl){ partyArenaEl.classList.remove('party-hurt'); void partyArenaEl.offsetWidth; partyArenaEl.classList.add('party-hurt');
-      scheduleCombat(()=>partyArenaEl.classList.remove('party-hurt'),480); }
     if(dmg>0) spawnCombatFx(enemy.isBoss?'critical':'impact',document.getElementById('playerHpAnchor'),enemyAuraPalette(enemy)[1],560);
     sfxCombatAttack(enemy.etype||enemy.id||enemy.name,'enemy');
     haptic([25,20,25]);

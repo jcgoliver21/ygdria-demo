@@ -68,6 +68,30 @@ test('v10.0.1 restaura escala e anima inimigos-personagem e inimigos comuns',asy
   expect(errors).toEqual([]);
 });
 
+test('escala do corpo permanece fixa ao trocar idle, ataque e dano',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
+  const result=await page.evaluate(()=>{
+    const samples=[];
+    for(const heroIdx of ACTIVE){
+      const avatar=document.getElementById('party-'+KINGDOMS[heroIdx].id+'-avatar');
+      const actions=['idle','attack','cast','hit','victory'];
+      const scales=[];
+      for(const action of actions){
+        window.__12rQA.playHeroAction(heroIdx,action);
+        scales.push({action,scale:avatar?.querySelector('.hero-sprite-sheet')?.style.getPropertyValue('--sprite-scale')||'',filter:getComputedStyle(avatar).filter});
+      }
+      samples.push({id:KINGDOMS[heroIdx].id,scales});
+    }
+    return samples;
+  });
+  for(const sample of result){
+    expect(new Set(sample.scales.map(entry=>entry.scale)).size).toBe(1);
+    expect(sample.scales.find(entry=>entry.action==='hit')?.filter).toBe('none');
+  }
+  expect(errors).toEqual([]);
+});
+
 test('Torre ancora personagens no pátio real da arte',async({page})=>{
   const errors=await boot(page,'flow');
   await page.setViewportSize({width:570,height:684});
@@ -815,7 +839,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.26');
+  expect(registration.caches).toContain('12r-v10.0.27');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -934,7 +958,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.26');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.27');
 
     // Produção não expõe __12rQA: este trecho percorre somente controles reais.
     if(await page.locator('#introScreen').isVisible()) await page.locator('#introNext').click();
