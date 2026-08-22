@@ -1547,6 +1547,7 @@ const ENEMY_ANIMATION_LIBRARY=Object.freeze({
   'soldado1':{src:'assets/enemies/runtime-v10/soldado1/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
   'soldado2':{src:'assets/enemies/runtime-v10/soldado2/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
   'sold-bib2':{src:'assets/enemies/runtime-v10/sold-bib2/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'sold-bib1':{src:'assets/enemies/runtime-v10/sold-bib1/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
   'sold-bib3':{src:'assets/enemies/runtime-v10/sold-bib3/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
   'infantaria':{src:'assets/enemies/runtime-v10/infantaria/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
   'cavalaria':{src:'assets/enemies/runtime-v10/cavalaria/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
@@ -1571,6 +1572,7 @@ function enemyAnimationKey(e){
   if(/soldado.?1|soldado-1/.test(descriptor)) return 'soldado1';
   if(/soldado.?2|soldado-2/.test(descriptor)) return 'soldado2';
   if(/biblioteca.?2|biblioteca-2/.test(descriptor)) return 'sold-bib2';
+  if(/biblioteca.?1|biblioteca-1/.test(descriptor)) return 'sold-bib1';
   if(/biblioteca.?3|biblioteca-3/.test(descriptor)) return 'sold-bib3';
   if(/infantaria/.test(descriptor)) return 'infantaria';
   if(/cavalaria/.test(descriptor)) return 'cavalaria';

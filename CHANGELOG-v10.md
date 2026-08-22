@@ -2,6 +2,11 @@
 
 Data: 2026-08-14
 
+## v10.0.21 — Elenco humano completo animado
+
+- inclusão do Soldado da Biblioteca 1 na matriz de animação própria;
+- cache e smoke test de produção atualizados para a release final.
+
 ## v10.0.20 — Animação real de inimigos por identidade
 
 - folhas 2×3 reais para todos os inimigos humanos e criaturas da campanha, partindo da arte oficial de cada identidade;
