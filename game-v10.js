@@ -1543,6 +1543,20 @@ const SUMMON_ANIMATIONS={golem:{src:'assets/summons/golem/attack-2x3.png',rows:3
    receberem uma folha animada criada a partir dessa identidade — nunca uma
    arte genérica de outro combatente. */
 const ENEMY_ANIMATION_LIBRARY=Object.freeze({
+  'capitao':{src:'assets/enemies/runtime-v10/capitao/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,4,5],cast:[2,3,4],hit:[4,5],victory:[5]}},
+  'soldado1':{src:'assets/enemies/runtime-v10/soldado1/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'soldado2':{src:'assets/enemies/runtime-v10/soldado2/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'sold-bib2':{src:'assets/enemies/runtime-v10/sold-bib2/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'sold-bib3':{src:'assets/enemies/runtime-v10/sold-bib3/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'infantaria':{src:'assets/enemies/runtime-v10/infantaria/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'cavalaria':{src:'assets/enemies/runtime-v10/cavalaria/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'comandante':{src:'assets/enemies/runtime-v10/comandante/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:760,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'trono':{src:'assets/enemies/runtime-v10/trono/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:760,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'morto':{src:'assets/enemies/runtime-v10/morto/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:760,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'vulto':{src:'assets/enemies/runtime-v10/vulto/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:700,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'slime-cereja':{src:'assets/enemies/runtime-v10/slime-cereja/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:650,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'lobo-raivoso':{src:'assets/enemies/runtime-v10/lobo-raivoso/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:700,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'espectro':{src:'assets/enemies/runtime-v10/espectro/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:680,flying:true,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
   'human-guard':{src:'assets/enemies/runtime-v10/human-guard/processed/sheet-transparent.png',cols:2,rows:3,frames:6,duration:720},
   'rune-slime':{src:'assets/enemies/runtime-v10/rune-slime/processed/sheet-transparent.png',cols:2,rows:3,frames:6,duration:650},
   'shadow-wolf':{src:'assets/enemies/runtime-v10/shadow-wolf/processed/sheet-transparent.png',cols:2,rows:3,frames:6,duration:700},
@@ -1553,6 +1567,20 @@ const ENEMY_ANIMATION_LIBRARY=Object.freeze({
 const ENEMY_FRAME_SEQUENCES=Object.freeze({idle:[0,1],attack:[2,3,1],cast:[1,2,3],hit:[4,5],victory:[5]});
 function enemyAnimationKey(e){
   const descriptor=[e?.etype,e?.name,e?.sprite].filter(Boolean).join(' ').toLowerCase();
+  if(/capit[aã]o/.test(descriptor)) return 'capitao';
+  if(/soldado.?1|soldado-1/.test(descriptor)) return 'soldado1';
+  if(/soldado.?2|soldado-2/.test(descriptor)) return 'soldado2';
+  if(/biblioteca.?2|biblioteca-2/.test(descriptor)) return 'sold-bib2';
+  if(/biblioteca.?3|biblioteca-3/.test(descriptor)) return 'sold-bib3';
+  if(/infantaria/.test(descriptor)) return 'infantaria';
+  if(/cavalaria/.test(descriptor)) return 'cavalaria';
+  if(/soldado.?trono|trono/.test(descriptor)) return 'trono';
+  if(/cavaleiro.?morto|morto-vivo/.test(descriptor)) return 'morto';
+  if(/slime.?cereja|slime-cereja/.test(descriptor)) return 'slime-cereja';
+  if(/lobo.?raivoso|lobo-raivoso/.test(descriptor)) return 'lobo-raivoso';
+  if(/espectro.?sombrio|espectro-sombrio/.test(descriptor)) return 'espectro';
+  if(/vulto.?sombrio|vulto-sombrio/.test(descriptor)) return 'vulto';
+  if(/comandante/.test(descriptor)) return 'comandante';
   if(/dragon|drag[aã]o/.test(descriptor)) return 'crimson-dragon';
   if(/slime|limo/.test(descriptor)) return 'rune-slime';
   if(/lobo|wolf|chacal/.test(descriptor)) return 'shadow-wolf';
@@ -1565,7 +1593,7 @@ function enemyAnimationCharacter(e){
   if(!library) return null;
   const sprites={};
   Object.entries(ENEMY_FRAME_SEQUENCES).forEach(([action,frameOrder])=>{
-    sprites[action]={...library,format:'sheet',sheetFrames:library.frames,frameOrder,loop:action==='idle',duration:action==='idle'?Math.max(1500,library.duration*2):library.duration};
+    sprites[action]={...library,format:'sheet',sheetFrames:library.frames,frameOrder:library.actionFrames?.[action]||frameOrder,loop:action==='idle',duration:action==='idle'?Math.max(1500,library.duration*2):library.duration};
   });
   return {id:`enemy-${key}`,nome:e?.name||key,sprites,heroFlip:false,enemyRuntime:true,flying:library.flying===true};
 }

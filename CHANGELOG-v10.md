@@ -2,6 +2,12 @@
 
 Data: 2026-08-14
 
+## v10.0.20 — Animação real de inimigos por identidade
+
+- folhas 2×3 reais para todos os inimigos humanos e criaturas da campanha, partindo da arte oficial de cada identidade;
+- sequências de idle, ataque, conjuração, dano e vitória por personagem, sem reutilizar o guarda genérico;
+- QC com escala compartilhada, pés alinhados e rejeição de frames cortados.
+
 ## v10.0.19 — Identidade dos inimigos e arenas reforçadas
 
 - Inimigos do Reino dos Humanos voltaram a usar sua arte oficial individual; o runtime não os substitui mais por um guarda genérico.
