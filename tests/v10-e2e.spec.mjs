@@ -75,6 +75,32 @@ test('v10.0.1 restaura escala e anima inimigos-personagem e inimigos comuns',asy
   expect(errors).toEqual([]);
 });
 
+test('mobile mantém derrota humana caída, opaca e presa ao piso',async({page})=>{
+  await page.setViewportSize({width:591,height:1280});
+  const errors=await boot(page,'flow');
+  await page.evaluate(()=>{ worldRun.active=true; worldRun.fase=1; worldRun.nivel=1; chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
+  await page.evaluate(()=>window.__12rQA.enemyDeathProbe());
+  await page.waitForTimeout(650);
+  const layout=await page.evaluate(()=>{
+    const enemy=document.querySelector('.enemy-unit.dead');
+    const sprite=enemy?.querySelector('.enemy-sprite-image,.hero-sprite-sheet');
+    const status=document.querySelector('.battle-status');
+    const shadow=enemy?.querySelector('.unit-ground-shadow');
+    return {
+      dead:Boolean(enemy),
+      action:enemy?.querySelector('.enemy-avatar')?.dataset.action,
+      opacity:enemy?getComputedStyle(enemy).opacity:null,
+      filter:enemy?getComputedStyle(enemy).filter:null,
+      spriteBottom:sprite?.getBoundingClientRect().bottom,
+      statusTop:status?.getBoundingClientRect().top,
+      shadowAnimation:shadow?getComputedStyle(shadow).animationName:null
+    };
+  });
+  expect(layout).toMatchObject({dead:true,action:'defeat',opacity:'1',filter:'none',shadowAnimation:'none'});
+  expect(layout.spriteBottom).toBeLessThanOrEqual(layout.statusTop+2);
+  expect(errors).toEqual([]);
+});
+
 test('inimigos humanos mantêm a escala entre idle enraizado e ação',async({page})=>{
   const errors=await boot(page,'flow');
   await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
@@ -858,7 +884,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.30');
+  expect(registration.caches).toContain('12r-v10.0.31');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1018,7 +1044,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.30');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.31');
 
     // Produção não expõe __12rQA: este trecho percorre somente controles reais.
     if(await page.locator('#introScreen').isVisible()) await page.locator('#introNext').click();

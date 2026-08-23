@@ -3258,15 +3258,20 @@ body.quality-economy .unit-ground-shadow,body.quality-economy .arena-floor{filte
 .motion-showcase-actions button:focus-visible{outline:2px solid #fff1a7;outline-offset:2px}
 @media (max-width:520px){.motion-showcase-actions{grid-template-columns:repeat(3,minmax(0,1fr))}.motion-showcase-stage{height:142px}.motion-showcase-avatar{width:130px;height:130px}}
 
-/* ===== v10.0.30 · Atmosfera narrativa, sem raios e sem bolinhas genéricas ===== */
-.arena-atmosphere{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;isolation:isolate;opacity:.84}
+/* ===== v10.0.31 · Atmosfera narrativa, sem raios e sem bolinhas genéricas ===== */
+.arena-atmosphere{position:absolute;inset:0;z-index:3;overflow:hidden;pointer-events:none;isolation:isolate;opacity:.9}
 .arena-atmosphere::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 84%,rgba(255,214,145,.12),transparent 38%);pointer-events:none}
 .arena-petals,.arena-cold-fog,.arena-world-drift{position:absolute;display:block;pointer-events:none;will-change:transform,opacity}
 .arena-petals{inset:-18% -10%;opacity:0;background-image:radial-gradient(ellipse 5px 2px at 12% 12%,rgba(255,205,224,.9) 0 60%,transparent 66%),radial-gradient(ellipse 4px 2px at 38% 34%,rgba(255,238,245,.82) 0 60%,transparent 66%),radial-gradient(ellipse 6px 2px at 72% 22%,rgba(246,171,203,.86) 0 60%,transparent 66%),radial-gradient(ellipse 4px 2px at 86% 66%,rgba(255,221,235,.88) 0 60%,transparent 66%);background-size:180px 230px,220px 270px,260px 310px,190px 250px;animation:cherryPetalDrift 11s linear infinite}
 .arena-cold-fog{left:-20%;right:-20%;bottom:-12%;height:48%;opacity:0;background:radial-gradient(ellipse at 16% 80%,rgba(207,233,255,.3),transparent 34%),radial-gradient(ellipse at 58% 68%,rgba(178,205,238,.23),transparent 38%),radial-gradient(ellipse at 91% 84%,rgba(222,240,255,.28),transparent 33%);filter:blur(10px);animation:coldFogCrawl 15s ease-in-out infinite alternate}
+.arena-cold-fog::before,.arena-cold-fog::after{content:"";position:absolute;left:-12%;right:-12%;pointer-events:none;border-radius:50%;filter:blur(10px)}
+.arena-cold-fog::before{bottom:12%;height:24%;background:linear-gradient(90deg,transparent 0 8%,rgba(219,241,255,.34) 25%,rgba(184,218,247,.24) 49%,rgba(225,245,255,.34) 72%,transparent 94%);animation:coldFogWisp 10s ease-in-out infinite alternate}
+.arena-cold-fog::after{bottom:42%;height:15%;background:linear-gradient(90deg,transparent 4%,rgba(201,230,252,.2) 29%,rgba(234,247,255,.28) 52%,rgba(191,222,247,.18) 78%,transparent 96%);animation:coldFogWisp 13s ease-in-out infinite alternate-reverse}
 .arena-world-drift{inset:-12%;opacity:0;background-image:linear-gradient(112deg,transparent 0 46%,rgba(255,219,137,.16) 48% 49%,transparent 51%),linear-gradient(18deg,transparent 0 54%,rgba(184,226,255,.13) 56% 57%,transparent 59%);background-size:240px 180px,300px 220px;animation:worldDriftPass 13s linear infinite}
 .arena[data-mission-atmosphere="cherry-petals"] .arena-petals{opacity:.8}
-.arena[data-mission-atmosphere="cold-mist"] .arena-cold-fog{opacity:.74}
+.arena[data-mission-atmosphere="cold-mist"] .arena-cold-fog{left:-8%;right:-8%;bottom:4%;height:54%;opacity:1;background:radial-gradient(ellipse at 8% 76%,rgba(225,245,255,.58) 0 9%,transparent 34%),radial-gradient(ellipse at 48% 56%,rgba(204,232,253,.5) 0 11%,transparent 37%),radial-gradient(ellipse at 92% 74%,rgba(225,245,255,.56) 0 9%,transparent 34%);filter:blur(8px)}
+.arena[data-mission-atmosphere="cold-mist"] .arena-cold-fog::before{left:-6%;right:-6%;bottom:18%;height:27%;background:linear-gradient(90deg,transparent 0 5%,rgba(235,249,255,.5) 18%,rgba(190,224,250,.46) 47%,rgba(235,249,255,.5) 78%,transparent 95%);filter:blur(11px)}
+.arena[data-mission-atmosphere="cold-mist"] .arena-cold-fog::after{left:-4%;right:-4%;bottom:48%;height:18%;background:linear-gradient(90deg,transparent 2%,rgba(213,240,255,.34) 23%,rgba(242,251,255,.48) 52%,rgba(202,231,252,.34) 81%,transparent 98%);filter:blur(9px)}
 .arena[data-mission-atmosphere="arcane-threads"] .arena-world-drift{opacity:.55;background-image:linear-gradient(102deg,transparent 0 48%,rgba(171,142,255,.3) 49% 50%,transparent 52%),linear-gradient(78deg,transparent 0 58%,rgba(119,224,255,.22) 59% 60%,transparent 62%)}
 .arena[data-mission-atmosphere="market-dust"] .arena-world-drift{opacity:.38;background-image:radial-gradient(ellipse 22px 3px at 20% 70%,rgba(232,194,142,.22),transparent 70%),radial-gradient(ellipse 18px 3px at 70% 45%,rgba(239,214,170,.2),transparent 70%)}
 .arena[data-mission-atmosphere="essence-ribbons"] .arena-world-drift{opacity:.5;background-image:linear-gradient(115deg,transparent 0 44%,rgba(255,161,209,.22) 46% 47%,transparent 49%),linear-gradient(70deg,transparent 0 61%,rgba(154,215,255,.22) 63% 64%,transparent 66%)}
@@ -3276,6 +3281,7 @@ body.quality-economy .unit-ground-shadow,body.quality-economy .arena-floor{filte
 .arena.boss-presence .arena-atmosphere{opacity:1;filter:saturate(1.2) contrast(1.04)}
 @keyframes cherryPetalDrift{0%{transform:translate3d(-2%,-5%,0) rotate(-2deg)}45%{transform:translate3d(4%,28%,0) rotate(9deg)}100%{transform:translate3d(-5%,72%,0) rotate(-12deg)}}
 @keyframes coldFogCrawl{0%{transform:translate3d(-5%,2%,0)}100%{transform:translate3d(5%,-4%,0)}}
+@keyframes coldFogWisp{0%{transform:translate3d(-5%,2%,0) scaleX(.96);opacity:.52}100%{transform:translate3d(7%,-3%,0) scaleX(1.05);opacity:1}}
 @keyframes worldDriftPass{0%{transform:translate3d(-4%,5%,0)}100%{transform:translate3d(5%,-6%,0)}}
 
 body.game-active .enemy-unit .enemy-runtime-sheet{scale:var(--unit-art-scale,1)!important;transform-origin:50% 100%;image-rendering:auto;filter:drop-shadow(0 8px 7px rgba(0,0,0,.68)) saturate(1.06) contrast(1.035)}
@@ -3368,6 +3374,8 @@ body.game-active .enemy-row .unit-stage{height:clamp(112px,18vh,142px)!important
 
 /* Estado terminal: sombra congelada e pose de queda; nenhum pulso ou escala. */
 .enemy-unit.dead .unit-ground-shadow{animation:none!important;transform:translateX(-50%) scale(.84)!important;opacity:.24!important}
+.enemy-unit.dead{opacity:1!important;filter:none!important}
+.enemy-unit.dead .enemy-avatar.enemy-defeat-pose{opacity:1!important;filter:none!important}
 .enemy-unit.dead .enemy-avatar,.enemy-unit.dead .enemy-avatar *{animation:none!important;transition:none!important}
 .enemy-unit.dead .enemy-runtime-sheet{background-position:100% 100%!important}
 .enemy-unit.dead .enemy-intent{display:none!important}
@@ -3421,6 +3429,25 @@ body.game-active .enemy-row .unit-stage{height:clamp(112px,18vh,142px)!important
   .enemy-unit.dead .enemy-avatar.enemy-defeat-pose .enemy-sprite-image,
   .enemy-unit.dead .enemy-avatar.enemy-defeat-pose .enemy-rooted-idle-art{animation:none!important;transform:translate3d(-12px,-92px,0) rotate(-90deg)!important;opacity:.86}
 }
+
+/* Em telas estreitas a faixa de missão fica mais baixa. A queda usa o mesmo
+   ponto de apoio do idle, mas termina antes da HUD, no chão visível da arena. */
+@media (max-width:600px){
+  .enemy-unit.dead .enemy-avatar.enemy-defeat-pose .hero-sprite-sheet,
+  .enemy-unit.dead .enemy-avatar.enemy-defeat-pose .enemy-sprite-image,
+  .enemy-unit.dead .enemy-avatar.enemy-defeat-pose .enemy-rooted-idle-art{animation-name:enemyDefeatFallMobile!important}
+  .enemy-unit.dead .enemy-avatar.enemy-defeat-pose .hero-sprite-sheet.flip,
+  .enemy-unit.dead .enemy-avatar.enemy-defeat-pose .enemy-sprite-image.flip,
+  .enemy-unit.dead .enemy-avatar.enemy-defeat-pose .enemy-rooted-idle-art.flip{animation-name:enemyDefeatFallMobileFlip!important}
+  .enemy-unit.dead .enemy-avatar.enemy-defeat-pose[data-defeat-pose="soft"] .hero-sprite-sheet,
+  .enemy-unit.dead .enemy-avatar.enemy-defeat-pose[data-defeat-pose="soft"] .enemy-sprite-image{animation-name:enemyDefeatSlumpMobile!important}
+  .enemy-unit.dead .enemy-avatar.enemy-defeat-pose[data-defeat-pose="air"] .hero-sprite-sheet,
+  .enemy-unit.dead .enemy-avatar.enemy-defeat-pose[data-defeat-pose="air"] .enemy-sprite-image{animation-name:enemyDefeatDropMobile!important}
+}
+@keyframes enemyDefeatFallMobile{0%{transform:translate3d(0,-2px,0) rotate(0deg);opacity:1}24%{transform:translate3d(-1px,-8px,0) rotate(8deg);opacity:1}58%{transform:translate3d(-6px,-25px,0) rotate(-48deg);opacity:1}82%{transform:translate3d(-11px,-40px,0) rotate(-82deg);opacity:1}100%{transform:translate3d(-12px,-52px,0) rotate(-90deg);opacity:1}}
+@keyframes enemyDefeatFallMobileFlip{0%{transform:scaleX(-1) translate3d(0,-2px,0) rotate(0deg);opacity:1}24%{transform:scaleX(-1) translate3d(1px,-8px,0) rotate(-8deg);opacity:1}58%{transform:scaleX(-1) translate3d(6px,-25px,0) rotate(48deg);opacity:1}82%{transform:scaleX(-1) translate3d(11px,-40px,0) rotate(82deg);opacity:1}100%{transform:scaleX(-1) translate3d(12px,-52px,0) rotate(90deg);opacity:1}}
+@keyframes enemyDefeatSlumpMobile{0%{transform:translate3d(0,-2px,0) rotate(0deg);opacity:1}35%{transform:translate3d(0,-4px,0) rotate(-4deg);opacity:1}72%{transform:translate3d(-2px,0,0) rotate(7deg) skewX(-7deg);opacity:1}100%{transform:translate3d(-2px,0,0) rotate(10deg) skewX(-10deg);opacity:1}}
+@keyframes enemyDefeatDropMobile{0%{transform:translate3d(0,-2px,0) rotate(0deg);opacity:1}35%{transform:translate3d(0,-12px,0) rotate(-5deg);opacity:1}72%{transform:translate3d(5px,-22px,0) rotate(21deg);opacity:1}100%{transform:translate3d(7px,-30px,0) rotate(32deg);opacity:1}}
 
 /* Galeria: mesma leitura em blocos da vitrine, sem retirar reino, raridade,
    favoritos, cartas novas, zoom ou a coleção de personagens encontrados. */
