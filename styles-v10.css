@@ -3258,7 +3258,7 @@ body.quality-economy .unit-ground-shadow,body.quality-economy .arena-floor{filte
 .motion-showcase-actions button:focus-visible{outline:2px solid #fff1a7;outline-offset:2px}
 @media (max-width:520px){.motion-showcase-actions{grid-template-columns:repeat(3,minmax(0,1fr))}.motion-showcase-stage{height:142px}.motion-showcase-avatar{width:130px;height:130px}}
 
-/* ===== v10.0.32 · Atmosfera narrativa e física de derrota permanente ===== */
+/* ===== v10.0.33 · Física de derrota grounded para todo o elenco ===== */
 .arena-atmosphere{position:absolute;inset:0;z-index:3;overflow:hidden;pointer-events:none;isolation:isolate;opacity:.9}
 .arena-atmosphere::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 84%,rgba(255,214,145,.12),transparent 38%);pointer-events:none}
 .arena-petals,.arena-cold-fog,.arena-world-drift{position:absolute;display:block;pointer-events:none;will-change:transform,opacity}

@@ -48,6 +48,15 @@
       "format": "sheet",
       "src": "assets/characters/runtime-v10/luz/victory-2x2.png",
       "displayScale": 1.0221
+    },
+    "defeat": {
+      "frames": 4,
+      "cols": 2,
+      "rows": 2,
+      "duration": 900,
+      "hold": true,
+      "format": "sheet",
+      "src": "assets/characters/runtime-v10/luz/defeat/processed/sheet-transparent.png"
     }
   },
   "humanos": {
@@ -97,6 +106,15 @@
       "format": "sheet",
       "src": "assets/characters/runtime-v10/humanos/victory-2x2.png",
       "displayScale": 1.0237
+    },
+    "defeat": {
+      "frames": 4,
+      "cols": 2,
+      "rows": 2,
+      "duration": 900,
+      "hold": true,
+      "format": "sheet",
+      "src": "assets/characters/runtime-v10/humanos/defeat/processed/sheet-transparent.png"
     }
   },
   "agua": {
@@ -146,6 +164,15 @@
       "format": "sheet",
       "src": "assets/characters/runtime-v10/agua/victory-2x2.png",
       "displayScale": 0.9978
+    },
+    "defeat": {
+      "frames": 4,
+      "cols": 2,
+      "rows": 2,
+      "duration": 900,
+      "hold": true,
+      "format": "sheet",
+      "src": "assets/characters/runtime-v10/agua/defeat/processed/sheet-transparent.png"
     }
   },
   "fogo": {
@@ -195,6 +222,15 @@
       "format": "sheet",
       "src": "assets/characters/runtime-v10/fogo/victory-2x2.png",
       "displayScale": 1.03
+    },
+    "defeat": {
+      "frames": 4,
+      "cols": 2,
+      "rows": 2,
+      "duration": 900,
+      "hold": true,
+      "format": "sheet",
+      "src": "assets/characters/runtime-v10/fogo/defeat/processed/sheet-transparent.png"
     }
   },
   "natureza": {
@@ -244,6 +280,15 @@
       "format": "sheet",
       "src": "assets/characters/runtime-v10/natureza/victory-2x2.png",
       "displayScale": 1.0681
+    },
+    "defeat": {
+      "frames": 4,
+      "cols": 2,
+      "rows": 2,
+      "duration": 900,
+      "hold": true,
+      "format": "sheet",
+      "src": "assets/characters/runtime-v10/natureza/defeat/processed/sheet-transparent.png"
     }
   },
   "terra": {
@@ -293,6 +338,15 @@
       "format": "sheet",
       "src": "assets/characters/runtime-v10/terra/victory-2x2.png",
       "displayScale": 1.1198
+    },
+    "defeat": {
+      "frames": 4,
+      "cols": 2,
+      "rows": 2,
+      "duration": 900,
+      "hold": true,
+      "format": "sheet",
+      "src": "assets/characters/runtime-v10/terra/defeat/processed/sheet-transparent.png"
     }
   },
   "areia": {
@@ -342,6 +396,15 @@
       "format": "sheet",
       "src": "assets/characters/runtime-v10/areia/victory-2x2.png",
       "displayScale": 0.9318
+    },
+    "defeat": {
+      "frames": 4,
+      "cols": 2,
+      "rows": 2,
+      "duration": 900,
+      "hold": true,
+      "format": "sheet",
+      "src": "assets/characters/runtime-v10/areia/defeat/processed/sheet-transparent.png"
     }
   },
   "sombras": {
@@ -391,6 +454,15 @@
       "format": "sheet",
       "src": "assets/characters/runtime-v10/sombras/victory-2x2.png",
       "displayScale": 1.0211
+    },
+    "defeat": {
+      "frames": 4,
+      "cols": 2,
+      "rows": 2,
+      "duration": 900,
+      "hold": true,
+      "format": "sheet",
+      "src": "assets/characters/runtime-v10/sombras/defeat/processed/sheet-transparent.png"
     }
   },
   "raio": {
@@ -440,6 +512,15 @@
       "format": "sheet",
       "src": "assets/characters/runtime-v10/raio/victory-2x2.png",
       "displayScale": 0.9808
+    },
+    "defeat": {
+      "frames": 4,
+      "cols": 2,
+      "rows": 2,
+      "duration": 900,
+      "hold": true,
+      "format": "sheet",
+      "src": "assets/characters/runtime-v10/raio/defeat/processed/sheet-transparent.png"
     }
   },
   "vento": {
@@ -548,6 +629,15 @@
       "format": "sheet",
       "src": "assets/characters/runtime-v10/chuvas/victory-2x2.png",
       "displayScale": 0.9078
+    },
+    "defeat": {
+      "frames": 4,
+      "cols": 2,
+      "rows": 2,
+      "duration": 900,
+      "hold": true,
+      "format": "sheet",
+      "src": "assets/characters/runtime-v10/chuvas/defeat/processed/sheet-transparent.png"
     }
   },
   "gelo": {
@@ -597,6 +687,15 @@
       "format": "sheet",
       "src": "assets/characters/runtime-v10/gelo/victory-2x2.png",
       "displayScale": 0.88
+    },
+    "defeat": {
+      "frames": 4,
+      "cols": 2,
+      "rows": 2,
+      "duration": 900,
+      "hold": true,
+      "format": "sheet",
+      "src": "assets/characters/runtime-v10/gelo/defeat/processed/sheet-transparent.png"
     }
   },
   "gareth": {
@@ -646,6 +745,15 @@
       "format": "sheet",
       "src": "assets/characters/runtime-v10/gareth/victory-2x2.png",
       "displayScale": 1.0331
+    },
+    "defeat": {
+      "frames": 4,
+      "cols": 2,
+      "rows": 2,
+      "duration": 900,
+      "hold": true,
+      "format": "sheet",
+      "src": "assets/characters/runtime-v10/gareth/defeat/processed/sheet-transparent.png"
     }
   },
   "cedric": {
@@ -695,6 +803,15 @@
       "format": "sheet",
       "src": "assets/characters/runtime-v10/cedric/victory-2x2.png",
       "displayScale": 1.0596
+    },
+    "defeat": {
+      "frames": 4,
+      "cols": 2,
+      "rows": 2,
+      "duration": 900,
+      "hold": true,
+      "format": "sheet",
+      "src": "assets/characters/runtime-v10/cedric/defeat/processed/sheet-transparent.png"
     }
   },
   "elizier": {
@@ -744,6 +861,15 @@
       "format": "sheet",
       "src": "assets/characters/runtime-v10/elizier/victory-2x2.png",
       "displayScale": 1.12
+    },
+    "defeat": {
+      "frames": 4,
+      "cols": 2,
+      "rows": 2,
+      "duration": 900,
+      "hold": true,
+      "format": "sheet",
+      "src": "assets/characters/runtime-v10/elizier/defeat/processed/sheet-transparent.png"
     }
   },
   "roland": {
@@ -793,6 +919,15 @@
       "format": "sheet",
       "src": "assets/characters/runtime-v10/roland/victory-2x2.png",
       "displayScale": 1.0363
+    },
+    "defeat": {
+      "frames": 4,
+      "cols": 2,
+      "rows": 2,
+      "duration": 900,
+      "hold": true,
+      "format": "sheet",
+      "src": "assets/characters/runtime-v10/roland/defeat/processed/sheet-transparent.png"
     }
   },
   "berenice-jovem": {
@@ -842,6 +977,15 @@
       "format": "sheet",
       "src": "assets/characters/runtime-v10/berenice-jovem/victory-2x2.png",
       "displayScale": 1.0581
+    },
+    "defeat": {
+      "frames": 4,
+      "cols": 2,
+      "rows": 2,
+      "duration": 900,
+      "hold": true,
+      "format": "sheet",
+      "src": "assets/characters/runtime-v10/berenice-jovem/defeat/processed/sheet-transparent.png"
     }
   },
   "galateia-jovem": {
@@ -891,6 +1035,15 @@
       "format": "sheet",
       "src": "assets/characters/runtime-v10/galateia-jovem/victory-2x2.png",
       "displayScale": 0.88
+    },
+    "defeat": {
+      "frames": 4,
+      "cols": 2,
+      "rows": 2,
+      "duration": 900,
+      "hold": true,
+      "format": "sheet",
+      "src": "assets/characters/runtime-v10/galateia-jovem/defeat/processed/sheet-transparent.png"
     }
   },
   "adriel-jovem": {
@@ -940,6 +1093,15 @@
       "format": "sheet",
       "src": "assets/characters/runtime-v10/adriel-jovem/victory-2x2.png",
       "displayScale": 1.0298
+    },
+    "defeat": {
+      "frames": 4,
+      "cols": 2,
+      "rows": 2,
+      "duration": 900,
+      "hold": true,
+      "format": "sheet",
+      "src": "assets/characters/runtime-v10/adriel-jovem/defeat/processed/sheet-transparent.png"
     }
   },
   "acqua-jovem": {
@@ -989,6 +1151,15 @@
       "format": "sheet",
       "src": "assets/characters/runtime-v10/acqua-jovem/victory-2x2.png",
       "displayScale": 0.9878
+    },
+    "defeat": {
+      "frames": 4,
+      "cols": 2,
+      "rows": 2,
+      "duration": 900,
+      "hold": true,
+      "format": "sheet",
+      "src": "assets/characters/runtime-v10/acqua-jovem/defeat/processed/sheet-transparent.png"
     }
   },
   "jules": {
@@ -1038,6 +1209,15 @@
       "format": "sheet",
       "src": "assets/characters/runtime-v10/jules/victory-2x2.png",
       "displayScale": 0.9426
+    },
+    "defeat": {
+      "frames": 4,
+      "cols": 2,
+      "rows": 2,
+      "duration": 900,
+      "hold": true,
+      "format": "sheet",
+      "src": "assets/characters/runtime-v10/jules/defeat/processed/sheet-transparent.png"
     }
   },
   "kalander": {
@@ -1087,6 +1267,15 @@
       "format": "sheet",
       "src": "assets/characters/runtime-v10/kalander/victory-2x2.png",
       "displayScale": 0.88
+    },
+    "defeat": {
+      "frames": 4,
+      "cols": 2,
+      "rows": 2,
+      "duration": 900,
+      "hold": true,
+      "format": "sheet",
+      "src": "assets/characters/runtime-v10/kalander/defeat/processed/sheet-transparent.png"
     }
   },
   "bernyce": {
@@ -1136,6 +1325,15 @@
       "format": "sheet",
       "src": "assets/characters/runtime-v10/bernyce/victory-2x2.png",
       "displayScale": 0.88
+    },
+    "defeat": {
+      "frames": 4,
+      "cols": 2,
+      "rows": 2,
+      "duration": 900,
+      "hold": true,
+      "format": "sheet",
+      "src": "assets/characters/runtime-v10/bernyce/defeat/processed/sheet-transparent.png"
     }
   },
   "julius": {
@@ -1185,6 +1383,15 @@
       "format": "sheet",
       "src": "assets/characters/runtime-v10/julius/victory-2x2.png",
       "displayScale": 0.88
+    },
+    "defeat": {
+      "frames": 4,
+      "cols": 2,
+      "rows": 2,
+      "duration": 900,
+      "hold": true,
+      "format": "sheet",
+      "src": "assets/characters/runtime-v10/julius/defeat/processed/sheet-transparent.png"
     }
   }
 };

@@ -1,6 +1,6 @@
 # Física permanente de derrota 2D
 
-Esta é a regra oficial para personagens, inimigos, invocações e novos assets de Ygdria/12 Reinos. Ela vale a partir da v10.0.32 e deve ser aplicada a qualquer identidade nova antes de entrar no jogo.
+Esta é a regra oficial para personagens, inimigos, invocações e novos assets de Ygdria/12 Reinos. Ela vale a partir da v10.0.33 e deve ser aplicada a qualquer identidade nova antes de entrar no jogo.
 
 ## O que a física garante
 
