@@ -2,7 +2,7 @@
    Regras de interface e qualidade ficam aqui para evitar valores divergentes. */
 (function exposeV10Config(){
   const config={
-    version:'v10.0.33',
+    version:'v10.0.34',
     label:'VERSÃO 10',
     release:'2026-08-14',
     battle:{
@@ -13,7 +13,22 @@
     quality:{
       values:['auto','high','medium','economy'],
       particles:{high:28,medium:18,economy:8},
-      preload:{high:32,medium:16,economy:8}
+      preload:{high:32,medium:16,economy:8},
+      arenaEffects:{high:true,medium:true,economy:false}
+    },
+    visuals:{
+      arenaProfiles:{
+        'cherry-petals':{mood:'cerejeiras',light:'#ffd2e4',depth:'#5f3249'},
+        'cold-mist':{mood:'neblina fria',light:'#bde9ff',depth:'#314b64'},
+        'arcane-threads':{mood:'fios arcanos',light:'#b79cff',depth:'#3b3260'},
+        'market-dust':{mood:'poeira dourada',light:'#f2ca8c',depth:'#60452f'},
+        'essence-ribbons':{mood:'fitas de essência',light:'#f0a7e9',depth:'#57345b'},
+        'library-pages':{mood:'páginas ao vento',light:'#ffe6a7',depth:'#554b36'},
+        'wall-wind':{mood:'vento das muralhas',light:'#a9d8f4',depth:'#345064'},
+        'ember-ash':{mood:'cinzas e brasas',light:'#ffae70',depth:'#633b2e'},
+        'scene-drift':{mood:'energia ambiente',light:'#d4b7ff',depth:'#403454'}
+      },
+      defeat:{anchor:'feet-and-eyes',noHorizontalFlip:true,equipmentFollowsGravity:true,holdRestingFrame:true}
     },
     accessibility:{highContrast:false,largeText:false,reduceFlashes:false},
     difficulty:{

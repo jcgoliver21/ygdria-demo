@@ -3500,3 +3500,48 @@ body.game-active .enemy-row .unit-stage{height:clamp(112px,18vh,142px)!important
   #galleryGrid.gallery-showcase .deck-grid,#galleryGrid.gallery-showcase .characters-game-grid{gap:6px!important}
   #galleryGrid.gallery-showcase .character-game-card .gallery-thumb-wrap{height:116px!important}
 }
+
+/* ===== v10.0.34 · arena cinematica, luz reativa e contato com o chao =====
+   As camadas abaixo pertencem ao cenario. Nenhuma delas transforma o avatar,
+   por isso impacto e magia podem ganhar leitura sem repetir o bug de escala ou
+   o pisca do WebView mobile. */
+.arena-depth,.arena-lighting{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.arena-depth{z-index:0;isolation:isolate}
+.arena-depth::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 0 42%,color-mix(in srgb,var(--arena-depth-color,#403454) 16%,transparent) 58%,rgba(5,3,12,.28) 100%);opacity:.86}
+.arena-depth::after{content:"";position:absolute;left:-8%;right:-8%;bottom:-5%;height:31%;background:radial-gradient(ellipse at 50% 0%,color-mix(in srgb,var(--arena-depth-color,#403454) 30%,transparent),transparent 68%);filter:blur(7px);opacity:.65}
+.arena-horizon-glow,.arena-foreground-haze{position:absolute;display:block;pointer-events:none}
+.arena-horizon-glow{left:12%;right:12%;top:var(--horizon,31%);height:23%;border-radius:50%;background:radial-gradient(ellipse,color-mix(in srgb,var(--arena-light-color,#d4b7ff) 24%,transparent),transparent 70%);filter:blur(15px);opacity:.48}
+.arena-foreground-haze{left:-8%;right:-8%;bottom:-8%;height:18%;background:linear-gradient(180deg,transparent,rgba(3,2,9,.35));filter:blur(3px);opacity:.82}
+.arena-lighting{z-index:1;mix-blend-mode:screen;opacity:0;will-change:opacity}
+.arena-lighting::before{content:"";position:absolute;inset:-18%;background:radial-gradient(ellipse at var(--arena-light-x,50%) var(--arena-light-y,48%),color-mix(in srgb,var(--arena-light-color,#d4b7ff) 38%,transparent) 0%,color-mix(in srgb,var(--arena-light-color,#d4b7ff) 13%,transparent) 17%,transparent 48%)}
+.arena-lighting::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 0 42%,color-mix(in srgb,var(--arena-light-color,#d4b7ff) 18%,transparent) 50%,transparent 58%);opacity:.45}
+.arena.arena-light-pulse .arena-lighting{animation:arenaLightPulse .46s cubic-bezier(.18,.72,.24,1) both}
+.arena.arena-light-pulse[data-light-kind="critical"] .arena-lighting{animation-duration:.68s}
+@keyframes arenaLightPulse{0%{opacity:0}18%{opacity:.92}42%{opacity:.42}100%{opacity:0}}
+.arena-atmosphere{z-index:1!important}
+
+/* Inimigos exclusivos ganham uma ação legível de arma/gesto sem balançar o
+   corpo em idle. O arco é VFX de combate, não uma alteração da arte original. */
+.enemy-static-avatar[data-action="attack"]::before{content:"";position:absolute;z-index:3;left:18%;top:25%;width:64%;height:42%;border:2px solid color-mix(in srgb,var(--aura-inner-light,#fff) 72%,transparent);border-left-color:transparent;border-bottom-color:transparent;border-radius:70% 36% 70% 32%;opacity:0;filter:drop-shadow(0 0 5px var(--aura-inner-light,#fff));animation:enemyAttackArc .62s cubic-bezier(.2,.8,.2,1) both;pointer-events:none}
+.enemy-static-avatar[data-action="cast"]::before{content:"";position:absolute;z-index:3;left:28%;top:24%;width:44%;height:44%;border:1px solid color-mix(in srgb,var(--aura-inner-light,#fff) 76%,transparent);border-radius:50%;opacity:0;box-shadow:0 0 12px var(--aura-inner-light,#fff),inset 0 0 8px var(--aura-inner,#fff);animation:enemyCastSigil .78s ease-out both;pointer-events:none}
+@keyframes enemyAttackArc{0%{opacity:0;transform:rotate(-22deg) scale(.7)}30%{opacity:.9}100%{opacity:0;transform:rotate(28deg) scale(1.18)}}
+@keyframes enemyCastSigil{0%{opacity:0;transform:scale(.35) rotate(-20deg)}32%{opacity:.88}100%{opacity:0;transform:scale(1.18) rotate(120deg)}}
+
+/* Contato físico simples e estável: uma elipse de chão, sem aura giratória,
+   sem respiração e sem continuar viva depois que a unidade cai. */
+body.game-active .unit-ground-shadow{display:block!important;z-index:1!important;left:50%!important;right:auto!important;bottom:0!important;width:76%!important;height:15px!important;border:0!important;border-radius:50%!important;background:radial-gradient(ellipse at center,rgba(0,0,0,.72) 0 34%,rgba(0,0,0,.42) 52%,transparent 76%)!important;box-shadow:none!important;filter:none!important;transform:translateX(-50%)!important;animation:none!important;opacity:.78!important}
+body.game-active .unit-ground-shadow::after{content:none!important;display:none!important;animation:none!important}
+body.game-active .enemy-unit.dead .unit-ground-shadow{transform:translateX(-50%) scaleX(.84)!important;opacity:.28!important}
+body.game-active .enemy-unit.dead .unit-ground-shadow,.enemy-unit.dead .unit-ground-shadow{animation:none!important}
+
+@media (prefers-reduced-motion:reduce){
+  .arena-lighting,.arena-lighting::before,.arena-lighting::after,.enemy-static-avatar[data-action="attack"]::before,.enemy-static-avatar[data-action="cast"]::before{animation:none!important;opacity:0!important}
+  .arena-depth::before,.arena-depth::after,.arena-horizon-glow,.arena-foreground-haze{filter:none!important}
+}
+@media (max-width:600px){
+  .arena-lighting::before{inset:-8%;background:radial-gradient(ellipse at var(--arena-light-x,50%) var(--arena-light-y,48%),color-mix(in srgb,var(--arena-light-color,#d4b7ff) 28%,transparent),transparent 44%)}
+  .arena-lighting::after{display:none}
+  .arena-depth::after{height:24%;opacity:.62}
+}
+body.quality-economy .arena-depth::after{filter:none}
+body.quality-economy .arena-lighting{display:none!important}

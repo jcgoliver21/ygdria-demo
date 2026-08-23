@@ -1767,6 +1767,56 @@ const stageObjectiveEl = document.getElementById('stageObjective');
 const hpStatusIconEl = document.getElementById('hpStatusIcon');
 const battleHistoryListEl = document.getElementById('battleHistoryList');
 
+/* Direção visual da arena: camadas permanentes e uma luz curta reativa a
+   eventos de combate. Tudo vive em pseudo-elementos/CSS, portanto não cria
+   partículas por frame nem toca no transform dos personagens. */
+function ensureArenaVisualLayers(){
+  if(!arenaEl) return;
+  if(!arenaEl.querySelector('.arena-depth')){
+    const depth=document.createElement('div');
+    depth.className='arena-depth';
+    depth.setAttribute('aria-hidden','true');
+    depth.innerHTML='<span class="arena-horizon-glow"></span><span class="arena-foreground-haze"></span>';
+    arenaEl.prepend(depth);
+  }
+  if(!arenaEl.querySelector('.arena-lighting')){
+    const lighting=document.createElement('div');
+    lighting.className='arena-lighting';
+    lighting.setAttribute('aria-hidden','true');
+    arenaEl.prepend(lighting);
+  }
+}
+
+function applyArenaVisualProfile(){
+  if(!arenaEl) return;
+  ensureArenaVisualLayers();
+  const key=arenaEl.dataset.missionAtmosphere||'scene-drift';
+  const profile=V10.visuals?.arenaProfiles?.[key]||V10.visuals?.arenaProfiles?.['scene-drift'];
+  if(!profile) return;
+  arenaEl.dataset.arenaMood=profile.mood||key;
+  arenaEl.style.setProperty('--arena-light-color',profile.light||'#d4b7ff');
+  arenaEl.style.setProperty('--arena-depth-color',profile.depth||'#403454');
+  arenaEl.dataset.arenaQuality=resolvedGraphicsQuality();
+}
+
+function pulseArenaLighting(color,target,kind='impact'){
+  if(!arenaEl||reducedMotion||reduceFlashes||!particlesEnabled) return;
+  const quality=resolvedGraphicsQuality();
+  if(V10.quality?.arenaEffects?.[quality]===false) return;
+  const arenaRect=arenaEl.getBoundingClientRect();
+  const targetRect=target?.getBoundingClientRect?.();
+  const x=targetRect?Math.max(12,Math.min(88,(targetRect.left+targetRect.width/2-arenaRect.left)/Math.max(1,arenaRect.width)*100)):50;
+  const y=targetRect?Math.max(18,Math.min(82,(targetRect.top+targetRect.height/2-arenaRect.top)/Math.max(1,arenaRect.height)*100)):48;
+  arenaEl.style.setProperty('--arena-light-color',color||'var(--arena-light-color)');
+  arenaEl.style.setProperty('--arena-light-x',x.toFixed(1)+'%');
+  arenaEl.style.setProperty('--arena-light-y',y.toFixed(1)+'%');
+  arenaEl.dataset.lightKind=kind;
+  arenaEl.classList.remove('arena-light-pulse');
+  void arenaEl.offsetWidth;
+  arenaEl.classList.add('arena-light-pulse');
+  scheduleCombat(()=>arenaEl.classList.remove('arena-light-pulse'),kind==='critical'?680:460);
+}
+
 /* Cabeçalho compacto: mantém missão/relógio na primeira linha e objetivo,
    recorde e controles na segunda, sem alterar os IDs usados pelos eventos. */
 function organizeMissionHeader(){
@@ -2308,6 +2358,7 @@ function releaseCombatFx(element,lease=element?.__fxLease){
 function spawnCombatFx(kind,target,color='#fff',duration=650){
   const layer = document.getElementById('specialFxLayer');
   if(!layer || !target || !particlesEnabled || reducedMotion) return;
+  if(kind==='impact'||kind==='critical') pulseArenaLighting(color,target,kind);
   const lr=layer.getBoundingClientRect(), tr=target.getBoundingClientRect();
   const fxClass=kind==='hit'?'fx-hit-spark':kind==='impact'?'fx-impact-burst':kind==='critical'?'fx-critical-impact':'attack-telegraph';
   const fx=acquireCombatFx(fxClass);
@@ -2627,6 +2678,7 @@ function renderStageProgress(){
     arenaEl.style.removeProperty('background-size');
     arenaEl.style.removeProperty('background-position');
   }
+  applyArenaVisualProfile();
 }
 
 
@@ -5259,6 +5311,7 @@ function launchSpecialFx(idx,a){
     arenaEl.classList.add('fx-flash');
     scheduleCombat(()=>arenaEl.classList.remove('fx-flash'), 500);
   }
+  if(a.kind==='active') pulseArenaLighting(k.colorLight,target,'critical');
   scheduleCombat(()=>{
     spawnCombatFx('impact',target,k.colorLight,520);
     spawnCombatFx('hit',target,k.colorLight,440);
@@ -6847,6 +6900,7 @@ function applySettings(){
   document.body.classList.toggle('high-contrast',highContrast);
   document.body.classList.toggle('large-text',largeText);
   document.body.classList.toggle('reduce-flashes',reduceFlashes);
+  if(arenaEl) arenaEl.dataset.arenaQuality=resolvedGraphicsQuality();
   document.body.classList.remove('quality-high','quality-medium','quality-economy');
   document.body.classList.add('quality-'+resolvedGraphicsQuality());
   document.getElementById('volumeRange').value=Math.round(masterVolume*100);

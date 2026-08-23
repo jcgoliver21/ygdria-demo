@@ -193,6 +193,39 @@ test('aura de habilidade carregada emana do corpo, sem moldura quadrada',async({
   expect(errors).toEqual([]);
 });
 
+test('arena cinematica mantém profundidade, luz localizada e sombra de contato estável',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
+  const state=await page.evaluate(()=>{
+    const arena=document.getElementById('arena');
+    const target=document.querySelector('.enemy-unit');
+    const shadow=target?.querySelector('.unit-ground-shadow');
+    const idle=target?.querySelector('.enemy-sprite-image,.hero-sprite-sheet');
+    spawnCombatFx('impact',target,'#bde9ff',120);
+    return {
+      depth:Boolean(arena?.querySelector('.arena-depth')),
+      lighting:Boolean(arena?.querySelector('.arena-lighting')),
+      atmosphere:Boolean(arena?.querySelector('.arena-atmosphere')),
+      mood:arena?.dataset.arenaMood||'',
+      lightPulse:arena?.classList.contains('arena-light-pulse'),
+      shadowDisplay:getComputedStyle(shadow).display,
+      shadowAnimation:getComputedStyle(shadow).animationName,
+      idleScale:getComputedStyle(idle).scale,
+      idleTransform:getComputedStyle(idle).transform
+    };
+  });
+  expect(state.depth).toBe(true);
+  expect(state.lighting).toBe(true);
+  expect(state.atmosphere).toBe(true);
+  expect(state.mood).not.toBe('');
+  expect(state.lightPulse).toBe(true);
+  expect(state.shadowDisplay).toBe('block');
+  expect(state.shadowAnimation).toBe('none');
+  expect(state.idleScale).not.toBe('none');
+  expect(state.idleTransform).not.toContain('scale(');
+  expect(errors).toEqual([]);
+});
+
 test('save v8 continua legível e é migrado na próxima gravação',async({page})=>{
   await page.addInitScript(()=>localStorage.setItem('12r_save',JSON.stringify({version:8,stage:2,team:[0,1,2,3],hp:321})));
   const errors=await boot(page,'flow');
@@ -905,7 +938,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.33');
+  expect(registration.caches).toContain('12r-v10.0.34');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1065,7 +1098,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.33');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.34');
 
     // Produção não expõe __12rQA: este trecho percorre somente controles reais.
     if(await page.locator('#introScreen').isVisible()) await page.locator('#introNext').click();

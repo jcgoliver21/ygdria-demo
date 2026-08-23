@@ -17,15 +17,17 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=10\.0\.33/);
-  assert.match(html,/v10-config\.js\?v=10\.0\.33/);
-  assert.match(html,/v10-animations\.js\?v=10\.0\.33/);
-  assert.match(html,/game-v10\.js\?v=10\.0\.33/);
+  assert.match(html,/styles-v10\.css\?v=10\.0\.34/);
+  assert.match(html,/v10-config\.js\?v=10\.0\.34/);
+  assert.match(html,/v10-animations\.js\?v=10\.0\.34/);
+  assert.match(html,/game-v10\.js\?v=10\.0\.34/);
+  assert.match(config,/version:'v10\.0\.34'/);
+  assert.match(sw,/12r-v10\.0\.34/);
   assert.doesNotMatch(html,/game-v9|styles-v9|v9\.3-config/);
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v10\.0\.33/);
+  assert.match(sw,/12r-v10\.0\.34/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -142,6 +144,16 @@ check('física permanente de derrota mantém identidade, chão e repouso',()=>{
   for(const [id,asset] of enemyAssets){ assert.ok(game.includes(asset),`${id} sem mapa de derrota`); assert.ok(fs.existsSync(path.join(root,...asset.split('/'))),`${id} sem folha de derrota`); }
 });
 
+check('passagem gráfica v10.0.34 mantém física e dá resposta ao combate',()=>{
+  for(const needle of ['ensureArenaVisualLayers','applyArenaVisualProfile','pulseArenaLighting','arena-light-pulse','arena-depth','arena-lighting','arenaEffects','arenaProfiles']) assert.ok(game.includes(needle)||css.includes(needle)||config.includes(needle),`${needle} ausente`);
+  assert.match(game,/if\(kind==='impact'\|\|kind==='critical'\) pulseArenaLighting\(color,target,kind\)/);
+  assert.match(css,/body\.game-active \.unit-ground-shadow\{display:block/);
+  assert.match(css,/body\.game-active \.enemy-unit\.dead \.unit-ground-shadow\{transform:translateX\(-50%\) scaleX\(\.84\)!important;opacity:\.28/);
+  assert.match(css,/\.enemy-static-avatar\[data-action="idle"\] \.enemy-sprite-image\{animation:none!important;transform:none!important\}/);
+  assert.match(css,/\.enemy-unit\.dead \.enemy-avatar\.enemy-defeat-pose\.enemy-defeat-runtime \.hero-sprite-sheet[\s\S]+?animation:none!important/);
+  assert.equal(/@keyframes enemyAttackArc[\s\S]+?scale\(/.test(css),true);
+});
+
 check('Torre usa cada encontro da campanha e invocações não bloqueiam heróis',()=>{
   assert.match(game,/One floor per actual encounter/);
   assert.doesNotMatch(game,/vistos\.has\(key\)/);
@@ -203,7 +215,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=10.0.33');
+  const deferredGame=html.indexOf('game-v10.js?v=10.0.34');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
