@@ -56,7 +56,14 @@ test('v10.0.1 restaura escala e anima inimigos-personagem e inimigos comuns',asy
   expect(rootedAction).toMatchObject({before:{rooted:true,action:'idle'},rooted:true,action:'idle',sheetAnimation:'none',sheetTransform:'none'});
   expect(probe.bossStarCount).toBe(0);
   const deathProbe=await page.evaluate(()=>window.__12rQA.enemyDeathProbe());
-  expect(deathProbe).toMatchObject({dead:true,action:'dead',paused:true,shadowAnimation:'none',sheetAnimation:'none'});
+  expect(deathProbe).toMatchObject({dead:true,action:'defeat',defeatPose:true,paused:true,shadowAnimation:'none'});
+  await page.waitForTimeout(520);
+  const defeatLayout=await page.evaluate(()=>{
+    const sprite=document.querySelector('.enemy-unit.dead .enemy-sprite-image,.enemy-unit.dead .hero-sprite-sheet');
+    const status=document.querySelector('.battle-status');
+    return {bottom:sprite?.getBoundingClientRect().bottom,statusTop:status?.getBoundingClientRect().top};
+  });
+  expect(defeatLayout.bottom).toBeLessThanOrEqual(defeatLayout.statusTop+2);
   expect(probe.rectangularGlow).toBe('none');
   const dimensions=await page.evaluate(()=>{
     const hero=document.querySelector('.hero-unit');
@@ -851,7 +858,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.29');
+  expect(registration.caches).toContain('12r-v10.0.30');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1011,7 +1018,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.29');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.30');
 
     // Produção não expõe __12rQA: este trecho percorre somente controles reais.
     if(await page.locator('#introScreen').isVisible()) await page.locator('#introNext').click();

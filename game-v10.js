@@ -1586,7 +1586,7 @@ const ENEMY_IDLE_LIBRARY=Object.freeze(Object.fromEntries([
     frameOrder:[0,1,2,3,4,5,4,3,2,1]
   }];
 })));
-const ENEMY_FRAME_SEQUENCES=Object.freeze({idle:[0,1,2,3,4,5,4,3,2,1],attack:[2,3,1],cast:[1,2,3],hit:[4,5],victory:[5]});
+const ENEMY_FRAME_SEQUENCES=Object.freeze({idle:[0,1,2,3,4,5,4,3,2,1],attack:[2,3,1],cast:[1,2,3],hit:[4,5],victory:[5],defeat:[5]});
 function enemyAnimationKey(e){
   const descriptor=[e?.etype,e?.name,e?.sprite].filter(Boolean).join(' ').toLowerCase();
   if(/capit[aã]o/.test(descriptor)) return 'capitao';
@@ -2145,6 +2145,7 @@ function usesRootedHumanIdle(e){
 
 function animateEnemyAvatar(avatar,e,action='idle',options={}){
   if(!avatar||!e) return false;
+  avatar.classList.remove('enemy-defeat-pose','enemy-defeated-avatar','motion-paused');
   if(action==='idle'&&usesRootedHumanIdle(e)){
     stopHeroAnimation(avatar);
     avatar.dataset.action='idle';
@@ -2177,21 +2178,28 @@ function animateEnemyAvatar(avatar,e,action='idle',options={}){
   return false;
 }
 
-/* Um inimigo derrotado não pode conservar RAF, transição de pose ou sombra
-   pulsante. Congelamos o retrato no primeiro quadro neutro antes de aplicar a
-   aparência de queda, para que o cadáver nunca pareça continuar respirando. */
-function freezeEnemyAvatar(avatar){
+/* A derrota é uma pose terminal real: o corpo cai uma única vez e permanece
+   apoiado no chão. Não usa escala, não conserva RAF e nunca volta ao idle. */
+function defeatEnemyAvatar(avatar,e){
   if(!avatar) return;
   stopHeroAnimation(avatar);
-  avatar.dataset.action='dead';
-  avatar.classList.add('motion-paused','enemy-defeated-avatar');
+  avatar.dataset.action='defeat';
+  const defeatKey=enemyAnimationKey(e||{});
+  avatar.dataset.defeatPose=/slime|limo/.test(defeatKey||'')?'soft':e?.flying?'air':'body';
+  avatar.classList.add('motion-paused','enemy-defeated-avatar','enemy-defeat-pose');
+  avatar.setAttribute('aria-label',L(e?.name||'Inimigo derrotado'));
   const sheet=avatar.querySelector('.hero-sprite-sheet.grid-sheet');
   if(sheet){
-    sheet.style.setProperty('--sprite-bg-x','0%');
-    sheet.style.setProperty('--sprite-bg-y','0%');
+    sheet.style.setProperty('--sprite-bg-x','100%');
+    sheet.style.setProperty('--sprite-bg-y','100%');
   }
+  avatar.querySelectorAll('.enemy-rooted-idle-sheet').forEach(layer=>{ layer.style.backgroundPosition='100% 100%'; });
   avatar.querySelectorAll('.enemy-sprite-image').forEach(image=>{ image.style.animation='none'; });
 }
+
+/* Compatibilidade para probes e extensões antigas: a API legada agora aplica
+   a pose de derrota em vez de deixar apenas um retrato congelado. */
+function freezeEnemyAvatar(avatar){ defeatEnemyAvatar(avatar,null); }
 
 function playEnemyAction(idx,action='attack'){
   const e=enemies[idx];
@@ -2548,13 +2556,19 @@ function renderStageProgress(){
   arenaEl.className = 'arena scene-'+((activeStageData&&Number.isFinite(activeStageData.scene))?activeStageData.scene:4)+(towerMode?' tower-stage':'');
   const mood=worldRun.active?'humanos':towerMode?'eternidade':bossRushMode?'boss':`scene-${activeStageData?.scene??4}`;
   arenaEl.dataset.realmMood=mood;
+  const missionAtmospheres=['cherry-petals','cold-mist','cold-mist','arcane-threads','market-dust','essence-ribbons','library-pages','wall-wind','cold-mist','ember-ash'];
+  const atmosphereKey=worldRun.active
+    ? (missionAtmospheres[Math.max(0,Math.min(missionAtmospheres.length-1,Number(worldRun.fase)||0))]||'cold-mist')
+    : (towerMode?'cold-mist':bossRushMode?'ember-ash':'scene-drift');
+  arenaEl.dataset.worldScene=worldRun.active?`humanos-${worldRun.fase}`:(towerMode?'tower':bossRushMode?'boss':'other');
+  arenaEl.dataset.missionAtmosphere=atmosphereKey;
   arenaEl.classList.toggle('boss-presence',Boolean(bossRushMode||worldRun.active&&worldRun.nivel===5));
   let atmosphere=arenaEl.querySelector('.arena-atmosphere');
   if(!atmosphere){
     atmosphere=document.createElement('div');
     atmosphere.className='arena-atmosphere';
     atmosphere.setAttribute('aria-hidden','true');
-    atmosphere.innerHTML='<span class="arena-light-rays"></span><span class="arena-moving-mist"></span><span class="arena-living-motes"></span>';
+    atmosphere.innerHTML='<span class="arena-petals"></span><span class="arena-cold-fog"></span><span class="arena-world-drift"></span>';
     arenaEl.prepend(atmosphere);
   }
   if(activeStageData?.bgUrl){
@@ -2896,7 +2910,7 @@ function renderEnemies(){
     enemyArenaEl.appendChild(unit);
     const avatar=document.getElementById('enemyPortrait-'+idx);
     if(e.hp>0) animateEnemyAvatar(avatar,e,'idle',{loop:true});
-    else freezeEnemyAvatar(avatar);
+    else defeatEnemyAvatar(avatar,e);
   });
   applyBattleFormation();
 }
@@ -5724,7 +5738,7 @@ function applyDamageToEnemy(dmg, colorIdx, targetIdxOverride){
   if(enemy.hp<=0){
     if(enemyUnit){
       enemyUnit.classList.add('dead'); enemyUnit.classList.remove('selectable');
-      freezeEnemyAvatar(document.getElementById('enemyPortrait-'+idx));
+      defeatEnemyAvatar(document.getElementById('enemyPortrait-'+idx),enemy);
     }
     if(manualTarget===idx) manualTarget=null;
   }
@@ -7090,6 +7104,7 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
       return {
         dead:Boolean(unit?.classList.contains('dead')),
         action:avatar?.dataset.action,
+        defeatPose:Boolean(avatar?.classList.contains('enemy-defeat-pose')),
         paused:Boolean(avatar?.classList.contains('motion-paused')),
         shadowAnimation:getComputedStyle(shadow).animationName,
         sheetAnimation:getComputedStyle(avatar?.querySelector('.hero-sprite-sheet')||avatar).animationName

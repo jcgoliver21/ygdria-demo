@@ -3,94 +3,68 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ygdria — vitrine de animações</title>
+  <title>Ygdria — galeria completa de animações</title>
   <style>
-    :root { color-scheme: dark; font-family: Georgia, serif; background: #0d0918; color: #f9e0a0; }
-    * { box-sizing: border-box; }
-    body { margin: 0; background: radial-gradient(circle at 50% 0%, #29203e, #0d0918 45%); }
-    header { position: sticky; top: 0; z-index: 2; display: flex; gap: 16px; align-items: center; justify-content: space-between; padding: 16px 24px; background: rgba(13,9,24,.94); border-bottom: 1px solid #7052a3; backdrop-filter: blur(10px); }
-    h1 { margin: 0; font-size: clamp(18px, 3vw, 30px); letter-spacing: .04em; }
-    p { margin: 5px 0 0; color: #c8b7d9; font: 14px/1.35 system-ui, sans-serif; }
-    button { border: 1px solid #f7d67c; border-radius: 8px; padding: 10px 14px; color: #201229; background: #f7d67c; font-weight: 800; cursor: pointer; }
-    main { width: min(1800px, 100%); margin: 0 auto; padding: 20px; }
-    .character { margin: 0 0 16px; padding: 14px; border: 1px solid #64458e; border-radius: 14px; background: rgba(28,19,45,.9); }
-    .identity { display: flex; gap: 10px; align-items: baseline; margin: 0 0 10px; }
-    .identity h2 { margin: 0; font-size: 22px; }
-    .identity small { color: #baa5d1; font: 14px system-ui, sans-serif; }
-    .actions { display: grid; grid-template-columns: repeat(5, minmax(130px, 1fr)); gap: 10px; }
-    .action { min-width: 0; border: 2px solid #5d4184; border-radius: 10px; overflow: hidden; background: #130d21; }
-    .action.changed { border-color: #48edcf; box-shadow: 0 0 18px rgba(72,237,207,.18); }
-    .label { display: flex; justify-content: space-between; padding: 7px 9px; color: #f6dfb1; font: 800 12px system-ui, sans-serif; }
-    .tag { color: #48edcf; font-size: 10px; }
-    .sprite { aspect-ratio: 1; width: 100%; background-repeat: no-repeat; background-color: #140d22; image-rendering: auto; }
-    @media (max-width: 850px) { main { padding: 10px; } .actions { grid-template-columns: repeat(2, minmax(0, 1fr)); } .character { padding: 10px; } }
+    :root{color-scheme:dark;font-family:Inter,system-ui,sans-serif;background:#0b0815;color:#f7e8bb}
+    *{box-sizing:border-box}
+    body{margin:0;background:radial-gradient(circle at 50% 0%,#302144,#0b0815 48%);min-width:320px}
+    header{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:16px 22px;background:rgba(12,8,22,.95);border-bottom:1px solid #7555a1;backdrop-filter:blur(12px)}
+    h1{margin:0;font:700 clamp(19px,3vw,31px)/1.05 Georgia,serif;letter-spacing:.04em;color:#ffe7a6}
+    header p{margin:6px 0 0;color:#cdbdda;font-size:12px;line-height:1.4}
+    button,.filter{border:1px solid #e9c871;border-radius:9px;padding:9px 12px;color:#21132d;background:#f4d378;font-weight:800;cursor:pointer}
+    button:focus-visible,.filter:focus-visible{outline:2px solid #fff3ae;outline-offset:2px}
+    main{width:min(1850px,100%);margin:auto;padding:18px}
+    .toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px;padding:12px 14px;border:1px solid #65488b;border-radius:12px;background:rgba(26,17,43,.9)}
+    .filters{display:flex;gap:7px;flex-wrap:wrap}.filter{padding:7px 10px;background:#211634;color:#eedeb8;border-color:#644687;font-size:11px}.filter.active{background:#e9c871;color:#21132d}
+    .stats{color:#c5b6d6;font-size:12px}.legend{display:flex;gap:10px;flex-wrap:wrap;color:#cbbbd9;font-size:10px}.legend span{display:inline-flex;align-items:center;gap:4px}.legend i{display:inline-block;width:18px;border-top:1px dashed #f2cb71}.legend i.eye{border-color:#74d8dc}
+    .character{margin:0 0 15px;padding:13px;border:1px solid #63468a;border-radius:14px;background:linear-gradient(135deg,rgba(35,22,56,.96),rgba(18,12,30,.96));box-shadow:0 8px 22px rgba(0,0,0,.2)}
+    .character[data-category="enemy"]{border-color:#87545b}.character[data-category="summon"]{border-color:#528b91}
+    .identity{display:flex;align-items:baseline;gap:9px;margin:0 0 9px}.identity h2{margin:0;font:700 20px/1.1 Georgia,serif;color:#ffebb5}.identity small{color:#baa8ca;font-size:11px}.identity em{margin-left:auto;color:#d6bedb;font-size:10px;font-style:normal;text-transform:uppercase;letter-spacing:.08em}
+    .actions{display:grid;grid-template-columns:repeat(6,minmax(132px,1fr));gap:8px}
+    .action{min-width:0;overflow:hidden;border:1px solid #564077;border-radius:10px;background:#100b1c}.action[data-action="defeat"]{border-color:#ac6874}.action[data-action="victory"]{border-color:#c89948}
+    .label{display:flex;justify-content:space-between;gap:5px;padding:7px 8px 5px;color:#f6dfb1;font-size:11px;font-weight:800}.label small{color:#b9aac5;font-size:9px;font-weight:500}
+    .stage{position:relative;height:145px;overflow:hidden;background:radial-gradient(ellipse at 50% 83%,rgba(213,171,78,.16),transparent 38%),linear-gradient(180deg,rgba(255,255,255,.035),rgba(0,0,0,.24))}
+    .stage:before,.stage:after{content:"";position:absolute;left:8%;right:8%;z-index:3;pointer-events:none}.stage:before{bottom:19px;border-top:1px dashed rgba(247,207,113,.76)}.stage:after{top:50px;border-top:1px dashed rgba(116,216,220,.55)}
+    .stage .line-label{position:absolute;right:6px;z-index:4;color:rgba(255,231,166,.58);font-size:8px;letter-spacing:.03em}.stage .floor{bottom:22px}.stage .eyes{top:53px;color:rgba(116,216,220,.64)}
+    .sprite{position:absolute;inset:0;background-repeat:no-repeat;background-color:transparent;background-position:0 0;background-size:300% 200%;transform-origin:50% 100%;filter:drop-shadow(0 7px 7px rgba(0,0,0,.6));will-change:background-position,transform}
+    .sprite.defeat{animation:galleryDefeat .46s cubic-bezier(.2,.76,.24,1) both;transform-origin:50% 100%}.sprite.defeat.flip{animation-name:galleryDefeatFlip}
+    .sprite.fallback{background-size:contain;background-position:center;background-repeat:no-repeat}
+    .meta{padding:5px 8px 7px;color:#aa9bbb;font-size:9px;line-height:1.2}.meta strong{color:#e2c978;font-weight:700}.status{color:#74d8dc}
+    .hidden{display:none!important}.empty{padding:24px;text-align:center;color:#c6b6d2;border:1px dashed #63468a;border-radius:12px}
+    @keyframes galleryDefeat{0%{transform:rotate(0) translate3d(0,0,0);opacity:1}62%{transform:rotate(58deg) translate3d(4px,4px,0);opacity:1}100%{transform:rotate(76deg) translate3d(7px,9px,0);opacity:.82}}
+    @keyframes galleryDefeatFlip{0%{transform:scaleX(-1) rotate(0) translate3d(0,0,0);opacity:1}62%{transform:scaleX(-1) rotate(-58deg) translate3d(-4px,4px,0);opacity:1}100%{transform:scaleX(-1) rotate(-76deg) translate3d(-7px,9px,0);opacity:.82}}
+    @media (max-width:1150px){.actions{grid-template-columns:repeat(3,minmax(145px,1fr))}}
+    @media (max-width:620px){header{align-items:flex-start;padding:13px 12px}header button{font-size:10px;padding:8px}.identity h2{font-size:17px}.identity em{display:none}main{padding:10px}.character{padding:9px}.actions{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.stage{height:126px}.stage:after{top:45px}}
+    @media (prefers-reduced-motion:reduce){.sprite.defeat{animation:none;transform:rotate(76deg) translate3d(7px,9px,0);opacity:.82}}
   </style>
 </head>
 <body>
-  <header>
-    <div><h1>Vitrine em movimento — Ygdria</h1><p>As 24 personagens e suas cinco ações em reprodução contínua.</p></div>
-    <button id="toggle" type="button">Pausar animações</button>
-  </header>
-  <main id="gallery" aria-live="polite"></main>
-  <script src="../v10-animations.js?v=10.0.21"></script>
+  <header><div><h1>Galeria de animações · Ygdria</h1><p>Todos os personagens, estados e pontos de referência. O chão é dourado; a linha dos olhos é azul.</p></div><button id="toggle" type="button">Pausar</button></header>
+  <main>
+    <div class="toolbar"><div class="filters" role="group" aria-label="Filtrar elenco"><button class="filter active" data-filter="all">Todos</button><button class="filter" data-filter="hero">Cartas</button><button class="filter" data-filter="enemy">Inimigos</button><button class="filter" data-filter="summon">Invocações</button></div><div class="stats" id="stats">Carregando matriz…</div><div class="legend"><span><i></i> pés no chão</span><span><i class="eye"></i> olhos</span><span>sem escala por quadro</span></div></div>
+    <div id="gallery" aria-live="polite"></div>
+  </main>
+  <script src="../v10-animations.js?v=10.0.30"></script>
   <script>
-    const characters = [
-      ['Galatéia','luz'],['Berenice','humanos'],['Maril','agua'],['Lucius','fogo'],['Ninfa Queen','natureza'],['Kallendra','terra'],
-      ['Rashid','areia'],['Berenice das Sombras','sombras'],['Mardogear','raio'],['Sophitia','vento'],['Regnar','chuvas'],['Blizzardo','gelo'],
-      ['Gareth','gareth'],['Cedric','cedric'],['Elizier','elizier'],['Roland','roland'],['Berenice Jovem','berenice-jovem'],['Galatéia Jovem','galateia-jovem'],
-      ['Adriel Jovem','adriel-jovem'],['Acqua Jovem','acqua-jovem'],['Jules','jules'],['Kalander','kalander'],['Bernyce','bernyce'],['Julius','julius']
-    ];
-    const actions = [
-      ['Idle','idle',4,2,2,2400], ['Ataque','attack',6,3,2,720], ['Conjuração','cast',6,3,2,840], ['Dano','hit',4,2,2,360], ['Vitória','victory',4,2,2,1200]
-    ];
-    const changed = new Set(['luz:attack','luz:cast','humanos:attack','humanos:cast','fogo:attack','fogo:cast','natureza:attack','natureza:cast','areia:idle','sombras:attack','sombras:cast','raio:attack','raio:cast','chuvas:attack','chuvas:cast','gelo:attack','gelo:cast','gareth:attack','julius:attack','julius:cast']);
-    /* Mesmo contrato de normalização aplicado pelo jogo: base é o repouso;
-       a origem é sempre a linha dos pés. */
-    const actionScale = {
-      'acqua-jovem':{attack:.8398,hit:.7652,victory:.9396},agua:{attack:1.0344,cast:1.07,hit:1.0982},areia:{attack:1.0834,cast:1.0858,hit:1.0285,victory:1.0535},
-      'berenice-jovem':{victory:.9662},bernyce:{attack:1.0272,cast:1.0315,hit:.9305,victory:1.0499},cedric:{attack:1.1456,cast:1.0793,hit:1.0518,victory:1.0545},
-      chuvas:{attack:.805,hit:1.2485},elizier:{attack:1.1281,cast:1.034,hit:1.0853,victory:1.0381},fogo:{attack:.6287,cast:1.0441,hit:.9568},
-      'galateia-jovem':{attack:.9742,cast:.972,victory:1.0391},gareth:{attack:.8071,cast:1.0367,hit:1.0212},gelo:{attack:.9769,cast:.8805,hit:1.1637,victory:1.0698},
-      humanos:{attack:.6331,cast:.6236,hit:1.0629,victory:1.0763},jules:{attack:1.0333,cast:1.0342,hit:.9361,victory:1.037},julius:{attack:.9372,cast:.9849,hit:1.0165},
-      kalander:{attack:1.0338,hit:.9806,victory:1.043},luz:{attack:.7015,cast:.6793},natureza:{attack:1.0775,cast:1.1599,hit:.9549,victory:.9489},
-      raio:{attack:.9437,cast:.9503,hit:1.2453,victory:.9597},roland:{attack:1.124,cast:1.0538,hit:1.1173},sombras:{attack:.6597,cast:.6563,hit:.9757},
-      terra:{attack:1.0811,hit:1.0352},vento:{cast:1.0319,hit:1.1514,victory:1.0431}
-    };
-    const gallery = document.getElementById('gallery');
-    const sprites = [];
-    for (const [name, id] of characters) {
-      const section = document.createElement('section'); section.className = 'character';
-      section.innerHTML = `<div class="identity"><h2>${name}</h2><small>${id}</small></div><div class="actions"></div>`;
-      const actionsEl = section.querySelector('.actions');
-      for (const [label, action, frames, cols, rows, duration] of actions) {
-        const key = `${id}:${action}`; const card = document.createElement('article');
-        card.className = `action${changed.has(key) ? ' changed' : ''}`;
-        card.innerHTML = `<div class="label"><span>${label}</span>${changed.has(key) ? '<span class="tag">CORRIGIDA</span>' : ''}</div><div class="sprite" aria-label="${name}: ${label}"></div>`;
-        const sprite = card.querySelector('.sprite');
-        const grid = cols === 3 ? '3x2' : '2x2';
-        sprite.style.backgroundImage = `url('../assets/characters/runtime-v10/${id}/${action}-${grid}.png')`;
-        sprite.style.backgroundSize = `${cols * 100}% ${rows * 100}%`;
-        const base = window.YGDRIA_V10_ANIMATIONS?.[id]?.[action]?.displayScale || 1;
-        const normalized = base * (actionScale[id]?.[action] || 1);
-        sprite.style.transform = `scale(${normalized})`;
-        sprite.style.transformOrigin = '50% 100%';
-        sprites.push({ sprite, frames, cols, rows, duration, frame: -1 }); actionsEl.append(card);
-      }
-      gallery.append(section);
-    }
-    let paused = false; const toggle = document.getElementById('toggle');
-    toggle.addEventListener('click', () => { paused = !paused; toggle.textContent = paused ? 'Retomar animações' : 'Pausar animações'; });
-    function render(now) {
-      if (!paused) for (const item of sprites) {
-        const frame = Math.floor(now / (item.duration / item.frames)) % item.frames;
-        if (frame !== item.frame) {
-          item.frame = frame; const col = frame % item.cols; const row = Math.floor(frame / item.cols);
-          const x = item.cols === 1 ? 0 : col * 100 / (item.cols - 1); const y = item.rows === 1 ? 0 : row * 100 / (item.rows - 1);
-          item.sprite.style.backgroundPosition = `${x}% ${y}%`;
-        }
-      }
-      requestAnimationFrame(render);
-    }
+    const heroNames={luz:'Galatéia',humanos:'Berenice',agua:'Maril',fogo:'Lucius',natureza:'Ninfa Queen',terra:'Kallendra',areia:'Rashid',sombras:'Berenice das Sombras',raio:'Mardogear',vento:'Sophitia',chuvas:'Regnar',gelo:'Blizzardo',gareth:'Gareth',cedric:'Cedric',elizier:'Elizier',roland:'Roland','berenice-jovem':'Berenice Jovem','galateia-jovem':'Galatéia Jovem','adriel-jovem':'Adriel Jovem','acqua-jovem':'Acqua Jovem',jules:'Jules',kalander:'Kalander',bernyce:'Bernyce',julius:'Julius'};
+    const heroIds=Object.keys(heroNames);
+    const enemyNames={capitao:'Capitão',soldado1:'Soldado 1',soldado2:'Soldado 2','sold-bib1':'Soldado Biblioteca 1','sold-bib2':'Soldado Biblioteca 2','sold-bib3':'Soldado Biblioteca 3',infantaria:'Infantaria',cavalaria:'Cavalaria',comandante:'Comandante',trono:'Soldado do Trono',morto:'Cavaleiro Morto',vulto:'Vulto Sombrio','slime-cereja':'Slime de Cerejeira','lobo-raivoso':'Lobo Raivoso',espectro:'Espectro Sombrio','human-guard':'Guarda Humano','rune-slime':'Slime Rúnico','shadow-wolf':'Lobo das Sombras','cursed-wraith':'Espectro Amaldiçoado','stone-sentinel':'Sentinela de Pedra','crimson-dragon':'Dragão Carmesim'};
+    const enemyIds=Object.keys(enemyNames),summonNames={golem:'Golem invocado',harpy:'Harpia invocada'};
+    const actionNames={idle:'Idle',attack:'Ataque',cast:'Magia',hit:'Dano',victory:'Vitória',defeat:'Derrota'};
+    const enemyIdleIds=new Set(['morto','vulto','espectro','slime-cereja','lobo-raivoso','human-guard','rune-slime','shadow-wolf','cursed-wraith','stone-sentinel','crimson-dragon']);
+    const frameOrders={idle:[0,1,2,3,4,5,4,3,2,1],attack:[2,3,1],cast:[1,2,3],hit:[4,5],victory:[5],defeat:[5]};
+    const gallery=document.getElementById('gallery'),sprites=[];
+    function esc(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+    function heroSpec(id,action){const spec=window.YGDRIA_V10_ANIMATIONS?.[id]?.[action];return spec?{...spec,src:spec.src.startsWith('../')?spec.src:`../${spec.src}`,category:'hero',displayScale:Number(spec.displayScale||1)}:null;}
+    function enemySpec(id,action){const grid=['human-guard','rune-slime','shadow-wolf','cursed-wraith','stone-sentinel','crimson-dragon'].includes(id)?[2,3]:[3,2];const source=action==='idle'&&enemyIdleIds.has(id)?`../assets/enemies/runtime-v10/${id}/idle/processed/sheet-transparent.png`:`../assets/enemies/runtime-v10/${id}/processed/sheet-transparent.png`;return{src:source,cols:grid[0],rows:grid[1],frames:6,frameOrder:frameOrders[action],duration:action==='idle'?2100:action==='defeat'?460:720,displayScale:1,category:'enemy'};}
+    function summonSpec(id,action){const data={golem:{src:'../assets/summons/golem/attack-2x3.png',cols:2,rows:3},harpy:{src:'../assets/summons/harpy/attack-2x3.png',cols:3,rows:2}}[id];return{...data,frames:6,frameOrder:action==='idle'?[0,5]:action==='defeat'?[5]:action==='victory'?[5]:[0,1,2,3,4,5],duration:action==='idle'?1500:640,displayScale:1,category:'summon'};}
+    function makeSpec(entry,action){if(entry.category==='hero'){if(action==='defeat'){const hit=heroSpec(entry.id,'hit');return hit&&{...hit,sourceAction:'hit',frameOrder:[3],duration:460};}return heroSpec(entry.id,action);}return entry.category==='enemy'?enemySpec(entry.id,action):summonSpec(entry.id,action);}
+    function addAction(parent,entry,action){const spec=makeSpec(entry,action),card=document.createElement('article');card.className='action';card.dataset.action=action;const label=actionNames[action],sourceLabel=spec?.sourceAction?` · ${spec.sourceAction}`:'';card.innerHTML=`<div class="label"><span>${label}</span><small>${sourceLabel}</small></div><div class="stage"><span class="line-label floor">pés</span><span class="line-label eyes">olhos</span><div class="sprite" aria-label="${esc(entry.name)}: ${label}"></div></div><div class="meta"><strong>${spec?'folha real':'ausente'}</strong> · ${spec?`${spec.frames} quadros · ${spec.duration}ms`:'verificar'} <span class="status">${action==='defeat'&&entry.category==='enemy'?'pose terminal':''}</span></div>`;const sprite=card.querySelector('.sprite');if(spec){sprite.style.backgroundImage=`url('${spec.src}')`;sprite.style.backgroundSize=`${spec.cols*100}% ${spec.rows*100}%`;sprite.style.transform=`scale(${spec.displayScale})`;sprite.dataset.frames=spec.frames;sprite.dataset.cols=spec.cols;sprite.dataset.rows=spec.rows;sprite.dataset.order=JSON.stringify(spec.frameOrder||[]);if(action==='defeat'){sprite.classList.add('defeat');}sprites.push({sprite,spec,action,frame:-1});}else sprite.classList.add('fallback');parent.append(card);}
+    function addEntry(entry){const section=document.createElement('section');section.className='character';section.dataset.category=entry.category;const categoryLabel={hero:'carta',enemy:'inimigo',summon:'invocação'}[entry.category];section.innerHTML=`<div class="identity"><h2>${esc(entry.name)}</h2><small>${esc(entry.id)}</small><em>${categoryLabel}</em></div><div class="actions"></div>`;const actionsEl=section.querySelector('.actions');['idle','attack','cast','hit','victory','defeat'].forEach(action=>addAction(actionsEl,entry,action));gallery.append(section);}
+    heroIds.forEach(id=>addEntry({id,name:heroNames[id],category:'hero'}));enemyIds.forEach(id=>addEntry({id,name:enemyNames[id],category:'enemy'}));Object.keys(summonNames).forEach(id=>addEntry({id,name:summonNames[id],category:'summon'}));
+    document.getElementById('stats').textContent=`${heroIds.length} cartas · ${enemyIds.length} inimigos · ${Object.keys(summonNames).length} invocações · ${sprites.length} estados`;
+    let paused=false;document.getElementById('toggle').addEventListener('click',event=>{paused=!paused;event.currentTarget.textContent=paused?'Retomar':'Pausar';});document.querySelectorAll('.filter').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('.filter').forEach(item=>item.classList.toggle('active',item===button));const filter=button.dataset.filter;document.querySelectorAll('.character').forEach(section=>section.classList.toggle('hidden',filter!=='all'&&section.dataset.category!==filter));}));
+    function render(now){if(!paused){for(const item of sprites){if(item.action==='defeat')continue;const order=item.spec.frameOrder?.length?item.spec.frameOrder:null,count=order?order.length:item.spec.frames,frame=Math.floor(now/(item.spec.duration/count))%count;if(frame!==item.frame){item.frame=frame;const source=order?order[frame]:frame,col=source%item.spec.cols,row=Math.floor(source/item.spec.cols);item.sprite.style.backgroundPosition=`${item.spec.cols===1?0:col*100/(item.spec.cols-1)}% ${item.spec.rows===1?0:row*100/(item.spec.rows-1)}%`;}}}requestAnimationFrame(render);}
     requestAnimationFrame(render);
   </script>
 </body>
