@@ -5935,8 +5935,12 @@ function enemyCounterAttack(){
     sfxCombatAttack(enemy.etype||enemy.id||enemy.name,'enemy');
     haptic([25,20,25]);
     if(dmg>0) setBattleStatus(T(`${L(enemy.name)} contra-atacou e causou ${dmg} de dano.`,`${L(enemy.name)} counterattacked for ${dmg} damage.`,`${L(enemy.name)} contraatacó y causó ${dmg} de daño.`));
-    /* anti-flicker: o tremor fica no palco da batalha, não no body inteiro */
-    if(localStorage.getItem('12r_shake')!=='0'){
+    /* No mobile, transformar o palco que contém sprites, backdrop e blend
+       modes força uma nova composição de toda a arena e aparece como pisca
+       em alguns WebViews. O dano continua legível pelo recuo, HP pulse, VFX
+       e número flutuante; o tremor de tela fica reservado ao ponteiro. */
+    const mobileViewport=matchMedia('(max-width:700px)').matches||navigator.maxTouchPoints>0;
+    if(!mobileViewport&&localStorage.getItem('12r_shake')!=='0'){
       const shakeEl=document.querySelector('.arena')||document.body;
       shakeEl.classList.remove('shake'); void shakeEl.offsetWidth; shakeEl.classList.add('shake');
       scheduleCombat(()=>shakeEl.classList.remove('shake'), 450);
@@ -6979,14 +6983,20 @@ function preloadOfficialAssets(){
 }
 function preloadHeroActions(indices=ACTIVE){
   const economy=resolvedGraphicsQuality()==='economy'||navigator.connection?.saveData;
-  const allowedActions=economy?['idle']:Object.keys(HERO_ACTIONS);
+  const mobileViewport=matchMedia('(max-width:700px)').matches||navigator.maxTouchPoints>0;
+  /* No mobile, a folha de impacto é parte do primeiro golpe recebido. Ela
+     precisa entrar no lote crítico junto do idle; deixá-la para um
+     requestIdleCallback fazia o primeiro contra-ataque trocar a textura
+     ainda não decodificada durante a composição do palco. */
+  const allowedActions=economy?['idle','hit']:Object.keys(HERO_ACTIONS);
   const sources=[...new Set(indices.flatMap(i=>allowedActions.map(action=>KINGDOMS[i]?.sprites?.[action]?.src)).filter(Boolean))];
   const load=src=>preloadSpriteSource(src).then(()=>true).catch(()=>{ markSpriteFailed(src); return false; });
-  const idleSources=new Set(indices.map(i=>KINGDOMS[i]?.sprites?.idle?.src).filter(Boolean));
-  return Promise.allSettled(sources.filter(src=>idleSources.has(src)).map(load)).then(()=>{
+  const criticalActions=mobileViewport?['idle','hit']:['idle'];
+  const criticalSources=new Set(indices.flatMap(i=>criticalActions.map(action=>KINGDOMS[i]?.sprites?.[action]?.src)).filter(Boolean));
+  return Promise.allSettled(sources.filter(src=>criticalSources.has(src)).map(load)).then(()=>{
     if(economy) return;
     const requestIdle=window.requestIdleCallback||((cb)=>setTimeout(cb,700));
-    requestIdle(()=>sources.filter(src=>!idleSources.has(src)).forEach((src,index)=>setTimeout(()=>load(src),index*120)),{timeout:3500});
+    requestIdle(()=>sources.filter(src=>!criticalSources.has(src)).forEach((src,index)=>setTimeout(()=>load(src),index*120)),{timeout:3500});
   });
 }
 const spritePreloadCache=new Map();
@@ -6996,7 +7006,13 @@ function preloadSpriteSource(src){
   if(spritePreloadCache.has(src)) return spritePreloadCache.get(src);
   const pending=new Promise((resolve,reject)=>{
     const image=new Image();
-    image.onload=()=>resolve(src);
+    image.onload=()=>{
+      /* onload is not the same as decoded: mobile browsers may still upload
+         the bitmap to the compositor after onload. Await decode when it is
+         available so a hit-sheet swap never exposes an empty frame. */
+      const decoded=(matchMedia('(max-width:700px)').matches||navigator.maxTouchPoints>0)&&typeof image.decode==='function'?image.decode().catch(()=>{}):Promise.resolve();
+      decoded.then(()=>resolve(src));
+    };
     image.onerror=()=>{ markSpriteFailed(src); spritePreloadCache.delete(src); reject(new Error('Falha ao carregar '+src)); };
     image.decoding='async';
     image.src=animationAssetUrl(src);

@@ -851,7 +851,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.28');
+  expect(registration.caches).toContain('12r-v10.0.29');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -950,6 +950,47 @@ test.describe('mobile',()=>{
     expect(battleOverflow).toBeLessThanOrEqual(1);
     expect(errors).toEqual([]);
   });
+
+  test('receber dano não recompõe a arena nem pisca no mobile',async({page})=>{
+    const errors=await boot(page,'flow');
+    await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
+    await page.waitForTimeout(900);
+    const result=await page.evaluate(async()=>{
+      const arena=document.querySelector('.arena');
+      const avatars=[...document.querySelectorAll('.party-row .avatar-circle')];
+      const frames=[];
+      enemyCounterAttack();
+      await new Promise(resolve=>{
+        let count=0;
+        const sample=()=>{
+          const arenaStyle=getComputedStyle(arena);
+          frames.push({
+            actions:avatars.map(avatar=>avatar.dataset.action),
+            arenaClass:arena.className,
+            arenaAnimation:arenaStyle.animationName,
+            arenaOpacity:arenaStyle.opacity,
+            avatars:avatars.map(avatar=>{
+              const style=getComputedStyle(avatar);
+              const sheet=avatar.firstElementChild;
+              const sheetStyle=getComputedStyle(sheet||avatar);
+              return {filter:style.filter,opacity:style.opacity,visibility:style.visibility,sheetOpacity:sheetStyle.opacity,sheetVisibility:sheetStyle.visibility};
+            })
+          });
+          if(++count<30) requestAnimationFrame(sample); else resolve();
+        }
+        requestAnimationFrame(sample);
+      });
+      return {
+        hitFrames:frames.filter(frame=>frame.actions.every(action=>action==='hit')).length,
+        shakeFrames:frames.filter(frame=>frame.arenaClass.includes('shake')||frame.arenaAnimation!=='none').length,
+        unstableFrames:frames.filter(frame=>frame.arenaOpacity!=='1'||frame.avatars.some(avatar=>avatar.filter!=='none'||avatar.opacity!=='1'||avatar.visibility!=='visible'||avatar.sheetOpacity!=='1'||avatar.sheetVisibility!=='visible')).length
+      };
+    });
+    expect(result.hitFrames).toBeGreaterThan(0);
+    expect(result.shakeFrames).toBe(0);
+    expect(result.unstableFrames).toBe(0);
+    expect(errors).toEqual([]);
+  });
 });
 
 test.describe('@production publicação real',()=>{
@@ -970,7 +1011,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.28');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.29');
 
     // Produção não expõe __12rQA: este trecho percorre somente controles reais.
     if(await page.locator('#introScreen').isVisible()) await page.locator('#introNext').click();
