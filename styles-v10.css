@@ -3545,3 +3545,33 @@ body.game-active .enemy-unit.dead .unit-ground-shadow,.enemy-unit.dead .unit-gro
 }
 body.quality-economy .arena-depth::after{filter:none}
 body.quality-economy .arena-lighting{display:none!important}
+
+/* ===== v10.0.35 · tela de vitoria dentro da arena ===== */
+#dungeonClearOverlay.victory-arena-overlay{
+  position:absolute!important;inset:0!important;z-index:40!important;
+  justify-content:flex-start!important;overflow-y:auto!important;overflow-x:hidden!important;
+  padding:clamp(54px,12vw,82px) 10px max(14px,env(safe-area-inset-bottom))!important;
+  background:
+    linear-gradient(180deg,rgba(8,4,16,.24) 0%,rgba(8,4,16,.08) 28%,rgba(8,4,16,.42) 100%),
+    radial-gradient(ellipse at 50% 38%,rgba(255,224,151,.14),transparent 54%)!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+#dungeonClearOverlay.victory-arena-overlay::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 0 48%,rgba(5,3,11,.18) 72%,rgba(5,3,11,.48));z-index:0}
+#dungeonClearOverlay.victory-arena-overlay>*:not(.confetti-layer){position:relative;z-index:3}
+#dungeonClearOverlay.victory-arena-overlay h2{margin:0 0 2px!important;font-size:clamp(20px,7vw,34px)!important;text-shadow:0 3px 14px rgba(0,0,0,.92)}
+#dungeonClearOverlay.victory-arena-overlay>p:not(.victory-rank){max-width:min(92%,420px);margin:4px auto!important;text-shadow:0 2px 5px #000}
+#dungeonClearOverlay.victory-arena-overlay .stage-stars{margin:3px 0 1px!important}
+#dungeonClearOverlay.victory-arena-overlay .victory-rank{margin:0 0 5px!important;text-shadow:0 2px 4px #000}
+#dungeonClearOverlay.victory-arena-overlay .battle-report{width:min(94%,380px);margin:6px auto 9px!important;background:linear-gradient(145deg,rgba(8,5,14,.91),rgba(21,13,30,.83));box-shadow:0 8px 22px rgba(0,0,0,.4),inset 0 1px rgba(255,255,255,.08);border-color:rgba(255,220,135,.48)}
+#dungeonClearOverlay.victory-arena-overlay .overlay-btn{position:relative;z-index:4}
+#dungeonClearOverlay.victory-arena-overlay .confetti-layer{z-index:2}
+.arena.victory-arena-state .enemy-unit.dead .unit-ground-shadow{opacity:.32!important}
+@media (max-width:600px){
+  #dungeonClearOverlay.victory-arena-overlay{padding-top:clamp(54px,14vw,70px)!important}
+  #dungeonClearOverlay.victory-arena-overlay .battle-report{padding:8px 9px!important;margin-top:4px!important}
+  #dungeonClearOverlay.victory-arena-overlay .report-mvp img{width:38px;height:51px}
+  #dungeonClearOverlay.victory-arena-overlay .overlay-btn{padding:8px 16px!important;font-size:11px!important}
+}
+@media (prefers-reduced-motion:reduce){
+  #dungeonClearOverlay.victory-arena-overlay h2{animation:none!important}
+}

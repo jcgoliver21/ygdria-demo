@@ -6109,6 +6109,12 @@ function renderBattleReport(elId){
     <div class="report-rows">${entries.map((e,rank)=>{const k=KINGDOMS[e.idx];const medal=['🥇','🥈','🥉'][rank]||`${rank+1}º`;return `<div class="report-row"><span class="rr-rank">${medal}</span><span class="rr-name">${L(k.nome)}</span><div class="rr-bar"><i style="width:${Math.max(6,Math.round(e.dmg/maxD*100))}%;background:${k.color}"></i></div><span class="rr-val">${e.dmg}</span></div>`;}).join('')}</div>
     <div class="report-meta">${T('Maior combo','Best combo','Mayor combo')} ×${runStats.maxCombo} · ${T('Power-ups criados:','Power-ups created:','Power-ups creados:')} ${runStats.powerUps}</div>`;
 }
+function renderVictoryStars(stars=3){
+  const value=Math.max(1,Math.min(3,Number(stars)||1));
+  const victoryStars=document.getElementById('victoryStars');
+  if(victoryStars) victoryStars.innerHTML=[1,2,3].map(x=>`<span class="star${x<=value?' on':''}" style="--i:${x}">★</span>`).join('');
+  return value;
+}
 function launchVictoryConfetti(){
   const layer=document.getElementById('victoryConfetti');
   if(!layer||reducedMotion||reduceFlashes||!particlesEnabled) return;
@@ -6147,7 +6153,7 @@ function onStageCleared(){
       const gt=document.getElementById('grandClearTitle'), gx=document.getElementById('grandClearText');
       if(gt) gt.textContent=T('Lenda de Ygdria!','Legend of Ygdria!','¡Leyenda de Ygdria!');
       if(gx) gx.textContent=T('Você venceu os 8 campeões em sequência. Nenhum trono resiste a você.','You defeated all 8 champions in a row. No throne can resist you.','Venciste a los 8 campeones seguidos. Ningún trono se te resiste.');
-      renderBattleReport('victoryReport'); launchVictoryConfetti();
+      renderVictoryStars(3); renderBattleReport('victoryReport'); launchVictoryConfetti();
       bossRushMode=false;
       victoryExitToMap=true;
       victoryExitMode='boss';
@@ -6217,8 +6223,7 @@ function onStageCleared(){
     flushRunToProfile(true);
       const starsEl=document.getElementById('stageStars');
     if(starsEl) starsEl.innerHTML=[1,2,3].map(x=>`<span class="star${x<=stars?' on':''}" style="--i:${x}">★</span>`).join('');
-    const victoryStars=document.getElementById('victoryStars');
-    if(victoryStars) victoryStars.innerHTML=[1,2,3].map(x=>`<span class="star${x<=stars?' on':''}" style="--i:${x}">★</span>`).join('');
+    renderVictoryStars(stars);
     const victoryRank=document.getElementById('victoryRank');
     if(victoryRank) victoryRank.textContent=`${DIFFICULTY_RANKS[difficulty]||'Prata'} · ${difficultyLabel(difficulty)} · ${stars}/3`;
     if(worldRun.fase===world.fases.length-1){
@@ -6247,7 +6252,7 @@ function onStageCleared(){
       const gt=document.getElementById('grandClearTitle'), gx=document.getElementById('grandClearText');
       if(gt) gt.textContent=T('Missão Concluída!','Mission Complete!','¡Misión Completada!');
       if(gx) gx.textContent=`${L(fase.chefe)} ${T('derrotado(a)!','defeated!','¡derrotado(a)!')} ${L(fase.nome)} ${T('conquistada!','conquered!','conquistada!')}${ups.length?' '+ups.join(' '):''}`;
-      renderBattleReport('victoryReport');
+      renderVictoryStars(3); renderBattleReport('victoryReport');
       launchVictoryConfetti();
       victoryExitToMap=true;
       victoryExitMode='world';
@@ -6286,7 +6291,7 @@ function onStageCleared(){
       const gt=document.getElementById('grandClearTitle'), gx=document.getElementById('grandClearText');
       if(gt) gt.textContent=T('Desafio Diário Concluído!','Daily Challenge Complete!','¡Desafío Diario Completado!');
       if(gx) gx.textContent=T('Você venceu os 5 andares de hoje. Volte amanhã para um novo desafio!','You beat all 5 floors today. Come back tomorrow!','¡Venciste los 5 pisos de hoy. Vuelve mañana!');
-      renderBattleReport('victoryReport');
+      renderVictoryStars(3); renderBattleReport('victoryReport');
       launchVictoryConfetti();
       showOverlay('dungeonClearOverlay');
       return;
@@ -6317,6 +6322,7 @@ function onStageCleared(){
     const shareBtn=document.getElementById('shareDailyBtn');
     if(shareBtn) shareBtn.style.display=dailyRunMode?'inline-block':'none';
     renderBattleReport('victoryReport');
+    renderVictoryStars(earnedStars);
     launchVictoryConfetti();
     showOverlay('dungeonClearOverlay');
   }
@@ -6329,8 +6335,29 @@ function onStageCleared(){
   }
 }
 
-function showOverlay(id){ document.getElementById(id).classList.add('show'); }
-function hideOverlay(id){ document.getElementById(id).classList.remove('show'); }
+const victoryOverlayHome=document.getElementById('dungeonClearOverlay')?.parentElement||null;
+function mountVictoryOverlay(){
+  const overlay=document.getElementById('dungeonClearOverlay');
+  if(!overlay||!arenaEl) return;
+  if(overlay.parentElement!==arenaEl) arenaEl.appendChild(overlay);
+  overlay.classList.add('victory-arena-overlay');
+  arenaEl.classList.add('victory-arena-state');
+}
+function restoreVictoryOverlay(){
+  const overlay=document.getElementById('dungeonClearOverlay');
+  if(!overlay) return;
+  if(victoryOverlayHome&&overlay.parentElement!==victoryOverlayHome) victoryOverlayHome.appendChild(overlay);
+  overlay.classList.remove('victory-arena-overlay');
+  arenaEl?.classList.remove('victory-arena-state');
+}
+function showOverlay(id){
+  if(id==='dungeonClearOverlay') mountVictoryOverlay();
+  document.getElementById(id)?.classList.add('show');
+}
+function hideOverlay(id){
+  document.getElementById(id)?.classList.remove('show');
+  if(id==='dungeonClearOverlay') restoreVictoryOverlay();
+}
 
 function resetGame(){
   resetRunStats();

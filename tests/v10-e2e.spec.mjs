@@ -226,6 +226,40 @@ test('arena cinematica mantém profundidade, luz localizada e sombra de contato 
   expect(errors).toEqual([]);
 });
 
+test('tela final celebra dentro do cenário com heróis vitoriosos e inimigos caídos',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.evaluate(()=>{
+    chosenIds=[0,1,2,3]; beginGame(0); skipStory();
+    stageIndex=DUNGEON.length-1;
+    enemies.forEach(enemy=>{ enemy.hp=0; });
+    renderEnemies();
+    worldRun.active=false; towerMode=false; bossRushMode=true;
+    bossRushIdx=BOSS_RUSH_ORDER.length-1;
+    runStats.damage={0:100,1:50};
+    stageTransitioning=false;
+    onStageCleared();
+  });
+  await page.waitForTimeout(850);
+  const state=await page.evaluate(()=>{
+    const overlay=document.getElementById('dungeonClearOverlay');
+    return {
+      visible:overlay?.classList.contains('show'),
+      parent:overlay?.parentElement?.id||'',
+      arenaVictory:document.getElementById('arena')?.classList.contains('victory-arena-state'),
+      heroesVictory:[...document.querySelectorAll('.party-row .avatar-circle')].every(avatar=>avatar.dataset.action==='victory'),
+      deadEnemies:document.querySelectorAll('.enemy-unit.dead').length,
+      enemiesTotal:document.querySelectorAll('.enemy-unit').length,
+      stars:document.querySelectorAll('#victoryStars .star').length,
+      report:Boolean(document.getElementById('victoryReport')?.textContent?.trim()),
+      noArenaAnimation:getComputedStyle(document.getElementById('arena')).animationName
+    };
+  });
+  expect(state).toMatchObject({visible:true,parent:'arena',arenaVictory:true,heroesVictory:true,report:true,noArenaAnimation:'none'});
+  expect(state.deadEnemies).toBe(state.enemiesTotal);
+  expect(state.stars).toBe(3);
+  expect(errors).toEqual([]);
+});
+
 test('save v8 continua legível e é migrado na próxima gravação',async({page})=>{
   await page.addInitScript(()=>localStorage.setItem('12r_save',JSON.stringify({version:8,stage:2,team:[0,1,2,3],hp:321})));
   const errors=await boot(page,'flow');
@@ -938,7 +972,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.34');
+  expect(registration.caches).toContain('12r-v10.0.35');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1098,7 +1132,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.34');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.35');
 
     // Produção não expõe __12rQA: este trecho percorre somente controles reais.
     if(await page.locator('#introScreen').isVisible()) await page.locator('#introNext').click();
