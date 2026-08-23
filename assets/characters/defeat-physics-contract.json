@@ -1,0 +1,51 @@
+{
+  "schema": "ygdria.defeat-physics",
+  "version": 1,
+  "status": "approved",
+  "display": "2d-grounded-contact",
+  "grid": {
+    "rows": 2,
+    "cols": 2,
+    "frames": 4,
+    "sequence": ["loss-of-balance", "descent", "ground-contact", "resting"]
+  },
+  "anchor": {
+    "reference": "feet-and-eyes",
+    "aliveBaseline": "same-ground-line-as-idle",
+    "restingBaseline": "ground-contact",
+    "flyingException": "wings-and-flying-bodies may descend from air before contact"
+  },
+  "identity": {
+    "preserveOriginalSilhouette": true,
+    "preservePaletteAndEquipment": true,
+    "equipmentFollowsGravity": true,
+    "noHorizontalFlipAsDefeat": true,
+    "noTransformOnlyDefeat": true
+  },
+  "runtime": {
+    "finalFrameMustHold": true,
+    "deadOpacity": 1,
+    "shadowAnimation": "none-after-contact",
+    "idleOrAttackRafAfterDefeat": false,
+    "mobileBaselineMustMatchDesktop": true,
+    "reducedMotionShowsRestingFrame": true
+  },
+  "assetPipeline": {
+    "sourceGrid": "2x2-solid-magenta",
+    "transparentOutput": "sheet-transparent.png",
+    "align": "feet",
+    "scaleStrategy": "preserve",
+    "componentMode": "largest",
+    "outputEdgeTouch": false,
+    "clampFrames": 0,
+    "visualReviewRequired": true
+  },
+  "newCharacterChecklist": [
+    "Create the four grounded frames from the approved original identity.",
+    "Keep eyes and feet readable against the idle baseline.",
+    "Let hair, cloth, wings, tail, weapons and dropped equipment obey gravity.",
+    "Add the defeat sheet to the runtime action map before publishing.",
+    "Verify desktop, mobile and prefers-reduced-motion behavior.",
+    "Verify the final frame holds and the shadow does not animate after death."
+  ]
+}

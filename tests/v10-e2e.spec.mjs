@@ -56,8 +56,11 @@ test('v10.0.1 restaura escala e anima inimigos-personagem e inimigos comuns',asy
   expect(rootedAction).toMatchObject({before:{rooted:true,action:'idle'},rooted:true,action:'idle',sheetAnimation:'none',sheetTransform:'none'});
   expect(probe.bossStarCount).toBe(0);
   const deathProbe=await page.evaluate(()=>window.__12rQA.enemyDeathProbe());
-  expect(deathProbe).toMatchObject({dead:true,action:'defeat',defeatPose:true,paused:true,shadowAnimation:'none'});
-  await page.waitForTimeout(520);
+  expect(deathProbe).toMatchObject({dead:true,action:'defeat',defeatPose:true,defeatRuntime:true,paused:true,shadowAnimation:'none'});
+  expect(deathProbe.defeatSource).toContain('/capitao/defeat/processed/sheet-transparent.png');
+  await page.waitForTimeout(980);
+  const defeatFrame=await page.evaluate(()=>{ const sheet=document.querySelector('.enemy-unit.dead .hero-sprite-sheet'); return {x:sheet?.style.getPropertyValue('--sprite-bg-x'),y:sheet?.style.getPropertyValue('--sprite-bg-y'),animation:getComputedStyle(sheet).animationName}; });
+  expect(defeatFrame).toEqual({x:'100%',y:'100%',animation:'none'});
   const defeatLayout=await page.evaluate(()=>{
     const sprite=document.querySelector('.enemy-unit.dead .enemy-sprite-image,.enemy-unit.dead .hero-sprite-sheet');
     const status=document.querySelector('.battle-status');
@@ -98,6 +101,24 @@ test('mobile mantém derrota humana caída, opaca e presa ao piso',async({page})
   });
   expect(layout).toMatchObject({dead:true,action:'defeat',opacity:'1',filter:'none',shadowAnimation:'none'});
   expect(layout.spriteBottom).toBeLessThanOrEqual(layout.statusTop+2);
+  expect(errors).toEqual([]);
+});
+
+test('Sophitia usa a mesma física de derrota e repouso no movimento reduzido',async({page})=>{
+  await page.emulateMedia({reducedMotion:'reduce'});
+  const errors=await boot(page,'flow');
+  const pose=await page.evaluate(()=>{
+    const sophitia=KINGDOMS.findIndex(hero=>hero.id==='vento');
+    chosenIds=[sophitia,1,2,3]; beginGame(0); skipStory();
+    window.__12rQA.playHeroAction(sophitia,'defeat');
+    const avatar=document.getElementById('party-vento-avatar');
+    const sheet=avatar?.querySelector('.hero-sprite-sheet.grid-sheet');
+    return {action:avatar?.dataset.action,source:sheet?.style.getPropertyValue('--sprite-url')||'',x:sheet?.style.getPropertyValue('--sprite-bg-x'),y:sheet?.style.getPropertyValue('--sprite-bg-y')};
+  });
+  expect(pose.action).toBe('defeat');
+  expect(pose.source).toContain('/vento/defeat/processed/sheet-transparent.png');
+  expect(pose.x).toBe('100%');
+  expect(pose.y).toBe('100%');
   expect(errors).toEqual([]);
 });
 
@@ -884,7 +905,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.31');
+  expect(registration.caches).toContain('12r-v10.0.32');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1044,7 +1065,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.31');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.32');
 
     // Produção não expõe __12rQA: este trecho percorre somente controles reais.
     if(await page.locator('#introScreen').isVisible()) await page.locator('#introNext').click();

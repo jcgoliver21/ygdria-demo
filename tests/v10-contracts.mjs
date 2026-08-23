@@ -11,20 +11,21 @@ const config=read('v10-config.js');
 const animations=read('v10-animations.js');
 const sw=read('sw.js');
 const workflow=read('.github/workflows/v10-ci.yml');
+const defeatPhysics=JSON.parse(read('assets/characters/defeat-physics-contract.json'));
 
 const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=10\.0\.31/);
-  assert.match(html,/v10-config\.js\?v=10\.0\.31/);
-  assert.match(html,/v10-animations\.js\?v=10\.0\.31/);
-  assert.match(html,/game-v10\.js\?v=10\.0\.31/);
+  assert.match(html,/styles-v10\.css\?v=10\.0\.32/);
+  assert.match(html,/v10-config\.js\?v=10\.0\.32/);
+  assert.match(html,/v10-animations\.js\?v=10\.0\.32/);
+  assert.match(html,/game-v10\.js\?v=10\.0\.32/);
   assert.doesNotMatch(html,/game-v9|styles-v9|v9\.3-config/);
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v10\.0\.31/);
+  assert.match(sw,/12r-v10\.0\.32/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -116,6 +117,25 @@ check('inimigos exclusivos usam folhas reais, impactos e arena viva',()=>{
   for(const needle of ['enemyOriginalAttack','arena-petals','arena-cold-fog','arena-world-drift','.enemy-unit.dead .unit-ground-shadow','@keyframes enemyDefeatFall']) assert.ok(css.includes(needle),`${needle} ausente`);
 });
 
+check('física permanente de derrota mantém identidade, chão e repouso',()=>{
+  assert.equal(defeatPhysics.schema,'ygdria.defeat-physics');
+  assert.equal(defeatPhysics.grid.rows,2);
+  assert.equal(defeatPhysics.grid.cols,2);
+  assert.deepEqual(defeatPhysics.grid.sequence,['loss-of-balance','descent','ground-contact','resting']);
+  assert.equal(defeatPhysics.anchor.reference,'feet-and-eyes');
+  assert.equal(defeatPhysics.identity.noHorizontalFlipAsDefeat,true);
+  assert.equal(defeatPhysics.identity.equipmentFollowsGravity,true);
+  assert.equal(defeatPhysics.runtime.finalFrameMustHold,true);
+  assert.equal(defeatPhysics.runtime.shadowAnimation,'none-after-contact');
+  assert.match(game,/DEFEAT_ANIMATION_LIBRARY/);
+  assert.match(game,/function playHeroDefeatPoses\(\)/);
+  assert.match(animations,/vento\/defeat\/processed\/sheet-transparent\.png/);
+  assert.match(css,/enemy-defeat-runtime/);
+  const enemyAssets=['capitao','soldado1','soldado2','sold-bib1','sold-bib2','sold-bib3','infantaria','cavalaria','comandante','trono','morto','vulto','slime-cereja','lobo-raivoso','espectro'].map(id=>[id,`assets/enemies/runtime-v10/${id}/defeat/processed/sheet-transparent.png`]);
+  for(const [id,asset] of enemyAssets){ assert.ok(game.includes(asset),`${id} sem mapa de derrota`); assert.ok(fs.existsSync(path.join(root,...asset.split('/'))),`${id} sem folha de derrota`); }
+  assert.ok(fs.existsSync(path.join(root,'assets/characters/runtime-v10/vento/defeat/processed/sheet-transparent.png')),'vento sem folha de derrota');
+});
+
 check('Torre usa cada encontro da campanha e invocações não bloqueiam heróis',()=>{
   assert.match(game,/One floor per actual encounter/);
   assert.doesNotMatch(game,/vistos\.has\(key\)/);
@@ -177,7 +197,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=10.0.31');
+  const deferredGame=html.indexOf('game-v10.js?v=10.0.32');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
@@ -195,14 +215,15 @@ check('menu inicial não bloqueia o primeiro toque',()=>{
   assert.match(game,/pauseOptionsBtn'\)\.addEventListener\('click',\(\)=>\{ openPanel\('optionsScreen'\); \}\)/);
 });
 
-check('motor v10 cobre e conecta cinco movimentos',()=>{
-  for(const action of ['idle','attack','cast','hit','victory']){
+check('motor v10 cobre e conecta seis movimentos',()=>{
+  for(const action of ['idle','attack','cast','hit','victory','defeat']){
     assert.match(game,new RegExp(`\\b${action}:\\s*\\{`),`${action} ausente do contrato`);
   }
   assert.match(game,/function animateHeroAvatar\(/);
   assert.match(game,/animateHeroAvatar\(avatarEl,k,'idle',\{loop:true\}\)/);
   assert.match(game,/ACTIVE\.forEach\(heroIdx=>playHeroAction\(heroIdx,'hit'\)\)/);
   assert.match(game,/ACTIVE\.forEach\(heroIdx=>playHeroAction\(heroIdx,'victory'\)\)/);
+  assert.match(game,/playHeroDefeatPoses\(\)/);
   assert.match(animations,/YGDRIA_V10_ANIMATIONS/);
 });
 

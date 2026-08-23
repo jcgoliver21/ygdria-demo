@@ -489,6 +489,16 @@
       "format": "sheet",
       "src": "assets/characters/runtime-v10/vento/victory-2x2.png",
       "displayScale": 0.9451
+    },
+    "defeat": {
+      "frames": 4,
+      "cols": 2,
+      "rows": 2,
+      "duration": 900,
+      "hold": true,
+      "format": "sheet",
+      "src": "assets/characters/runtime-v10/vento/defeat/processed/sheet-transparent.png",
+      "displayScale": 0.9451
     }
   },
   "chuvas": {

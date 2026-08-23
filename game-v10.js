@@ -1586,6 +1586,26 @@ const ENEMY_IDLE_LIBRARY=Object.freeze(Object.fromEntries([
     frameOrder:[0,1,2,3,4,5,4,3,2,1]
   }];
 })));
+/* Contrato físico v11: cada derrota usa a folha própria da identidade. A
+   sequência 2x2 registra desequilíbrio, descida, contato e repouso; a arte,
+   os equipamentos e a escala do personagem não são substituídos. */
+const DEFEAT_ANIMATION_LIBRARY=Object.freeze({
+  'capitao':{src:'assets/enemies/runtime-v10/capitao/defeat/processed/sheet-transparent.png',cols:2,rows:2,frames:4,duration:900},
+  'soldado1':{src:'assets/enemies/runtime-v10/soldado1/defeat/processed/sheet-transparent.png',cols:2,rows:2,frames:4,duration:880},
+  'soldado2':{src:'assets/enemies/runtime-v10/soldado2/defeat/processed/sheet-transparent.png',cols:2,rows:2,frames:4,duration:880},
+  'sold-bib1':{src:'assets/enemies/runtime-v10/sold-bib1/defeat/processed/sheet-transparent.png',cols:2,rows:2,frames:4,duration:880},
+  'sold-bib2':{src:'assets/enemies/runtime-v10/sold-bib2/defeat/processed/sheet-transparent.png',cols:2,rows:2,frames:4,duration:880},
+  'sold-bib3':{src:'assets/enemies/runtime-v10/sold-bib3/defeat/processed/sheet-transparent.png',cols:2,rows:2,frames:4,duration:880},
+  'infantaria':{src:'assets/enemies/runtime-v10/infantaria/defeat/processed/sheet-transparent.png',cols:2,rows:2,frames:4,duration:900},
+  'cavalaria':{src:'assets/enemies/runtime-v10/cavalaria/defeat/processed/sheet-transparent.png',cols:2,rows:2,frames:4,duration:980},
+  'comandante':{src:'assets/enemies/runtime-v10/comandante/defeat/processed/sheet-transparent.png',cols:2,rows:2,frames:4,duration:940},
+  'trono':{src:'assets/enemies/runtime-v10/trono/defeat/processed/sheet-transparent.png',cols:2,rows:2,frames:4,duration:940},
+  'morto':{src:'assets/enemies/runtime-v10/morto/defeat/processed/sheet-transparent.png',cols:2,rows:2,frames:4,duration:920},
+  'vulto':{src:'assets/enemies/runtime-v10/vulto/defeat/processed/sheet-transparent.png',cols:2,rows:2,frames:4,duration:900},
+  'slime-cereja':{src:'assets/enemies/runtime-v10/slime-cereja/defeat/processed/sheet-transparent.png',cols:2,rows:2,frames:4,duration:820},
+  'lobo-raivoso':{src:'assets/enemies/runtime-v10/lobo-raivoso/defeat/processed/sheet-transparent.png',cols:2,rows:2,frames:4,duration:860},
+  'espectro':{src:'assets/enemies/runtime-v10/espectro/defeat/processed/sheet-transparent.png',cols:2,rows:2,frames:4,duration:900}
+});
 const ENEMY_FRAME_SEQUENCES=Object.freeze({idle:[0,1,2,3,4,5,4,3,2,1],attack:[2,3,1],cast:[1,2,3],hit:[4,5],victory:[5],defeat:[5]});
 function enemyAnimationKey(e){
   const descriptor=[e?.etype,e?.name,e?.sprite].filter(Boolean).join(' ').toLowerCase();
@@ -1615,10 +1635,12 @@ function enemyAnimationCharacter(e){
   const key=enemyAnimationKey(e),library=key&&ENEMY_ANIMATION_LIBRARY[key];
   if(!library) return null;
   const idleLibrary=ENEMY_IDLE_LIBRARY[key];
+  const defeatLibrary=DEFEAT_ANIMATION_LIBRARY[key];
   const sprites={};
   Object.entries(ENEMY_FRAME_SEQUENCES).forEach(([action,frameOrder])=>{
-    const source=action==='idle'&&idleLibrary?{...library,...idleLibrary}:library;
-    sprites[action]={...source,format:'sheet',sheetFrames:source.frames,frameOrder:action==='idle'&&idleLibrary?idleLibrary.frameOrder:(library.actionFrames?.[action]||frameOrder),loop:action==='idle',duration:action==='idle'?Number(source.duration):library.duration};
+    const source=action==='idle'&&idleLibrary?{...library,...idleLibrary}:action==='defeat'&&defeatLibrary?{...library,...defeatLibrary}:library;
+    const sequence=action==='idle'&&idleLibrary?idleLibrary.frameOrder:action==='defeat'&&defeatLibrary?[0,1,2,3]:(library.actionFrames?.[action]||frameOrder);
+    sprites[action]={...source,format:'sheet',sheetFrames:source.frames,frameOrder:sequence,loop:action==='idle',duration:Number(source.duration||library.duration)};
   });
   return {id:`enemy-${key}`,nome:e?.name||key,sprites,heroFlip:false,enemyRuntime:true,flying:library.flying===true};
 }
@@ -1897,7 +1919,8 @@ const HERO_ACTIONS = Object.freeze({
   attack:  { frames:6, cols:3, rows:2, duration:720, loop:false },
   cast:    { frames:6, cols:3, rows:2, duration:840, loop:false },
   hit:     { frames:4, cols:2, rows:2, duration:360, loop:false },
-  victory: { frames:4, cols:2, rows:2, duration:1200, loop:false, holdLast:true }
+  victory: { frames:4, cols:2, rows:2, duration:1200, loop:false, holdLast:true },
+  defeat:  { frames:4, cols:2, rows:2, duration:900, loop:false, holdLast:true }
 });
 
 /* v10.0.28 · A escala corporal do personagem é separada da correção técnica
@@ -2028,6 +2051,11 @@ function animateHeroAvatar(avatar,k,action='idle',options={}){
   const duration=Math.max(80,Number(meta.duration||520));
   const frameOrder=Array.isArray(meta.frameOrder)&&meta.frameOrder.length?meta.frameOrder:null;
   const frames=frameOrder?frameOrder.length:Math.max(1,Number(meta.frames||1));
+  if(action==='defeat'&&reducedMotion&&spec?.format==='sheet'&&frames>1){
+    const restingSheet=avatar.querySelector('.hero-sprite-sheet.grid-sheet');
+    restingSheet?.style.setProperty('--sprite-bg-x','100%');
+    restingSheet?.style.setProperty('--sprite-bg-y','100%');
+  }
   const state={paused:false,lastTick:null,elapsed:0,timerRemaining:null,timerDeadline:0,tick:null,finish:null};
   avatar.__heroAnimationState=state;
   if(spec?.format==='sheet'&&frames>1&&!reducedMotion){
@@ -2085,6 +2113,13 @@ function playHeroAction(idx, action='attack'){
   const avatar=k&&document.getElementById('party-'+k.id+'-avatar');
   if(!avatar) return;
   animateHeroAvatar(avatar,k,action,{hold:action==='victory'});
+}
+
+function playHeroDefeatPoses(){
+  ACTIVE.forEach(idx=>{
+    const k=KINGDOMS[idx];
+    if(k?.sprites?.defeat?.src) playHeroAction(idx,'defeat');
+  });
 }
 
 /* Inimigos que tambem pertencem ao elenco usam a mesma animacao v10 do
@@ -2145,7 +2180,7 @@ function usesRootedHumanIdle(e){
 
 function animateEnemyAvatar(avatar,e,action='idle',options={}){
   if(!avatar||!e) return false;
-  avatar.classList.remove('enemy-defeat-pose','enemy-defeated-avatar','motion-paused');
+  avatar.classList.remove('enemy-defeat-pose','enemy-defeated-avatar','enemy-defeat-runtime','motion-paused');
   if(action==='idle'&&usesRootedHumanIdle(e)){
     stopHeroAnimation(avatar);
     avatar.dataset.action='idle';
@@ -2188,6 +2223,18 @@ function defeatEnemyAvatar(avatar,e){
   avatar.dataset.defeatPose=/slime|limo/.test(defeatKey||'')?'soft':e?.flying?'air':'body';
   avatar.classList.add('motion-paused','enemy-defeated-avatar','enemy-defeat-pose');
   avatar.setAttribute('aria-label',L(e?.name||'Inimigo derrotado'));
+  const character=enemyCharacterFor(e)||enemyAnimationCharacter(e);
+  if(character?.sprites?.defeat?.src){
+    animateEnemyAvatar(avatar,e,'defeat',{hold:true});
+    avatar.classList.add('motion-paused','enemy-defeated-avatar','enemy-defeat-pose','enemy-defeat-runtime');
+    const runtimeSheet=avatar.querySelector('.hero-sprite-sheet.grid-sheet');
+    if(reducedMotion&&runtimeSheet){
+      runtimeSheet.style.setProperty('--sprite-bg-x','100%');
+      runtimeSheet.style.setProperty('--sprite-bg-y','100%');
+    }
+    avatar.querySelectorAll('.enemy-intent').forEach(intent=>intent.remove());
+    return;
+  }
   const sheet=avatar.querySelector('.hero-sprite-sheet.grid-sheet');
   if(sheet){
     sheet.style.setProperty('--sprite-bg-x','100%');
@@ -5855,9 +5902,10 @@ function finalizeDefeat(){
   cancelTempoSombrio();
   resetCombatSchedule();
   sfxDefeat();
+  playHeroDefeatPoses();
   flushRunToProfile(false);
   renderBattleReport('defeatReport');
-  scheduleCombat(()=>showOverlay('defeatOverlay'),400);
+  scheduleCombat(()=>showOverlay('defeatOverlay'),1000);
   return true;
 }
 
@@ -7105,6 +7153,8 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
         dead:Boolean(unit?.classList.contains('dead')),
         action:avatar?.dataset.action,
         defeatPose:Boolean(avatar?.classList.contains('enemy-defeat-pose')),
+        defeatRuntime:Boolean(avatar?.classList.contains('enemy-defeat-runtime')),
+        defeatSource:avatar?.querySelector('.hero-sprite-sheet')?.style.getPropertyValue('--sprite-url')||'',
         paused:Boolean(avatar?.classList.contains('motion-paused')),
         shadowAnimation:getComputedStyle(shadow).animationName,
         sheetAnimation:getComputedStyle(avatar?.querySelector('.hero-sprite-sheet')||avatar).animationName

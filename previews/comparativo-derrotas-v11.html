@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>12 Reinos · Comparativo de derrotas v11</title>
+<style>
+  :root{color-scheme:dark;--gold:#e8c879;--ink:#0e0918;--panel:#1b1127}
+  *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#4d2d55 0,#120b1b 44%,#07050c 100%);color:#f7edcf;font:14px/1.4 system-ui,Segoe UI,sans-serif}
+  header{max-width:1500px;margin:auto;padding:28px 24px 18px;border-bottom:1px solid #80613b80}h1{margin:0;color:var(--gold);font:700 clamp(22px,3vw,38px) Georgia,serif;letter-spacing:.04em}p{max-width:900px;margin:9px 0 0;color:#e7d8bc}
+  .legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.tag{padding:5px 9px;border:1px solid #cda95c70;border-radius:999px;background:#20162c;color:#f2dfb0;font-size:12px}
+  main{max-width:1500px;margin:0 auto;padding:22px 24px 42px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.card{min-width:0;border:1px solid #b8904e70;border-radius:14px;background:linear-gradient(145deg,#261731e8,#100a17f5);box-shadow:0 12px 30px #0008;overflow:hidden}.card h2{margin:0;padding:12px 14px;color:#ffe8a5;font:700 18px Georgia,serif;border-bottom:1px solid #b8904e4d}.compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}.pane{min-width:0;padding:8px;border-radius:10px;background:#07050caa;border:1px solid #ffffff14}.pane h3{margin:0 0 7px;color:#d9c39b;font-size:11px;letter-spacing:.12em;text-transform:uppercase}.pane img{display:block;width:100%;height:210px;object-fit:contain;background:#05040a;border-radius:7px}.anim{position:relative;width:100%;height:210px;display:grid;place-items:center;background:#05040a;border-radius:7px;overflow:hidden}.anim img{height:100%;width:100%;object-fit:contain}.frame-note{padding:8px 12px;color:#aa9bb3;font-size:11px;border-top:1px solid #ffffff12}.status{display:inline-block;margin-left:6px;color:#9ee3b0}.status.bad{color:#ffb1a7}
+  @media(max-width:850px){main{padding:16px 10px 30px}.grid{grid-template-columns:1fr}.compare{grid-template-columns:1fr 1fr}.pane img,.anim{height:190px}}
+  @media(max-width:470px){.compare{grid-template-columns:1fr}.pane img,.anim{height:220px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Comparativo de derrotas · v11</h1>
+  <p>Comparativo aprovado e integrado à publicação. À esquerda está a arte original; à direita, a sequência reconstruída em 2×2: perda de equilíbrio, queda, contato e repouso no chão.</p>
+  <div class="legend"><span class="tag">corpos apoiados no piso</span><span class="tag">equipamentos sob gravidade</span><span class="tag">escala uniforme por folha</span><span class="tag">sem corte de célula</span></div>
+</header>
+<main><section class="grid" id="gallery"></section></main>
+<script>
+const entries=[
+  ['Sophitia','../assets/characters/runtime-v6/sophitia/single-1.png','sophitia'],
+  ['Slime de Cerejeira','../assets/enemies/humanos/slime-cerejeira.png','slime-cerejeira'],
+  ['Lobo Raivoso','../assets/enemies/humanos/lobo-raivoso.png','lobo-raivoso'],
+  ['Soldado 1','../assets/enemies/humanos/soldado-1.png','soldado-1'],
+  ['Soldado 2','../assets/enemies/humanos/soldado-2.png','soldado-2'],
+  ['Capitão','../assets/enemies/humanos/capitao.png','capitao'],
+  ['Vulto Sombrio','../assets/enemies/humanos/vulto-sombrio.png','vulto-sombrio'],
+  ['Espectro Sombrio','../assets/enemies/humanos/espectro-sombrio.png','espectro-sombrio'],
+  ['Cavaleiro Morto-Vivo','../assets/enemies/humanos/cavaleiro-morto-vivo.png','cavaleiro-morto-vivo'],
+  ['Soldado da Biblioteca 1','../assets/enemies/humanos/soldado-biblioteca-1.png','soldado-biblioteca-1'],
+  ['Soldado da Biblioteca 2','../assets/enemies/humanos/soldado-biblioteca-2.png','soldado-biblioteca-2'],
+  ['Soldado da Biblioteca 3','../assets/enemies/humanos/soldado-biblioteca-3.png','soldado-biblioteca-3'],
+  ['Soldado de Infantaria','../assets/enemies/humanos/soldado-infantaria.png','soldado-infantaria'],
+  ['Soldado de Cavalaria','../assets/enemies/humanos/soldado-cavalaria.png','soldado-cavalaria'],
+  ['Comandante dos Soldados','../assets/enemies/humanos/comandante.png','comandante'],
+  ['Soldado do Trono Real','../assets/enemies/humanos/soldado-trono.png','soldado-trono']
+];
+const gallery=document.querySelector('#gallery');
+const runtimeFolders={sophitia:['characters','vento'],'slime-cerejeira':['enemies','slime-cereja'],'lobo-raivoso':['enemies','lobo-raivoso'],'soldado-1':['enemies','soldado1'],'soldado-2':['enemies','soldado2'],'capitao':['enemies','capitao'],'vulto-sombrio':['enemies','vulto'],'espectro-sombrio':['enemies','espectro'],'cavaleiro-morto-vivo':['enemies','morto'],'soldado-biblioteca-1':['enemies','sold-bib1'],'soldado-biblioteca-2':['enemies','sold-bib2'],'soldado-biblioteca-3':['enemies','sold-bib3'],'soldado-infantaria':['enemies','infantaria'],'soldado-cavalaria':['enemies','cavalaria'],'comandante':['enemies','comandante'],'soldado-trono':['enemies','trono']};
+entries.forEach(([name,original,id],index)=>{
+  const [kind,folder]=runtimeFolders[id];
+  const sheet=kind==='characters'?`../assets/characters/runtime-v10/${folder}/defeat/processed/sheet-transparent.png`:`../assets/enemies/runtime-v10/${folder}/defeat/processed/sheet-transparent.png`;
+  const card=document.createElement('article');card.className='card';
+  card.innerHTML=`<h2>${index+1}. ${name}</h2><div class="compare"><div class="pane"><h3>Original aprovado</h3><img src="${original}" alt="${name} original"></div><div class="pane"><h3>Derrota reconstruída <span class="status">QC ok</span></h3><div class="anim"><img alt="${name} sequência de derrota"></div></div></div><div class="frame-note">Quadros: início da queda → contato → repouso com cabelo, tecido, asas/pelos e equipamentos sujeitos à gravidade.</div>`;
+  card.querySelector('.anim img').src=sheet;gallery.append(card);
+});
+</script>
+</body>
+</html>
