@@ -3748,3 +3748,22 @@ body.game-active .battle-tools-panel{z-index:220!important}
   body.game-active .party-row .unit-stage{height:106px!important}
   body.game-active .enemy-row .unit-stage{height:102px!important}
 }
+
+/* v13 · grid físico exclusivo da Cidade das Cerejeiras. Cada célula nasce
+   quadrada; a perspectiva é aplicada ao plano inteiro para acompanhar o
+   piso, sem transformar a posição lógica em um retângulo. */
+.cerejeira-tactical-grid{display:none;position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden;--grid-hero-cell:clamp(32px,10vw,62px);--grid-enemy-cell:clamp(27px,7vw,48px)}
+.arena.cerejeira-grid-available.tactical-grid .cerejeira-tactical-grid{display:block}
+.arena-grid-zone{position:absolute;display:grid;gap:clamp(4px,1vw,8px);transform-origin:50% 100%;transform:perspective(780px) rotateX(56deg);transform-style:preserve-3d;filter:drop-shadow(0 3px 5px rgba(0,0,0,.35))}
+.hero-grid-zone{left:3%;bottom:5%;grid-template-columns:repeat(3,var(--grid-hero-cell));grid-auto-rows:var(--grid-hero-cell)}
+.enemy-grid-zone{right:3%;bottom:5%;grid-template-columns:repeat(2,var(--grid-enemy-cell));grid-auto-rows:var(--grid-enemy-cell);transform:perspective(780px) rotateX(56deg)}
+.hero-grid-zone .arena-grid-cell{--cell-size:var(--grid-hero-cell)}
+.enemy-grid-zone .arena-grid-cell{--cell-size:var(--grid-enemy-cell)}
+.arena-grid-cell{width:var(--cell-size);height:var(--cell-size);aspect-ratio:1 / 1;display:grid;place-items:center;border:1px solid rgba(255,226,143,.72);border-radius:5px;background:linear-gradient(145deg,rgba(255,238,174,.18),rgba(94,177,255,.1) 55%,rgba(8,5,18,.34));box-shadow:inset 0 0 10px rgba(255,239,182,.08),0 0 0 1px rgba(8,4,15,.55);color:#fff0b5;font:800 clamp(8px,1.9vw,13px)/1 system-ui,sans-serif;text-shadow:0 1px 3px #000;backface-visibility:hidden}
+.enemy-grid-zone .arena-grid-cell{border-color:rgba(255,151,132,.76);background:linear-gradient(145deg,rgba(255,175,149,.2),rgba(255,86,105,.11) 55%,rgba(8,5,18,.36));color:#ffd0b8}
+.arena-grid-cell small{font-size:.66em;letter-spacing:.05em;opacity:.78}
+@media (max-width:600px){
+  .cerejeira-tactical-grid{--grid-hero-cell:clamp(30px,10vw,46px);--grid-enemy-cell:clamp(25px,7vw,34px)}
+  .arena-grid-zone{gap:4px}
+}
+@media (prefers-reduced-motion:reduce){.arena-grid-zone{transition:none!important}}

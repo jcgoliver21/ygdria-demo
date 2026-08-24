@@ -2699,6 +2699,39 @@ function useQueuedActive(idx,a){
   },1200);
 }
 
+function renderCerejeiraTacticalGrid(){
+  const heroGrid=document.getElementById('heroTacticalGrid');
+  const enemyGrid=document.getElementById('enemyTacticalGrid');
+  if(!heroGrid||!enemyGrid) return;
+  if(heroGrid.childElementCount!==12){
+    heroGrid.innerHTML=Array.from({length:12},(_,i)=>{
+      const label=String(i+1).padStart(2,'0');
+      return `<span class="arena-grid-cell" data-grid-side="heroes" data-grid-slot="${label}" aria-label="Casa dos heróis ${label}"><small>H</small>${label}</span>`;
+    }).join('');
+  }
+  if(enemyGrid.childElementCount!==6){
+    enemyGrid.innerHTML=Array.from({length:6},(_,i)=>{
+      const label=`E${String(i+1).padStart(2,'0')}`;
+      return `<span class="arena-grid-cell" data-grid-side="enemies" data-grid-slot="${label}" aria-label="Casa dos inimigos ${label}">${label}</span>`;
+    }).join('');
+  }
+}
+
+function syncCerejeiraTacticalGrid(){
+  const available=Boolean(worldRun.active&&Number(worldRun.fase)===0);
+  const tool=document.getElementById('gridTool');
+  const overlay=document.getElementById('cerejeiraTacticalGrid');
+  arenaEl.classList.toggle('cerejeira-grid-available',available);
+  if(available){
+    renderCerejeiraTacticalGrid();
+    if(tool){ tool.hidden=false; tool.disabled=false; }
+  }else{
+    arenaEl.classList.remove('tactical-grid');
+    overlay?.setAttribute('aria-hidden','true');
+    if(tool){ tool.hidden=true; tool.disabled=true; tool.classList.remove('active'); }
+  }
+}
+
 function renderStageProgress(){
   stageProgressEl.innerHTML = '';
   const total=worldRun.active?5:towerMode?5:bossRushMode?8:5;
@@ -2724,6 +2757,7 @@ function renderStageProgress(){
      A classe própria mantém a banda de aterrissagem e a malha tática presas ao
      piso pintado, sem deslocar os demais cenários que também usam scene-4. */
   arenaEl.className = 'arena scene-'+((activeStageData&&Number.isFinite(activeStageData.scene))?activeStageData.scene:4)+(towerMode?' tower-stage':'');
+  syncCerejeiraTacticalGrid();
   const mood=worldRun.active?'humanos':towerMode?'eternidade':bossRushMode?'boss':`scene-${activeStageData?.scene??4}`;
   arenaEl.dataset.realmMood=mood;
   const missionAtmospheres=['cherry-petals','cold-mist','cold-mist','arcane-threads','market-dust','essence-ribbons','library-pages','wall-wind','cold-mist','ember-ash'];
@@ -2952,7 +2986,9 @@ function useRoyalShuffle(){
 }
 
 function toggleTacticalGrid(){
+  if(!arenaEl.classList.contains('cerejeira-grid-available')) return;
   const active=arenaEl.classList.toggle('tactical-grid');
+  document.getElementById('cerejeiraTacticalGrid')?.setAttribute('aria-hidden',String(!active));
   document.getElementById('gridTool').classList.toggle('active',active);
   setBattleStatus(active?T('Grade de profundidade ativada.','Depth grid enabled.','Cuadrícula de profundidad activada.'):T('Grade de profundidade ocultada.','Depth grid hidden.','Cuadrícula de profundidad oculta.'));
 }
