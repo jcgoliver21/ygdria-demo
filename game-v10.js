@@ -2162,7 +2162,10 @@ function playHeroAction(idx, action='attack'){
   const k=KINGDOMS[idx];
   const avatar=k&&document.getElementById('party-'+k.id+'-avatar');
   if(!avatar) return;
-  animateHeroAvatar(avatar,k,action,{hold:action==='victory'});
+  /* A comemoração precisa continuar visível enquanto o relatório está aberto.
+     O estado de derrota dos inimigos continua segurando o último frame; aqui
+     apenas a pose positiva dos heróis fica em loop. */
+  animateHeroAvatar(avatar,k,action,{loop:action==='victory',hold:false});
 }
 
 function playHeroDefeatPoses(){
@@ -6142,6 +6145,14 @@ function updatePlayerHP(){
 let runStats={damage:{},maxCombo:0,powerUps:0};
 let victoryExitToMap=false;
 let victoryExitMode='world';
+let victoryNextStage=false;
+function updateVictoryActionLabel(){
+  const btn=document.getElementById('playAgainBtn');
+  if(!btn) return;
+  const label=victoryNextStage?T('Próxima fase','Next stage','Próxima fase'):T('Jogar novamente','Play again','Jugar de nuevo');
+  btn.textContent=label;
+  btn.setAttribute('aria-label',label);
+}
 function resetRunStats(){ runStats={damage:{},maxCombo:0,powerUps:0,starsEarned:0,_flushedDamage:0,_flushedPU:0}; }
 function getStars(){ try{ return JSON.parse(localStorage.getItem('12r_stars')||'{}'); }catch(e){ return {}; } }
 function recordStars(stageIdx){
@@ -6187,6 +6198,7 @@ function launchVictoryConfetti(){
 
 function onStageCleared(){
   if(stageTransitioning) return;
+  victoryNextStage=false;
   stopMissionTimer();
   stageTransitioning = true;
   busy = true;
@@ -6309,6 +6321,7 @@ function onStageCleared(){
       launchVictoryConfetti();
       victoryExitToMap=true;
       victoryExitMode='world';
+      victoryNextStage=completedFase<world.fases.length-1;
       showOverlay('dungeonClearOverlay');
       worldRun.active=false;
       busy=false;
@@ -6389,20 +6402,36 @@ function onStageCleared(){
 }
 
 const victoryOverlayHome=document.getElementById('victoryReportDock')||document.getElementById('dungeonClearOverlay')?.parentElement||null;
+const victoryTopIds=['grandClearTitle','grandClearText','victoryStars','victoryRank'];
 function mountVictoryOverlay(){
   const overlay=document.getElementById('dungeonClearOverlay');
   const dock=document.getElementById('victoryReportDock');
+  const top=document.getElementById('victoryArenaHeader');
+  const confetti=document.getElementById('victoryConfetti');
   const frame=document.querySelector('.game-frame');
   if(!overlay||!arenaEl||!dock) return;
   if(overlay.parentElement!==dock) dock.appendChild(overlay);
+  if(confetti&&confetti.parentElement!==arenaEl) arenaEl.appendChild(confetti);
+  if(top) victoryTopIds.forEach(id=>{
+    const node=document.getElementById(id);
+    if(node&&node.parentElement!==top) top.appendChild(node);
+  });
   overlay.classList.add('victory-arena-overlay','victory-docked');
   frame?.classList.add('victory-celebration');
   arenaEl.classList.add('victory-arena-state');
+  updateVictoryActionLabel();
 }
 function restoreVictoryOverlay(){
   const overlay=document.getElementById('dungeonClearOverlay');
   if(!overlay) return;
   if(victoryOverlayHome&&overlay.parentElement!==victoryOverlayHome) victoryOverlayHome.appendChild(overlay);
+  const top=document.getElementById('victoryArenaHeader');
+  const confetti=document.getElementById('victoryConfetti');
+  if(confetti&&confetti.parentElement!==overlay) overlay.insertBefore(confetti,overlay.firstChild);
+  victoryTopIds.forEach(id=>{
+    const node=document.getElementById(id);
+    if(node&&node.parentElement!==overlay) overlay.appendChild(node);
+  });
   overlay.classList.remove('victory-arena-overlay','victory-docked');
   document.querySelector('.game-frame')?.classList.remove('victory-celebration');
   arenaEl?.classList.remove('victory-arena-state');
@@ -6478,6 +6507,7 @@ document.getElementById('playAgainBtn').addEventListener('click',()=>{
   const destination=victoryExitMode;
   victoryExitToMap=false;
   victoryExitMode='world';
+  victoryNextStage=false;
   hideOverlay('dungeonClearOverlay');
   showMainMenu();
   openMapScreen(destination==='boss'?'boss':'world');
@@ -6786,6 +6816,8 @@ function showMainMenu(options={}){
   if(confetti) confetti.replaceChildren();
   victoryExitToMap=false;
   victoryExitMode='world';
+  victoryNextStage=false;
+  updateVictoryActionLabel();
   document.getElementById('mainMenu').style.display='flex';
   document.getElementById('selectScreen').style.display='none';
   document.getElementById('gameScreen').style.display='none';

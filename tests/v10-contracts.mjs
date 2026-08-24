@@ -17,17 +17,17 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=10\.0\.36/);
-  assert.match(html,/v10-config\.js\?v=10\.0\.36/);
-  assert.match(html,/v10-animations\.js\?v=10\.0\.36/);
-  assert.match(html,/game-v10\.js\?v=10\.0\.36/);
-  assert.match(config,/version:'v10\.0\.36'/);
-  assert.match(sw,/12r-v10\.0\.36/);
+  assert.match(html,/styles-v10\.css\?v=10\.0\.37/);
+  assert.match(html,/v10-config\.js\?v=10\.0\.37/);
+  assert.match(html,/v10-animations\.js\?v=10\.0\.37/);
+  assert.match(html,/game-v10\.js\?v=10\.0\.37/);
+  assert.match(config,/version:'v10\.0\.37'/);
+  assert.match(sw,/12r-v10\.0\.37/);
   assert.doesNotMatch(html,/game-v9|styles-v9|v9\.3-config/);
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v10\.0\.36/);
+  assert.match(sw,/12r-v10\.0\.37/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -144,7 +144,7 @@ check('física permanente de derrota mantém identidade, chão e repouso',()=>{
   for(const [id,asset] of enemyAssets){ assert.ok(game.includes(asset),`${id} sem mapa de derrota`); assert.ok(fs.existsSync(path.join(root,...asset.split('/'))),`${id} sem folha de derrota`); }
 });
 
-check('passagem gráfica v10.0.36 mantém física e dá resposta ao combate',()=>{
+check('passagem gráfica v10.0.37 mantém física e dá resposta ao combate',()=>{
   for(const needle of ['ensureArenaVisualLayers','applyArenaVisualProfile','pulseArenaLighting','spawnCombatAttackFx','enemyFxRealm','arena-light-pulse','arena-depth','arena-lighting','arenaEffects','arenaProfiles','fx-attack-signature','attack-fogo','attack-gelo']) assert.ok(game.includes(needle)||css.includes(needle)||config.includes(needle),`${needle} ausente`);
   assert.match(game,/if\(kind==='impact'\|\|kind==='critical'\) pulseArenaLighting\(color,target,kind\)/);
   assert.match(css,/body\.game-active \.unit-ground-shadow\{display:block/);
@@ -155,16 +155,19 @@ check('passagem gráfica v10.0.36 mantém física e dá resposta ao combate',()=
   assert.equal(/@keyframes enemyAttackArc[\s\S]+?scale\(/.test(css),true);
 });
 
-check('vitória preserva a arena e encaixa o relatório no dock inferior',()=>{
-  for(const needle of ['victoryOverlayHome','victoryReportDock','mountVictoryOverlay','restoreVictoryOverlay','victory-arena-overlay','victory-docked','victory-celebration','victory-arena-state']) assert.ok(game.includes(needle)||css.includes(needle)||html.includes(needle),`${needle} ausente`);
+check('vitória preserva a arena e separa cabeçalho do relatório inferior',()=>{
+  for(const needle of ['victoryOverlayHome','victoryReportDock','mountVictoryOverlay','restoreVictoryOverlay','victoryArenaHeader','victoryTopIds','victoryNextStage','victory-arena-overlay','victory-docked','victory-celebration','victory-arena-state']) assert.ok(game.includes(needle)||css.includes(needle)||html.includes(needle),`${needle} ausente`);
   assert.match(html,/id="dungeonClearOverlay" role="dialog"/);
   assert.match(html,/id="victoryReportDock"/);
+  assert.match(html,/id="victoryArenaHeader"/);
   for(const id of ['victoryStars','victoryRank','victoryReport','victoryConfetti']) assert.match(html,new RegExp(`id="${id}"`));
   assert.match(game,/if\(id==='dungeonClearOverlay'\) mountVictoryOverlay\(\)/);
   assert.match(game,/arenaEl\.classList\.add\('victory-arena-state'\)/);
   assert.match(css,/#dungeonClearOverlay\.victory-arena-overlay\.victory-docked\{[\s\S]+?position:static!important/);
   assert.match(css,/#dungeonClearOverlay\.victory-arena-overlay \.battle-report/);
   assert.match(css,/\.game-frame\.victory-celebration \.combat-console\{[\s\S]+?display:none!important/);
+  assert.match(css,/\.arena\.victory-arena-state \.victory-arena-header\{/);
+  assert.match(game,/updateVictoryActionLabel\(\);/);
 });
 
 check('Torre usa cada encontro da campanha e invocações não bloqueiam heróis',()=>{
@@ -228,7 +231,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=10.0.36');
+  const deferredGame=html.indexOf('game-v10.js?v=10.0.37');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);

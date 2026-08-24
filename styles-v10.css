@@ -3674,3 +3674,45 @@ body.game-active .game-frame.victory-celebration .arena{
 .attack-gelo .attack-trail{height:7px;background:linear-gradient(90deg,transparent,#7e9ab5 32%,#fff 58%,transparent);filter:drop-shadow(0 0 6px #cfe4f5)}
 .attack-gelo .attack-contact{border:0;background:#f2f7fc;clip-path:polygon(50% 0,61% 35%,97% 25%,72% 50%,97% 75%,61% 65%,50% 100%,39% 65%,3% 75%,28% 50%,3% 25%,39% 35%);filter:drop-shadow(0 0 9px #cfe4f5)}
 @media (prefers-reduced-motion:reduce){.fx-attack-signature{display:none!important}}
+
+/* ===== v10.0.37 · cabeçalho de vitória no cenário ===== */
+/* Durante a comemoração, título, conquista e estrelas ocupam o topo da
+   própria arena; o dock fica deliberadamente reservado ao relatório. */
+.victory-arena-header{display:none}
+body.game-active .arena.victory-arena-state{position:relative;isolation:isolate}
+body.game-active .arena.victory-arena-state .victory-arena-header{
+  display:flex;position:absolute;top:clamp(58px,11%,92px);left:50%;transform:translateX(-50%);
+  width:min(92%,440px);padding:7px 12px 8px;flex-direction:column;align-items:center;
+  text-align:center;z-index:45;pointer-events:none;border:1px solid rgba(232,203,133,.58);
+  border-radius:12px;background:linear-gradient(180deg,rgba(12,7,21,.9),rgba(12,7,21,.58),transparent);
+  box-shadow:0 6px 18px rgba(0,0,0,.24),inset 0 1px rgba(255,255,255,.07);
+}
+body.game-active .arena.victory-arena-state .victory-arena-header h2{
+  margin:0;color:#f6e5a9;font-family:var(--font-display,Georgia,serif);font-size:clamp(17px,5vw,27px);
+  line-height:1.05;letter-spacing:.08em;text-shadow:0 2px 12px #000,0 0 18px rgba(255,219,108,.28);
+}
+body.game-active .arena.victory-arena-state .victory-arena-header>p:not(.victory-rank){
+  margin:3px auto 0;color:#f4e9d0;font-family:var(--font-display,Georgia,serif);font-size:clamp(9px,2.5vw,13px);
+  line-height:1.2;text-shadow:0 1px 5px #000;
+}
+body.game-active .arena.victory-arena-state .victory-arena-header .stage-stars{
+  display:flex;gap:clamp(7px,2vw,12px);margin:2px 0 0;font-size:clamp(24px,7vw,38px);line-height:.9;
+}
+body.game-active .arena.victory-arena-state .victory-arena-header .victory-rank{
+  margin:3px 0 0;color:#e7d8b1;font-size:clamp(9px,2.5vw,13px);letter-spacing:.08em;
+}
+body.game-active .arena.victory-arena-state>#victoryConfetti{
+  display:block!important;position:absolute!important;inset:0!important;z-index:42!important;pointer-events:none!important;
+}
+#dungeonClearOverlay.victory-arena-overlay.victory-docked .overlay-btn{
+  padding:5px 13px!important;margin-top:2px!important;font-size:9px!important;letter-spacing:.05em;
+  opacity:.9;box-shadow:0 2px 8px rgba(0,0,0,.32);
+}
+@media (max-width:600px){
+  body.game-active .arena.victory-arena-state .victory-arena-header{top:clamp(56px,10%,78px);padding:6px 9px 7px;width:92%}
+  body.game-active .arena.victory-arena-state .victory-arena-header h2{letter-spacing:.06em}
+  body.game-active .arena.victory-arena-state .victory-arena-header .stage-stars{font-size:29px}
+}
+@media (prefers-reduced-motion:reduce){
+  body.game-active .arena.victory-arena-state .victory-arena-header h2{animation:none!important}
+}
