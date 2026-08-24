@@ -2736,12 +2736,16 @@ function syncCerejeiraTacticalGrid(){
   const available=Boolean(worldRun.active&&Number(worldRun.fase)===0);
   const tool=document.getElementById('gridTool');
   const overlay=document.getElementById('cerejeiraTacticalGrid');
+  /* Física de perspectiva: a profundidade é uma propriedade da vaga no piso,
+     não uma animação do sprite. Toda unidade conserva os pés ancorados e só
+     recebe o porte correspondente à distância da câmera. */
+  arenaEl.classList.toggle('perspective-physics',document.body.classList.contains('game-active'));
   arenaEl.classList.toggle('cerejeira-grid-available',available);
   if(available){
     renderCerejeiraTacticalGrid();
     arenaEl.classList.add('tactical-grid');
     overlay?.setAttribute('aria-hidden','false');
-    requestAnimationFrame(renderCerejeiraTacticalGrid);
+    requestAnimationFrame(()=>{ renderCerejeiraTacticalGrid(); applyBattleFormation(); });
     if(tool){ tool.hidden=false; tool.disabled=false; }
     tool?.classList.add('active');
   }else{
@@ -2890,13 +2894,25 @@ function applyFormationSlot(unit,slot,width){
     yFin=yMin+prof*Math.max(0,yMax-yMin);
     if(enemySlot) yFin=Math.max(0,yFin-3); /* sobe o grupo e mantém distância do HUD */
   }
+  /* y=0 é a faixa mais próxima da câmera e y=46 a mais distante. A curva
+     linear evita qualquer pulsação corporal: ao trocar de posição, largura,
+     sombra e camada passam juntas para o novo valor de profundidade. */
+  const depth=Math.max(0,Math.min(1,y/46));
+  const perspective=arenaBox?.classList.contains('perspective-physics')===true;
+  const depthScale=perspective?(1-depth*.28):1;
+  const shadowScale=perspective?(1-depth*.24):1;
+  const shadowOpacity=perspective?(1-depth*.34):1;
+  unit.dataset.depth=depth.toFixed(3);
+  unit.dataset.depthScale=depthScale.toFixed(3);
   unit.style.setProperty('--slot-x',x+'%');
   unit.style.setProperty('--slot-y',yFin+'%');
   /* nitidez: a escala é aplicada na LARGURA (layout) — o navegador rasteriza o sprite
      no tamanho final em vez de ampliar um raster menor (que ficava embaçado) */
   unit.style.setProperty('--slot-scale','1');
   unit.style.setProperty('--slot-z',String(slot.z));
-  unit.style.setProperty('--slot-w',Math.round(w*s)+'px');
+  unit.style.setProperty('--depth-shadow-scale',shadowScale.toFixed(3));
+  unit.style.setProperty('--depth-shadow-opacity',shadowOpacity.toFixed(3));
+  unit.style.setProperty('--slot-w',Math.round(w*s*depthScale)+'px');
 }
 /* Reaplica a formação ao girar/redimensionar a tela durante a batalha */
 let formResizeTimer=null;

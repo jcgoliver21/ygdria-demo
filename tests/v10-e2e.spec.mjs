@@ -87,6 +87,25 @@ test('v13 mostra o grid físico numerado somente na Cidade das Cerejeiras',async
   expect(errors).toEqual([]);
 });
 
+test('física de perspectiva reduz apenas unidades distantes e mantém os pés ancorados',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.setViewportSize({width:390,height:844});
+  await page.evaluate(()=>{ worldRun.active=true; worldRun.fase=0; worldRun.nivel=1; chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
+  const probe=await page.evaluate(()=>{
+    const units=[...document.querySelectorAll('.party-row .hero-unit')].map(unit=>({
+      depth:Number(unit.dataset.depth), width:Number.parseFloat(getComputedStyle(unit).getPropertyValue('--slot-w')),
+      bottom:Number.parseFloat(getComputedStyle(unit).getPropertyValue('--slot-y')),
+      shadow:Number.parseFloat(getComputedStyle(unit).getPropertyValue('--depth-shadow-scale'))
+    })).sort((a,b)=>a.depth-b.depth);
+    return {physics:document.getElementById('arena')?.classList.contains('perspective-physics'),near:units[0],far:units.at(-1)};
+  });
+  expect(probe.physics).toBe(true);
+  expect(probe.near.depth).toBeLessThan(probe.far.depth);
+  expect(probe.near.width).toBeGreaterThan(probe.far.width);
+  expect(probe.near.shadow).toBeGreaterThan(probe.far.shadow);
+  expect(errors).toEqual([]);
+});
+
 test('v10.0.1 restaura escala e anima inimigos-personagem e inimigos comuns',async({page})=>{
   const errors=await boot(page,'flow');
   await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
@@ -1023,7 +1042,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.45');
+  expect(registration.caches).toContain('12r-v10.0.46');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1183,7 +1202,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.45');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.46');
 
     // Produção não expõe __12rQA: este trecho percorre somente controles reais.
     if(await page.locator('#introScreen').isVisible()) await page.locator('#introNext').click();
