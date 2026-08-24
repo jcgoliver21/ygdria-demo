@@ -2700,19 +2700,34 @@ function useQueuedActive(idx,a){
 }
 
 function renderCerejeiraTacticalGrid(){
-  const heroGrid=document.getElementById('heroTacticalGrid');
-  const enemyGrid=document.getElementById('enemyTacticalGrid');
-  if(!heroGrid||!enemyGrid) return;
-  if(heroGrid.childElementCount!==12){
-    heroGrid.innerHTML=Array.from({length:12},(_,i)=>{
+  const grid=document.getElementById('physicalFloorGrid');
+  const battleRow=arenaEl?.querySelector('.battle-row');
+  if(!grid||!battleRow||!arenaEl) return;
+  const arenaRect=arenaEl.getBoundingClientRect();
+  const rowRect=battleRow.getBoundingClientRect();
+  if(arenaRect.height<40||rowRect.width<40||rowRect.height<40) return;
+  const {top,bot:bottom}=groundBand();
+  const rowTop=rowRect.top-arenaRect.top;
+  const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
+  const floorTop=clamp((arenaRect.height*top-rowTop)/rowRect.height,0,.92);
+  const floorBottom=clamp((arenaRect.height*bottom-rowTop)/rowRect.height,floorTop+.08,1);
+  const floorHeight=(floorBottom-floorTop)*rowRect.height;
+  const targetCell=window.innerWidth<=600?44:58;
+  const columns=Math.max(6,Math.floor(rowRect.width/targetCell));
+  const cell=Math.max(24,Math.floor(rowRect.width/columns));
+  const rows=Math.max(1,Math.floor(floorHeight/cell));
+  const count=columns*rows;
+  const signature=`${columns}:${rows}:${cell}:${floorTop.toFixed(3)}:${floorBottom.toFixed(3)}`;
+  grid.style.setProperty('--floor-top',`${(floorTop*100).toFixed(2)}%`);
+  grid.style.setProperty('--floor-bottom',`${((1-floorBottom)*100).toFixed(2)}%`);
+  grid.style.setProperty('--floor-cell',`${cell}px`);
+  grid.style.setProperty('--floor-columns',String(columns));
+  grid.style.setProperty('--floor-rows',String(rows));
+  if(grid.dataset.signature!==signature){
+    grid.dataset.signature=signature;
+    grid.innerHTML=Array.from({length:count},(_,i)=>{
       const label=String(i+1).padStart(2,'0');
-      return `<span class="arena-grid-cell" data-grid-side="heroes" data-grid-slot="${label}" aria-label="Casa dos heróis ${label}"><small>H</small>${label}</span>`;
-    }).join('');
-  }
-  if(enemyGrid.childElementCount!==6){
-    enemyGrid.innerHTML=Array.from({length:6},(_,i)=>{
-      const label=`E${String(i+1).padStart(2,'0')}`;
-      return `<span class="arena-grid-cell" data-grid-side="enemies" data-grid-slot="${label}" aria-label="Casa dos inimigos ${label}">${label}</span>`;
+      return `<span class="physical-floor-cell" data-grid-slot="${label}" aria-label="Casa de solo ${label}">${label}</span>`;
     }).join('');
   }
 }
@@ -2726,6 +2741,7 @@ function syncCerejeiraTacticalGrid(){
     renderCerejeiraTacticalGrid();
     arenaEl.classList.add('tactical-grid');
     overlay?.setAttribute('aria-hidden','false');
+    requestAnimationFrame(renderCerejeiraTacticalGrid);
     if(tool){ tool.hidden=false; tool.disabled=false; }
     tool?.classList.add('active');
   }else{
@@ -2886,7 +2902,10 @@ function applyFormationSlot(unit,slot,width){
 let formResizeTimer=null;
 window.addEventListener('resize',()=>{
   clearTimeout(formResizeTimer);
-  formResizeTimer=setTimeout(()=>{ if(partyArenaEl&&partyArenaEl.children.length) applyBattleFormation(); },220);
+  formResizeTimer=setTimeout(()=>{
+    if(partyArenaEl&&partyArenaEl.children.length) applyBattleFormation();
+    if(arenaEl?.classList.contains('cerejeira-grid-available')) renderCerejeiraTacticalGrid();
+  },220);
 });
 
 function toggleBattleTools(force){

@@ -75,15 +75,15 @@ test('v13 mostra o grid físico numerado somente na Cidade das Cerejeiras',async
   const grid=await page.evaluate(()=>({
     available:document.getElementById('arena')?.classList.contains('cerejeira-grid-available'),
     active:document.getElementById('arena')?.classList.contains('tactical-grid'),
-    heroes:document.querySelectorAll('#heroTacticalGrid .arena-grid-cell').length,
-    enemies:document.querySelectorAll('#enemyTacticalGrid .arena-grid-cell').length,
-    heroLabels:[...document.querySelectorAll('#heroTacticalGrid .arena-grid-cell')].map(el=>el.dataset.gridSlot),
-    enemyLabels:[...document.querySelectorAll('#enemyTacticalGrid .arena-grid-cell')].map(el=>el.dataset.gridSlot),
-       heroCell:[...document.querySelectorAll('#heroTacticalGrid .arena-grid-cell')][0] ? (()=>{ const el=[...document.querySelectorAll('#heroTacticalGrid .arena-grid-cell')][0]; const rect=el.getBoundingClientRect(); return {width:rect.width,height:rect.height,offsetWidth:el.offsetWidth,offsetHeight:el.offsetHeight,computedWidth:getComputedStyle(el).width,computedHeight:getComputedStyle(el).height}; })() : null
+    cells:document.querySelectorAll('#physicalFloorGrid .physical-floor-cell').length,
+    labels:[...document.querySelectorAll('#physicalFloorGrid .physical-floor-cell')].map(el=>el.dataset.gridSlot),
+    floorCell:[...document.querySelectorAll('#physicalFloorGrid .physical-floor-cell')][0] ? (()=>{ const el=[...document.querySelectorAll('#physicalFloorGrid .physical-floor-cell')][0]; const rect=el.getBoundingClientRect(); return {width:rect.width,height:rect.height,offsetWidth:el.offsetWidth,offsetHeight:el.offsetHeight,computedWidth:getComputedStyle(el).width,computedHeight:getComputedStyle(el).height}; })() : null
   }));
-  expect(grid).toMatchObject({available:true,active:true,heroes:12,enemies:6,heroLabels:['01','02','03','04','05','06','07','08','09','10','11','12'],enemyLabels:['E01','E02','E03','E04','E05','E06']});
-     expect(grid.heroCell.offsetWidth).toBe(grid.heroCell.offsetHeight);
-     expect(grid.heroCell.computedWidth).toBe(grid.heroCell.computedHeight);
+  expect(grid).toMatchObject({available:true,active:true});
+  expect(grid.cells).toBeGreaterThan(24);
+  expect(grid.labels[0]).toBe('01');
+  expect(grid.floorCell.offsetWidth).toBe(grid.floorCell.offsetHeight);
+  expect(grid.floorCell.computedWidth).toBe(grid.floorCell.computedHeight);
   expect(errors).toEqual([]);
 });
 
@@ -1023,7 +1023,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.42');
+  expect(registration.caches).toContain('12r-v10.0.43');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1183,7 +1183,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.42');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.43');
 
     // Produção não expõe __12rQA: este trecho percorre somente controles reais.
     if(await page.locator('#introScreen').isVisible()) await page.locator('#introNext').click();

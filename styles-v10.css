@@ -3749,19 +3749,10 @@ body.game-active .battle-tools-panel{z-index:220!important}
   body.game-active .enemy-row .unit-stage{height:102px!important}
 }
 
-/* v13 · grid físico exclusivo da Cidade das Cerejeiras. Cada célula nasce
-   quadrada; a perspectiva é aplicada ao plano inteiro para acompanhar o
-   piso, sem transformar a posição lógica em um retângulo. */
-.cerejeira-tactical-grid{display:none;position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden;--grid-cell:clamp(34px,16vw,72px)}
+/* v13 · malha de solo exclusiva da Cidade das Cerejeiras. A faixa é medida
+   da mesma banda física usada pelos pés; não existem vagas artificiais. */
+.cerejeira-tactical-grid{display:none;position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden}
 .arena.cerejeira-grid-available.tactical-grid .cerejeira-tactical-grid{display:block}
-.arena-grid-zone{position:absolute;display:grid;gap:clamp(4px,1vw,8px);transform-origin:50% 100%;transform:perspective(780px) rotateX(56deg);transform-style:preserve-3d;filter:drop-shadow(0 3px 5px rgba(0,0,0,.35))}
-.hero-grid-zone{left:1%;top:4%;grid-template-columns:repeat(3,var(--grid-cell));grid-template-rows:repeat(4,var(--grid-cell))}
-.enemy-grid-zone{right:1%;top:8%;grid-template-columns:repeat(2,var(--grid-cell));grid-template-rows:repeat(3,var(--grid-cell));transform:perspective(780px) rotateX(56deg)}
-.arena-grid-cell{width:var(--grid-cell);height:var(--grid-cell);aspect-ratio:1 / 1;display:grid;place-items:center;border:1px solid rgba(255,226,143,.78);border-radius:5px;background:linear-gradient(145deg,rgba(255,238,174,.23),rgba(94,177,255,.14) 55%,rgba(8,5,18,.42));box-shadow:inset 0 0 10px rgba(255,239,182,.1),0 0 0 1px rgba(8,4,15,.62);color:#fff0b5;font:800 clamp(9px,2.2vw,14px)/1 system-ui,sans-serif;text-shadow:0 1px 3px #000;backface-visibility:hidden}
-.enemy-grid-zone .arena-grid-cell{border-color:rgba(255,151,132,.76);background:linear-gradient(145deg,rgba(255,175,149,.2),rgba(255,86,105,.11) 55%,rgba(8,5,18,.36));color:#ffd0b8}
-.arena-grid-cell small{font-size:.66em;letter-spacing:.05em;opacity:.78}
-@media (max-width:600px){
-     .cerejeira-tactical-grid{--grid-cell:clamp(31px,16vw,62px)}
-     .arena-grid-zone{gap:4px}
-}
-@media (prefers-reduced-motion:reduce){.arena-grid-zone{transition:none!important}}
+.physical-floor-grid{position:absolute;left:0;right:0;top:var(--floor-top,42%);bottom:var(--floor-bottom,0);display:grid;grid-template-columns:repeat(var(--floor-columns,8),var(--floor-cell,44px));grid-template-rows:repeat(var(--floor-rows,5),var(--floor-cell,44px));align-content:start;justify-content:start;overflow:hidden;transform-origin:50% 0;transform:perspective(1600px) rotateX(12deg) scaleY(1.04);transform-style:preserve-3d;filter:drop-shadow(0 3px 5px rgba(0,0,0,.35));background-image:linear-gradient(90deg,rgba(161,222,255,.24) 1px,transparent 1px),linear-gradient(rgba(161,222,255,.20) 1px,transparent 1px);background-size:var(--floor-cell,44px) var(--floor-cell,44px);background-position:0 0;box-shadow:inset 0 0 34px rgba(133,211,255,.12)}
+.physical-floor-cell{box-sizing:border-box;width:var(--floor-cell,44px);height:var(--floor-cell,44px);aspect-ratio:1 / 1;display:grid;place-items:center;border:1px solid rgba(255,226,143,.74);background:linear-gradient(145deg,rgba(255,238,174,.17),rgba(94,177,255,.08) 55%,rgba(8,5,18,.2));color:#fff0b5;font:800 clamp(8px,1.8vw,13px)/1 system-ui,sans-serif;text-shadow:0 1px 3px #000;backface-visibility:hidden}
+@media (prefers-reduced-motion:reduce){.physical-floor-grid{transition:none!important}}
