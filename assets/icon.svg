@@ -1,18 +1,34 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Estrela dos 12 Reinos</title>
+  <desc id="desc">Estrela de doze pontas, uma cor para cada mundo de Ygdria.</desc>
   <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#f6e6b4"/><stop offset=".5" stop-color="#d4af5a"/><stop offset="1" stop-color="#8a6a1f"/>
-    </linearGradient>
-    <radialGradient id="bg" cx="50%" cy="35%" r="80%">
-      <stop offset="0" stop-color="#2c2140"/><stop offset="1" stop-color="#0b0714"/>
+    <radialGradient id="bg" cx="50%" cy="38%" r="78%">
+      <stop offset="0" stop-color="#30234a"/><stop offset="1" stop-color="#08050f"/>
     </radialGradient>
+    <radialGradient id="core" cx="35%" cy="28%" r="80%">
+      <stop offset="0" stop-color="#fff8d5"/><stop offset=".5" stop-color="#d4af5a"/><stop offset="1" stop-color="#76541a"/>
+    </radialGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="6" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
   </defs>
   <rect width="512" height="512" rx="96" fill="url(#bg)"/>
-  <rect x="20" y="20" width="472" height="472" rx="80" fill="none" stroke="url(#g)" stroke-width="12"/>
-  <polygon points="256,84 322,196 256,168 190,196" fill="url(#g)"/>
-  <polygon points="256,428 322,316 256,344 190,316" fill="url(#g)" opacity=".85"/>
-  <polygon points="84,256 196,190 168,256 196,322" fill="url(#g)" opacity=".85"/>
-  <polygon points="428,256 316,190 344,256 316,322" fill="url(#g)" opacity=".85"/>
-  <circle cx="256" cy="256" r="58" fill="none" stroke="url(#g)" stroke-width="10"/>
-  <text x="256" y="278" font-family="Georgia,serif" font-size="64" font-weight="bold" text-anchor="middle" fill="url(#g)">12</text>
+  <circle cx="256" cy="256" r="205" fill="none" stroke="#d4af5a" stroke-opacity=".34" stroke-width="3"/>
+  <g filter="url(#glow)" stroke="#fff8dc" stroke-opacity=".42" stroke-width="2" stroke-linejoin="round">
+    <path d="M256 28 274 190 256 170 238 190Z" fill="#eef2f8"/>
+    <path d="M256 28 274 190 256 170 238 190Z" fill="#ff6fa5" transform="rotate(30 256 256)"/>
+    <path d="M256 28 274 190 256 170 238 190Z" fill="#174ea6" transform="rotate(60 256 256)"/>
+    <path d="M256 28 274 190 256 170 238 190Z" fill="#d52232" transform="rotate(90 256 256)"/>
+    <path d="M256 28 274 190 256 170 238 190Z" fill="#2f9f45" transform="rotate(120 256 256)"/>
+    <path d="M256 28 274 190 256 170 238 190Z" fill="#8b5a2b" transform="rotate(150 256 256)"/>
+    <path d="M256 28 274 190 256 170 238 190Z" fill="#d69a20" transform="rotate(180 256 256)"/>
+    <path d="M256 28 274 190 256 170 238 190Z" fill="#7650a8" transform="rotate(210 256 256)"/>
+    <path d="M256 28 274 190 256 170 238 190Z" fill="#6cb8e8" transform="rotate(240 256 256)"/>
+    <path d="M256 28 274 190 256 170 238 190Z" fill="#ffc42e" transform="rotate(270 256 256)"/>
+    <path d="M256 28 274 190 256 170 238 190Z" fill="#a5e9ff" transform="rotate(300 256 256)"/>
+    <path d="M256 28 274 190 256 170 238 190Z" fill="#8f9fb5" transform="rotate(330 256 256)"/>
+  </g>
+  <circle cx="256" cy="256" r="76" fill="#0d0818" stroke="url(#core)" stroke-width="9"/>
+  <circle cx="256" cy="256" r="59" fill="url(#core)" opacity=".92"/>
+  <text x="256" y="278" font-family="Georgia,serif" font-size="56" font-weight="bold" text-anchor="middle" fill="#160d24">12</text>
 </svg>

@@ -2670,6 +2670,7 @@ h1.maintitle{ display:none; }
   backdrop-filter:blur(10px) saturate(1.05);
 }
 .menu-card::before{ inset:6px; border:1px double rgba(212,175,90,.28); border-radius:19px; }
+.game-logo{display:block;width:clamp(64px,18vw,92px);height:auto;margin:4px auto 2px;filter:drop-shadow(0 0 14px rgba(212,175,90,.38));}
 /* Título caprichado: ourivesaria */
 .menu-title{
   margin:2px 0 0; font-family:'Cinzel',Georgia,serif; font-size:clamp(36px,9vw,58px);
@@ -3740,3 +3741,10 @@ body.game-active .arena.victory-arena-state>#victoryConfetti{
 body.game-active .battle-tools-panel{z-index:220!important}
 .ach-toast{pointer-events:none!important}
 @media (prefers-reduced-motion:reduce){.hero-select-arrow{transition:none!important}}
+
+/* v12 · escala mobile: o palco continua legível sem fazer o elenco ocupar
+   toda a altura da arena. Desktop preserva a composição aprovada. */
+@media (max-width:600px){
+  body.game-active .party-row .unit-stage{height:106px!important}
+  body.game-active .enemy-row .unit-stage{height:102px!important}
+}

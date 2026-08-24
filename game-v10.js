@@ -1973,16 +1973,41 @@ const HERO_ACTIONS = Object.freeze({
   defeat:  { frames:4, cols:2, rows:2, duration:900, loop:false, holdLast:true }
 });
 
-/* v10.0.28 · A escala corporal do personagem é separada da correção técnica
-   de cada folha. O manifesto já traz a compensação auditada de cada pose para
-   que o corpo preserve a mesma leitura de pés e olhos entre ações. */
+/* Física das folhas: razão entre a altura média do corpo em idle e a altura
+   média do corpo na ação. Os PNGs continuam intactos; esta compensação só
+   impede que uma folha com recorte mais alto faça o personagem crescer. */
+const ACTION_PHYSICS_SCALE=Object.freeze({
+  'acqua-jovem':{attack:.9225,cast:1.0166,hit:.8122,victory:.9907},
+  'adriel-jovem':{attack:1.0705,cast:1.0202,hit:1.052,victory:1.0698},
+  agua:{attack:1.1354,cast:1.0969,hit:1.1141,victory:.9986},
+  areia:{attack:1.1185,cast:1.1088,hit:1.0906,victory:1.0619},
+  'berenice-jovem':{attack:1.0189,cast:.9866,hit:1.0305,victory:.9558},
+  bernyce:{attack:1.0533,cast:1.0513,hit:.9535,victory:1.0528},
+  cedric:{attack:1.181,cast:1.0509,hit:1.0636,victory:.9949},
+  chuvas:{attack:1.0276,cast:1.1576,hit:1.2392,victory:1.0127},
+  elizier:{attack:1.0883,cast:1.0182,hit:1.2138,victory:1.0122},
+  fogo:{attack:.8082,cast:1.0251,hit:.9168,victory:.9861},
+  'galateia-jovem':{attack:.9949,cast:.8945,hit:1,victory:1.0245},
+  gareth:{attack:1.1124,cast:1.0235,hit:1.0364,victory:1.0015},
+  gelo:{attack:1.2691,cast:1.3377,hit:1.295,victory:1.1137},
+  humanos:{attack:.8051,cast:.793,hit:1.0635,victory:1.0461},
+  jules:{attack:1.0408,cast:1.0519,hit:1.0679,victory:1.084},
+  julius:{attack:1.3859,cast:1.4119,hit:1.1239,victory:1.004},
+  kalander:{attack:1.0966,cast:1.0195,hit:1.0691,victory:1.0594},
+  luz:{attack:.9188,cast:.8897,hit:.9762,victory:.969},
+  natureza:{attack:1.2738,cast:.9755,hit:.9357,victory:.8977},
+  raio:{attack:1.1008,cast:1.2705,hit:1.2811,victory:.9571},
+  roland:{attack:1.0894,cast:.9983,hit:1.1437,victory:.911},
+  sombras:{attack:.8632,cast:.8586,hit:.9939,victory:.969},
+  terra:{attack:1.0619,cast:.8429,hit:1.0292,victory:1.016},
+  vento:{attack:.8575,cast:1.0071,hit:1.1625,victory:1.0579}
+});
 function normalizedActionDisplayScale(character,action,displayScale){
   const idleScale=Number(character?.sprites?.idle?.displayScale);
   const fallback=Number(displayScale||1);
-  const actionScale=Number(displayScale);
-  const fixed=Number.isFinite(actionScale)&&actionScale>0
-    ? actionScale
-    : (Number.isFinite(idleScale)&&idleScale>0?idleScale:(Number.isFinite(fallback)&&fallback>0?fallback:1));
+  const base=Number.isFinite(idleScale)&&idleScale>0?idleScale:(Number.isFinite(fallback)&&fallback>0?fallback:1);
+  const physics=Number(ACTION_PHYSICS_SCALE[character?.id]?.[action]||1);
+  const fixed=base*physics;
   return Number(fixed.toFixed(4));
 }
 const MAX_ACTIVE_FX = 28;
@@ -7242,12 +7267,19 @@ function scheduleHeroSelectionArrows(){
       const arrow=document.getElementById('hero-select-'+id);
       if(!arrow) return;
       const avatar=unit.querySelector('.avatar-circle')||unit;
-      const rect=avatar.getBoundingClientRect();
+      /* Usa o retângulo visual já transformado, não a caixa do avatar. Isso
+         mantém a seta presa ao topo real também em cartas jovens ou folhas
+         cuja escala corporal ultrapassa a caixa de layout. */
+      const visual=unit.querySelector('.hero-sprite-sheet,.hero-sprite-image')||avatar;
+      const rect=visual.getBoundingClientRect();
       const desiredLeft=rect.left-rowRect.left+rect.width/2;
       /* A ponta encosta no topo visual do sprite, não no topo do contêiner
          que também abriga nome e barra de vida. */
       const arrowWidth=30,arrowHeight=24;
-      const desiredTop=Math.max(2,rect.top-rowRect.top-arrowHeight+2);
+      /* Mantém uma folga real entre a ponta da seta e o topo visual do
+         personagem; ela não pode encostar nem ser confundida com cabelo,
+         asa ou equipamento alto. */
+      const desiredTop=Math.max(2,rect.top-rowRect.top-arrowHeight-4);
       const candidates=[0,-16,16,-32,32,-48,48].map(offset=>desiredLeft+offset);
       let chosenLeft=candidates[0];
       for(const candidate of candidates){
