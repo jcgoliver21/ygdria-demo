@@ -77,10 +77,15 @@ test('v13 mostra o grid físico numerado somente na Cidade das Cerejeiras',async
     active:document.getElementById('arena')?.classList.contains('tactical-grid'),
     cells:document.querySelectorAll('#physicalFloorGrid .physical-floor-cell').length,
     labels:[...document.querySelectorAll('#physicalFloorGrid .physical-floor-cell')].map(el=>el.dataset.gridSlot),
+    rows:document.querySelectorAll('#physicalFloorGrid .physical-floor-row').length,
+    largestFootprint:Number(document.getElementById('physicalFloorGrid')?.dataset.largestFootprint),
+    baseCell:Number(document.getElementById('physicalFloorGrid')?.dataset.baseCell),
     floorCell:[...document.querySelectorAll('#physicalFloorGrid .physical-floor-cell')][0] ? (()=>{ const el=[...document.querySelectorAll('#physicalFloorGrid .physical-floor-cell')][0]; const rect=el.getBoundingClientRect(); return {width:rect.width,height:rect.height,offsetWidth:el.offsetWidth,offsetHeight:el.offsetHeight,computedWidth:getComputedStyle(el).width,computedHeight:getComputedStyle(el).height}; })() : null
   }));
   expect(grid).toMatchObject({available:true,active:true});
-  expect(grid.cells).toBeGreaterThan(24);
+  expect(grid.cells).toBeGreaterThanOrEqual(6);
+  expect(grid.rows).toBeGreaterThanOrEqual(2);
+  expect(grid.baseCell).toBeGreaterThanOrEqual(grid.largestFootprint*.9);
   expect(grid.labels[0]).toBe('01');
   expect(grid.floorCell.offsetWidth).toBe(grid.floorCell.offsetHeight);
   expect(grid.floorCell.computedWidth).toBe(grid.floorCell.computedHeight);
@@ -1023,7 +1028,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.43');
+  expect(registration.caches).toContain('12r-v10.0.44');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1183,7 +1188,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.43');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.44');
 
     // Produção não expõe __12rQA: este trecho percorre somente controles reais.
     if(await page.locator('#introScreen').isVisible()) await page.locator('#introNext').click();
