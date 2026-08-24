@@ -87,6 +87,34 @@ test('v13 mostra o grid físico numerado somente na Cidade das Cerejeiras',async
   expect(errors).toEqual([]);
 });
 
+test('grade inimiga usa três por três e segue as formações canônicas',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.setViewportSize({width:390,height:844});
+  await page.evaluate(()=>{ worldRun.active=true; worldRun.fase=0; worldRun.nivel=1; chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
+  const probe=await page.evaluate(()=>({
+    activeCells:[...document.querySelectorAll('#physicalFloorGrid .enemy-grid-cell')].map(cell=>cell.dataset.gridSlot),
+    retiredCells:document.querySelectorAll('#physicalFloorGrid .enemy-grid-retired').length,
+    singleEnemy:{column:document.querySelector('.enemy-unit')?.dataset.gridColumn,row:document.querySelector('.enemy-unit')?.dataset.gridRow},
+    plans:window.__12rQA.enemyGridPlanProbe()
+  }));
+  expect(probe.activeCells).toEqual(['07','08','09','16','17','18','25','26','27']);
+  expect(probe.retiredCells).toBe(3);
+  expect(probe.singleEnemy).toEqual({column:'1',row:'2'});
+  expect(probe.plans.normal).toEqual([
+    [{column:1,row:2,boss:false}],
+    [{column:1,row:2,boss:false},{column:2,row:1,boss:false}],
+    [{column:1,row:2,boss:false},{column:2,row:1,boss:false},{column:2,row:3,boss:false}],
+    [{column:1,row:2,boss:false},{column:2,row:1,boss:false},{column:2,row:3,boss:false},{column:2,row:2,boss:false}]
+  ]);
+  expect(probe.plans.bosses).toEqual([
+    [{column:1,row:2,boss:true}],
+    [{column:1,row:1,boss:false},{column:2,row:2,boss:true}],
+    [{column:1,row:1,boss:false},{column:1,row:2,boss:false},{column:2,row:2,boss:true}],
+    [{column:1,row:1,boss:false},{column:1,row:2,boss:false},{column:1,row:3,boss:false},{column:2,row:2,boss:true}]
+  ]);
+  expect(errors).toEqual([]);
+});
+
 test('física de perspectiva reduz apenas unidades distantes e mantém os pés ancorados',async({page})=>{
   const errors=await boot(page,'flow');
   await page.setViewportSize({width:390,height:844});
@@ -1050,7 +1078,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.47');
+  expect(registration.caches).toContain('12r-v10.0.48');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1210,7 +1238,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.47');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.48');
 
     // Produção não expõe __12rQA: este trecho percorre somente controles reais.
     if(await page.locator('#introScreen').isVisible()) await page.locator('#introNext').click();

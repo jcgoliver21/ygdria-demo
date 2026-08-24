@@ -1683,6 +1683,44 @@ const SCENE_ENEMY_FORMATIONS = [
   {3:[{x:54,y:40,s:.9,z:19},{x:75,y:34,s:.94,z:25},{x:92,y:24,s:1.08,z:38}]},
   {3:[{x:54,y:40,s:.88,z:19},{x:75,y:34,s:.92,z:25},{x:92,y:24,s:1.12,z:38}]}
 ];
+/* Grade inimiga 3×3. Linha 1 está mais distante (menor), Linha 3 mais próxima
+   (maior). A terceira coluna fica livre para a leitura/ataques, mas é uma vaga
+   válida para expansões futuras. */
+const ENEMY_GRID_COORDS={
+  1:{y:42,z:18},
+  2:{y:22,z:34},
+  3:{y:4,z:46}
+};
+const ENEMY_GRID_X={1:73,2:84,3:94};
+const ENEMY_GRID_NORMAL=[[1,2],[2,1],[2,3],[2,2]];
+function enemyGridSlot(column,row,isBoss=false){
+  const coord=ENEMY_GRID_COORDS[row]||ENEMY_GRID_COORDS[2];
+  return {x:ENEMY_GRID_X[column]||ENEMY_GRID_X[2],y:coord.y,s:1,z:coord.z,grid:{column,row},isBoss};
+}
+function enemyMissionHasBoss(list=enemies){
+  return Boolean(list.some(enemy=>enemy?.isBoss===true)||bossRushMode||(worldRun?.active&&worldRun.nivel===5));
+}
+function planEnemyGridSlots(list=enemies,bossMission=enemyMissionHasBoss(list)){
+  const count=Math.min(4,list.length);
+  const plan=Array.from({length:count});
+  let bossIndex=list.findIndex(enemy=>enemy?.isBoss===true);
+  if(bossIndex<0&&bossMission) bossIndex=count-1;
+  if(bossIndex<0){
+    ENEMY_GRID_NORMAL.slice(0,count).forEach(([column,row],index)=>{ plan[index]=enemyGridSlot(column,row); });
+    return plan;
+  }
+  const bossPosition=count===1?[1,2]:[2,2];
+  plan[bossIndex]=enemyGridSlot(bossPosition[0],bossPosition[1],true);
+  /* Chefe +3: o terceiro acompanhante completa a coluna 1 na Linha 2,
+     posição necessária para totalizar os quatro inimigos especificados. */
+  const escorts=count===2?[[1,1]]:count===3?[[1,1],[1,2]]:[[1,1],[1,2],[1,3]];
+  list.slice(0,count).forEach((_,index)=>{
+    if(index===bossIndex) return;
+    const [column,row]=escorts.shift()||[3,2];
+    plan[index]=enemyGridSlot(column,row);
+  });
+  return plan;
+}
 
 /* v10: o manifesto visual fica separado dos dados de gameplay. Assim cada
    movimento pode ser carregado sob demanda sem duplicar ou alterar cartas. */
@@ -2712,10 +2750,12 @@ function renderCerejeiraTacticalGrid(){
   const floorTop=clamp((arenaRect.height*top-rowTop)/rowRect.height,0,.92);
   const floorBottom=clamp((arenaRect.height*bottom-rowTop)/rowRect.height,floorTop+.08,1);
   const floorHeight=(floorBottom-floorTop)*rowRect.height;
-  const targetCell=window.innerWidth<=600?44:58;
-  const columns=Math.max(6,Math.floor(rowRect.width/targetCell));
+  /* Grade tática canônica: seis colunas de heróis e três de inimigos. O setor
+     inimigo encerra na terceira linha (7–9, 16–18, 25–27); 34–36 deixam de
+     ser vagas de combate para a formação nunca avançar sobre o HUD. */
+  const columns=9;
+  const rows=4;
   const cell=Math.max(24,Math.floor(rowRect.width/columns));
-  const rows=Math.max(1,Math.floor(floorHeight/cell));
   const count=columns*rows;
   const signature=`${columns}:${rows}:${cell}:${floorTop.toFixed(3)}:${floorBottom.toFixed(3)}`;
   grid.style.setProperty('--floor-top',`${(floorTop*100).toFixed(2)}%`);
@@ -2726,8 +2766,17 @@ function renderCerejeiraTacticalGrid(){
   if(grid.dataset.signature!==signature){
     grid.dataset.signature=signature;
     grid.innerHTML=Array.from({length:count},(_,i)=>{
+      const row=Math.floor(i/columns)+1;
+      const column=i%columns+1;
       const label=String(i+1).padStart(2,'0');
-      return `<span class="physical-floor-cell" data-grid-slot="${label}" aria-label="Casa de solo ${label}">${label}</span>`;
+      const enemyColumn=column-(columns-3);
+      const enemyCell=enemyColumn>=1&&row<=3;
+      const retiredEnemyCell=enemyColumn>=1&&row>3;
+      const classes=['physical-floor-cell'];
+      if(enemyCell) classes.push('enemy-grid-cell');
+      if(retiredEnemyCell) classes.push('enemy-grid-retired');
+      const side=enemyCell?'enemy':'party';
+      return `<span class="${classes.join(' ')}" data-grid-slot="${label}" data-grid-side="${side}" data-grid-column="${enemyCell?enemyColumn:column}" data-grid-row="${row}" aria-label="Casa de solo ${label}">${retiredEnemyCell?'':label}</span>`;
     }).join('');
   }
 }
@@ -2830,18 +2879,12 @@ function applyBattleFormation(){
     const offset=harpyOffsets[i%harpyOffsets.length];
     applyFormationSlot(unit,{x:Math.max(4,Math.min(96,sophSlot.x+offset.x)),y:sophSlot.y+offset.y,s:offset.s,z:sophSlot.z-5+i},48);
   });
-  const enemySlots=SCENE_ENEMY_FORMATIONS[stageIndex]?.[enemies.length]||ENEMY_FORMATIONS[Math.min(4,Math.max(1,enemies.length))]||ENEMY_FORMATIONS[1];
+  const enemySlots=planEnemyGridSlots();
   [...enemyArenaEl.children].forEach((unit,i)=>{
     const enemy=enemies[i];
     const slot={...(enemySlots[i]||enemySlots[enemySlots.length-1])};
-    const isBoss=enemy?.isBoss===true || i===enemies.length-1;
+    const isBoss=slot.isBoss===true;
     if(isBoss&&!enemy?.isCard) slot.s*=1.16;
-    /* Grupos ficam mais separados horizontalmente e em profundidades distintas;
-       isso evita que nomes, barras e sprites ocupem a mesma área. */
-    if(enemies.length>=3){ slot.x=Math.max(64,Math.min(94,slot.x)); }
-    /* O chefe fica sempre em segundo plano; assim nome/vida não encostam na
-       barra de informações e os demais inimigos conservam leitura própria. */
-    if(isBoss&&enemies.length>1){ slot.y=Math.max(20,slot.y); slot.z+=6; }
     applyFormationSlot(unit,slot,enemy?.isCard?112:(isBoss?116:112));
   });
 }
@@ -2904,6 +2947,13 @@ function applyFormationSlot(unit,slot,width){
   const shadowOpacity=perspective?(1-depth*.34):1;
   unit.dataset.depth=depth.toFixed(3);
   unit.dataset.depthScale=depthScale.toFixed(3);
+  if(slot.grid){
+    unit.dataset.gridColumn=String(slot.grid.column);
+    unit.dataset.gridRow=String(slot.grid.row);
+  }else{
+    delete unit.dataset.gridColumn;
+    delete unit.dataset.gridRow;
+  }
   unit.style.setProperty('--slot-x',x+'%');
   unit.style.setProperty('--slot-y',yFin+'%');
   /* nitidez: a escala é aplicada na LARGURA (layout) — o navegador rasteriza o sprite
@@ -3135,9 +3185,10 @@ function renderEnemies(){
   enemyArenaEl.style.setProperty('--enemy-count',String(Math.max(1,enemies.length)));
   const activeIdx = currentTargetIndex();
   const selectable = enemies.filter(e=>e.hp>0).length>1;
+  const enemySlots=planEnemyGridSlots();
   enemies.forEach((e, idx)=>{
     const unit = document.createElement('div');
-    const isBoss=e.isBoss===true || idx===enemies.length-1;
+    const isBoss=enemySlots[idx]?.isBoss===true;
     unit.className = 'unit enemy-unit' + (e.hp<=0 ? ' dead' : (idx===activeIdx ? ' target' : '')) + (selectable && e.hp>0 ? ' selectable' : '') + (isBoss?' boss-unit':'') + (e.isCard?' enemy-card-unit':'') + (e.saCounter?' charging':'');
     unit.id = 'enemy-'+idx;
     const palette=enemyAuraPalette(e);
@@ -3154,7 +3205,7 @@ function renderEnemies(){
         <div class="avatar-circle enemy-avatar" id="enemyPortrait-${idx}" data-action="idle">${enemyFallbackMarkup(e)}</div>
       </div>`;
     const nomeHtml=vizPrefs.enemyNames==='off'?'':`
-      <div class="unit-name${e.isBoss?' boss-name':''}${vizPrefs.enemyNames==='top'?' name-top':''}">${e.isBoss?'👑 ':''}${L(e.name)}</div>`;
+      <div class="unit-name${isBoss?' boss-name':''}${vizPrefs.enemyNames==='top'?' name-top':''}">${isBoss?'👑 ':''}${L(e.name)}</div>`;
     unit.innerHTML = (vizPrefs.enemyNames==='top'?nomeHtml+stageHtml:stageHtml+nomeHtml)+`
       <div class="unit-hp-outer"><div class="unit-hp-inner" id="enemyHpBar-${idx}" style="width:${Math.max(0,e.hp/e.maxHp*100)}%"></div></div>
       <div class="unit-hp-text" id="enemyHpText-${idx}">${Math.max(0,e.hp)} / ${e.maxHp}</div>
@@ -7533,6 +7584,14 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
         unit.remove();
         return {id:etype,idleScale,attackScale};
       });
+    },
+    enemyGridPlanProbe:()=>{
+      const make=(count,bossIndex=-1)=>Array.from({length:count},(_,index)=>({name:`E${index}`,isBoss:index===bossIndex}));
+      const simplify=plan=>plan.map(slot=>({column:slot.grid.column,row:slot.grid.row,boss:slot.isBoss===true}));
+      return {
+        normal:[1,2,3,4].map(count=>simplify(planEnemyGridSlots(make(count),false))),
+        bosses:[1,2,3,4].map(count=>simplify(planEnemyGridSlots(make(count,count-1),true)))
+      };
     },
     heroAuraProbe:()=>{
       const heroIdx=ACTIVE[0];

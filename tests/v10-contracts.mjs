@@ -17,17 +17,17 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=10\.0\.47/);
-  assert.match(html,/v10-config\.js\?v=10\.0\.47/);
-  assert.match(html,/v10-animations\.js\?v=10\.0\.47/);
-  assert.match(html,/game-v10\.js\?v=10\.0\.47/);
-  assert.match(config,/version:'v10\.0\.47'/);
-  assert.match(sw,/12r-v10\.0\.47/);
+  assert.match(html,/styles-v10\.css\?v=10\.0\.48/);
+  assert.match(html,/v10-config\.js\?v=10\.0\.48/);
+  assert.match(html,/v10-animations\.js\?v=10\.0\.48/);
+  assert.match(html,/game-v10\.js\?v=10\.0\.48/);
+  assert.match(config,/version:'v10\.0\.48'/);
+  assert.match(sw,/12r-v10\.0\.48/);
   assert.doesNotMatch(html,/game-v9|styles-v9|v9\.3-config/);
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v10\.0\.47/);
+  assert.match(sw,/12r-v10\.0\.48/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -175,7 +175,8 @@ check('v13 limita o grid perspectivado à Cidade das Cerejeiras',()=>{
     assert.match(game,/worldRun\.active&&Number\(worldRun\.fase\)===0/);
     assert.match(game,/arenaEl\.classList\.add\('tactical-grid'\)/);
   assert.match(game,/const \{top,bot:bottom\}=groundBand\(\)/);
-  assert.match(game,/const columns=Math\.max\(6,Math\.floor\(rowRect\.width\/targetCell\)\)/);
+  assert.match(game,/const columns=9/);
+  assert.match(game,/const rows=4/);
   assert.match(game,/data-grid-slot/);
   assert.match(css,/\.physical-floor-grid\{[\s\S]+?top:var\(--floor-top/);
   assert.match(css,/grid-template-columns:repeat\(var\(--floor-columns/);
@@ -187,9 +188,12 @@ check('v13 limita o grid perspectivado à Cidade das Cerejeiras',()=>{
   assert.match(game,/--depth-scale/);
   assert.match(game,/--depth-shadow-scale/);
   assert.match(css,/\.arena\.perspective-physics \.unit-stage \.avatar-circle/);
+  assert.match(game,/const ENEMY_GRID_NORMAL=\[\[1,2\],\[2,1\],\[2,3\],\[2,2\]\]/);
+  assert.match(game,/function planEnemyGridSlots/);
+  assert.match(css,/\.physical-floor-cell\.enemy-grid-cell/);
 });
 
-check('passagem gráfica v10.0.47 mantém física e dá resposta ao combate',()=>{
+check('passagem gráfica v10.0.48 mantém física e dá resposta ao combate',()=>{
   for(const needle of ['ensureArenaVisualLayers','applyArenaVisualProfile','pulseArenaLighting','spawnCombatAttackFx','enemyFxRealm','arena-light-pulse','arena-depth','arena-lighting','arenaEffects','arenaProfiles','fx-attack-signature','attack-fogo','attack-gelo']) assert.ok(game.includes(needle)||css.includes(needle)||config.includes(needle),`${needle} ausente`);
   assert.match(game,/if\(kind==='impact'\|\|kind==='critical'\) pulseArenaLighting\(color,target,kind\)/);
   assert.match(css,/body\.game-active \.unit-ground-shadow\{display:block/);
@@ -276,7 +280,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=10.0.47');
+  const deferredGame=html.indexOf('game-v10.js?v=10.0.48');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
