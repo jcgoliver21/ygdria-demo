@@ -72,7 +72,6 @@ test('v13 mostra o grid físico numerado somente na Cidade das Cerejeiras',async
   await page.setViewportSize({width:390,height:844});
   await page.evaluate(()=>{ worldRun.active=true; worldRun.fase=0; worldRun.nivel=1; chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
   await page.click('#battleToolsToggle');
-  await page.click('#gridTool');
   const grid=await page.evaluate(()=>({
     available:document.getElementById('arena')?.classList.contains('cerejeira-grid-available'),
     active:document.getElementById('arena')?.classList.contains('tactical-grid'),
@@ -1024,7 +1023,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.40');
+  expect(registration.caches).toContain('12r-v10.0.41');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1184,7 +1183,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.40');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.41');
 
     // Produção não expõe __12rQA: este trecho percorre somente controles reais.
     if(await page.locator('#introScreen').isVisible()) await page.locator('#introNext').click();

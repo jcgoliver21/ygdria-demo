@@ -2724,7 +2724,10 @@ function syncCerejeiraTacticalGrid(){
   arenaEl.classList.toggle('cerejeira-grid-available',available);
   if(available){
     renderCerejeiraTacticalGrid();
+    arenaEl.classList.add('tactical-grid');
+    overlay?.setAttribute('aria-hidden','false');
     if(tool){ tool.hidden=false; tool.disabled=false; }
+    tool?.classList.add('active');
   }else{
     arenaEl.classList.remove('tactical-grid');
     overlay?.setAttribute('aria-hidden','true');
