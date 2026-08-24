@@ -42,6 +42,31 @@ test('fluxo real abre seletor, monta equipe e inicia tabuleiro',async({page})=>{
   expect(errors).toEqual([]);
 });
 
+test('v11 mostra dez formações e setas de seleção acima dos heróis',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.setViewportSize({width:390,height:844});
+  await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
+  const initial=await page.evaluate(()=>({
+    arrows:[...document.querySelectorAll('.hero-select-arrow')].map(arrow=>({label:arrow.getAttribute('aria-label'),rect:arrow.getBoundingClientRect().toJSON()})),
+    formation:document.getElementById('formationTool')?.textContent
+  }));
+  expect(initial.arrows).toHaveLength(4);
+  expect(initial.arrows.every(item=>item.rect.top>=0&&item.rect.bottom<=844)).toBe(true);
+  expect(initial.arrows.every(item=>item.label?.startsWith('Selecionar'))).toBe(true);
+  await page.click('#battleToolsToggle');
+  await expect(page.locator('#battleToolsPanel')).toHaveClass(/open/);
+  const names=[];
+  for(let i=0;i<10;i++){
+    await page.click('#formationTool');
+    names.push((await page.locator('#formationTool').textContent()).trim());
+  }
+  expect(new Set(names).size).toBe(10);
+  await page.click('#battleToolsClose');
+  await page.locator('.hero-select-arrow').first().click();
+  await expect(page.locator('#battleStatus')).toContainText('mudou o lado');
+  expect(errors).toEqual([]);
+});
+
 test('v10.0.1 restaura escala e anima inimigos-personagem e inimigos comuns',async({page})=>{
   const errors=await boot(page,'flow');
   await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
@@ -978,7 +1003,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.37');
+  expect(registration.caches).toContain('12r-v10.0.38');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1138,7 +1163,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.37');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.38');
 
     // Produção não expõe __12rQA: este trecho percorre somente controles reais.
     if(await page.locator('#introScreen').isVisible()) await page.locator('#introNext').click();

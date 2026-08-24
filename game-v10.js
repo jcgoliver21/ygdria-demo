@@ -1650,20 +1650,19 @@ let royalShuffles = 1;
 let formationIndex = 0;
 let bestCombo = 0;
 const BATTLE_SPEEDS = [1,1.5,2];
-/* v9.1 · 12 formações nomeadas (y≈0 = linha de frente, maior escala/z) */
+/* v11 · dez formações novas. y≈0 é a linha de frente; as colunas deixam
+   respiro lateral e os níveis de profundidade mantêm cada silhueta legível. */
 const HERO_FORMATIONS = [
-  { nome:'Clássica',        slots:[{x:16,y:42,s:.94,z:18},{x:39,y:46,s:.98,z:20},{x:22,y:4,s:1.17,z:38},{x:48,y:7,s:1.2,z:40}] },
-  { nome:'Falange',         slots:[{x:6,y:6,s:1.1,z:40},{x:20,y:2,s:1.14,z:42},{x:34,y:4,s:1.12,z:41},{x:48,y:6,s:1.1,z:40}] },
-  { nome:'Muralha',         slots:[{x:8,y:44,s:.94,z:18},{x:22,y:40,s:.96,z:20},{x:36,y:42,s:.95,z:19},{x:50,y:45,s:.93,z:17}] },
-  { nome:'Coluna Diagonal', slots:[{x:12,y:46,s:.9,z:16},{x:24,y:31,s:1.0,z:26},{x:36,y:17,s:1.1,z:34},{x:48,y:3,s:1.2,z:42}] },
-  { nome:'Ponta de Lança',  slots:[{x:50,y:2,s:1.24,z:43},{x:32,y:14,s:1.1,z:34},{x:32,y:32,s:1.0,z:25},{x:14,y:44,s:.9,z:16}] },
-  { nome:'Escudo',          slots:[{x:8,y:4,s:1.16,z:40},{x:50,y:4,s:1.16,z:41},{x:22,y:40,s:.95,z:19},{x:38,y:42,s:.94,z:18}] },
-  { nome:'Escolta Real',    slots:[{x:30,y:2,s:1.24,z:43},{x:8,y:34,s:.98,z:24},{x:28,y:44,s:.93,z:17},{x:48,y:36,s:.97,z:23}] },
-  { nome:'Emboscada',       slots:[{x:6,y:8,s:1.12,z:39},{x:20,y:14,s:1.06,z:35},{x:38,y:36,s:.97,z:22},{x:52,y:44,s:.9,z:16}] },
-  { nome:'Ala Esquerda',    slots:[{x:10,y:2,s:1.2,z:42},{x:12,y:17,s:1.1,z:34},{x:14,y:32,s:1.0,z:25},{x:16,y:46,s:.9,z:16}] },
-  { nome:'Ala Direita',     slots:[{x:52,y:4,s:1.18,z:41},{x:48,y:18,s:1.1,z:34},{x:46,y:32,s:1.0,z:25},{x:44,y:46,s:.9,z:16}] },
-  { nome:'Losango',         slots:[{x:29,y:0,s:1.22,z:42},{x:12,y:24,s:1.04,z:29},{x:48,y:24,s:1.04,z:30},{x:30,y:46,s:.9,z:16}] },
-  { nome:'Estrela do Caos', slots:[{x:8,y:20,s:1.06,z:32},{x:42,y:10,s:1.14,z:37},{x:20,y:4,s:1.18,z:40},{x:52,y:38,s:.95,z:20}] }
+  { nome:'Líder',            slots:[{x:55,y:20,s:1.00,z:34},{x:18,y:40,s:.92,z:18},{x:34,y:20,s:.92,z:34},{x:18,y:0,s:.92,z:43}] },
+  { nome:'Guarda-costas',    slots:[{x:10,y:20,s:.92,z:34},{x:30,y:40,s:.92,z:18},{x:55,y:20,s:.92,z:34},{x:30,y:0,s:.92,z:43}] },
+  { nome:'Cercados',         slots:[{x:38,y:42,s:.84,z:18},{x:10,y:20,s:.84,z:34},{x:10,y:0,s:.84,z:43},{x:38,y:0,s:.84,z:43}] },
+  { nome:'Defensiva',        slots:[{x:4,y:20,s:.88,z:34},{x:23,y:20,s:.88,z:34},{x:42,y:20,s:.88,z:34},{x:61,y:20,s:.88,z:34}] },
+  { nome:'Ofensiva',         slots:[{x:8,y:20,s:.84,z:34},{x:24,y:20,s:.84,z:34},{x:40,y:20,s:.84,z:34},{x:56,y:20,s:.84,z:34}] },
+  { nome:'Vanguarda em V',   slots:[{x:52,y:20,s:.90,z:34},{x:16,y:40,s:.86,z:18},{x:34,y:20,s:.86,z:34},{x:16,y:0,s:.86,z:43}] },
+  { nome:'Asa Dupla',        slots:[{x:56,y:40,s:.86,z:18},{x:10,y:20,s:.86,z:34},{x:26,y:0,s:.86,z:43},{x:56,y:0,s:.86,z:43}] },
+  { nome:'Diamante',         slots:[{x:56,y:20,s:.86,z:34},{x:8,y:20,s:.86,z:34},{x:32,y:0,s:.86,z:43},{x:32,y:40,s:.86,z:18}] },
+  { nome:'Escalonada',       slots:[{x:4,y:0,s:.86,z:43},{x:22,y:10,s:.86,z:41},{x:40,y:20,s:.86,z:34},{x:58,y:30,s:.86,z:26}] },
+  { nome:'Cruz de Proteção', slots:[{x:50,y:20,s:.90,z:34},{x:30,y:40,s:.86,z:18},{x:30,y:0,s:.86,z:43},{x:8,y:20,s:.86,z:34}] }
 ];
 {
   const storedFormation=Number(localStorage.getItem('12r_formation'));
@@ -1750,6 +1749,7 @@ const boardEl = document.getElementById('board');
 const arenaEl = document.getElementById('arena');
 const enemyArenaEl = document.getElementById('enemyArena');
 const partyArenaEl = document.getElementById('partyArena');
+const heroSelectionLayerEl = document.getElementById('heroSelectionLayer');
 const stageProgressEl = document.getElementById('stageProgress');
 const stageLabelEl = document.getElementById('stageLabel');
 const dungeonTitleEl = document.getElementById('dungeonTitle');
@@ -2455,6 +2455,7 @@ function spawnRealmParticles(realmId, targetEl, countOverride){
 
 function renderPartyArena(){
   partyArenaEl.innerHTML = '';
+  heroSelectionLayerEl?.replaceChildren();
   computeBattleGemColors();
   ACTIVE.forEach(idx=>{
     const k = KINGDOMS[idx];
@@ -2491,6 +2492,17 @@ function renderPartyArena(){
     avatarEl.addEventListener('click', ()=>onHeroAvatarClick(idx));
     avatarEl.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); onHeroAvatarClick(idx); } });
     animateHeroAvatar(avatarEl,k,'idle',{loop:true});
+    if(heroSelectionLayerEl){
+      const arrow=document.createElement('button');
+      arrow.type='button';
+      arrow.className='hero-select-arrow';
+      arrow.id='hero-select-'+k.id;
+      arrow.dataset.heroId=k.id;
+      arrow.style.setProperty('--hero-arrow-color',k.color);
+      arrow.setAttribute('aria-label',T(`Selecionar ${L(k.nome)}`,`Select ${L(k.nome)}`,`Seleccionar a ${L(k.nome)}`));
+      arrow.addEventListener('click',event=>{ event.stopPropagation(); onHeroAvatarClick(idx); });
+      heroSelectionLayerEl.appendChild(arrow);
+    }
   });
   renderGolemUnits();
   renderHarpyUnits();
@@ -2721,6 +2733,7 @@ function applyBattleFormation(){
   const heroSlots=HERO_FORMATIONS[formationIndex%HERO_FORMATIONS.length].slots;
   const heroUnits=[...partyArenaEl.querySelectorAll('.hero-unit')];
   heroUnits.forEach((unit,i)=>applyFormationSlot(unit,heroSlots[i]||heroSlots[heroSlots.length-1],112));
+  scheduleHeroSelectionArrows();
   const barbaraIdx=ACTIVE.findIndex(idx=>KINGDOMS[idx]?.id==='terra');
   const barbaraSlot=heroSlots[barbaraIdx]||heroSlots[0]||{x:30,y:35,s:1,z:20};
   const golemOffsets=[{x:-8,y:5,s:.48},{x:8,y:4,s:.5},{x:-13,y:8,s:.44},{x:13,y:8,s:.44}];
@@ -2743,7 +2756,7 @@ function applyBattleFormation(){
     if(isBoss&&!enemy?.isCard) slot.s*=1.16;
     /* Grupos ficam mais separados horizontalmente e em profundidades distintas;
        isso evita que nomes, barras e sprites ocupem a mesma área. */
-    if(enemies.length>=3){ slot.x=Math.max(50,Math.min(94,slot.x)); }
+    if(enemies.length>=3){ slot.x=Math.max(64,Math.min(94,slot.x)); }
     /* O chefe fica sempre em segundo plano; assim nome/vida não encostam na
        barra de informações e os demais inimigos conservam leitura própria. */
     if(isBoss&&enemies.length>1){ slot.y=Math.max(20,slot.y); slot.z+=6; }
@@ -2773,14 +2786,14 @@ function applyFormationSlot(unit,slot,width){
   const estreito=window.innerWidth<=600;
   const enemySlot=unit.classList.contains('enemy-unit');
   const x=estreito
-    ? (enemySlot?Math.max(8,Math.min(92,slot.x)):Math.max(15,Math.min(85,50+(slot.x-50)*0.72)))
+    ? (enemySlot?Math.max(8,Math.min(92,slot.x)):Math.max(4,Math.min(76,4+slot.x*1.25)))
     : slot.x;
   const y=estreito?50+(slot.y-50)*0.9:slot.y;
   /* v10.0.1: a compressao anterior encolhia a formacao e ainda diminuia a
      largura do avatar. Mantemos a posicao segura, mas devolvemos a escala
      visual original dos chibis e inimigos. */
-  const s=estreito?slot.s*0.96:slot.s;
-  const w=estreito?Math.round(width*(enemySlot?1.05:1.04)):width;
+  const s=estreito?slot.s*0.92:slot.s;
+  const w=estreito?Math.round(width*(enemySlot?1.02:.88)):width;
   /* ATERRISSAGEM: re-mapeia a profundidade (y 0..46) para a banda de chão da arte da
      fase — todos os pés (heróis, inimigos, golens, harpias) pisam no piso pintado.
      bottom% = ((1-F)·alturaArena − gap − UI sob os pés) / alturaRow  (cover = 100% da
@@ -7211,6 +7224,44 @@ function preloadOfficialAssets(){
     if(resolvedGraphicsQuality()==='economy'||navigator.connection?.saveData) return;
     const idle=window.requestIdleCallback||((cb)=>setTimeout(cb,700));
     idle(()=>remaining.forEach((src,i)=>setTimeout(()=>load(src),i*80)),{timeout:3000});
+  });
+}
+
+let heroArrowFrame=null;
+let heroArrowSyncTimer=null;
+function scheduleHeroSelectionArrows(){
+  if(!heroSelectionLayerEl||!partyArenaEl) return;
+  if(heroArrowFrame) cancelAnimationFrame(heroArrowFrame);
+  if(heroArrowSyncTimer) clearTimeout(heroArrowSyncTimer);
+  heroArrowFrame=requestAnimationFrame(()=>{
+    heroArrowFrame=null;
+    const rowRect=partyArenaEl.getBoundingClientRect();
+    const placed=[];
+    partyArenaEl.querySelectorAll('.hero-unit').forEach((unit,index)=>{
+      const id=unit.id.replace(/^party-/,'');
+      const arrow=document.getElementById('hero-select-'+id);
+      if(!arrow) return;
+      const avatar=unit.querySelector('.avatar-circle')||unit;
+      const rect=avatar.getBoundingClientRect();
+      const desiredLeft=rect.left-rowRect.left+rect.width/2;
+      /* A ponta encosta no topo visual do sprite, não no topo do contêiner
+         que também abriga nome e barra de vida. */
+      const arrowWidth=30,arrowHeight=24;
+      const desiredTop=Math.max(2,rect.top-rowRect.top-arrowHeight+2);
+      const candidates=[0,-16,16,-32,32,-48,48].map(offset=>desiredLeft+offset);
+      let chosenLeft=candidates[0];
+      for(const candidate of candidates){
+        const left=Math.max(arrowWidth/2,Math.min(rowRect.width-arrowWidth/2,candidate));
+        const box={left:left-arrowWidth/2,right:left+arrowWidth/2,top:desiredTop,bottom:desiredTop+arrowHeight};
+        if(!placed.some(other=>box.left<other.right+3&&box.right>other.left-3&&box.top<other.bottom+3&&box.bottom>other.top-3)){ chosenLeft=left; break; }
+      }
+      arrow.style.left=chosenLeft+'px';
+      arrow.style.top=desiredTop+'px';
+      placed.push({left:chosenLeft-arrowWidth/2,right:chosenLeft+arrowWidth/2,top:desiredTop,bottom:desiredTop+arrowHeight,index});
+    });
+    /* Recalcula ao fim da transição da formação para a seta continuar presa
+       ao sprite enquanto o grupo se move. */
+    heroArrowSyncTimer=setTimeout(()=>scheduleHeroSelectionArrows(),360);
   });
 }
 function preloadHeroActions(indices=ACTIVE){
