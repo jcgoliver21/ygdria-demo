@@ -2712,42 +2712,22 @@ function renderCerejeiraTacticalGrid(){
   const floorTop=clamp((arenaRect.height*top-rowTop)/rowRect.height,0,.92);
   const floorBottom=clamp((arenaRect.height*bottom-rowTop)/rowRect.height,floorTop+.08,1);
   const floorHeight=(floorBottom-floorTop)*rowRect.height;
-  const units=[...battleRow.querySelectorAll('.unit')];
-  const largestFootprint=Math.max(88,...units.map(unit=>{
-    const declared=parseFloat(getComputedStyle(unit).getPropertyValue('--slot-w'));
-    const unitWidth=Number.isFinite(declared)&&declared>0?declared:unit.getBoundingClientRect().width;
-    return unitWidth*.76; // mesma largura da sombra de contato: o espaço físico dos pés
-  }));
-  let rows=2;
-  let depthWeights=[.62,1];
-  let baseCell=floorHeight/depthWeights.reduce((sum,weight)=>sum+weight,0);
-  for(let candidate=5;candidate>=2;candidate--){
-    const weights=Array.from({length:candidate},(_,i)=>.62+(.38*i/Math.max(1,candidate-1)));
-    const candidateCell=floorHeight/weights.reduce((sum,weight)=>sum+weight,0);
-    if(candidateCell>=largestFootprint*.92){ rows=candidate; depthWeights=weights; baseCell=candidateCell; break; }
-  }
-  baseCell=Math.max(24,Math.floor(baseCell));
-  const columns=Math.max(3,Math.floor(rowRect.width/baseCell));
+  const targetCell=window.innerWidth<=600?44:58;
+  const columns=Math.max(6,Math.floor(rowRect.width/targetCell));
+  const cell=Math.max(24,Math.floor(rowRect.width/columns));
+  const rows=Math.max(1,Math.floor(floorHeight/cell));
   const count=columns*rows;
-  const signature=`${columns}:${rows}:${baseCell}:${largestFootprint.toFixed(1)}:${floorTop.toFixed(3)}:${floorBottom.toFixed(3)}`;
+  const signature=`${columns}:${rows}:${cell}:${floorTop.toFixed(3)}:${floorBottom.toFixed(3)}`;
   grid.style.setProperty('--floor-top',`${(floorTop*100).toFixed(2)}%`);
   grid.style.setProperty('--floor-bottom',`${((1-floorBottom)*100).toFixed(2)}%`);
+  grid.style.setProperty('--floor-cell',`${cell}px`);
   grid.style.setProperty('--floor-columns',String(columns));
   grid.style.setProperty('--floor-rows',String(rows));
-  grid.dataset.largestFootprint=String(Math.round(largestFootprint));
-  grid.dataset.baseCell=String(baseCell);
   if(grid.dataset.signature!==signature){
     grid.dataset.signature=signature;
-    let cursor=0;
-    grid.innerHTML=depthWeights.map((weight,rowIndex)=>{
-      const cell=Math.round(baseCell*weight);
-      const rowWidth=cell*columns;
-      const rowTop=depthWeights.slice(0,rowIndex).reduce((sum,previous)=>sum+baseCell*previous,0);
-      const cells=Array.from({length:columns},()=>{
-        const label=String(++cursor).padStart(2,'0');
-        return `<span class="physical-floor-cell" data-grid-slot="${label}" aria-label="Casa de solo ${label}">${label}</span>`;
-      }).join('');
-      return `<div class="physical-floor-row" style="--row-top:${rowTop.toFixed(2)}px;--row-cell:${cell}px;--row-width:${rowWidth}px" data-depth="${rowIndex+1}">${cells}</div>`;
+    grid.innerHTML=Array.from({length:count},(_,i)=>{
+      const label=String(i+1).padStart(2,'0');
+      return `<span class="physical-floor-cell" data-grid-slot="${label}" aria-label="Casa de solo ${label}">${label}</span>`;
     }).join('');
   }
 }
