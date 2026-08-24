@@ -2750,50 +2750,67 @@ function renderCerejeiraTacticalGrid(){
   const floorTop=clamp((arenaRect.height*top-rowTop)/rowRect.height,0,.92);
   const floorBottom=clamp((arenaRect.height*bottom-rowTop)/rowRect.height,floorTop+.08,1);
   const floorHeight=(floorBottom-floorTop)*rowRect.height;
-  /* Grade tática canônica aprovada: três linhas de solo, numeradas de 01 a
-     27. O setor inimigo é o 3×3 vermelho nas casas 07–09, 16–18 e 25–27. */
+  /* Grade composta aprovada: os heróis mantêm as seis colunas por quatro
+     linhas da malha original. Somente o setor direito é redesenhado como um
+     3×3 inimigo, ocupando a mesma altura física das quatro linhas aliadas. */
   const columns=9;
-  const rows=3;
+  const partyColumns=6;
+  const partyRows=4;
+  const enemyColumns=3;
+  const enemyRows=3;
+  const layoutRows=12; /* MMC(4,3): herói ocupa 3 unidades; inimigo, 4. */
   const cell=Math.max(24,Math.floor(rowRect.width/columns));
-  const count=columns*rows;
-  const signature=`${columns}:${rows}:${cell}:${floorTop.toFixed(3)}:${floorBottom.toFixed(3)}`;
+  const rowUnit=cell/3;
+  const enemyCellHeight=rowUnit*4;
+  const signature=`${columns}:${partyRows}:${enemyRows}:${cell}:${floorTop.toFixed(3)}:${floorBottom.toFixed(3)}`;
   grid.style.setProperty('--floor-top',`${(floorTop*100).toFixed(2)}%`);
   grid.style.setProperty('--floor-bottom',`${((1-floorBottom)*100).toFixed(2)}%`);
   grid.style.setProperty('--floor-cell',`${cell}px`);
+  grid.style.setProperty('--floor-row-unit',`${rowUnit.toFixed(3)}px`);
+  grid.style.setProperty('--enemy-cell-height',`${enemyCellHeight.toFixed(3)}px`);
   grid.style.setProperty('--floor-columns',String(columns));
-  grid.style.setProperty('--floor-rows',String(rows));
+  grid.style.setProperty('--floor-layout-rows',String(layoutRows));
   if(grid.dataset.signature!==signature){
     grid.dataset.signature=signature;
-    grid.innerHTML=Array.from({length:count},(_,i)=>{
-      const row=Math.floor(i/columns)+1;
-      const column=i%columns+1;
-      const label=String(i+1).padStart(2,'0');
-      const enemyColumn=column-(columns-3);
-      const enemyCell=enemyColumn>=1&&row<=3;
-      const classes=['physical-floor-cell'];
-      if(enemyCell) classes.push('enemy-grid-cell');
-      const side=enemyCell?'enemy':'party';
-      return `<span class="${classes.join(' ')}" data-grid-slot="${label}" data-grid-side="${side}" data-grid-column="${enemyCell?enemyColumn:column}" data-grid-row="${row}" aria-label="Casa de solo ${label}">${label}</span>`;
-    }).join('');
+    const cells=[];
+    for(let row=1;row<=partyRows;row++){
+      for(let column=1;column<=partyColumns;column++){
+        const slot=(row-1)*columns+column;
+        const label=String(slot).padStart(2,'0');
+        const layoutRow=(row-1)*3+1;
+        cells.push(`<span class="physical-floor-cell party-grid-cell" style="grid-column:${column};grid-row:${layoutRow}/span 3" data-grid-slot="${label}" data-grid-side="party" data-grid-column="${column}" data-grid-row="${row}" aria-label="Casa aliada ${label}">${label}</span>`);
+      }
+    }
+    for(let row=1;row<=enemyRows;row++){
+      for(let column=1;column<=enemyColumns;column++){
+        const absoluteColumn=partyColumns+column;
+        const slot=(row-1)*columns+absoluteColumn;
+        const label=String(slot).padStart(2,'0');
+        const layoutRow=(row-1)*4+1;
+        cells.push(`<span class="physical-floor-cell enemy-grid-cell" style="grid-column:${absoluteColumn};grid-row:${layoutRow}/span 4" data-grid-slot="${label}" data-grid-side="enemy" data-grid-column="${column}" data-grid-row="${row}" aria-label="Casa inimiga ${label}">${label}</span>`);
+      }
+    }
+    grid.innerHTML=cells.join('');
   }
 }
 
 function syncCerejeiraTacticalGrid(){
-  const available=Boolean(worldRun.active&&Number(worldRun.fase)===0);
+  const available=document.body.classList.contains('game-active');
+  const cityDefault=Boolean(worldRun.active&&Number(worldRun.fase)===0);
   const tool=document.getElementById('gridTool');
   const overlay=document.getElementById('cerejeiraTacticalGrid');
   /* Física de perspectiva: a profundidade é uma propriedade da vaga no piso,
      não uma animação do sprite. Toda unidade conserva os pés ancorados e só
      recebe o porte correspondente à distância da câmera. */
   arenaEl.classList.toggle('perspective-physics',document.body.classList.contains('game-active'));
-  arenaEl.classList.toggle('cerejeira-grid-available',available);
+  arenaEl.classList.toggle('tactical-grid-available',available);
   if(available){
     renderCerejeiraTacticalGrid();
-    arenaEl.classList.add('tactical-grid');
-    overlay?.setAttribute('aria-hidden','false');
+    arenaEl.classList.toggle('tactical-grid',cityDefault);
+    overlay?.setAttribute('aria-hidden',String(!cityDefault));
     requestAnimationFrame(()=>{ renderCerejeiraTacticalGrid(); applyBattleFormation(); });
     if(tool){ tool.hidden=false; tool.disabled=false; }
-    tool?.classList.add('active');
+    tool?.classList.toggle('active',cityDefault);
   }else{
     arenaEl.classList.remove('tactical-grid');
     overlay?.setAttribute('aria-hidden','true');
@@ -2968,7 +2985,7 @@ window.addEventListener('resize',()=>{
   clearTimeout(formResizeTimer);
   formResizeTimer=setTimeout(()=>{
     if(partyArenaEl&&partyArenaEl.children.length) applyBattleFormation();
-    if(arenaEl?.classList.contains('cerejeira-grid-available')) renderCerejeiraTacticalGrid();
+    if(arenaEl?.classList.contains('tactical-grid-available')) renderCerejeiraTacticalGrid();
   },220);
 });
 
@@ -3072,7 +3089,7 @@ function useRoyalShuffle(){
 }
 
 function toggleTacticalGrid(){
-  if(!arenaEl.classList.contains('cerejeira-grid-available')) return;
+  if(!arenaEl.classList.contains('tactical-grid-available')) return;
   const active=arenaEl.classList.toggle('tactical-grid');
   document.getElementById('cerejeiraTacticalGrid')?.setAttribute('aria-hidden',String(!active));
   document.getElementById('gridTool').classList.toggle('active',active);

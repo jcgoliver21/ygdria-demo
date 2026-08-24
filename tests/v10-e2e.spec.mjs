@@ -67,23 +67,47 @@ test('v11 mostra dez formações e setas de seleção acima dos heróis',async({
   expect(errors).toEqual([]);
 });
 
-test('v13 mostra o grid físico numerado somente na Cidade das Cerejeiras',async({page})=>{
+test('v13 mantém a grade da Cidade e libera o validador em todas as fases',async({page})=>{
   const errors=await boot(page,'flow');
   await page.setViewportSize({width:390,height:844});
   await page.evaluate(()=>{ worldRun.active=true; worldRun.fase=0; worldRun.nivel=1; chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
   await page.click('#battleToolsToggle');
-  const grid=await page.evaluate(()=>({
-    available:document.getElementById('arena')?.classList.contains('cerejeira-grid-available'),
-    active:document.getElementById('arena')?.classList.contains('tactical-grid'),
-    cells:document.querySelectorAll('#physicalFloorGrid .physical-floor-cell').length,
-    labels:[...document.querySelectorAll('#physicalFloorGrid .physical-floor-cell')].map(el=>el.dataset.gridSlot),
-    floorCell:[...document.querySelectorAll('#physicalFloorGrid .physical-floor-cell')][0] ? (()=>{ const el=[...document.querySelectorAll('#physicalFloorGrid .physical-floor-cell')][0]; const rect=el.getBoundingClientRect(); return {width:rect.width,height:rect.height,offsetWidth:el.offsetWidth,offsetHeight:el.offsetHeight,computedWidth:getComputedStyle(el).width,computedHeight:getComputedStyle(el).height}; })() : null
-  }));
+  const grid=await page.evaluate(()=>{
+    const party=[...document.querySelectorAll('#physicalFloorGrid .party-grid-cell')];
+    const enemy=[...document.querySelectorAll('#physicalFloorGrid .enemy-grid-cell')];
+    const bounds=list=>{
+      const rects=list.map(el=>el.getBoundingClientRect());
+      return {top:Math.min(...rects.map(rect=>rect.top)),bottom:Math.max(...rects.map(rect=>rect.bottom))};
+    };
+    const floorCell=party[0];
+    const rect=floorCell?.getBoundingClientRect();
+    return {
+      available:document.getElementById('arena')?.classList.contains('tactical-grid-available'),
+      active:document.getElementById('arena')?.classList.contains('tactical-grid'),
+      cells:party.length+enemy.length,
+      partyLabels:party.map(el=>el.dataset.gridSlot),
+      enemyLabels:enemy.map(el=>el.dataset.gridSlot),
+      partyRows:[...new Set(party.map(el=>el.dataset.gridRow))],
+      enemyRows:[...new Set(enemy.map(el=>el.dataset.gridRow))],
+      sameFloorHeight:Math.abs((bounds(party).bottom-bounds(party).top)-(bounds(enemy).bottom-bounds(enemy).top))<2,
+      floorCell:floorCell?{width:rect.width,height:rect.height,offsetWidth:floorCell.offsetWidth,offsetHeight:floorCell.offsetHeight,computedWidth:getComputedStyle(floorCell).width,computedHeight:getComputedStyle(floorCell).height}:null
+    };
+  });
   expect(grid).toMatchObject({available:true,active:true});
-  expect(grid.cells).toBeGreaterThan(24);
-  expect(grid.labels[0]).toBe('01');
+  expect(grid.cells).toBe(33);
+  expect(grid.partyLabels).toEqual(['01','02','03','04','05','06','10','11','12','13','14','15','19','20','21','22','23','24','28','29','30','31','32','33']);
+  expect(grid.enemyLabels).toEqual(['07','08','09','16','17','18','25','26','27']);
+  expect(grid.partyRows).toEqual(['1','2','3','4']);
+  expect(grid.enemyRows).toEqual(['1','2','3']);
+  expect(grid.sameFloorHeight).toBe(true);
   expect(grid.floorCell.offsetWidth).toBe(grid.floorCell.offsetHeight);
   expect(grid.floorCell.computedWidth).toBe(grid.floorCell.computedHeight);
+  await page.evaluate(()=>{ worldRun.fase=1; syncCerejeiraTacticalGrid(); });
+  await expect(page.locator('#gridTool')).toBeVisible();
+  await expect(page.locator('#arena')).toHaveClass(/tactical-grid-available/);
+  await expect(page.locator('#arena')).not.toHaveClass(/(?:^|\s)tactical-grid(?:\s|$)/);
+  await page.click('#gridTool');
+  await expect(page.locator('#arena')).toHaveClass(/(?:^|\s)tactical-grid(?:\s|$)/);
   expect(errors).toEqual([]);
 });
 
@@ -1078,7 +1102,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.49');
+  expect(registration.caches).toContain('12r-v10.0.50');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1238,7 +1262,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.49');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.50');
 
     // Produção não expõe __12rQA: este trecho percorre somente controles reais.
     if(await page.locator('#introScreen').isVisible()) await page.locator('#introNext').click();
