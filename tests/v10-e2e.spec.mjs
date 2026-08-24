@@ -111,6 +111,37 @@ test('v13 mantém a grade da Cidade e libera o validador em todas as fases',asyn
   expect(errors).toEqual([]);
 });
 
+test('formações dos heróis seguem exatamente as células e interpolações canônicas',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.setViewportSize({width:390,height:844});
+  const probe=await page.evaluate(()=>window.__12rQA.heroFormationGridProbe());
+  expect(probe.map(item=>item.name)).toEqual(['Líder','Guarda-costas','Cercados','Defensiva','Ofensiva','Vanguarda em V','Asa Dupla','Diamante','Escalonada','Berserker']);
+  expect(probe.map(item=>item.slots.map(slot=>slot.refs))).toEqual([
+    [[14,23],[4,13],[13,22],[22,31]],
+    [[11,20],[5,14],[14,23],[23,32]],
+    [[6],[14],[23],[33]],
+    [[2],[11],[20],[29]],
+    [[5],[14],[23],[32]],
+    [[14,23],[12,13,21,22],[2],[29]],
+    [[5],[32],[3],[30]],
+    [[14,23],[3,4],[30,31],[11,20]],
+    [[5],[13],[21],[29]],
+    [[17],[4,5],[13,22],[31,32]]
+  ]);
+  expect(probe[9].slots[0].side).toBe('enemy');
+  expect(probe[9].slots[0]).toMatchObject({x:83.3333,y:22});
+  const mobileBerserker=await page.evaluate(()=>{
+    worldRun.active=true; worldRun.fase=0; worldRun.nivel=1; chosenIds=[0,1,2,3]; beginGame(0); skipStory();
+    formationIndex=9; applyBattleFormation();
+    const unit=document.querySelector('.party-row .hero-unit');
+    return {refs:unit?.dataset.gridRefs,x:parseFloat(unit?.style.getPropertyValue('--slot-x')),depth:Number(unit?.dataset.depth)};
+  });
+  expect(mobileBerserker.refs).toBe('17');
+  expect(mobileBerserker.x).toBeCloseTo(83.3333,3);
+  expect(mobileBerserker.depth).toBeCloseTo(22/46,3);
+  expect(errors).toEqual([]);
+});
+
 test('grade inimiga usa três por três e segue as formações canônicas',async({page})=>{
   const errors=await boot(page,'flow');
   await page.setViewportSize({width:390,height:844});
@@ -1102,7 +1133,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.50');
+  expect(registration.caches).toContain('12r-v10.0.51');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1262,7 +1293,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.50');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.51');
 
     // Produção não expõe __12rQA: este trecho percorre somente controles reais.
     if(await page.locator('#introScreen').isVisible()) await page.locator('#introNext').click();

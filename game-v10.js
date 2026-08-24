@@ -1650,19 +1650,53 @@ let royalShuffles = 1;
 let formationIndex = 0;
 let bestCombo = 0;
 const BATTLE_SPEEDS = [1,1.5,2];
-/* v11 · dez formações novas. y≈0 é a linha de frente; as colunas deixam
-   respiro lateral e os níveis de profundidade mantêm cada silhueta legível. */
+/* A mesma malha numerada que aparece sobre o piso passa a ser a fonte das
+   formações. Linhas menores ficam ao fundo; linhas maiores se aproximam da
+   câmera. Pontos compostos usam a média física das células informadas. */
+const PARTY_GRID_DEPTH=Object.freeze({
+  1:Object.freeze({y:42,z:18}),
+  2:Object.freeze({y:29.333,z:27}),
+  3:Object.freeze({y:16.667,z:37}),
+  4:Object.freeze({y:4,z:46})
+});
+const ENEMY_GRID_DEPTH=Object.freeze({
+  1:Object.freeze({y:42,z:18}),
+  2:Object.freeze({y:22,z:34}),
+  3:Object.freeze({y:4,z:46})
+});
+function tacticalGridCell(cellNumber){
+  const cell=Number(cellNumber);
+  if(!Number.isInteger(cell)||cell<1||cell>33) throw new Error(`Célula tática inválida: ${cellNumber}`);
+  const column=((cell-1)%9)+1;
+  const row=Math.floor((cell-1)/9)+1;
+  const enemySide=column>=7;
+  const depth=(enemySide?ENEMY_GRID_DEPTH:PARTY_GRID_DEPTH)[row];
+  if(!depth||(enemySide?column>9:column>6)) throw new Error(`Célula fora da grade ativa: ${cellNumber}`);
+  return {cell,column,row,x:((column-.5)/9)*100,y:depth.y,z:depth.z,side:enemySide?'enemy':'party'};
+}
+function tacticalGridSlot(...cellNumbers){
+  const points=cellNumbers.map(tacticalGridCell);
+  const average=key=>points.reduce((sum,point)=>sum+point[key],0)/points.length;
+  return {
+    x:average('x'),y:average('y'),s:1,z:Math.round(average('z')),
+    gridRefs:points.map(point=>point.cell),
+    gridSide:points.some(point=>point.side==='enemy')?'enemy':'party'
+  };
+}
+/* Dez formações canônicas definidas diretamente pelo usuário. `tacticalGridSlot`
+   aceita uma célula, o meio de duas ou o centro de quatro sem aproximações
+   percentuais diferentes entre desktop e celular. */
 const HERO_FORMATIONS = [
-  { nome:'Líder',            slots:[{x:55,y:20,s:1.00,z:34},{x:18,y:40,s:.92,z:18},{x:34,y:20,s:.92,z:34},{x:18,y:0,s:.92,z:43}] },
-  { nome:'Guarda-costas',    slots:[{x:10,y:20,s:.92,z:34},{x:30,y:40,s:.92,z:18},{x:55,y:20,s:.92,z:34},{x:30,y:0,s:.92,z:43}] },
-  { nome:'Cercados',         slots:[{x:38,y:42,s:.84,z:18},{x:10,y:20,s:.84,z:34},{x:10,y:0,s:.84,z:43},{x:38,y:0,s:.84,z:43}] },
-  { nome:'Defensiva',        slots:[{x:4,y:20,s:.88,z:34},{x:23,y:20,s:.88,z:34},{x:42,y:20,s:.88,z:34},{x:61,y:20,s:.88,z:34}] },
-  { nome:'Ofensiva',         slots:[{x:8,y:20,s:.84,z:34},{x:24,y:20,s:.84,z:34},{x:40,y:20,s:.84,z:34},{x:56,y:20,s:.84,z:34}] },
-  { nome:'Vanguarda em V',   slots:[{x:52,y:20,s:.90,z:34},{x:16,y:40,s:.86,z:18},{x:34,y:20,s:.86,z:34},{x:16,y:0,s:.86,z:43}] },
-  { nome:'Asa Dupla',        slots:[{x:56,y:40,s:.86,z:18},{x:10,y:20,s:.86,z:34},{x:26,y:0,s:.86,z:43},{x:56,y:0,s:.86,z:43}] },
-  { nome:'Diamante',         slots:[{x:56,y:20,s:.86,z:34},{x:8,y:20,s:.86,z:34},{x:32,y:0,s:.86,z:43},{x:32,y:40,s:.86,z:18}] },
-  { nome:'Escalonada',       slots:[{x:4,y:0,s:.86,z:43},{x:22,y:10,s:.86,z:41},{x:40,y:20,s:.86,z:34},{x:58,y:30,s:.86,z:26}] },
-  { nome:'Cruz de Proteção', slots:[{x:50,y:20,s:.90,z:34},{x:30,y:40,s:.86,z:18},{x:30,y:0,s:.86,z:43},{x:8,y:20,s:.86,z:34}] }
+  { nome:'Líder',          slots:[tacticalGridSlot(14,23),tacticalGridSlot(4,13),tacticalGridSlot(13,22),tacticalGridSlot(22,31)] },
+  { nome:'Guarda-costas',  slots:[tacticalGridSlot(11,20),tacticalGridSlot(5,14),tacticalGridSlot(14,23),tacticalGridSlot(23,32)] },
+  { nome:'Cercados',       slots:[tacticalGridSlot(6),tacticalGridSlot(14),tacticalGridSlot(23),tacticalGridSlot(33)] },
+  { nome:'Defensiva',      slots:[tacticalGridSlot(2),tacticalGridSlot(11),tacticalGridSlot(20),tacticalGridSlot(29)] },
+  { nome:'Ofensiva',       slots:[tacticalGridSlot(5),tacticalGridSlot(14),tacticalGridSlot(23),tacticalGridSlot(32)] },
+  { nome:'Vanguarda em V', slots:[tacticalGridSlot(14,23),tacticalGridSlot(12,13,21,22),tacticalGridSlot(2),tacticalGridSlot(29)] },
+  { nome:'Asa Dupla',      slots:[tacticalGridSlot(5),tacticalGridSlot(32),tacticalGridSlot(3),tacticalGridSlot(30)] },
+  { nome:'Diamante',       slots:[tacticalGridSlot(14,23),tacticalGridSlot(3,4),tacticalGridSlot(30,31),tacticalGridSlot(11,20)] },
+  { nome:'Escalonada',     slots:[tacticalGridSlot(5),tacticalGridSlot(13),tacticalGridSlot(21),tacticalGridSlot(29)] },
+  { nome:'Berserker',      slots:[tacticalGridSlot(17),tacticalGridSlot(4,5),tacticalGridSlot(13,22),tacticalGridSlot(31,32)] }
 ];
 {
   const storedFormation=Number(localStorage.getItem('12r_formation'));
@@ -1686,11 +1720,7 @@ const SCENE_ENEMY_FORMATIONS = [
 /* Grade inimiga 3×3. Linha 1 está mais distante (menor), Linha 3 mais próxima
    (maior). A terceira coluna fica livre para a leitura/ataques, mas é uma vaga
    válida para expansões futuras. */
-const ENEMY_GRID_COORDS={
-  1:{y:42,z:18},
-  2:{y:22,z:34},
-  3:{y:4,z:46}
-};
+const ENEMY_GRID_COORDS=ENEMY_GRID_DEPTH;
 const ENEMY_GRID_X={1:73,2:84,3:94};
 const ENEMY_GRID_NORMAL=[[1,2],[2,1],[2,3],[2,2]];
 function enemyGridSlot(column,row,isBoss=false){
@@ -2924,10 +2954,11 @@ function applyFormationSlot(unit,slot,width){
   /* Ajuste fino mobile: comprime a formação para nenhuma unidade/nome sair da tela */
   const estreito=window.innerWidth<=600;
   const enemySlot=unit.classList.contains('enemy-unit');
+  const gridAnchored=Array.isArray(slot.gridRefs)&&slot.gridRefs.length>0;
   const x=estreito
-    ? (enemySlot?Math.max(8,Math.min(92,slot.x)):Math.max(4,Math.min(76,4+slot.x*1.25)))
+    ? (enemySlot?Math.max(8,Math.min(92,slot.x)):gridAnchored?Math.max(4,Math.min(96,slot.x)):Math.max(4,Math.min(76,4+slot.x*1.25)))
     : slot.x;
-  const y=estreito?50+(slot.y-50)*0.9:slot.y;
+  const y=estreito&&!gridAnchored?50+(slot.y-50)*0.9:slot.y;
   /* v10.0.1: a compressao anterior encolhia a formacao e ainda diminuia a
      largura do avatar. Mantemos a posicao segura, mas devolvemos a escala
      visual original dos chibis e inimigos. */
@@ -2968,6 +2999,8 @@ function applyFormationSlot(unit,slot,width){
     delete unit.dataset.gridColumn;
     delete unit.dataset.gridRow;
   }
+  if(gridAnchored) unit.dataset.gridRefs=slot.gridRefs.join(',');
+  else delete unit.dataset.gridRefs;
   unit.style.setProperty('--slot-x',x+'%');
   unit.style.setProperty('--slot-y',yFin+'%');
   /* nitidez: a escala é aplicada na LARGURA (layout) — o navegador rasteriza o sprite
@@ -7607,6 +7640,10 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
         bosses:[1,2,3,4].map(count=>simplify(planEnemyGridSlots(make(count,count-1),true)))
       };
     },
+    heroFormationGridProbe:()=>HERO_FORMATIONS.map(formation=>({
+      name:formation.nome,
+      slots:formation.slots.map(slot=>({refs:[...slot.gridRefs],x:Number(slot.x.toFixed(4)),y:Number(slot.y.toFixed(4)),z:slot.z,side:slot.gridSide}))
+    })),
     heroAuraProbe:()=>{
       const heroIdx=ACTIVE[0];
       const active=KINGDOMS[heroIdx]?.abilities.find(ability=>ability.kind==='active');

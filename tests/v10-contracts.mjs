@@ -17,17 +17,17 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=10\.0\.50/);
-  assert.match(html,/v10-config\.js\?v=10\.0\.50/);
-  assert.match(html,/v10-animations\.js\?v=10\.0\.50/);
-  assert.match(html,/game-v10\.js\?v=10\.0\.50/);
-  assert.match(config,/version:'v10\.0\.50'/);
-  assert.match(sw,/12r-v10\.0\.50/);
+  assert.match(html,/styles-v10\.css\?v=10\.0\.51/);
+  assert.match(html,/v10-config\.js\?v=10\.0\.51/);
+  assert.match(html,/v10-animations\.js\?v=10\.0\.51/);
+  assert.match(html,/game-v10\.js\?v=10\.0\.51/);
+  assert.match(config,/version:'v10\.0\.51'/);
+  assert.match(sw,/12r-v10\.0\.51/);
   assert.doesNotMatch(html,/game-v9|styles-v9|v9\.3-config/);
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v10\.0\.50/);
+  assert.match(sw,/12r-v10\.0\.51/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -147,7 +147,12 @@ check('física permanente de derrota mantém identidade, chão e repouso',()=>{
 check('v11 substitui formações antigas e mantém seleção direta dos heróis',()=>{
   const block=game.match(/const HERO_FORMATIONS = \[([\s\S]*?)\n\];/)?.[1]||'';
   assert.equal((block.match(/\{ nome:/g)||[]).length,10,'a formação precisa ter exatamente 10 opções');
-  for(const name of ['Líder','Guarda-costas','Cercados','Defensiva','Ofensiva','Vanguarda em V','Asa Dupla','Diamante','Escalonada','Cruz de Proteção']) assert.ok(block.includes(`nome:'${name}'`),`${name} ausente`);
+  for(const name of ['Líder','Guarda-costas','Cercados','Defensiva','Ofensiva','Vanguarda em V','Asa Dupla','Diamante','Escalonada','Berserker']) assert.ok(block.includes(`nome:'${name}'`),`${name} ausente`);
+  assert.match(game,/function tacticalGridCell\(cellNumber\)/);
+  assert.match(game,/function tacticalGridSlot\(\.\.\.cellNumbers\)/);
+  assert.match(block,/nome:'Líder',[\s\S]*tacticalGridSlot\(14,23\)[\s\S]*tacticalGridSlot\(4,13\)[\s\S]*tacticalGridSlot\(13,22\)[\s\S]*tacticalGridSlot\(22,31\)/);
+  assert.match(block,/nome:'Vanguarda em V',[\s\S]*tacticalGridSlot\(12,13,21,22\)/);
+  assert.match(block,/nome:'Berserker',[\s\S]*tacticalGridSlot\(17\)/);
   assert.match(html,/id="heroSelectionLayer"/);
   assert.match(game,/heroSelectionLayerEl/);
   assert.match(game,/arrow\.addEventListener\('click'/);
@@ -196,7 +201,7 @@ check('v13 limita o grid perspectivado à Cidade das Cerejeiras',()=>{
   assert.match(css,/\.physical-floor-cell\.enemy-grid-cell/);
 });
 
-check('passagem gráfica v10.0.50 mantém física e dá resposta ao combate',()=>{
+check('passagem gráfica v10.0.51 mantém física e dá resposta ao combate',()=>{
   for(const needle of ['ensureArenaVisualLayers','applyArenaVisualProfile','pulseArenaLighting','spawnCombatAttackFx','enemyFxRealm','arena-light-pulse','arena-depth','arena-lighting','arenaEffects','arenaProfiles','fx-attack-signature','attack-fogo','attack-gelo']) assert.ok(game.includes(needle)||css.includes(needle)||config.includes(needle),`${needle} ausente`);
   assert.match(game,/if\(kind==='impact'\|\|kind==='critical'\) pulseArenaLighting\(color,target,kind\)/);
   assert.match(css,/body\.game-active \.unit-ground-shadow\{display:block/);
@@ -283,7 +288,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=10.0.50');
+  const deferredGame=html.indexOf('game-v10.js?v=10.0.51');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
