@@ -245,6 +245,8 @@ test('tela final celebra dentro do cenário com heróis vitoriosos e inimigos ca
     return {
       visible:overlay?.classList.contains('show'),
       parent:overlay?.parentElement?.id||'',
+      dockVisible:getComputedStyle(document.getElementById('victoryReportDock')).display!=='none',
+      combatHidden:getComputedStyle(document.querySelector('.combat-console')).display==='none',
       arenaVictory:document.getElementById('arena')?.classList.contains('victory-arena-state'),
       heroesVictory:[...document.querySelectorAll('.party-row .avatar-circle')].every(avatar=>avatar.dataset.action==='victory'),
       deadEnemies:document.querySelectorAll('.enemy-unit.dead').length,
@@ -254,7 +256,7 @@ test('tela final celebra dentro do cenário com heróis vitoriosos e inimigos ca
       noArenaAnimation:getComputedStyle(document.getElementById('arena')).animationName
     };
   });
-  expect(state).toMatchObject({visible:true,parent:'arena',arenaVictory:true,heroesVictory:true,report:true,noArenaAnimation:'none'});
+  expect(state).toMatchObject({visible:true,parent:'victoryReportDock',dockVisible:true,combatHidden:true,arenaVictory:true,heroesVictory:true,report:true,noArenaAnimation:'none'});
   expect(state.deadEnemies).toBe(state.enemiesTotal);
   expect(state.stars).toBe(3);
   expect(errors).toEqual([]);
@@ -972,7 +974,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.35');
+  expect(registration.caches).toContain('12r-v10.0.36');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1132,7 +1134,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.35');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.36');
 
     // Produção não expõe __12rQA: este trecho percorre somente controles reais.
     if(await page.locator('#introScreen').isVisible()) await page.locator('#introNext').click();

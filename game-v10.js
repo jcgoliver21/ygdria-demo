@@ -2371,6 +2371,38 @@ function spawnCombatFx(kind,target,color='#fff',duration=650){
   window.setTimeout(()=>releaseCombatFx(fx,lease),duration);
 }
 
+/* Ataque comum: liga visualmente a origem ao alvo sem tocar no transform do
+   sprite. Cada reino escolhe uma assinatura própria, enquanto o pool limita
+   a quantidade de nós e o mesmo efeito serve para cartas e inimigos. */
+function spawnCombatAttackFx(realmId,source,target,color='#fff',kind='impact'){
+  const layer=document.getElementById('specialFxLayer');
+  if(!layer||!source||!target||!particlesEnabled||reducedMotion||reduceFlashes) return;
+  const quality=resolvedGraphicsQuality();
+  if(V10.quality?.arenaEffects?.[quality]===false && kind!=='critical') return;
+  const lr=layer.getBoundingClientRect(), sr=source.getBoundingClientRect(), tr=target.getBoundingClientRect();
+  const sx=sr.left-lr.left+sr.width/2, sy=sr.top-lr.top+sr.height/2;
+  const tx=tr.left-lr.left+tr.width/2, ty=tr.top-lr.top+tr.height/2;
+  const dx=tx-sx, dy=ty-sy, dist=Math.max(24,Math.hypot(dx,dy));
+  const realm=REALM_FX_PROFILE[realmId]?realmId:'humanos';
+  const fx=acquireCombatFx(`fx-attack-signature attack-${realm}`);
+  const lease=fx.__fxLease;
+  fx.dataset.fx='attack-signature';
+  fx.dataset.attackKind=kind;
+  fx.style.left=sx+'px';
+  fx.style.top=sy+'px';
+  fx.style.color=color;
+  fx.style.setProperty('--attack-color',color);
+  fx.style.setProperty('--attack-light',kind==='critical'?'#fff7cf':color);
+  fx.style.setProperty('--attack-angle',Math.atan2(dy,dx)*180/Math.PI+'deg');
+  fx.style.setProperty('--attack-length',dist+'px');
+  fx.style.setProperty('--attack-dx',dx+'px');
+  fx.style.setProperty('--attack-dy',dy+'px');
+  fx.innerHTML='<span class="attack-trail"></span><span class="attack-trail secondary"></span><span class="attack-contact"></span>';
+  layer.appendChild(fx);
+  trimCombatFx();
+  window.setTimeout(()=>releaseCombatFx(fx,lease),kind==='critical'?980:820);
+}
+
 /* v9 · Partículas temáticas por reino: cada ataque tem identidade própria.
    angle em graus (0=direita, -90=sobe, 90=cai); dist em px; dur em ms. */
 const REALM_FX_PROFILE={
@@ -2968,6 +3000,18 @@ function enemyAuraPalette(enemy){
   if(/espectro/.test(text)) return ['#4ba5a8','#b6ffff','#7b66c9','#d9d2ff'];
   if(/trevas|servo/.test(text)) return ['#632e78','#d7a0ee','#a43f72','#ffb5dd'];
   return ['#ae4f44','#ffd0a5','#d47759','#ffe1b8'];
+}
+
+function enemyFxRealm(enemy){
+  const text=(enemy?.name||'').toLowerCase();
+  if(/dragão|carmesim|brasa|fogo/.test(text)) return 'fogo';
+  if(/limo|slime|água|oceano/.test(text)) return 'agua';
+  if(/pedra|golem|sentinela/.test(text)) return 'terra';
+  if(/lobo|harpia|vento|raivoso/.test(text)) return 'vento';
+  if(/espectro|trevas|vulto|sombra|morto/.test(text)) return 'sombras';
+  if(/gelo|blizz/.test(text)) return 'gelo';
+  if(/chuva|tempest/.test(text)) return 'chuvas';
+  return 'humanos';
 }
 
 function renderEnemies(){
@@ -5830,6 +5874,9 @@ function applyDamageToEnemy(dmg, colorIdx, targetIdxOverride){
        produzia piscadas e uma falsa mudança de escala no celular. */
     playEnemyAction(idx,'hit');
     const hitColor = colorIdx!==null && colorIdx!==undefined && KINGDOMS[colorIdx] ? KINGDOMS[colorIdx].colorLight : '#fff';
+    const sourceUnit = colorIdx!==null && colorIdx!==undefined && KINGDOMS[colorIdx]
+      ? document.getElementById('party-'+KINGDOMS[colorIdx].id+'-avatar') : null;
+    if(sourceUnit) spawnCombatAttackFx(KINGDOMS[colorIdx].iconId||KINGDOMS[colorIdx].id,sourceUnit,enemyUnit,hitColor,finalDamage>=100?'critical':'impact');
     spawnCombatFx(finalDamage>=100?'critical':'impact',enemyUnit,hitColor,560);
     spawnCombatFx('hit',enemyUnit,hitColor,440);
     if(colorIdx!==null && colorIdx!==undefined && KINGDOMS[colorIdx]) spawnRealmParticles(KINGDOMS[colorIdx].iconId||KINGDOMS[colorIdx].id,enemyUnit,8);
@@ -6046,7 +6093,13 @@ function enemyCounterAttack(){
     updatePlayerHP();
     if(dmg>0) pulseHpEffect('damage',800);
     if(dmg>0) ACTIVE.forEach(heroIdx=>playHeroAction(heroIdx,'hit'));
-    if(dmg>0) spawnCombatFx(enemy.isBoss?'critical':'impact',document.getElementById('playerHpAnchor'),enemyAuraPalette(enemy)[1],560);
+    if(dmg>0){
+      const enemySource=document.getElementById('enemyPortrait-'+idx);
+      const playerTarget=document.getElementById('playerHpAnchor');
+      const enemyColor=enemyAuraPalette(enemy)[1];
+      spawnCombatAttackFx(enemyFxRealm(enemy),enemySource,playerTarget,enemyColor,enemy.isBoss?'critical':'impact');
+      spawnCombatFx(enemy.isBoss?'critical':'impact',playerTarget,enemyColor,560);
+    }
     sfxCombatAttack(enemy.etype||enemy.id||enemy.name,'enemy');
     haptic([25,20,25]);
     if(dmg>0) setBattleStatus(T(`${L(enemy.name)} contra-atacou e causou ${dmg} de dano.`,`${L(enemy.name)} counterattacked for ${dmg} damage.`,`${L(enemy.name)} contraatacó y causó ${dmg} de daño.`));
@@ -6335,19 +6388,23 @@ function onStageCleared(){
   }
 }
 
-const victoryOverlayHome=document.getElementById('dungeonClearOverlay')?.parentElement||null;
+const victoryOverlayHome=document.getElementById('victoryReportDock')||document.getElementById('dungeonClearOverlay')?.parentElement||null;
 function mountVictoryOverlay(){
   const overlay=document.getElementById('dungeonClearOverlay');
-  if(!overlay||!arenaEl) return;
-  if(overlay.parentElement!==arenaEl) arenaEl.appendChild(overlay);
-  overlay.classList.add('victory-arena-overlay');
+  const dock=document.getElementById('victoryReportDock');
+  const frame=document.querySelector('.game-frame');
+  if(!overlay||!arenaEl||!dock) return;
+  if(overlay.parentElement!==dock) dock.appendChild(overlay);
+  overlay.classList.add('victory-arena-overlay','victory-docked');
+  frame?.classList.add('victory-celebration');
   arenaEl.classList.add('victory-arena-state');
 }
 function restoreVictoryOverlay(){
   const overlay=document.getElementById('dungeonClearOverlay');
   if(!overlay) return;
   if(victoryOverlayHome&&overlay.parentElement!==victoryOverlayHome) victoryOverlayHome.appendChild(overlay);
-  overlay.classList.remove('victory-arena-overlay');
+  overlay.classList.remove('victory-arena-overlay','victory-docked');
+  document.querySelector('.game-frame')?.classList.remove('victory-celebration');
   arenaEl?.classList.remove('victory-arena-state');
 }
 function showOverlay(id){
