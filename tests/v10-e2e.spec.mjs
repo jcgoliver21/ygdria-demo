@@ -92,17 +92,25 @@ test('física de perspectiva reduz apenas unidades distantes e mantém os pés a
   await page.setViewportSize({width:390,height:844});
   await page.evaluate(()=>{ worldRun.active=true; worldRun.fase=0; worldRun.nivel=1; chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
   const probe=await page.evaluate(()=>{
-    const units=[...document.querySelectorAll('.party-row .hero-unit')].map(unit=>({
-      depth:Number(unit.dataset.depth), width:Number.parseFloat(getComputedStyle(unit).getPropertyValue('--slot-w')),
-      bottom:Number.parseFloat(getComputedStyle(unit).getPropertyValue('--slot-y')),
-      shadow:Number.parseFloat(getComputedStyle(unit).getPropertyValue('--depth-shadow-scale'))
-    })).sort((a,b)=>a.depth-b.depth);
-    return {physics:document.getElementById('arena')?.classList.contains('perspective-physics'),near:units[0],far:units.at(-1)};
+    const measure=form=>{
+      formationIndex=form; applyBattleFormation();
+      const unit=document.querySelector('.party-row .hero-unit');
+      const avatar=unit?.querySelector('.avatar-circle');
+      const stage=unit?.querySelector('.unit-stage');
+      const rect=avatar?.getBoundingClientRect();
+      const stageRect=stage?.getBoundingClientRect();
+      return {depth:Number(unit?.dataset.depth),scale:Number(unit?.dataset.depthScale),height:rect?.height,footGap:Math.abs((stageRect?.bottom||0)-(rect?.bottom||0))};
+    };
+    const near=measure(0); // Líder: Adriel na faixa intermediária
+    const far=measure(2);  // Cercados: Adriel no fundo do piso
+    return {physics:document.getElementById('arena')?.classList.contains('perspective-physics'),near,far};
   });
   expect(probe.physics).toBe(true);
   expect(probe.near.depth).toBeLessThan(probe.far.depth);
-  expect(probe.near.width).toBeGreaterThan(probe.far.width);
-  expect(probe.near.shadow).toBeGreaterThan(probe.far.shadow);
+  expect(probe.near.scale).toBeGreaterThan(probe.far.scale);
+  expect(probe.near.height).toBeGreaterThan(probe.far.height*1.1);
+  expect(probe.near.footGap).toBeLessThan(1.5);
+  expect(probe.far.footGap).toBeLessThan(1.5);
   expect(errors).toEqual([]);
 });
 
@@ -1042,7 +1050,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.46');
+  expect(registration.caches).toContain('12r-v10.0.47');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1202,7 +1210,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.46');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.47');
 
     // Produção não expõe __12rQA: este trecho percorre somente controles reais.
     if(await page.locator('#introScreen').isVisible()) await page.locator('#introNext').click();

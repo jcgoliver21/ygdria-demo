@@ -2910,9 +2910,10 @@ function applyFormationSlot(unit,slot,width){
      no tamanho final em vez de ampliar um raster menor (que ficava embaçado) */
   unit.style.setProperty('--slot-scale','1');
   unit.style.setProperty('--slot-z',String(slot.z));
+  unit.style.setProperty('--depth-scale',depthScale.toFixed(3));
   unit.style.setProperty('--depth-shadow-scale',shadowScale.toFixed(3));
   unit.style.setProperty('--depth-shadow-opacity',shadowOpacity.toFixed(3));
-  unit.style.setProperty('--slot-w',Math.round(w*s*depthScale)+'px');
+  unit.style.setProperty('--slot-w',Math.round(w*s)+'px');
 }
 /* Reaplica a formação ao girar/redimensionar a tela durante a batalha */
 let formResizeTimer=null;
