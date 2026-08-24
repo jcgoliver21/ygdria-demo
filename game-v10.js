@@ -2750,11 +2750,10 @@ function renderCerejeiraTacticalGrid(){
   const floorTop=clamp((arenaRect.height*top-rowTop)/rowRect.height,0,.92);
   const floorBottom=clamp((arenaRect.height*bottom-rowTop)/rowRect.height,floorTop+.08,1);
   const floorHeight=(floorBottom-floorTop)*rowRect.height;
-  /* Grade tática canônica: seis colunas de heróis e três de inimigos. O setor
-     inimigo encerra na terceira linha (7–9, 16–18, 25–27); 34–36 deixam de
-     ser vagas de combate para a formação nunca avançar sobre o HUD. */
+  /* Grade tática canônica aprovada: três linhas de solo, numeradas de 01 a
+     27. O setor inimigo é o 3×3 vermelho nas casas 07–09, 16–18 e 25–27. */
   const columns=9;
-  const rows=4;
+  const rows=3;
   const cell=Math.max(24,Math.floor(rowRect.width/columns));
   const count=columns*rows;
   const signature=`${columns}:${rows}:${cell}:${floorTop.toFixed(3)}:${floorBottom.toFixed(3)}`;
@@ -2771,12 +2770,10 @@ function renderCerejeiraTacticalGrid(){
       const label=String(i+1).padStart(2,'0');
       const enemyColumn=column-(columns-3);
       const enemyCell=enemyColumn>=1&&row<=3;
-      const retiredEnemyCell=enemyColumn>=1&&row>3;
       const classes=['physical-floor-cell'];
       if(enemyCell) classes.push('enemy-grid-cell');
-      if(retiredEnemyCell) classes.push('enemy-grid-retired');
       const side=enemyCell?'enemy':'party';
-      return `<span class="${classes.join(' ')}" data-grid-slot="${label}" data-grid-side="${side}" data-grid-column="${enemyCell?enemyColumn:column}" data-grid-row="${row}" aria-label="Casa de solo ${label}">${retiredEnemyCell?'':label}</span>`;
+      return `<span class="${classes.join(' ')}" data-grid-slot="${label}" data-grid-side="${side}" data-grid-column="${enemyCell?enemyColumn:column}" data-grid-row="${row}" aria-label="Casa de solo ${label}">${label}</span>`;
     }).join('');
   }
 }

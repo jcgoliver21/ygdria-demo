@@ -98,7 +98,7 @@ test('grade inimiga usa três por três e segue as formações canônicas',async
     plans:window.__12rQA.enemyGridPlanProbe()
   }));
   expect(probe.activeCells).toEqual(['07','08','09','16','17','18','25','26','27']);
-  expect(probe.retiredCells).toBe(3);
+  expect(probe.retiredCells).toBe(0);
   expect(probe.singleEnemy).toEqual({column:'1',row:'2'});
   expect(probe.plans.normal).toEqual([
     [{column:1,row:2,boss:false}],
@@ -1078,7 +1078,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.48');
+  expect(registration.caches).toContain('12r-v10.0.49');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1238,7 +1238,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.48');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.49');
 
     // Produção não expõe __12rQA: este trecho percorre somente controles reais.
     if(await page.locator('#introScreen').isVisible()) await page.locator('#introNext').click();
