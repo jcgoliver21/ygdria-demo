@@ -84,13 +84,13 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
-        - name: Wait for GitHub Pages v10
-          env:
-            GH_TOKEN: ${{ github.token }}
-          run: |
-            expected_asset="$(grep -oE 'game-v10\.js\?v=[0-9.]+' play.html | head -n 1)"
-            test -n "${expected_asset}"
-            for attempt in {1..120}; do
+      - name: Wait for GitHub Pages v10
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          expected_asset="$(grep -oE 'game-v10\.js\?v=[0-9.]+' play.html | head -n 1)"
+          test -n "${expected_asset}"
+          for attempt in {1..120}; do
             published_sha="$(curl --fail --silent --show-error \
               --header 'Accept: application/vnd.github+json' \
               --header "Authorization: Bearer ${GH_TOKEN}" \
@@ -100,7 +100,7 @@ jobs:
             if [ "${published_sha}" = "${GITHUB_SHA}" ] && \
                curl --fail --silent --show-error \
                  "https://jcgoliver21.github.io/ygdria-demo/play.html?ci=${GITHUB_SHA}" \
-                  | grep -Fq "${expected_asset}"; then
+                 | grep -Fq "${expected_asset}"; then
               exit 0
             fi
             sleep 5
