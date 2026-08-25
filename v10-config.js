@@ -2,8 +2,8 @@
    Regras de interface e qualidade ficam aqui para evitar valores divergentes. */
 (function exposeV10Config(){
   const config={
-    version:'v10.0.58',
-    label:'VERSÃO 10',
+    version:'v11.0.0',
+    label:'VERSÃO 11',
     release:'2026-08-14',
     battle:{
       phases:['idle','resolving','heroes','enemies','transition','paused'],

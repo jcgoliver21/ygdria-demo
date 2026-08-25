@@ -19,13 +19,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=10\.0\.58/);
-  assert.match(html,/v10-config\.js\?v=10\.0\.58/);
-  assert.match(html,/v10-animations\.js\?v=10\.0\.58/);
-  assert.match(html,/humanos-lore-v10\.js\?v=10\.0\.58/);
-  assert.match(html,/game-v10\.js\?v=10\.0\.58/);
-  assert.match(config,/version:'v10\.0\.58'/);
-  assert.match(sw,/12r-v10\.0\.58/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.0/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.0/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.0/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.0/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.0/);
+  assert.match(config,/version:'v11\.0\.0'/);
+  assert.match(sw,/12r-v11\.0\.0/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -53,7 +53,7 @@ check('Markdown editável é a fonte canônica das dez fases humanas',()=>{
   for(const key of ['cherry-petals','sacred-pink-light','festival-confetti','shadow-fog','library-pages','fireworks','darkness','total-darkness']) assert.ok(css.includes(key),`efeito ${key} ausente`);
   assert.match(game,/const HUMAN_LORE=globalThis\.YGDRIA_HUMANOS_LORE/);
   assert.match(game,/canonicalAfterSequence/);
-  assert.match(game,/STORY_CAMPAIGN_VERSION='10\.0\.58'/);
+  assert.match(game,/STORY_CAMPAIGN_VERSION='11\.0\.0'/);
 });
 
 check('narrador usa caixa e personagens ou feras usam balões ancorados',()=>{
@@ -73,7 +73,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v10\.0\.58/);
+  assert.match(sw,/12r-v11\.0\.0/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -162,7 +162,7 @@ check('inimigos exclusivos usam folhas reais, impactos e arena viva',()=>{
   assert.doesNotMatch(game,/class="boss-presence-mark"|aria-hidden="true">✦/,'marcador de estrela não deve renderizar sobre inimigos');
   assert.match(game,/return e\?\.etype\|\|null;/,'arte humana individual não pode cair no guarda genérico');
   assert.doesNotMatch(game,/assets\\\/enemies\\\/humanos\\\/.+human-guard/,'arte humana não pode ser mapeada ao guarda genérico');
-  for(const needle of ['enemyOriginalAttack','arena-petals','arena-cold-fog','arena-world-drift','.enemy-unit.dead .unit-ground-shadow','@keyframes enemyDefeatFall']) assert.ok(css.includes(needle),`${needle} ausente`);
+  for(const needle of ['enemyOriginalAttack','arena-petals','arena-cold-fog','arena-world-drift','.enemy-unit.dead .unit-ground-shadow','@keyframes enemyDefeatGroundedFallback']) assert.ok(css.includes(needle),`${needle} ausente`);
 });
 
 check('Biblioteca da Eternidade faz as páginas cair e acumular',()=>{
@@ -269,6 +269,16 @@ check('passagem gráfica v10.0.54 mantém física e dá resposta ao combate',()=
   assert.equal(/@keyframes enemyAttackArc[\s\S]+?scale\(/.test(css),true);
 });
 
+check('v11 usa folhas reais no repouso, VFX separado e fallback de derrota sem giro horizontal',()=>{
+  for(const needle of ['arena-midground-light','attack-origin','attack-mote','attackOrigin','attackMote','enemyDefeatGroundedFallback']) assert.ok(game.includes(needle)||css.includes(needle),`${needle} ausente`);
+  assert.match(game,/fx\.innerHTML='<span class="attack-origin"><\/span><span class="attack-trail"><\/span>/);
+  assert.match(css,/\.hero-sprite-image\{ animation:none; transform-origin:50% 100%; \}/);
+  assert.match(css,/\.summon-sprite\{ animation:none!important; \}/);
+  assert.doesNotMatch(css,/enemyDefeatFall/);
+  assert.doesNotMatch(css,/enemyDefeatGroundedFallback[^}]*rotate\(-90deg\)/);
+  assert.doesNotMatch(css,/enemyDefeatGroundedFallback[^}]*rotate\(90deg\)/);
+});
+
 check('vitória preserva a arena e separa cabeçalho do relatório inferior',()=>{
   for(const needle of ['victoryOverlayHome','victoryReportDock','mountVictoryOverlay','restoreVictoryOverlay','victoryArenaHeader','victoryTopIds','victoryNextStage','victory-arena-overlay','victory-docked','victory-celebration','victory-arena-state']) assert.ok(game.includes(needle)||css.includes(needle)||html.includes(needle),`${needle} ausente`);
   assert.match(html,/id="dungeonClearOverlay" role="dialog"/);
@@ -345,7 +355,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=10.0.58');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.0');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
