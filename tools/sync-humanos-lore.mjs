@@ -87,7 +87,7 @@ const classifyAtmosphere=text=>{
   if(value.includes('nevoa')) return {key:'shadow-fog'};
   if(value.includes('folhas de livros')) return {key:'library-pages',progressive:true};
   if(value.includes('fogos de artificio')) return {key:'fireworks'};
-  if(value.includes('nada /')&&value.includes('missao 5')) return {key:'none',missionFive:'darkness'};
+  if(value.includes('nada /')&&value.includes('missao 5')) return {key:'none',missionFive:value.includes('escuridao total')?'total-darkness':'darkness'};
   if(value.includes('escuridao')) return {key:'darkness'};
   return {key:'none'};
 };

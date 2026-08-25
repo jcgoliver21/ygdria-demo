@@ -5,7 +5,7 @@
   root.YGDRIA_HUMANOS_LORE=Object.freeze({
   "schema": 1,
   "source": "docs/REINO-HUMANOS-FASES-EDITAVEL.md",
-  "sourceHash": "d43601434925a77f2a9774caaedb0235697dcd625ee6f309323b14c1b864a7f9",
+  "sourceHash": "60de32653dfb9be2c02cf4a6c930fa46f8786bc6f2ea4ad3b5da6c24d110683f",
   "generatedAt": "deterministic",
   "phases": [
     {
@@ -1120,9 +1120,9 @@
         "Julius"
       ],
       "visual": {
-        "description": "Nada / Escuridão na missão 5",
+        "description": "Nada / Escuridão total na missão 5",
         "key": "none",
-        "missionFive": "darkness"
+        "missionFive": "total-darkness"
       },
       "before": "Ao chegarem no castelo, todos os soldados já sabem do ocorrido, e acusam o grupo de terem arquitetado o sequestro da princesa. Jules havia articulado tudo. E uma batalha começa!",
       "allowed": [

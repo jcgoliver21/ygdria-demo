@@ -130,7 +130,87 @@ test('lore canônica controla fases, elencos, falas e atmosferas no runtime',asy
   expect(probe.garethLine).toEqual({name:'Gareth',t:'Não estou gostando nada disso pessoal.'});
   expect(probe.finalSpeakers).toEqual(['Narrador','Cedric','Narrador','Narrador']);
   expect(probe.atmospheres).toEqual(['cherry-petals','sacred-pink-light','none','none','festival-confetti','shadow-fog','library-pages','fireworks','darkness','none']);
-  expect(probe.missionFive).toBe('darkness');
+  expect(probe.missionFive).toBe('total-darkness');
+  expect(errors).toEqual([]);
+});
+
+test('atmosferas canônicas permanecem legíveis no mobile e a missão final usa escuridão total',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.setViewportSize({width:390,height:844});
+  const probe=await page.evaluate(()=>{
+    worldRun.active=true;
+    worldRun.fase=0;
+    worldRun.nivel=1;
+    chosenIds=[0,1,2,3];
+    beginGame(0);
+    skipStory();
+    const sample=(fase,nivel=1)=>{
+      worldRun.fase=fase;
+      worldRun.nivel=nivel;
+      renderStageProgress();
+      const arena=document.getElementById('arena');
+      const atmosphere=arena.querySelector('.arena-atmosphere');
+      const drift=arena.querySelector('.arena-world-drift');
+      const fog=arena.querySelector('.arena-cold-fog');
+      const atmosphereStyle=getComputedStyle(atmosphere);
+      const before=getComputedStyle(atmosphere,'::before');
+      const after=getComputedStyle(atmosphere,'::after');
+      const driftStyle=getComputedStyle(drift);
+      const fogStyle=getComputedStyle(fog);
+      return {
+        key:arena.dataset.missionAtmosphere,
+        pointerEvents:atmosphereStyle.pointerEvents,
+        backgroundImage:atmosphereStyle.backgroundImage,
+        backgroundColor:atmosphereStyle.backgroundColor,
+        beforeOpacity:Number(before.opacity),
+        beforeAnimation:before.animationName,
+        afterOpacity:Number(after.opacity),
+        afterAnimation:after.animationName,
+        driftOpacity:Number(driftStyle.opacity),
+        driftAnimation:driftStyle.animationName,
+        fogOpacity:Number(fogStyle.opacity),
+        fogHeight:fog.getBoundingClientRect().height,
+        arenaHeight:arena.getBoundingClientRect().height
+      };
+    };
+    return {
+      sacred:sample(1),
+      fog:sample(5),
+      pagesStart:sample(6,1),
+      pagesEnd:sample(6,5),
+      fireworks:sample(7),
+      darkness:sample(8),
+      totalDarkness:sample(9,5)
+    };
+  });
+  expect(probe.sacred).toMatchObject({key:'sacred-pink-light',pointerEvents:'none',driftAnimation:'sacredPinkBreath',beforeAnimation:'sacredRaySweep',afterAnimation:'sacredMoteRise'});
+  expect(probe.sacred.driftOpacity).toBeGreaterThan(.3);
+  expect(probe.sacred.beforeOpacity).toBeGreaterThan(.4);
+  expect(probe.fog).toMatchObject({key:'shadow-fog',pointerEvents:'none',fogOpacity:1});
+  expect(probe.fog.fogHeight/probe.fog.arenaHeight).toBeGreaterThan(.65);
+  expect(probe.pagesStart).toMatchObject({key:'library-pages',driftAnimation:'pageFlutter',beforeAnimation:'pageFlutterNear'});
+  expect(probe.pagesStart.driftOpacity).toBeGreaterThan(.5);
+  expect(probe.pagesEnd.driftOpacity).toBeGreaterThan(probe.pagesStart.driftOpacity);
+  expect(probe.pagesEnd.afterOpacity).toBeGreaterThan(probe.pagesStart.afterOpacity);
+  expect(probe.fireworks).toMatchObject({key:'fireworks',driftAnimation:'fireworkBloom',beforeAnimation:'fireworkCrown',afterAnimation:'fireworkCrown'});
+  expect(probe.darkness.key).toBe('darkness');
+  expect(probe.totalDarkness.key).toBe('total-darkness');
+  expect(probe.totalDarkness.backgroundColor).toBe('rgba(0, 0, 0, 0.94)');
+  expect(probe.totalDarkness.backgroundImage).not.toBe(probe.darkness.backgroundImage);
+  await page.emulateMedia({reducedMotion:'reduce'});
+  const reduced=await page.evaluate(()=>{
+    worldRun.fase=7;
+    worldRun.nivel=1;
+    renderStageProgress();
+    const arena=document.getElementById('arena');
+    const atmosphere=arena.querySelector('.arena-atmosphere');
+    return {
+      drift:getComputedStyle(arena.querySelector('.arena-world-drift')).animationName,
+      before:getComputedStyle(atmosphere,'::before').animationName,
+      after:getComputedStyle(atmosphere,'::after').animationName
+    };
+  });
+  expect(reduced).toEqual({drift:'none',before:'none',after:'none'});
   expect(errors).toEqual([]);
 });
 
@@ -1237,7 +1317,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.54');
+  expect(registration.caches).toContain('12r-v10.0.55');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1397,7 +1477,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.54');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.55');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

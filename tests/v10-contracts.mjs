@@ -18,13 +18,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=10\.0\.54/);
-  assert.match(html,/v10-config\.js\?v=10\.0\.54/);
-  assert.match(html,/v10-animations\.js\?v=10\.0\.54/);
-  assert.match(html,/humanos-lore-v10\.js\?v=10\.0\.54/);
-  assert.match(html,/game-v10\.js\?v=10\.0\.54/);
-  assert.match(config,/version:'v10\.0\.54'/);
-  assert.match(sw,/12r-v10\.0\.54/);
+  assert.match(html,/styles-v10\.css\?v=10\.0\.55/);
+  assert.match(html,/v10-config\.js\?v=10\.0\.55/);
+  assert.match(html,/v10-animations\.js\?v=10\.0\.55/);
+  assert.match(html,/humanos-lore-v10\.js\?v=10\.0\.55/);
+  assert.match(html,/game-v10\.js\?v=10\.0\.55/);
+  assert.match(config,/version:'v10\.0\.55'/);
+  assert.match(sw,/12r-v10\.0\.55/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -40,14 +40,14 @@ check('Markdown editável é a fonte canônica das dez fases humanas',()=>{
   assert.equal(payload.phases[5].missions[1].lines[0].speaker,'Gareth');
   assert.equal(payload.phases[7].fixed.length,3);
   assert.deepEqual(payload.phases[9].allowed,['adriel-jovem','gareth','roland','elizier']);
-  assert.equal(payload.phases[9].visual.missionFive,'darkness');
+  assert.equal(payload.phases[9].visual.missionFive,'total-darkness');
   assert.equal(payload.phases[9].after.at(-3).speaker,'Cedric');
   assert.equal(payload.phases[0].missions[0].lines[0].text,'Blub... ploc-ploc... splash!');
   assert.equal(payload.phases[0].missions[1].lines[1].text,'Grrrr... auuuuu!');
-  for(const key of ['cherry-petals','sacred-pink-light','festival-confetti','shadow-fog','library-pages','fireworks','darkness']) assert.ok(css.includes(key),`efeito ${key} ausente`);
+  for(const key of ['cherry-petals','sacred-pink-light','festival-confetti','shadow-fog','library-pages','fireworks','darkness','total-darkness']) assert.ok(css.includes(key),`efeito ${key} ausente`);
   assert.match(game,/const HUMAN_LORE=globalThis\.YGDRIA_HUMANOS_LORE/);
   assert.match(game,/canonicalAfterSequence/);
-  assert.match(game,/STORY_CAMPAIGN_VERSION='10\.0\.54'/);
+  assert.match(game,/STORY_CAMPAIGN_VERSION='10\.0\.55'/);
 });
 
 check('narrador usa caixa e personagens ou feras usam balões ancorados',()=>{
@@ -59,7 +59,7 @@ check('narrador usa caixa e personagens ou feras usam balões ancorados',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v10\.0\.54/);
+  assert.match(sw,/12r-v10\.0\.55/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -323,7 +323,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=10.0.54');
+  const deferredGame=html.indexOf('game-v10.js?v=10.0.55');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);

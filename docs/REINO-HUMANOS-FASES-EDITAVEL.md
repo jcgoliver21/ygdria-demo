@@ -326,7 +326,7 @@ Efeito Visual: Escuridão
 
 **Subtítulo:** A Sombra que Devora Tudo 
 **Chefe:** Julius
-Efeito Visual: Nada / Escuridão na missão 5
+Efeito Visual: Nada / Escuridão total na missão 5
 
 ### Background da Fase e Texto subindo
 
