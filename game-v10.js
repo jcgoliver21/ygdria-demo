@@ -3139,6 +3139,26 @@ function renderStageProgress(){
     arenaEl.style.removeProperty('background-position');
   }
   applyArenaVisualProfile();
+  syncRoyalCourtSceneCast();
+}
+
+/* Corte da fase 10: o trono já faz parte da arte de fundo. Esta camada só
+   acrescenta Bernyce sentada e os dois guardas, sem duplicar mobiliário. Quem
+   entra como inimigo sai imediatamente do fundo antes da luta começar. */
+function syncRoyalCourtSceneCast(){
+  const existing=arenaEl?.querySelector('.royal-court-cast');
+  const enabled=Boolean(worldRun.active&&worldRun.fase===9&&activeStageData?.bgUrl?.endsWith('fase-10.jpg'));
+  if(!enabled){ existing?.remove(); return; }
+  const opponents=new Set((activeStageData?.enemies||[]).map(enemy=>enemy?.cardId).filter(Boolean));
+  const visible={bernyce:!opponents.has('bernyce'),kalander:!opponents.has('kalander'),jules:!opponents.has('jules')};
+  let cast=existing;
+  if(!cast){
+    cast=document.createElement('div');
+    cast.className='royal-court-cast';
+    cast.setAttribute('aria-hidden','true');
+    arenaEl.appendChild(cast);
+  }
+  cast.innerHTML=`${visible.bernyce?'<img class="royal-court-bernyce" src="assets/characters/runtime-v10/bernyce/scene-seated.png" alt="">':''}${visible.jules?'<span class="royal-court-guard royal-court-jules"></span>':''}${visible.kalander?'<span class="royal-court-guard royal-court-kalander"></span>':''}`;
 }
 
 
@@ -8392,6 +8412,15 @@ function worldProg(worldId){
   }catch(e){ return {unlocked:0,stars:{},starsByDifficulty:{facil:{},normal:{},dificil:{},pesadelo:{}}}; }
 }
 function saveWorldProg(worldId,prog){ localStorage.setItem('12r_world_'+worldId,JSON.stringify(prog)); }
+/* Janela temporária de validação pública: libera a navegação por todas as
+   fases humanas, mas nunca grava falsamente o avanço do jogador. */
+const HUMANOS_PUBLIC_TEST_UNLOCK=true;
+function worldAccessLimit(worldId,prog=worldProg(worldId)){
+  const saved=Math.max(0,Number(prog?.unlocked)||0);
+  return worldId==='humanos'&&HUMANOS_PUBLIC_TEST_UNLOCK
+    ? Math.max(saved,WORLDS[0].fases.length-1)
+    : saved;
+}
 function buildWorldLevel(){
   const world=WORLDS[0];
   const fase=world.fases[worldRun.fase];
@@ -8442,7 +8471,7 @@ function difficultyLabel(value){ return {facil:'Fácil',normal:'Normal',dificil:
 function startWorldFase(faseIdx,options={}){
   armTapGuard();
   const prog=worldProg('humanos');
-  if(faseIdx>prog.unlocked){ sfxInvalid(); return; }
+  if(faseIdx>worldAccessLimit('humanos',prog)){ sfxInvalid(); return; }
   worldRun={active:true,fase:faseIdx,nivel:1,storyMode:options.storyMode!==false};
   if(options.difficulty){ difficulty=options.difficulty; localStorage.setItem('12r_difficulty',difficulty); applyDifficultyUI(); }
   towerMode=false;
@@ -8463,11 +8492,15 @@ function renderWorldMap(){
   const map=document.getElementById('worldMap');
   if(!map) return;
   const prog=worldProg('humanos');
+  const note=document.getElementById('worldNote');
+  if(note) note.textContent=HUMANOS_PUBLIC_TEST_UNLOCK
+    ? 'Teste público: todas as 10 fases do Reino dos Humanos estão liberadas. Seu progresso salvo não será alterado.'
+    : 'Cada fase tem 5 níveis — o 5º guarda o CHEFE. Vença o chefe para desbloquear a próxima fase. Os demais reinos serão revelados em breve.';
   map.innerHTML='';
   const fb=faseBest();
   const ft=faseTime();
   world.fases.forEach((fase,idx)=>{
-    const locked=idx>prog.unlocked;
+    const locked=idx>worldAccessLimit('humanos',prog);
     const stars=prog.stars[idx]||0;
     const rankHtml=DIFFICULTY_ORDER.map(d=>`<small class="fase-rank rank-${d}">${DIFFICULTY_RANKS[d]} ${'★'.repeat(prog.starsByDifficulty?.[d]?.[idx]||0)}${'☆'.repeat(3-(prog.starsByDifficulty?.[d]?.[idx]||0))}</small>`).join('');
     const node=document.createElement('button');

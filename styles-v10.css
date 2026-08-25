@@ -3851,6 +3851,21 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
   flex:0 0 calc(64dvh - env(safe-area-inset-bottom,0px))!important;
   height:calc(64dvh - env(safe-area-inset-bottom,0px))!important;
 }
+
+/* Corte do Trono Real: o móvel pertence ao fundo da Fase 10. Bernyce usa a
+   pose sentada isolada e os guardas ocupam o plano do cenário, sempre atrás
+   da área de combate e sem capturar toque. */
+.royal-court-cast{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.royal-court-bernyce{position:absolute;width:clamp(104px,45%,196px);left:50%;top:27%;transform:translateX(-50%);filter:drop-shadow(0 6px 6px rgba(25,5,20,.68));object-fit:contain}
+.royal-court-guard{position:absolute;width:clamp(74px,23%,112px);aspect-ratio:1;background-repeat:no-repeat;background-size:200% 200%;background-position:0 0;filter:drop-shadow(0 7px 6px rgba(18,4,13,.78));transform-origin:50% 100%}
+.royal-court-jules{left:11%;bottom:15%;background-image:url('assets/characters/runtime-v10/jules/idle-2x2.png')}
+.royal-court-kalander{right:11%;bottom:15%;background-image:url('assets/characters/runtime-v10/kalander/idle-2x2.png')}
+@media (max-width:600px){
+  .royal-court-bernyce{width:43%;top:28%}
+  .royal-court-guard{width:22%;bottom:14%}
+  .royal-court-jules{left:8%}
+  .royal-court-kalander{right:8%}
+}
 body.game-active .game-frame:not(.victory-celebration) .combat-console{
   flex:0 0 30dvh!important;
   height:30dvh!important;
