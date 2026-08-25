@@ -4706,7 +4706,7 @@ function clearStoryPresentation(){
 function positionStorySpeechBubble(){
   const layer=document.getElementById('storyLayer');
   const box=layer?.querySelector('.story-box');
-  if(!layer?.classList.contains('speaker-bubble')||!box) return;
+  if(!layer||!box) return;
   const anchorId=layer.dataset.storyAnchor;
   const anchor=anchorId?document.getElementById(anchorId):null;
   const skip=layer.querySelector('.story-skip');
@@ -4715,6 +4715,7 @@ function positionStorySpeechBubble(){
     skip.style.right=Math.max(8,window.innerWidth-arenaRect.right+8)+'px';
     skip.style.bottom=Math.max(2,window.innerHeight-arenaRect.bottom+2)+'px';
   }
+  if(!layer.classList.contains('speaker-bubble')) return;
   if(!anchor){ layer.classList.add('story-speaker-fallback'); return; }
   layer.classList.remove('story-speaker-fallback');
   requestAnimationFrame(()=>{
@@ -4807,7 +4808,7 @@ function renderStoryStep(){
   }
   layer.classList.add('show');
   layer.setAttribute('aria-hidden','false');
-  if(!narrator) positionStorySpeechBubble();
+  positionStorySpeechBubble();
 }
 function advanceStory(){
   storyQueue.shift();
@@ -8214,7 +8215,7 @@ function canonicalAfterSequence(faseIndex){
 const STORY_RULES=HUMAN_STORY.map((s)=>({allowed:s.allowed,fixed:s.fixed}));
 /* A revisão 9.3.10 reabre a campanha narrativa uma vez para perfis que
    concluíram missões enquanto as cenas estavam bloqueadas pelo tutorial. */
-const STORY_CAMPAIGN_VERSION='10.0.55';
+const STORY_CAMPAIGN_VERSION='10.0.56';
 function storyMissionKey(f,n){ return `12r_story_${STORY_CAMPAIGN_VERSION}_humanos_${f+1}_${n}`; }
 function storyPhaseKey(f){ return `12r_story_phase_${STORY_CAMPAIGN_VERSION}_humanos_${f+1}`; }
 function storyPhaseDone(f){ return localStorage.getItem(storyPhaseKey(f))==='1'; }
