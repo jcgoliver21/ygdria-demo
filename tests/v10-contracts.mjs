@@ -9,6 +9,7 @@ const game=read('game-v10.js');
 const css=read('styles-v10.css');
 const config=read('v10-config.js');
 const animations=read('v10-animations.js');
+const lore=read('humanos-lore-v10.js');
 const sw=read('sw.js');
 const workflow=read('.github/workflows/v10-ci.yml');
 const defeatPhysics=JSON.parse(read('assets/characters/defeat-physics-contract.json'));
@@ -17,18 +18,36 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=10\.0\.51/);
-  assert.match(html,/v10-config\.js\?v=10\.0\.51/);
-  assert.match(html,/v10-animations\.js\?v=10\.0\.51/);
-  assert.match(html,/game-v10\.js\?v=10\.0\.51/);
-  assert.match(config,/version:'v10\.0\.51'/);
-  assert.match(sw,/12r-v10\.0\.51/);
+  assert.match(html,/styles-v10\.css\?v=10\.0\.52/);
+  assert.match(html,/v10-config\.js\?v=10\.0\.52/);
+  assert.match(html,/v10-animations\.js\?v=10\.0\.52/);
+  assert.match(html,/humanos-lore-v10\.js\?v=10\.0\.52/);
+  assert.match(html,/game-v10\.js\?v=10\.0\.52/);
+  assert.match(config,/version:'v10\.0\.52'/);
+  assert.match(sw,/12r-v10\.0\.52/);
   assert.doesNotMatch(html,/game-v9|styles-v9|v9\.3-config/);
 });
 
+check('Markdown editável é a fonte canônica das dez fases humanas',()=>{
+  const payloadText=lore.match(/Object\.freeze\(([\s\S]*?)\);\s*\n\}\)/)?.[1];
+  assert.ok(payloadText,'payload canônico ausente');
+  const payload=JSON.parse(payloadText);
+  assert.equal(payload.phases.length,10);
+  assert.equal(payload.phases[0].subtitle,'O Encontro Predestinado na Capital de Ygdria');
+  assert.equal(payload.phases[5].missions[1].lines[0].speaker,'Gareth');
+  assert.equal(payload.phases[7].fixed.length,3);
+  assert.deepEqual(payload.phases[9].allowed,['adriel-jovem','gareth','roland','elizier']);
+  assert.equal(payload.phases[9].visual.missionFive,'darkness');
+  assert.equal(payload.phases[9].after.at(-3).speaker,'Cedric');
+  for(const key of ['cherry-petals','sacred-pink-light','festival-confetti','shadow-fog','library-pages','fireworks','darkness']) assert.ok(css.includes(key),`efeito ${key} ausente`);
+  assert.match(game,/const HUMAN_LORE=globalThis\.YGDRIA_HUMANOS_LORE/);
+  assert.match(game,/canonicalAfterSequence/);
+  assert.match(game,/STORY_CAMPAIGN_VERSION='10\.0\.52'/);
+});
+
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v10\.0\.51/);
-  for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
+  assert.match(sw,/12r-v10\.0\.52/);
+  for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
   assert.match(game,/navigator\.serviceWorker\.register\('\.\/sw\.js'/);
@@ -112,7 +131,7 @@ check('inimigos exclusivos usam folhas reais, impactos e arena viva',()=>{
     const rootedIdle=`assets/enemies/runtime-v10/${id}/idle-v3/processed/sheet-transparent.png`;
     assert.ok(fs.existsSync(path.join(root,...rootedIdle.split('/'))),`${id} sem idle normalizado pela base`);
   }
-  for(const needle of ['ENEMY_ANIMATION_LIBRARY','HUMAN_ENEMY_IDLE_IDS','ROOTED_HUMAN_IDLE_LIBRARY','ENEMY_IDLE_LIBRARY','rootedEnemyIdleMarkup','startRootedEnemyIdle','usesRootedHumanIdle','enemy-rooted-idle-sheet','returnToIdle','ENEMY_FRAME_SEQUENCES','actionFrames','function enemyAnimationCharacter','defeatEnemyAvatar','freezeEnemyAvatar','fx-impact-burst','fx-critical-impact','arena-atmosphere','missionAtmospheres']) assert.ok(game.includes(needle)||css.includes(needle),`${needle} ausente`);
+  for(const needle of ['ENEMY_ANIMATION_LIBRARY','HUMAN_ENEMY_IDLE_IDS','ROOTED_HUMAN_IDLE_LIBRARY','ENEMY_IDLE_LIBRARY','rootedEnemyIdleMarkup','startRootedEnemyIdle','usesRootedHumanIdle','enemy-rooted-idle-sheet','returnToIdle','ENEMY_FRAME_SEQUENCES','actionFrames','function enemyAnimationCharacter','defeatEnemyAvatar','freezeEnemyAvatar','fx-impact-burst','fx-critical-impact','arena-atmosphere','canonicalVisual']) assert.ok(game.includes(needle)||css.includes(needle),`${needle} ausente`);
   assert.doesNotMatch(game,/class="boss-presence-mark"|aria-hidden="true">✦/,'marcador de estrela não deve renderizar sobre inimigos');
   assert.match(game,/return e\?\.etype\|\|null;/,'arte humana individual não pode cair no guarda genérico');
   assert.doesNotMatch(game,/assets\\\/enemies\\\/humanos\\\/.+human-guard/,'arte humana não pode ser mapeada ao guarda genérico');
@@ -150,17 +169,19 @@ check('v11 substitui formações antigas e mantém seleção direta dos heróis'
   for(const name of ['Líder','Guarda-costas','Cercados','Defensiva','Ofensiva','Vanguarda em V','Asa Dupla','Diamante','Escalonada','Berserker']) assert.ok(block.includes(`nome:'${name}'`),`${name} ausente`);
   assert.match(game,/function tacticalGridCell\(cellNumber\)/);
   assert.match(game,/function tacticalGridSlot\(\.\.\.cellNumbers\)/);
-  assert.match(block,/nome:'Líder',[\s\S]*tacticalGridSlot\(14,23\)[\s\S]*tacticalGridSlot\(4,13\)[\s\S]*tacticalGridSlot\(13,22\)[\s\S]*tacticalGridSlot\(22,31\)/);
+  assert.match(block,/nome:'Líder',[\s\S]*tacticalGridSlot\(14,23\)[\s\S]*tacticalGridSlot\(3\)[\s\S]*tacticalGridSlot\(12,21\)[\s\S]*tacticalGridSlot\(30\)/);
   assert.match(block,/nome:'Vanguarda em V',[\s\S]*tacticalGridSlot\(12,13,21,22\)/);
   assert.match(block,/nome:'Berserker',[\s\S]*tacticalGridSlot\(17\)/);
-  assert.match(html,/id="heroSelectionLayer"/);
-  assert.match(game,/heroSelectionLayerEl/);
-  assert.match(game,/arrow\.addEventListener\('click'/);
-  assert.match(css,/\.hero-selection-layer\{position:absolute;inset:0;z-index:180/);
+  assert.doesNotMatch(html,/id="heroSelectionLayer"/);
+  assert.doesNotMatch(game,/heroSelectionLayerEl|hero-select-arrow|scheduleHeroSelectionArrows/);
+  assert.match(game,/const HERO_BODY_ALPHA_THRESHOLD=24/);
+  assert.match(game,/function heroVisualOpaqueAt\(visual,clientX,clientY\)/);
+  assert.match(game,/function resolveHeroBodyAtPoint\(clientX,clientY\)/);
+  assert.match(game,/arenaEl\.addEventListener\('pointerup',handleHeroBodyPointer,true\)/);
+  assert.match(css,/\.party-row \.hero-unit\{pointer-events:none!important\}/);
+  assert.match(game,/function heroUsesFlightPhysics\(character\)/);
+  assert.match(css,/\.hero-unit\.hero-flying:not\(\.dead\) \.avatar-circle:not\(\[data-action="defeat"\]\)/);
   assert.match(game,/enemySlot\?1\.02:\.88/);
-  assert.match(game,/const avatar=unit\.querySelector\('\.avatar-circle'\)\|\|unit/);
-  assert.match(game,/const visual=unit\.querySelector\('\.hero-sprite-sheet,\.hero-sprite-image'\)\|\|avatar/);
-  assert.match(game,/heroArrowSyncTimer=setTimeout/);
 });
 
 check('v12 fixa a física de escala das ações e a leitura mobile',()=>{
@@ -201,7 +222,7 @@ check('v13 limita o grid perspectivado à Cidade das Cerejeiras',()=>{
   assert.match(css,/\.physical-floor-cell\.enemy-grid-cell/);
 });
 
-check('passagem gráfica v10.0.51 mantém física e dá resposta ao combate',()=>{
+check('passagem gráfica v10.0.52 mantém física e dá resposta ao combate',()=>{
   for(const needle of ['ensureArenaVisualLayers','applyArenaVisualProfile','pulseArenaLighting','spawnCombatAttackFx','enemyFxRealm','arena-light-pulse','arena-depth','arena-lighting','arenaEffects','arenaProfiles','fx-attack-signature','attack-fogo','attack-gelo']) assert.ok(game.includes(needle)||css.includes(needle)||config.includes(needle),`${needle} ausente`);
   assert.match(game,/if\(kind==='impact'\|\|kind==='critical'\) pulseArenaLighting\(color,target,kind\)/);
   assert.match(css,/body\.game-active \.unit-ground-shadow\{display:block/);
@@ -288,7 +309,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=10.0.51');
+  const deferredGame=html.indexOf('game-v10.js?v=10.0.52');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
@@ -473,8 +494,8 @@ check('campanha só conclui a fase no setor final e oferece replay',()=>{
 
 check('final da fase aguarda a história e mostra classificação',()=>{
   assert.match(game,/function finishStorySequence\(\)/);
-  assert.match(game,/showStorySequence\(\[\{name:'Narrador',t:HUMAN_STORY\[finaleFase\].*\}\],finishFinale\)/);
-  assert.match(game,/showStorySequence\(\[\{name:'Narrador',t:HUMAN_STORY\[completedFase\]\.after\}\],finishMissionReport\)/);
+  assert.match(game,/showStorySequence\(canonicalAfterSequence\(finaleFase\),finishFinale\)/);
+  assert.match(game,/showStorySequence\(finalStory,finishMissionReport\)/);
   assert.match(game,/const finishMissionReport=\(\)=>\{/);
   assert.match(html,/id="victoryStars"/);
   assert.match(html,/id="victoryReport"/);

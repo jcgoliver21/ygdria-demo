@@ -42,17 +42,21 @@ test('fluxo real abre seletor, monta equipe e inicia tabuleiro',async({page})=>{
   expect(errors).toEqual([]);
 });
 
-test('v11 mostra dez formações e setas de seleção acima dos heróis',async({page})=>{
+test('v11 mostra dez formações e seleciona pelo corpo visível sem setas',async({page})=>{
   const errors=await boot(page,'flow');
   await page.setViewportSize({width:390,height:844});
   await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
-  const initial=await page.evaluate(()=>({
-    arrows:[...document.querySelectorAll('.hero-select-arrow')].map(arrow=>({label:arrow.getAttribute('aria-label'),rect:arrow.getBoundingClientRect().toJSON()})),
-    formation:document.getElementById('formationTool')?.textContent
-  }));
-  expect(initial.arrows).toHaveLength(4);
-  expect(initial.arrows.every(item=>item.rect.top>=0&&item.rect.bottom<=844)).toBe(true);
-  expect(initial.arrows.every(item=>item.label?.startsWith('Selecionar'))).toBe(true);
+  await expect(page.locator('.hero-select-arrow')).toHaveCount(0);
+  const hitProbe=await page.evaluate(()=>window.__12rQA.heroBodyHitProbe());
+  expect(hitProbe).toHaveLength(4);
+  expect(hitProbe.every(item=>item.point&&item.groundPhysics==='grounded')).toBe(true);
+  await page.mouse.click(hitProbe[0].point.x,hitProbe[0].point.y);
+  await expect(page.locator('#battleStatus')).toContainText('mudou o lado');
+  await page.evaluate(()=>window.__12rQA.grantEnergy(ACTIVE[0],100));
+  const chargedProbe=await page.evaluate(()=>window.__12rQA.heroBodyHitProbe());
+  await page.mouse.click(chargedProbe[0].point.x,chargedProbe[0].point.y);
+  await expect(page.locator('#abilityPickerScreen')).toHaveClass(/show/);
+  await page.locator('[data-close="abilityPickerScreen"]').click();
   await page.click('#battleToolsToggle');
   await expect(page.locator('#battleToolsPanel')).toHaveClass(/open/);
   const names=[];
@@ -62,8 +66,71 @@ test('v11 mostra dez formações e setas de seleção acima dos heróis',async({
   }
   expect(new Set(names).size).toBe(10);
   await page.click('#battleToolsClose');
-  await page.locator('.hero-select-arrow').first().click();
-  await expect(page.locator('#battleStatus')).toContainText('mudou o lado');
+  expect(errors).toEqual([]);
+});
+
+test('Sophitia e futuros heróis do Vento usam física de voo acima da sombra',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.setViewportSize({width:390,height:844});
+  const probe=await page.evaluate(async()=>{
+    const sophitia=KINGDOMS.findIndex(hero=>hero.id==='vento');
+    chosenIds=[sophitia,0,1,2]; beginGame(0); skipStory();
+    await window.__12rQA.heroBodyHitProbe();
+    const unit=document.getElementById('party-vento');
+    const avatar=unit.querySelector('.avatar-circle');
+    const airborneTransform=getComputedStyle(avatar).transform;
+    avatar.dataset.action='defeat';
+    const defeatedTransform=getComputedStyle(avatar).transform;
+    avatar.dataset.action='idle';
+    return {rule:window.__12rQA.windRealmFlightProbe(),className:unit.className,groundPhysics:unit.dataset.groundPhysics,airborneTransform,defeatedTransform};
+  });
+  expect(probe.rule).toEqual({sophitia:true,futureWindHero:true,groundedHero:false});
+  expect(probe.className).toContain('hero-flying');
+  expect(probe.groundPhysics).toBe('flight');
+  expect(probe.airborneTransform).not.toBe('none');
+  expect(probe.defeatedTransform).toBe('none');
+  expect(errors).toEqual([]);
+});
+
+test('lore canônica controla fases, elencos, falas e atmosferas no runtime',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.setViewportSize({width:390,height:844});
+  const probe=await page.evaluate(()=>{
+    worldRun.active=true;
+    const atmospheres=[];
+    for(let fase=0;fase<10;fase++){
+      worldRun.fase=fase;
+      worldRun.nivel=fase===9?4:1;
+      renderStageProgress();
+      atmospheres.push(document.getElementById('arena').dataset.missionAtmosphere);
+    }
+    worldRun.fase=9; worldRun.nivel=5; renderStageProgress();
+    const missionFive=document.getElementById('arena').dataset.missionAtmosphere;
+    return {
+      source:globalThis.YGDRIA_HUMANOS_LORE?.source,
+      hash:globalThis.YGDRIA_HUMANOS_LORE?.sourceHash,
+      names:WORLDS[0].fases.map(phase=>phase.nome),
+      subtitles:WORLDS[0].fases.map(phase=>phase.sub),
+      allowed:HUMAN_STORY.map(phase=>phase.allowed),
+      fixed:HUMAN_STORY.map(phase=>phase.fixed),
+      garethLine:HUMAN_STORY[5].missions[1][0],
+      finalSpeakers:HUMAN_STORY[9].after.map(step=>step.h||step.name),
+      atmospheres,
+      missionFive
+    };
+  });
+  expect(probe.source).toBe('docs/REINO-HUMANOS-FASES-EDITAVEL.md');
+  expect(probe.hash).toMatch(/^[a-f0-9]{64}$/);
+  expect(probe.names).toHaveLength(10);
+  expect(probe.subtitles[0]).toBe('O Encontro Predestinado na Capital de Ygdria');
+  expect(probe.subtitles[8]).toBe('O Prólogo do Fim');
+  expect(probe.allowed[0]).toEqual(['adriel-jovem','berenice-jovem','galateia-jovem','acqua-jovem']);
+  expect(probe.fixed[7]).toEqual(['adriel-jovem','berenice-jovem','galateia-jovem']);
+  expect(probe.allowed[9]).toEqual(['adriel-jovem','gareth','roland','elizier']);
+  expect(probe.garethLine).toEqual({name:'Gareth',t:'Não estou gostando nada disso pessoal.'});
+  expect(probe.finalSpeakers).toEqual(['Narrador','Cedric','Narrador','Narrador']);
+  expect(probe.atmospheres).toEqual(['cherry-petals','sacred-pink-light','none','none','festival-confetti','shadow-fog','library-pages','fireworks','darkness','none']);
+  expect(probe.missionFive).toBe('darkness');
   expect(errors).toEqual([]);
 });
 
@@ -117,7 +184,7 @@ test('formações dos heróis seguem exatamente as células e interpolações ca
   const probe=await page.evaluate(()=>window.__12rQA.heroFormationGridProbe());
   expect(probe.map(item=>item.name)).toEqual(['Líder','Guarda-costas','Cercados','Defensiva','Ofensiva','Vanguarda em V','Asa Dupla','Diamante','Escalonada','Berserker']);
   expect(probe.map(item=>item.slots.map(slot=>slot.refs))).toEqual([
-    [[14,23],[4,13],[13,22],[22,31]],
+    [[14,23],[3],[12,21],[30]],
     [[11,20],[5,14],[14,23],[23,32]],
     [[6],[14],[23],[33]],
     [[2],[11],[20],[29]],
@@ -1133,7 +1200,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.51');
+  expect(registration.caches).toContain('12r-v10.0.52');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1293,7 +1360,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.51');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.52');
 
     // Produção não expõe __12rQA: este trecho percorre somente controles reais.
     if(await page.locator('#introScreen').isVisible()) await page.locator('#introNext').click();

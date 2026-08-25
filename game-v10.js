@@ -1687,7 +1687,7 @@ function tacticalGridSlot(...cellNumbers){
    aceita uma célula, o meio de duas ou o centro de quatro sem aproximações
    percentuais diferentes entre desktop e celular. */
 const HERO_FORMATIONS = [
-  { nome:'Líder',          slots:[tacticalGridSlot(14,23),tacticalGridSlot(4,13),tacticalGridSlot(13,22),tacticalGridSlot(22,31)] },
+  { nome:'Líder',          slots:[tacticalGridSlot(14,23),tacticalGridSlot(3),tacticalGridSlot(12,21),tacticalGridSlot(30)] },
   { nome:'Guarda-costas',  slots:[tacticalGridSlot(11,20),tacticalGridSlot(5,14),tacticalGridSlot(14,23),tacticalGridSlot(23,32)] },
   { nome:'Cercados',       slots:[tacticalGridSlot(6),tacticalGridSlot(14),tacticalGridSlot(23),tacticalGridSlot(33)] },
   { nome:'Defensiva',      slots:[tacticalGridSlot(2),tacticalGridSlot(11),tacticalGridSlot(20),tacticalGridSlot(29)] },
@@ -1817,7 +1817,6 @@ const boardEl = document.getElementById('board');
 const arenaEl = document.getElementById('arena');
 const enemyArenaEl = document.getElementById('enemyArena');
 const partyArenaEl = document.getElementById('partyArena');
-const heroSelectionLayerEl = document.getElementById('heroSelectionLayer');
 const stageProgressEl = document.getElementById('stageProgress');
 const stageLabelEl = document.getElementById('stageLabel');
 const dungeonTitleEl = document.getElementById('dungeonTitle');
@@ -2101,6 +2100,85 @@ function resolvedGraphicsQuality(){
 function particleBudget(){ return V10.quality?.particles?.[resolvedGraphicsQuality()]||MAX_ACTIVE_FX; }
 const heroFacingOverrides = new Set();
 
+function heroUsesFlightPhysics(character){
+  const realm=String(character?.reino||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  return character?.flying===true||character?.realmId==='vento'||character?.id==='vento'||realm.includes('reino do vento');
+}
+
+/* O toque usa o alfa real do frame exibido. Assim a caixa transparente de um
+   herói à frente não bloqueia o corpo visível de outro herói atrás dele. */
+const HERO_BODY_ALPHA_THRESHOLD=24;
+const heroHitMaskCache=new Map();
+function prepareHeroHitMask(src){
+  if(!src) return Promise.resolve(null);
+  if(heroHitMaskCache.has(src)) return heroHitMaskCache.get(src).promise;
+  const entry={ready:false,failed:false,width:0,height:0,alpha:null,promise:null};
+  entry.promise=new Promise(resolve=>{
+    const image=new Image();
+    image.onload=()=>{
+      try{
+        const canvas=document.createElement('canvas');
+        canvas.width=image.naturalWidth; canvas.height=image.naturalHeight;
+        const context=canvas.getContext('2d',{willReadFrequently:true});
+        context.drawImage(image,0,0);
+        const rgba=context.getImageData(0,0,canvas.width,canvas.height).data;
+        const alpha=new Uint8Array(canvas.width*canvas.height);
+        for(let source=3,target=0;source<rgba.length;source+=4,target++) alpha[target]=rgba[source];
+        entry.width=canvas.width; entry.height=canvas.height; entry.alpha=alpha; entry.ready=true;
+      }catch(error){ entry.failed=true; }
+      resolve(entry);
+    };
+    image.onerror=()=>{ entry.failed=true; resolve(entry); };
+    image.decoding='async'; image.src=src;
+  });
+  heroHitMaskCache.set(src,entry);
+  return entry.promise;
+}
+function prepareHeroBodyHitTest(avatar){
+  const visual=avatar?.querySelector('.hero-sprite-sheet,.hero-sprite-image');
+  const src=visual?.dataset.hitSrc;
+  if(src) prepareHeroHitMask(src);
+}
+function heroVisualOpaqueAt(visual,clientX,clientY){
+  if(!visual) return false;
+  const rect=visual.getBoundingClientRect();
+  if(rect.width<1||rect.height<1||clientX<rect.left||clientX>rect.right||clientY<rect.top||clientY>rect.bottom) return false;
+  const entry=heroHitMaskCache.get(visual.dataset.hitSrc||'');
+  if(!entry?.ready||!entry.alpha) return null;
+  const columns=Math.max(1,Number(visual.dataset.hitCols||1));
+  const rows=Math.max(1,Number(visual.dataset.hitRows||1));
+  const style=getComputedStyle(visual);
+  const xPercent=parseFloat(style.getPropertyValue('--sprite-bg-x'))||0;
+  const yPercent=parseFloat(style.getPropertyValue('--sprite-bg-y'))||0;
+  const column=Math.max(0,Math.min(columns-1,Math.round(xPercent*(columns-1)/100)));
+  const row=Math.max(0,Math.min(rows-1,Math.round(yPercent*(rows-1)/100)));
+  let localX=Math.max(0,Math.min(.9999,(clientX-rect.left)/rect.width));
+  const localY=Math.max(0,Math.min(.9999,(clientY-rect.top)/rect.height));
+  if(visual.classList.contains('flip')) localX=1-localX;
+  const frameWidth=entry.width/columns,frameHeight=entry.height/rows;
+  const sourceX=Math.min(entry.width-1,Math.floor((column+localX)*frameWidth));
+  const sourceY=Math.min(entry.height-1,Math.floor((row+localY)*frameHeight));
+  return entry.alpha[sourceY*entry.width+sourceX]>=HERO_BODY_ALPHA_THRESHOLD;
+}
+function resolveHeroBodyAtPoint(clientX,clientY){
+  const candidates=[...partyArenaEl.querySelectorAll('.hero-unit')].map((unit,order)=>({
+    unit,order,z:Number(getComputedStyle(unit).zIndex)||0,
+    visual:unit.querySelector('.hero-sprite-sheet,.hero-sprite-image')
+  })).sort((a,b)=>b.z-a.z||b.order-a.order);
+  for(const candidate of candidates){
+    if(heroVisualOpaqueAt(candidate.visual,clientX,clientY)===true) return candidate.unit;
+  }
+  return null;
+}
+function handleHeroBodyPointer(event){
+  if((event.button!==undefined&&event.button!==0)||event.isPrimary===false||!canAcceptPlayerInput()) return;
+  const unit=resolveHeroBodyAtPoint(event.clientX,event.clientY);
+  const heroIndex=Number(unit?.dataset.heroIndex);
+  if(!unit||!Number.isInteger(heroIndex)) return;
+  event.preventDefault(); event.stopPropagation();
+  onHeroAvatarClick(heroIndex);
+}
+
 function heroIsFlipped(k){
   return Boolean(k.heroFlip) !== heroFacingOverrides.has(k.id);
 }
@@ -2115,12 +2193,14 @@ function spriteMarkup(k, action='idle', options={}){
     if(meta.format==='sheet'){
       const cols=Math.max(1,Number(meta.cols||meta.frames||1));
       const rows=Math.max(1,Number(meta.rows||1));
-      return `<div class="hero-sprite-sheet grid-sheet${roleClass}${flipped?' flip':''}" aria-hidden="true" style="--sprite-url:url('${animationAssetUrl(meta.src)}');--sprite-cols:${cols};--sprite-rows:${rows};--sprite-scale:${displayScale};--sprite-duration:${Number(meta.duration||520)}ms;--sprite-bg-x:0%;--sprite-bg-y:0%"></div>`;
+      const hitSrc=animationAssetUrl(meta.src);
+      return `<div class="hero-sprite-sheet grid-sheet${roleClass}${flipped?' flip':''}" data-hit-src="${hitSrc}" data-hit-cols="${cols}" data-hit-rows="${rows}" aria-hidden="true" style="--sprite-url:url('${hitSrc}');--sprite-cols:${cols};--sprite-rows:${rows};--sprite-scale:${displayScale};--sprite-duration:${Number(meta.duration||520)}ms;--sprite-bg-x:0%;--sprite-bg-y:0%"></div>`;
     }
     const steps = Math.max(1, Number(meta.frames||1)-1);
-    return `<div class="hero-sprite-sheet${roleClass}${flipped?' flip':''}" aria-hidden="true" style="--sprite-url:url('${animationAssetUrl(meta.src)}');--sprite-frames:${Math.max(1,Number(meta.frames||1))};--sprite-steps:${steps};--sprite-scale:${displayScale};--sprite-duration:${Number(meta.duration||520)}ms"></div>`;
+    const hitSrc=animationAssetUrl(meta.src),frames=Math.max(1,Number(meta.frames||1));
+    return `<div class="hero-sprite-sheet${roleClass}${flipped?' flip':''}" data-hit-src="${hitSrc}" data-hit-cols="${frames}" data-hit-rows="1" aria-hidden="true" style="--sprite-url:url('${hitSrc}');--sprite-frames:${frames};--sprite-steps:${steps};--sprite-scale:${displayScale};--sprite-duration:${Number(meta.duration||520)}ms"></div>`;
   }
-  if(k.sprite) return `<img class="hero-sprite-image${roleClass}${flipped?' flip':''}" src="${k.sprite}" alt="${L(k.nome)}">`;
+  if(k.sprite) return `<img class="hero-sprite-image${roleClass}${flipped?' flip':''}" data-hit-src="${k.sprite}" data-hit-cols="1" data-hit-rows="1" src="${k.sprite}" alt="${L(k.nome)}">`;
   return CHIBI_SVG[k.id] ? scopeSvg(CHIBI_SVG[k.id],k.id) : '';
 }
 
@@ -2189,6 +2269,7 @@ function animateHeroAvatar(avatar,k,action='idle',options={}){
   const overlayMarkup=options.overlayMarkup||'';
   if(spec?.src) avatar.innerHTML=spriteMarkup(k,requested,options)+overlayMarkup;
   else if(!avatar.firstElementChild) avatar.innerHTML=spriteMarkup(k,'idle',options)+overlayMarkup;
+  prepareHeroBodyHitTest(avatar);
   avatar.classList.toggle('hero-action',requested!=='idle');
   const loop=options.loop??Boolean(meta.loop);
   const duration=Math.max(80,Number(meta.duration||520));
@@ -2548,15 +2629,16 @@ function spawnRealmParticles(realmId, targetEl, countOverride){
 
 function renderPartyArena(){
   partyArenaEl.innerHTML = '';
-  heroSelectionLayerEl?.replaceChildren();
   computeBattleGemColors();
   ACTIVE.forEach(idx=>{
     const k = KINGDOMS[idx];
     const ag = battleGemColors[idx];
     const gemC=ag?ag.c:(k.orbColor||k.color), gemL=ag?ag.l:(k.orbColorLight||k.colorLight), gemD=ag?ag.d:(k.orbColorDark||k.colorDark);
     const unit = document.createElement('div');
-    unit.className = 'unit hero-unit rarity-'+(k.stars||0)+(k.id.endsWith('-jovem')?' hero-young':'');
+    unit.className = 'unit hero-unit rarity-'+(k.stars||0)+(k.id.endsWith('-jovem')?' hero-young':'')+(heroUsesFlightPhysics(k)?' hero-flying':'');
     unit.id = 'party-'+k.id;
+    unit.dataset.heroIndex=String(idx);
+    unit.dataset.groundPhysics=heroUsesFlightPhysics(k)?'flight':'grounded';
     unit.style.setProperty('--realm',k.color);
     unit.style.setProperty('--aura-inner',k.color);
     unit.style.setProperty('--aura-inner-light',k.colorLight);
@@ -2582,20 +2664,9 @@ function renderPartyArena(){
     avatarEl.setAttribute('role','button');
     avatarEl.setAttribute('tabindex','0');
     avatarEl.setAttribute('aria-label',T(`${L(k.nome)}: espelhar personagem; se houver habilidade carregada, abrir a seleção`,`${L(k.nome)}: mirror character; if an ability is charged, open its selection`,`${L(k.nome)}: espejar personaje; si hay una habilidad cargada, abrir la selección`));
-    avatarEl.addEventListener('click', ()=>onHeroAvatarClick(idx));
     avatarEl.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); onHeroAvatarClick(idx); } });
     animateHeroAvatar(avatarEl,k,'idle',{loop:true});
-    if(heroSelectionLayerEl){
-      const arrow=document.createElement('button');
-      arrow.type='button';
-      arrow.className='hero-select-arrow';
-      arrow.id='hero-select-'+k.id;
-      arrow.dataset.heroId=k.id;
-      arrow.style.setProperty('--hero-arrow-color',k.color);
-      arrow.setAttribute('aria-label',T(`Selecionar ${L(k.nome)}`,`Select ${L(k.nome)}`,`Seleccionar a ${L(k.nome)}`));
-      arrow.addEventListener('click',event=>{ event.stopPropagation(); onHeroAvatarClick(idx); });
-      heroSelectionLayerEl.appendChild(arrow);
-    }
+    prepareHeroBodyHitTest(avatarEl);
   });
   renderGolemUnits();
   renderHarpyUnits();
@@ -2700,6 +2771,7 @@ function onHeroAvatarClick(idx){
   }
   setBattleStatus(T(`${L(k.nome)} mudou o lado para o qual está olhando.`,`${L(k.nome)} changed the direction they are facing.`,`${L(k.nome)} cambió el lado hacia el que mira.`),'system');
 }
+arenaEl.addEventListener('pointerup',handleHeroBodyPointer,true);
 
 function summonSpriteMarkup(kind){ const m=SUMMON_ANIMATIONS[kind]; return `<div class="hero-sprite-sheet grid-sheet summon-sprite-sheet" aria-hidden="true" style="--sprite-url:url('${m.src}');--sprite-cols:${m.cols};--sprite-rows:${m.rows};--sprite-bg-x:0%;--sprite-bg-y:0%;--sprite-scale:1"></div>`; }
 function animateSummonAvatar(avatar,kind,action='idle'){
@@ -2876,12 +2948,13 @@ function renderStageProgress(){
   syncCerejeiraTacticalGrid();
   const mood=worldRun.active?'humanos':towerMode?'eternidade':bossRushMode?'boss':`scene-${activeStageData?.scene??4}`;
   arenaEl.dataset.realmMood=mood;
-  const missionAtmospheres=['cherry-petals','cold-mist','cold-mist','arcane-threads','market-dust','essence-ribbons','library-pages','wall-wind','cold-mist','ember-ash'];
+  const canonicalVisual=worldRun.active?WORLDS[0]?.fases?.[worldRun.fase]?.visual:null;
   const atmosphereKey=worldRun.active
-    ? (missionAtmospheres[Math.max(0,Math.min(missionAtmospheres.length-1,Number(worldRun.fase)||0))]||'cold-mist')
+    ? ((worldRun.nivel===5&&canonicalVisual?.missionFive)||canonicalVisual?.key||'none')
     : (towerMode?'cold-mist':bossRushMode?'ember-ash':'scene-drift');
   arenaEl.dataset.worldScene=worldRun.active?`humanos-${worldRun.fase}`:(towerMode?'tower':bossRushMode?'boss':'other');
   arenaEl.dataset.missionAtmosphere=atmosphereKey;
+  arenaEl.style.setProperty('--atmosphere-progress',String(worldRun.active?Math.max(1,Math.min(5,Number(worldRun.nivel)||1)):1));
   arenaEl.classList.toggle('boss-presence',Boolean(bossRushMode||worldRun.active&&worldRun.nivel===5));
   let atmosphere=arenaEl.querySelector('.arena-atmosphere');
   if(!atmosphere){
@@ -2908,7 +2981,6 @@ function applyBattleFormation(){
   const heroSlots=HERO_FORMATIONS[formationIndex%HERO_FORMATIONS.length].slots;
   const heroUnits=[...partyArenaEl.querySelectorAll('.hero-unit')];
   heroUnits.forEach((unit,i)=>applyFormationSlot(unit,heroSlots[i]||heroSlots[heroSlots.length-1],112));
-  scheduleHeroSelectionArrows();
   const barbaraIdx=ACTIVE.findIndex(idx=>KINGDOMS[idx]?.id==='terra');
   const barbaraSlot=heroSlots[barbaraIdx]||heroSlots[0]||{x:30,y:35,s:1,z:20};
   const golemOffsets=[{x:-8,y:5,s:.48},{x:8,y:4,s:.5},{x:-13,y:8,s:.44},{x:13,y:8,s:.44}];
@@ -6519,7 +6591,7 @@ function onStageCleared(){
         launchVictoryConfetti();
         showOverlay('dungeonClearOverlay');
       };
-      if(showFinalStory) showStorySequence([{name:'Narrador',t:HUMAN_STORY[finaleFase]?.after||''}],finishFinale);
+      if(showFinalStory) showStorySequence(canonicalAfterSequence(finaleFase),finishFinale);
       else finishFinale();
       return;
     }
@@ -6537,8 +6609,8 @@ function onStageCleared(){
       worldRun.active=false;
       busy=false;
     };
-    const finalStory=worldRun.storyMode!==false&&HUMAN_STORY[completedFase]?.after;
-    if(finalStory) showStorySequence([{name:'Narrador',t:HUMAN_STORY[completedFase].after}],finishMissionReport);
+    const finalStory=worldRun.storyMode!==false?canonicalAfterSequence(completedFase):[];
+    if(finalStory.length) showStorySequence(finalStory,finishMissionReport);
     else finishMissionReport();
     return;
   }
@@ -7425,50 +7497,6 @@ function preloadOfficialAssets(){
   });
 }
 
-let heroArrowFrame=null;
-let heroArrowSyncTimer=null;
-function scheduleHeroSelectionArrows(){
-  if(!heroSelectionLayerEl||!partyArenaEl) return;
-  if(heroArrowFrame) cancelAnimationFrame(heroArrowFrame);
-  if(heroArrowSyncTimer) clearTimeout(heroArrowSyncTimer);
-  heroArrowFrame=requestAnimationFrame(()=>{
-    heroArrowFrame=null;
-    const rowRect=partyArenaEl.getBoundingClientRect();
-    const placed=[];
-    partyArenaEl.querySelectorAll('.hero-unit').forEach((unit,index)=>{
-      const id=unit.id.replace(/^party-/,'');
-      const arrow=document.getElementById('hero-select-'+id);
-      if(!arrow) return;
-      const avatar=unit.querySelector('.avatar-circle')||unit;
-      /* Usa o retângulo visual já transformado, não a caixa do avatar. Isso
-         mantém a seta presa ao topo real também em cartas jovens ou folhas
-         cuja escala corporal ultrapassa a caixa de layout. */
-      const visual=unit.querySelector('.hero-sprite-sheet,.hero-sprite-image')||avatar;
-      const rect=visual.getBoundingClientRect();
-      const desiredLeft=rect.left-rowRect.left+rect.width/2;
-      /* A ponta encosta no topo visual do sprite, não no topo do contêiner
-         que também abriga nome e barra de vida. */
-      const arrowWidth=30,arrowHeight=24;
-      /* Mantém uma folga real entre a ponta da seta e o topo visual do
-         personagem; ela não pode encostar nem ser confundida com cabelo,
-         asa ou equipamento alto. */
-      const desiredTop=Math.max(2,rect.top-rowRect.top-arrowHeight-4);
-      const candidates=[0,-16,16,-32,32,-48,48].map(offset=>desiredLeft+offset);
-      let chosenLeft=candidates[0];
-      for(const candidate of candidates){
-        const left=Math.max(arrowWidth/2,Math.min(rowRect.width-arrowWidth/2,candidate));
-        const box={left:left-arrowWidth/2,right:left+arrowWidth/2,top:desiredTop,bottom:desiredTop+arrowHeight};
-        if(!placed.some(other=>box.left<other.right+3&&box.right>other.left-3&&box.top<other.bottom+3&&box.bottom>other.top-3)){ chosenLeft=left; break; }
-      }
-      arrow.style.left=chosenLeft+'px';
-      arrow.style.top=desiredTop+'px';
-      placed.push({left:chosenLeft-arrowWidth/2,right:chosenLeft+arrowWidth/2,top:desiredTop,bottom:desiredTop+arrowHeight,index});
-    });
-    /* Recalcula ao fim da transição da formação para a seta continuar presa
-       ao sprite enquanto o grupo se move. */
-    heroArrowSyncTimer=setTimeout(()=>scheduleHeroSelectionArrows(),360);
-  });
-}
 function preloadHeroActions(indices=ACTIVE){
   const economy=resolvedGraphicsQuality()==='economy'||navigator.connection?.saveData;
   const mobileViewport=matchMedia('(max-width:700px)').matches||navigator.maxTouchPoints>0;
@@ -7644,6 +7672,29 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
       name:formation.nome,
       slots:formation.slots.map(slot=>({refs:[...slot.gridRefs],x:Number(slot.x.toFixed(4)),y:Number(slot.y.toFixed(4)),z:slot.z,side:slot.gridSide}))
     })),
+    heroBodyHitProbe:async()=>{
+      await Promise.all([...heroHitMaskCache.values()].map(entry=>entry.promise));
+      return [...partyArenaEl.querySelectorAll('.hero-unit')].map(unit=>{
+        const visual=unit.querySelector('.hero-sprite-sheet,.hero-sprite-image');
+        const rect=visual?.getBoundingClientRect();
+        if(!rect) return {id:unit.id,point:null};
+        const centerX=rect.left+rect.width/2,centerY=rect.top+rect.height/2;
+        const points=[];
+        for(let radius=0;radius<=Math.max(rect.width,rect.height);radius+=3){
+          for(let angle=0;angle<Math.PI*2;angle+=Math.PI/12){
+            const x=centerX+Math.cos(angle)*radius,y=centerY+Math.sin(angle)*radius;
+            if(x>=rect.left&&x<=rect.right&&y>=rect.top&&y<=rect.bottom) points.push([x,y]);
+          }
+        }
+        const point=points.find(([x,y])=>resolveHeroBodyAtPoint(x,y)===unit);
+        return {id:unit.id,point:point?{x:point[0],y:point[1]}:null,groundPhysics:unit.dataset.groundPhysics};
+      });
+    },
+    windRealmFlightProbe:()=>({
+      sophitia:heroUsesFlightPhysics(KINGDOMS.find(hero=>hero.id==='vento')),
+      futureWindHero:heroUsesFlightPhysics({id:'aero-futuro',reino:'Reino do Vento'}),
+      groundedHero:heroUsesFlightPhysics({id:'humanos',reino:'Reino dos Humanos'})
+    }),
     heroAuraProbe:()=>{
       const heroIdx=ACTIVE[0];
       const active=KINGDOMS[heroIdx]?.abilities.find(ability=>ability.kind==='active');
@@ -7847,10 +7898,48 @@ const HUMAN_STORY=(()=>{
   ].map((x,i)=>({...x,index:i}));
 })();
 
+/* v10.0.52 · A campanha humana passa a ser gerada do Markdown editável.
+   O bloco histórico acima permanece apenas como fallback de diagnóstico; em
+   execução, cenário, inimigos, seleção e roteiro usam uma única fonte. */
+const HUMAN_LORE=globalThis.YGDRIA_HUMANOS_LORE;
+if(!HUMAN_LORE||!Array.isArray(HUMAN_LORE.phases)||HUMAN_LORE.phases.length!==10){
+  throw new Error('Lore canônica do Reino dos Humanos ausente ou inválida.');
+}
+const HUMAN_PHASE_TECH=WORLDS[0].fases.map(({bg,rec})=>({bg,rec}));
+WORLDS[0].fases=HUMAN_LORE.phases.map((phase,index)=>({
+  nome:phase.name,
+  sub:phase.subtitle,
+  bg:HUMAN_PHASE_TECH[index].bg,
+  chefe:phase.bosses.join(', '),
+  rec:HUMAN_PHASE_TECH[index].rec,
+  visual:phase.visual,
+  loreSourceHash:HUMAN_LORE.sourceHash,
+  dial:[],
+  missoes:phase.missions.map(mission=>[...mission.enemies])
+}));
+function canonicalStoryStep(line){
+  if(line?.heroId) return {h:line.heroId,t:line.text};
+  return {name:line?.speaker||'Narrador',t:line?.text||''};
+}
+HUMAN_STORY.splice(0,HUMAN_STORY.length,...HUMAN_LORE.phases.map((phase,index)=>({
+  index,
+  before:phase.before,
+  missions:phase.missions.map(mission=>mission.lines.map(canonicalStoryStep)),
+  after:phase.after.map(canonicalStoryStep),
+  afterSceneCues:[...(phase.afterSceneCues||[])],
+  allowed:[...phase.allowed],
+  fixed:[...phase.fixed]
+})));
+function canonicalAfterSequence(faseIndex){
+  const sequence=HUMAN_STORY[faseIndex]?.after;
+  if(!Array.isArray(sequence)) return sequence?[{name:'Narrador',t:String(sequence)}]:[];
+  return sequence.filter(step=>step?.t).map(step=>step?.h?step:{...step,sprite:step?.sprite||storySpeakerSprite(step?.name)});
+}
+
 const STORY_RULES=HUMAN_STORY.map((s)=>({allowed:s.allowed,fixed:s.fixed}));
 /* A revisão 9.3.10 reabre a campanha narrativa uma vez para perfis que
    concluíram missões enquanto as cenas estavam bloqueadas pelo tutorial. */
-const STORY_CAMPAIGN_VERSION='9.3.10';
+const STORY_CAMPAIGN_VERSION='10.0.52';
 function storyMissionKey(f,n){ return `12r_story_${STORY_CAMPAIGN_VERSION}_humanos_${f+1}_${n}`; }
 function storyPhaseKey(f){ return `12r_story_phase_${STORY_CAMPAIGN_VERSION}_humanos_${f+1}`; }
 function storyPhaseDone(f){ return localStorage.getItem(storyPhaseKey(f))==='1'; }
