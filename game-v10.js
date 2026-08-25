@@ -2059,7 +2059,9 @@ const ACTION_PHYSICS_SCALE=Object.freeze({
   elizier:{attack:1.0883,cast:1.0182,hit:1.2138,victory:1.0122},
   fogo:{attack:.8082,cast:1.0251,hit:.9168,victory:.9861},
   'galateia-jovem':{attack:.9949,cast:.8945,hit:1,victory:1.0245},
-  gareth:{attack:1.1124,cast:1.0235,hit:1.0364,victory:1.0015},
+  /* Gareth: a folha de ataque mantém a mesma estatura do idle. O corte é
+     comunicado pela pose e pelo VFX físico, nunca por aumento de escala. */
+  gareth:{attack:1,cast:1.0235,hit:1.0364,victory:1.0015},
   gelo:{attack:1.2691,cast:1.3377,hit:1.295,victory:1.1137},
   humanos:{attack:.8051,cast:.793,hit:1.0635,victory:1.0461},
   jules:{attack:1.0408,cast:1.0519,hit:1.0679,victory:1.084},
@@ -2555,7 +2557,22 @@ function spawnCombatFx(kind,target,color='#fff',duration=650){
 /* Ataque comum: liga visualmente a origem ao alvo sem tocar no transform do
    sprite. Cada reino escolhe uma assinatura própria, enquanto o pool limita
    a quantidade de nós e o mesmo efeito serve para cartas e inimigos. */
-function spawnCombatAttackFx(realmId,source,target,color='#fff',kind='impact'){
+const BLADE_ATTACK_IDS=new Set(['adriel-jovem','gareth','roland','kalander','capitao','soldado1','soldado2','sold-bib1','sold-bib2','sold-bib3','infantaria','cavalaria','comandante','trono']);
+const CLAW_ATTACK_IDS=new Set(['lobo-raivoso','shadow-wolf','crimson-dragon']);
+const BODY_ATTACK_IDS=new Set(['slime-cereja','rune-slime','stone-sentinel']);
+function combatAttackStyle(attacker){
+  if(!attacker) return 'spell';
+  const heroId=String(attacker.id||attacker.heroId||attacker.characterId||attacker.cardId||'').toLowerCase();
+  const key=enemyAnimationKey(attacker)||heroId;
+  if(BLADE_ATTACK_IDS.has(heroId)||BLADE_ATTACK_IDS.has(key)) return 'blade';
+  if(CLAW_ATTACK_IDS.has(key)||/lobo|wolf|drag[aã]o/.test(key)) return 'claw';
+  if(BODY_ATTACK_IDS.has(key)||/slime|limo|golem|sentinela/.test(key)) return 'body';
+  return 'spell';
+}
+/* Ataques físicos viajam como golpes materiais e não usam a trajetória mágica.
+   A camada de VFX continua completamente separada do sprite: nada altera
+   escala, nitidez ou a linha dos pés do personagem. */
+function spawnCombatAttackFx(realmId,source,target,color='#fff',kind='impact',attacker=null){
   const layer=document.getElementById('specialFxLayer');
   if(!layer||!source||!target||!particlesEnabled||reducedMotion||reduceFlashes) return;
   const quality=resolvedGraphicsQuality();
@@ -2565,10 +2582,12 @@ function spawnCombatAttackFx(realmId,source,target,color='#fff',kind='impact'){
   const tx=tr.left-lr.left+tr.width/2, ty=tr.top-lr.top+tr.height/2;
   const dx=tx-sx, dy=ty-sy, dist=Math.max(24,Math.hypot(dx,dy));
   const realm=REALM_FX_PROFILE[realmId]?realmId:'humanos';
-  const fx=acquireCombatFx(`fx-attack-signature attack-${realm}`);
+  const style=combatAttackStyle(attacker);
+  const fx=acquireCombatFx(`fx-attack-signature attack-${style} ${style==='spell'?`attack-${realm}`:''}`);
   const lease=fx.__fxLease;
   fx.dataset.fx='attack-signature';
   fx.dataset.attackKind=kind;
+  fx.dataset.attackStyle=style;
   fx.style.left=sx+'px';
   fx.style.top=sy+'px';
   fx.style.color=color;
@@ -2581,7 +2600,13 @@ function spawnCombatAttackFx(realmId,source,target,color='#fff',kind='impact'){
   /* O corpo nunca recebe o efeito: origem, trajetória e contato são elementos
      independentes na camada de VFX. Assim a leitura fica mais rica sem alterar
      escala, linha dos pés ou nitidez do sprite em WebViews móveis. */
-  fx.innerHTML='<span class="attack-origin"></span><span class="attack-trail"></span><span class="attack-trail secondary"></span><span class="attack-mote mote-a"></span><span class="attack-mote mote-b"></span><span class="attack-contact"></span>';
+  fx.innerHTML=style==='blade'
+    ? '<span class="attack-swing"></span><span class="attack-swing echo"></span><span class="attack-contact physical"></span>'
+    : style==='claw'
+      ? '<span class="attack-claw-mark claw-one"></span><span class="attack-claw-mark claw-two"></span><span class="attack-claw-mark claw-three"></span><span class="attack-contact physical"></span>'
+      : style==='body'
+        ? '<span class="attack-body-wave"></span><span class="attack-contact physical"></span>'
+        : '<span class="attack-origin"></span><span class="attack-trail"></span><span class="attack-trail secondary"></span><span class="attack-mote mote-a"></span><span class="attack-mote mote-b"></span><span class="attack-contact"></span>';
   layer.appendChild(fx);
   trimCombatFx();
   window.setTimeout(()=>releaseCombatFx(fx,lease),kind==='critical'?980:820);
@@ -4133,8 +4158,8 @@ function loadStage(idx){
   boardRenderCache=null; /* nova fase = render completo do tabuleiro */
   { const ar=document.querySelector('.arena'); if(ar){ ar.classList.remove('stage-fade'); void ar.offsetWidth; ar.classList.add('stage-fade'); } }
   if(!worldRun.active && !towerMode && !bossRushMode){
-    /* rota órfã: reancora no Reino dos Humanos (fases demo NUNCA voltam) */
-    worldRun={active:true, fase:Math.min(worldProg('humanos').unlocked, WORLDS[0].fases.length-1), nivel:1};
+    /* Rota de recuperação: começa no prólogo, jamais na última fase liberada. */
+    worldRun={active:true, fase:0, nivel:1,storyMode:false};
   }
   const stageData = bossRushMode ? buildBossRushStage(bossRushIdx) : worldRun.active ? buildWorldLevel() : buildTowerStage(towerFloor);
   activeStageData = stageData;
@@ -6428,7 +6453,7 @@ function applyDamageToEnemy(dmg, colorIdx, targetIdxOverride){
     const hitColor = colorIdx!==null && colorIdx!==undefined && KINGDOMS[colorIdx] ? KINGDOMS[colorIdx].colorLight : '#fff';
     const sourceUnit = colorIdx!==null && colorIdx!==undefined && KINGDOMS[colorIdx]
       ? document.getElementById('party-'+KINGDOMS[colorIdx].id+'-avatar') : null;
-    if(sourceUnit) spawnCombatAttackFx(KINGDOMS[colorIdx].iconId||KINGDOMS[colorIdx].id,sourceUnit,enemyUnit,hitColor,finalDamage>=100?'critical':'impact');
+    if(sourceUnit) spawnCombatAttackFx(KINGDOMS[colorIdx].iconId||KINGDOMS[colorIdx].id,sourceUnit,enemyUnit,hitColor,finalDamage>=100?'critical':'impact',KINGDOMS[colorIdx]);
     spawnCombatFx(finalDamage>=100?'critical':'impact',enemyUnit,hitColor,560);
     spawnCombatFx('hit',enemyUnit,hitColor,440);
     if(colorIdx!==null && colorIdx!==undefined && KINGDOMS[colorIdx]) spawnRealmParticles(KINGDOMS[colorIdx].iconId||KINGDOMS[colorIdx].id,enemyUnit,8);
@@ -6649,7 +6674,7 @@ function enemyCounterAttack(){
       const enemySource=document.getElementById('enemyPortrait-'+idx);
       const playerTarget=document.getElementById('playerHpAnchor');
       const enemyColor=enemyAuraPalette(enemy)[1];
-      spawnCombatAttackFx(enemyFxRealm(enemy),enemySource,playerTarget,enemyColor,enemy.isBoss?'critical':'impact');
+      spawnCombatAttackFx(enemyFxRealm(enemy),enemySource,playerTarget,enemyColor,enemy.isBoss?'critical':'impact',enemy);
       spawnCombatFx(enemy.isBoss?'critical':'impact',playerTarget,enemyColor,560);
     }
     sfxCombatAttack(enemy.etype||enemy.id||enemy.name,'enemy');
@@ -6968,8 +6993,18 @@ function mountVictoryOverlay(){
   overlay.classList.add('victory-arena-overlay','victory-docked');
   frame?.classList.add('victory-celebration');
   arenaEl.classList.add('victory-arena-state');
+  syncVictoryHeaderPosition();
   updateVictoryActionLabel();
 }
+function syncVictoryHeaderPosition(){
+  const topbar=document.querySelector('.mission-topbar');
+  if(!arenaEl||!topbar||!arenaEl.classList.contains('victory-arena-state')) return;
+  const arenaRect=arenaEl.getBoundingClientRect();
+  const topbarRect=topbar.getBoundingClientRect();
+  const offset=Math.max(84,Math.ceil(topbarRect.bottom-arenaRect.top+8));
+  arenaEl.style.setProperty('--victory-header-top',offset+'px');
+}
+window.addEventListener('resize',syncVictoryHeaderPosition,{passive:true});
 function restoreVictoryOverlay(){
   const overlay=document.getElementById('dungeonClearOverlay');
   if(!overlay) return;
@@ -6984,6 +7019,7 @@ function restoreVictoryOverlay(){
   overlay.classList.remove('victory-arena-overlay','victory-docked');
   document.querySelector('.game-frame')?.classList.remove('victory-celebration');
   arenaEl?.classList.remove('victory-arena-state');
+  arenaEl?.style.removeProperty('--victory-header-top');
 }
 function showOverlay(id){
   if(id==='dungeonClearOverlay') mountVictoryOverlay();
@@ -7406,6 +7442,14 @@ function beginGame(startAt=0,restoredHP=null){
   resetRunStats();
   pendingDimensional=[];
   incineratePhaseKey=null; incinerateActive=false; incinerateStacks=0;
+  /* Um início não pode herdar a última fase destravada nem cartas de outra
+     etapa. A seleção narrativa é revalidada aqui, no limite de entrada. */
+  const orphanStart=!worldRun.active&&!towerMode&&!bossRushMode;
+  if(orphanStart){
+    worldRun={active:true,fase:0,nivel:1,storyMode:false};
+    startAt=0;
+  }
+  if(!orphanStart) prepareStorySelection();
   if(!isValidHeroTeam(chosenIds)){
     chosenIds=[...new Set(chosenIds)].filter(index=>Number.isInteger(index)&&KINGDOMS[index]).slice(0,4);
     renderSelectGrid(); sfxInvalid(); return;
@@ -8219,7 +8263,7 @@ function canonicalAfterSequence(faseIndex){
 const STORY_RULES=HUMAN_STORY.map((s)=>({allowed:s.allowed,fixed:s.fixed}));
 /* A revisão 9.3.10 reabre a campanha narrativa uma vez para perfis que
    concluíram missões enquanto as cenas estavam bloqueadas pelo tutorial. */
-const STORY_CAMPAIGN_VERSION='11.0.0';
+const STORY_CAMPAIGN_VERSION='11.0.1';
 function storyMissionKey(f,n){ return `12r_story_${STORY_CAMPAIGN_VERSION}_humanos_${f+1}_${n}`; }
 function storyPhaseKey(f){ return `12r_story_phase_${STORY_CAMPAIGN_VERSION}_humanos_${f+1}`; }
 function storyPhaseDone(f){ return localStorage.getItem(storyPhaseKey(f))==='1'; }

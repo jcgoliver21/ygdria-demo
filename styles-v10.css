@@ -3805,7 +3805,7 @@ body.game-active .game-frame.victory-celebration .arena{
 .victory-arena-header{display:none}
 body.game-active .arena.victory-arena-state{position:relative;isolation:isolate}
 body.game-active .arena.victory-arena-state .victory-arena-header{
-  display:flex;position:absolute;top:clamp(58px,11%,92px);left:50%;transform:translateX(-50%);
+  display:flex;position:absolute;top:var(--victory-header-top,96px);left:50%;transform:translateX(-50%);
   width:min(92%,440px);padding:7px 12px 8px;flex-direction:column;align-items:center;
   text-align:center;z-index:45;pointer-events:none;border:1px solid rgba(232,203,133,.58);
   border-radius:12px;background:linear-gradient(180deg,rgba(12,7,21,.9),rgba(12,7,21,.58),transparent);
@@ -3833,7 +3833,7 @@ body.game-active .arena.victory-arena-state>#victoryConfetti{
   opacity:.9;box-shadow:0 2px 8px rgba(0,0,0,.32);
 }
 @media (max-width:600px){
-  body.game-active .arena.victory-arena-state .victory-arena-header{top:clamp(56px,10%,78px);padding:6px 9px 7px;width:92%}
+  body.game-active .arena.victory-arena-state .victory-arena-header{top:var(--victory-header-top,96px);padding:6px 9px 7px;width:92%}
   body.game-active .arena.victory-arena-state .victory-arena-header h2{letter-spacing:.06em}
   body.game-active .arena.victory-arena-state .victory-arena-header .stage-stars{font-size:29px}
 }
@@ -3844,6 +3844,46 @@ body.game-active .arena.victory-arena-state>#victoryConfetti{
 /* Seleção direta no alfa do corpo: as caixas transparentes deixam o evento
    chegar à arena, onde o frame visível decide qual herói recebeu o toque. */
 body.game-active .party-row .hero-unit{pointer-events:none!important}
+
+/* v11.0.1 · HUD de informações depois do console: o cenário fica livre e o
+   último elemento da tela passa a ser a leitura de batalha. */
+body.game-active .game-frame:not(.victory-celebration) .arena{
+  flex:0 0 calc(64dvh - env(safe-area-inset-bottom,0px))!important;
+  height:calc(64dvh - env(safe-area-inset-bottom,0px))!important;
+}
+body.game-active .game-frame:not(.victory-celebration) .combat-console{
+  flex:0 0 30dvh!important;
+  height:30dvh!important;
+  padding-bottom:4px!important;
+}
+body.game-active .game-frame:not(.victory-celebration) .battle-info-dock{
+  position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;
+  z-index:84!important;display:grid!important;flex:0 0 calc(5dvh + env(safe-area-inset-bottom,0px))!important;
+  width:100%!important;min-height:30px!important;margin:0!important;padding:3px 6px max(3px,env(safe-area-inset-bottom,0px))!important;
+  grid-template-columns:minmax(0,1fr) 34px;gap:5px;background:linear-gradient(180deg,rgba(12,8,20,.98),rgba(5,4,11,.99));
+  border-top:1px solid rgba(232,203,133,.42);box-sizing:border-box;
+}
+body.game-active .game-frame:not(.victory-celebration) .battle-info-dock .battle-status{
+  align-self:center;background:rgba(5,3,10,.62)!important;border-color:rgba(240,216,150,.45)!important;
+  font-size:9px!important;line-height:1.2!important;
+}
+body.game-active .game-frame:not(.victory-celebration) .battle-info-dock .history-btn{min-height:28px!important}
+body.game-active .game-frame.victory-celebration .battle-info-dock{display:none!important}
+
+/* Perfis físicos: lâminas, garras e impactos corporais percorrem o espaço
+   sem a linha de magia. O personagem não recebe transform algum. */
+.attack-blade .attack-swing{position:absolute;left:0;top:0;width:42px;height:26px;transform-origin:50% 50%;border:4px solid transparent;border-top-color:#fff9df;border-right-color:var(--attack-color);border-radius:68% 42% 62% 45%;filter:drop-shadow(0 0 4px var(--attack-color));opacity:0;animation:physicalSlash .54s cubic-bezier(.18,.76,.2,1) both}
+.attack-blade .attack-swing.echo{width:34px;height:21px;border-width:2px;animation-delay:.08s;filter:drop-shadow(0 0 3px #fff)}
+.attack-claw-mark{position:absolute;left:0;top:0;width:34px;height:4px;border-radius:999px;background:linear-gradient(90deg,transparent,#fff6db 30%,var(--attack-color) 74%,transparent);box-shadow:0 0 6px var(--attack-color);opacity:0;animation:physicalClaw .48s cubic-bezier(.2,.76,.18,1) both}
+.attack-claw-mark.claw-one{transform:rotate(-28deg)}
+.attack-claw-mark.claw-two{transform:translateY(9px) rotate(-20deg);animation-delay:.05s}
+.attack-claw-mark.claw-three{transform:translateY(18px) rotate(-12deg);animation-delay:.1s}
+.attack-body-wave{position:absolute;left:0;top:0;width:24px;height:24px;border:3px solid var(--attack-light);border-radius:50%;box-shadow:0 0 10px var(--attack-color),inset 0 0 8px var(--attack-color);opacity:0;animation:physicalBody .5s cubic-bezier(.18,.78,.2,1) both}
+.attack-blade .attack-contact,.attack-claw .attack-contact,.attack-body .attack-contact{border-color:#fff8db;background:radial-gradient(circle,#fff8db 0 8%,var(--attack-color) 20% 34%,transparent 37%);box-shadow:0 0 10px var(--attack-color);animation-delay:.16s}
+.attack-blade .attack-contact::before,.attack-claw .attack-contact::before,.attack-body .attack-contact::before{content:''}
+@keyframes physicalSlash{0%{opacity:0;transform:translate(-50%,-50%) rotate(-42deg) scale(.52)}20%{opacity:1}78%{opacity:1;transform:translate(calc(var(--attack-dx)*.78),calc(var(--attack-dy)*.78)) rotate(178deg) scale(1.04)}100%{opacity:0;transform:translate(var(--attack-dx),var(--attack-dy)) rotate(214deg) scale(1.12)}}
+@keyframes physicalClaw{0%{opacity:0;filter:brightness(.7)}18%{opacity:1}82%{opacity:1;transform:translate(calc(var(--attack-dx)*.82),calc(var(--attack-dy)*.82)) rotate(-18deg)}100%{opacity:0;transform:translate(var(--attack-dx),var(--attack-dy)) rotate(-18deg)}}
+@keyframes physicalBody{0%{opacity:0;transform:translate(-50%,-50%) scale(.42)}26%{opacity:.95}84%{opacity:.72;transform:translate(calc(var(--attack-dx)*.84),calc(var(--attack-dy)*.84)) scale(1.2)}100%{opacity:0;transform:translate(var(--attack-dx),var(--attack-dy)) scale(1.45)}}
 body.game-active .party-row .hero-unit .avatar-circle{pointer-events:none!important}
 body.game-active .hero-unit.hero-flying:not(.dead) .avatar-circle:not([data-action="defeat"]){
   --hero-flight-lift:clamp(10px,1.7vh,14px);

@@ -19,13 +19,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.0/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.0/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.0/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.0/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.0/);
-  assert.match(config,/version:'v11\.0\.0'/);
-  assert.match(sw,/12r-v11\.0\.0/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.1/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.1/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.1/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.1/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.1/);
+  assert.match(config,/version:'v11\.0\.1'/);
+  assert.match(sw,/12r-v11\.0\.1/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -53,7 +53,7 @@ check('Markdown editável é a fonte canônica das dez fases humanas',()=>{
   for(const key of ['cherry-petals','sacred-pink-light','festival-confetti','shadow-fog','library-pages','fireworks','darkness','total-darkness']) assert.ok(css.includes(key),`efeito ${key} ausente`);
   assert.match(game,/const HUMAN_LORE=globalThis\.YGDRIA_HUMANOS_LORE/);
   assert.match(game,/canonicalAfterSequence/);
-  assert.match(game,/STORY_CAMPAIGN_VERSION='11\.0\.0'/);
+  assert.match(game,/STORY_CAMPAIGN_VERSION='11\.0\.1'/);
 });
 
 check('narrador usa caixa e personagens ou feras usam balões ancorados',()=>{
@@ -73,7 +73,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.0/);
+  assert.match(sw,/12r-v11\.0\.1/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -270,8 +270,10 @@ check('passagem gráfica v10.0.54 mantém física e dá resposta ao combate',()=
 });
 
 check('v11 usa folhas reais no repouso, VFX separado e fallback de derrota sem giro horizontal',()=>{
-  for(const needle of ['arena-midground-light','attack-origin','attack-mote','attackOrigin','attackMote','enemyDefeatGroundedFallback']) assert.ok(game.includes(needle)||css.includes(needle),`${needle} ausente`);
-  assert.match(game,/fx\.innerHTML='<span class="attack-origin"><\/span><span class="attack-trail"><\/span>/);
+  for(const needle of ['arena-midground-light','attack-origin','attack-mote','attackOrigin','attackMote','enemyDefeatGroundedFallback','BLADE_ATTACK_IDS','combatAttackStyle','attack-swing','physicalSlash']) assert.ok(game.includes(needle)||css.includes(needle),`${needle} ausente`);
+  assert.match(game,/fx\.innerHTML=style==='blade'/);
+  assert.match(game,/style==='spell'\?`attack-\$\{realm\}`:''/);
+  assert.match(css,/\.attack-blade \.attack-swing/);
   assert.match(css,/\.hero-sprite-image\{ animation:none; transform-origin:50% 100%; \}/);
   assert.match(css,/\.summon-sprite\{ animation:none!important; \}/);
   assert.doesNotMatch(css,/enemyDefeatFall/);
@@ -287,11 +289,21 @@ check('vitória preserva a arena e separa cabeçalho do relatório inferior',()=
   for(const id of ['victoryStars','victoryRank','victoryReport','victoryConfetti']) assert.match(html,new RegExp(`id="${id}"`));
   assert.match(game,/if\(id==='dungeonClearOverlay'\) mountVictoryOverlay\(\)/);
   assert.match(game,/arenaEl\.classList\.add\('victory-arena-state'\)/);
+  assert.match(game,/function syncVictoryHeaderPosition/);
+  assert.match(css,/--victory-header-top/);
   assert.match(css,/#dungeonClearOverlay\.victory-arena-overlay\.victory-docked\{[\s\S]+?position:static!important/);
   assert.match(css,/#dungeonClearOverlay\.victory-arena-overlay \.battle-report/);
   assert.match(css,/\.game-frame\.victory-celebration \.combat-console\{[\s\S]+?display:none!important/);
   assert.match(css,/\.arena\.victory-arena-state \.victory-arena-header\{/);
   assert.match(game,/updateVictoryActionLabel\(\);/);
+});
+
+check('início revalida a fase narrativa e o HUD de leitura fica fora da arena',()=>{
+  assert.match(game,/if\(!orphanStart\) prepareStorySelection\(\);[\s\S]+?if\(!isValidHeroTeam\(chosenIds\)\)/);
+  assert.match(game,/worldRun=\{active:true,fase:0,nivel:1,storyMode:false\}/);
+  assert.match(html,/battle-feed-row battle-info-dock/);
+  assert.doesNotMatch(html,/<div class="arena"[\s\S]+?<div class="battle-feed-row">/);
+  assert.match(css,/\.battle-info-dock/);
 });
 
 check('Torre usa cada encontro da campanha e invocações não bloqueiam heróis',()=>{
@@ -355,7 +367,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.0');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.1');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);

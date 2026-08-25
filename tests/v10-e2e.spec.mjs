@@ -649,6 +649,57 @@ test('arena cinematica mantém profundidade, luz localizada e sombra de contato 
   expect(errors).toEqual([]);
 });
 
+test('lâmina do Gareth cruza a arena sem projétil mágico ou variação de escala',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.evaluate(()=>{
+    worldRun={active:true,fase:5,nivel:1,storyMode:false};
+    chosenIds=['adriel-jovem','berenice-jovem','galateia-jovem','gareth'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    beginGame(0); skipStory();
+  });
+  const attack=await page.evaluate(()=>{
+    const gareth=KINGDOMS.find(hero=>hero.id==='gareth');
+    const source=document.getElementById('party-gareth-avatar');
+    const target=document.querySelector('.enemy-unit');
+    const idleScale=getComputedStyle(source.querySelector('.hero-sprite-sheet')).getPropertyValue('--sprite-scale').trim();
+    playHeroAction(KINGDOMS.findIndex(hero=>hero.id==='gareth'),'attack');
+    const actionDisplayScale=getComputedStyle(source.querySelector('.hero-sprite-sheet')).getPropertyValue('--sprite-scale').trim();
+    spawnCombatAttackFx('humanos',source,target,gareth.colorLight,'impact',gareth);
+    const fx=document.querySelector('.fx-attack-signature');
+    return {style:fx?.dataset.attackStyle,blade:Boolean(fx?.querySelector('.attack-swing')),trail:Boolean(fx?.querySelector('.attack-trail')),origin:Boolean(fx?.querySelector('.attack-origin')),idleScale,actionDisplayScale,actionScale:ACTION_PHYSICS_SCALE.gareth.attack};
+  });
+  expect(attack).toMatchObject({style:'blade',blade:true,trail:false,origin:false,actionScale:1});
+  expect(attack.actionDisplayScale).toBe(attack.idleScale);
+  expect(errors).toEqual([]);
+});
+
+test('informação de batalha fica abaixo de HP, tabuleiro e cartas',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.setViewportSize({width:390,height:844});
+  await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
+  const layout=await page.evaluate(()=>{
+    const arena=document.getElementById('arena').getBoundingClientRect();
+    const consoleRect=document.querySelector('.combat-console').getBoundingClientRect();
+    const dock=document.querySelector('.battle-info-dock').getBoundingClientRect();
+    return {arenaBottom:Math.round(arena.bottom),consoleBottom:Math.round(consoleRect.bottom),dockTop:Math.round(dock.top),dockBottom:Math.round(dock.bottom),lastChild:document.querySelector('.game-frame').lastElementChild?.id||document.querySelector('.game-frame').lastElementChild?.className||''};
+  });
+  expect(layout.dockTop).toBeGreaterThanOrEqual(layout.consoleBottom-1);
+  expect(layout.dockTop).toBeGreaterThanOrEqual(layout.arenaBottom-1);
+  expect(layout.dockBottom).toBeLessThanOrEqual(844);
+  expect(errors).toEqual([]);
+});
+
+test('início órfão retorna ao prólogo e aplica o elenco permitido',async({page})=>{
+  const errors=await boot(page,'flow');
+  const state=await page.evaluate(()=>{
+    worldRun={active:false,fase:9,nivel:5,storyMode:true}; pendingStage=999;
+    chosenIds=['adriel-jovem','gareth','roland','elizier'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    beginGame(pendingStage); skipStory();
+    return {fase:worldRun.fase,nivel:worldRun.nivel,stageIndex,active:ACTIVE.map(index=>KINGDOMS[index].id),enemy:enemies[0]?.name};
+  });
+  expect(state).toEqual({fase:0,nivel:1,stageIndex:0,active:['adriel-jovem','gareth','roland','elizier'],enemy:'Slime de Cerejeira'});
+  expect(errors).toEqual([]);
+});
+
 test('tela final celebra dentro do cenário com heróis vitoriosos e inimigos caídos',async({page})=>{
   const errors=await boot(page,'flow');
   await page.evaluate(()=>{
@@ -1401,7 +1452,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.0');
+  expect(registration.caches).toContain('12r-v11.0.1');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1561,7 +1612,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.0');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.1');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 
