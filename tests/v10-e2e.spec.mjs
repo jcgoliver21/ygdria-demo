@@ -1383,8 +1383,11 @@ test.describe('@production publicação real',()=>{
     await page.locator('.mini-card').first().click();
     await expect(page.locator('#motionShowcase')).toBeVisible();
     for(const action of ['idle','attack','cast','hit','victory']){
+      await expect(page.locator('#motionShowcaseAvatar')).toHaveAttribute('data-action','idle',{timeout:12000});
       await page.locator(`#motionShowcaseActions button[data-motion="${action}"]`).click();
+      await expect(page.locator('#motionShowcaseAvatar')).toHaveAttribute('data-requested-action',action);
       await expect(page.locator('#motionShowcaseAvatar')).toHaveAttribute('data-action',action);
+      if(action!=='idle'&&action!=='victory') await expect(page.locator('#motionShowcaseAvatar')).toHaveAttribute('data-action','idle',{timeout:12000});
     }
     expect(errors).toEqual([]);
   });
