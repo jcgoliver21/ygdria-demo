@@ -25,6 +25,9 @@ check('arquivos públicos apontam somente para v10',()=>{
   assert.match(html,/game-v10\.js\?v=10\.0\.52/);
   assert.match(config,/version:'v10\.0\.52'/);
   assert.match(sw,/12r-v10\.0\.52/);
+  assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
+  assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
+  assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
   assert.doesNotMatch(html,/game-v9|styles-v9|v9\.3-config/);
 });
 
