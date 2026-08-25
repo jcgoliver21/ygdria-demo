@@ -4710,12 +4710,13 @@ function positionStorySpeechBubble(){
   const anchorId=layer.dataset.storyAnchor;
   const anchor=anchorId?document.getElementById(anchorId):null;
   const skip=layer.querySelector('.story-skip');
-  const arenaRect=arenaEl.getBoundingClientRect();
+  const isSpeaker=layer.classList.contains('speaker-bubble');
+  const arenaRect=isSpeaker?arenaEl.getBoundingClientRect():{right:window.innerWidth,bottom:window.innerHeight,top:0};
   if(skip){
     skip.style.right=Math.max(8,window.innerWidth-arenaRect.right+8)+'px';
     skip.style.bottom=Math.max(2,window.innerHeight-arenaRect.bottom+2)+'px';
   }
-  if(!layer.classList.contains('speaker-bubble')) return;
+  if(!isSpeaker) return;
   if(!anchor){ layer.classList.add('story-speaker-fallback'); return; }
   layer.classList.remove('story-speaker-fallback');
   requestAnimationFrame(()=>{
@@ -8215,7 +8216,7 @@ function canonicalAfterSequence(faseIndex){
 const STORY_RULES=HUMAN_STORY.map((s)=>({allowed:s.allowed,fixed:s.fixed}));
 /* A revisão 9.3.10 reabre a campanha narrativa uma vez para perfis que
    concluíram missões enquanto as cenas estavam bloqueadas pelo tutorial. */
-const STORY_CAMPAIGN_VERSION='10.0.56';
+const STORY_CAMPAIGN_VERSION='10.0.57';
 function storyMissionKey(f,n){ return `12r_story_${STORY_CAMPAIGN_VERSION}_humanos_${f+1}_${n}`; }
 function storyPhaseKey(f){ return `12r_story_phase_${STORY_CAMPAIGN_VERSION}_humanos_${f+1}`; }
 function storyPhaseDone(f){ return localStorage.getItem(storyPhaseKey(f))==='1'; }
@@ -8531,8 +8532,8 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
   applyVizSettings();
   document.getElementById('achBtn')?.addEventListener('click',()=>openPanel('achScreen'));
   document.getElementById('coachNext')?.addEventListener('click',()=>{ coachStep++; renderCoach(); sfxSelect(); });
-  document.getElementById('storyLayer')?.addEventListener('click',(e)=>{ if(e.target.id!=='storySkip') advanceStory(); });
-  document.getElementById('storySkip')?.addEventListener('click',()=>skipStory(true));
+  document.getElementById('storyLayer')?.addEventListener('click',(e)=>{ if(!e.target.closest?.('#storySkip')) advanceStory(); });
+  document.getElementById('storySkip')?.addEventListener('click',(e)=>{ e.stopPropagation(); skipStory(true); });
   document.getElementById('shareDailyBtn')?.addEventListener('click',async(e)=>{
     await copyTextToClipboard(buildDailyShareText());
     e.target.textContent=T('✓ Copiado! Cole no grupo','✓ Copied! Paste it anywhere','✓ ¡Copiado! Pégalo donde quieras');
