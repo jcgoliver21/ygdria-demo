@@ -1704,6 +1704,10 @@ const HERO_FORMATIONS = [
     ?Math.max(0,Math.min(HERO_FORMATIONS.length-1,storedFormation))
     :0;
 }
+/* A grade é uma ferramenta de leitura, não parte obrigatória do cenário.
+   O primeiro acesso começa limpo; depois disso respeitamos apenas a escolha
+   explícita feita na engrenagem. */
+let tacticalGridVisible=localStorage.getItem('12r_tactical_grid')==='1';
 const ENEMY_FORMATIONS = {
   1:[{x:80,y:10,s:1.2,z:42}],
   2:[{x:73,y:36,s:.94,z:22},{x:86,y:3,s:1.14,z:44}],
@@ -2898,7 +2902,6 @@ function renderCerejeiraTacticalGrid(){
 
 function syncCerejeiraTacticalGrid(){
   const available=document.body.classList.contains('game-active');
-  const cityDefault=Boolean(worldRun.active&&Number(worldRun.fase)===0);
   const tool=document.getElementById('gridTool');
   const overlay=document.getElementById('cerejeiraTacticalGrid');
   /* Física de perspectiva: a profundidade é uma propriedade da vaga no piso,
@@ -2908,11 +2911,11 @@ function syncCerejeiraTacticalGrid(){
   arenaEl.classList.toggle('tactical-grid-available',available);
   if(available){
     renderCerejeiraTacticalGrid();
-    arenaEl.classList.toggle('tactical-grid',cityDefault);
-    overlay?.setAttribute('aria-hidden',String(!cityDefault));
+    arenaEl.classList.toggle('tactical-grid',tacticalGridVisible);
+    overlay?.setAttribute('aria-hidden',String(!tacticalGridVisible));
     requestAnimationFrame(()=>{ renderCerejeiraTacticalGrid(); applyBattleFormation(); });
     if(tool){ tool.hidden=false; tool.disabled=false; }
-    tool?.classList.toggle('active',cityDefault);
+    tool?.classList.toggle('active',tacticalGridVisible);
   }else{
     arenaEl.classList.remove('tactical-grid');
     overlay?.setAttribute('aria-hidden','true');
@@ -3003,6 +3006,7 @@ function applyBattleFormation(){
     if(isBoss&&!enemy?.isCard) slot.s*=1.16;
     applyFormationSlot(unit,slot,enemy?.isCard?112:(isBoss?116:112));
   });
+  if(document.getElementById('storyLayer')?.classList.contains('speaker-bubble')) positionStorySpeechBubble();
 }
 
 /* == CHÃO DOS CENÁRIOS: onde o piso REAL de cada arte começa (fração do TOPO da imagem)
@@ -3091,6 +3095,7 @@ window.addEventListener('resize',()=>{
   formResizeTimer=setTimeout(()=>{
     if(partyArenaEl&&partyArenaEl.children.length) applyBattleFormation();
     if(arenaEl?.classList.contains('tactical-grid-available')) renderCerejeiraTacticalGrid();
+    positionStorySpeechBubble();
   },220);
 });
 
@@ -3196,6 +3201,8 @@ function useRoyalShuffle(){
 function toggleTacticalGrid(){
   if(!arenaEl.classList.contains('tactical-grid-available')) return;
   const active=arenaEl.classList.toggle('tactical-grid');
+  tacticalGridVisible=active;
+  localStorage.setItem('12r_tactical_grid',active?'1':'0');
   document.getElementById('cerejeiraTacticalGrid')?.setAttribute('aria-hidden',String(!active));
   document.getElementById('gridTool').classList.toggle('active',active);
   setBattleStatus(active?T('Grade de profundidade ativada.','Depth grid enabled.','Cuadrícula de profundidad activada.'):T('Grade de profundidade ocultada.','Depth grid hidden.','Cuadrícula de profundidad oculta.'));
@@ -4441,11 +4448,36 @@ const STAGE_DIALOGS={
      {h:'gelo',t:'E quando o trovão passar... apenas o gelo permanecerá.'}]
 };
 let storyQueue=[];
+/* Vocabulário sonoro das criaturas. As feras preservam a personalidade sem
+   receber falas humanas; variantes da mesma espécie compartilham a voz. */
+const CREATURE_ONOMATOPOEIAS=Object.freeze({
+  slime:T('Blub... ploc-ploc... splash!','Blub... plop-plop... splash!','¡Blub... ploc-ploc... splash!'),
+  wolf:T('Grrrr... auuuuu!','Grrrr... awoooo!','¡Grrrr... auuuuu!'),
+  harpy:T('Kriiih! Kriiih!','Skreee! Skreee!','¡Kriiih! ¡Kriiih!'),
+  golem:T('Grrrooom... tum!','Grrrooom... thud!','¡Grrrooom... bum!'),
+  dragon:T('RROOOAAARRR... FWHOOOSH!','RROOOAAARRR... FWHOOOSH!','¡RROOOAAARRR... FUUUUSH!'),
+  kraken:T('SHLAAAP... glooorp!','SHLAAAP... glooorp!','¡SHLAAAP... glooorp!'),
+  beast:T('Grrrr... RRAAAH!','Grrrr... RRAAAH!','¡Grrrr... RRAAAH!')
+});
+function creatureOnomatopoeiaKind(creature){
+  const raw=typeof creature==='string'?creature:[creature?.etype,creature?.cardId,creature?.id,creature?.name].filter(Boolean).join(' ');
+  const key=String(raw||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  if(/slime|limo/.test(key)) return 'slime';
+  if(/lobo|wolf|chacal/.test(key)) return 'wolf';
+  if(/harpia|harpy/.test(key)) return 'harpy';
+  if(/golem|sentinela|sentinel|guardiao de areia/.test(key)) return 'golem';
+  if(/dragao|dragon|draco/.test(key)) return 'dragon';
+  if(/kraken|lula|tentac/.test(key)) return 'kraken';
+  return '';
+}
+function creatureOnomatopoeia(creature){
+  return CREATURE_ONOMATOPOEIAS[creatureOnomatopoeiaKind(creature)]||CREATURE_ONOMATOPOEIAS.beast;
+}
 /* v9.2 · FALAS DE ENTRADA DOS INIMIGOS: todos os inimigos falam quando a missão
    começa (mesmo vários por missão). Feras mágicas NÃO falam — emitem sons. */
 const ENEMY_LINES={
-  slimeCereja:[['*Blub... blub... squish!*','*Blub... blub... squish!*','*Blub... blub... squish!*']],
-  loboRaivoso:[['*GRRRRRRR... AUUUUUU!*','*GRRRRRRR... AWOOOO!*','*GRRRRRRR... AUUUUUU!*']],
+  slimeCereja:[[CREATURE_ONOMATOPOEIAS.slime,CREATURE_ONOMATOPOEIAS.slime,CREATURE_ONOMATOPOEIAS.slime]],
+  loboRaivoso:[[CREATURE_ONOMATOPOEIAS.wolf,CREATURE_ONOMATOPOEIAS.wolf,CREATURE_ONOMATOPOEIAS.wolf]],
   soldado1:[['Alto! Ninguém passa pela guarda da capital.','Halt! No one passes the capital guard.','¡Alto! Nadie pasa la guardia de la capital.'],
             ['Pela Coroa! Rendam-se agora.','For the Crown! Surrender now.','¡Por la Corona! Ríndanse ahora.']],
   soldado2:[['Vocês não deviam ter vindo até aqui.','You should not have come here.','No deberían haber venido hasta aquí.'],
@@ -4478,7 +4510,7 @@ function enemyLineFor(e){
     const tri=arr[Math.floor(gameRandom()*arr.length)];
     return T(tri[0],tri[1],tri[2]);
   }
-  if(tpl?.fera) return '*Grrrrrr...*';
+  if(tpl?.fera||(!e?.isCard&&creatureOnomatopoeiaKind(e))) return creatureOnomatopoeia(e);
   const k=KINGDOMS.find(x=>x.id===key);
   if(k?.frase) return L(k.frase);
   return T('Vocês não deveriam ter vindo até aqui...','You should not have come here...','No deberían haber venido hasta aquí...');
@@ -4492,6 +4524,65 @@ function storySpeakerSprite(name){
   if(enemyType?.sprite) return enemyType.sprite;
   const enemyCard=Object.values(HUMANOS_CARDS||{}).find(c=>c?.nome===wanted&&c.sprite);
   return enemyCard?.sprite||'';
+}
+function storySpeakerToken(value){
+  return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+}
+function storySpeakerAnchor(step){
+  if(step?.h){
+    const direct=document.getElementById('party-'+step.h);
+    if(direct) return direct;
+    const wanted=storySpeakerToken(step.h);
+    const hero=[...partyArenaEl.querySelectorAll('.hero-unit')].find(unit=>{
+      const character=KINGDOMS[Number(unit.dataset.heroIndex)];
+      return storySpeakerToken(character?.id)===wanted||storySpeakerToken(L(character?.nome)).includes(wanted);
+    });
+    if(hero) return hero;
+  }
+  const wanted=storySpeakerToken(step?.name);
+  if(!wanted||['narrador','narrator'].includes(wanted)) return null;
+  const enemyIndex=(enemies||[]).findIndex(enemy=>{
+    const candidate=storySpeakerToken(L(enemy?.name));
+    return candidate===wanted||candidate.includes(wanted)||wanted.includes(candidate);
+  });
+  return enemyIndex>=0?document.getElementById('enemy-'+enemyIndex):null;
+}
+function clearStoryPresentation(){
+  const layer=document.getElementById('storyLayer');
+  const box=layer?.querySelector('.story-box');
+  if(!layer||!box) return;
+  layer.classList.remove('speaker-bubble','story-speaker-fallback','story-bubble-positioned','bubble-below','narrator-box');
+  layer.removeAttribute('data-story-anchor');
+  box.style.removeProperty('left');
+  box.style.removeProperty('top');
+  box.style.removeProperty('--story-tail-x');
+}
+function positionStorySpeechBubble(){
+  const layer=document.getElementById('storyLayer');
+  const box=layer?.querySelector('.story-box');
+  if(!layer?.classList.contains('speaker-bubble')||!box) return;
+  const anchorId=layer.dataset.storyAnchor;
+  const anchor=anchorId?document.getElementById(anchorId):null;
+  if(!anchor){ layer.classList.add('story-speaker-fallback'); return; }
+  layer.classList.remove('story-speaker-fallback');
+  requestAnimationFrame(()=>{
+    if(!layer.classList.contains('speaker-bubble')) return;
+    const anchorRect=anchor.getBoundingClientRect();
+    const boxRect=box.getBoundingClientRect();
+    const arenaRect=arenaEl.getBoundingClientRect();
+    const margin=8;
+    let left=anchorRect.left+anchorRect.width/2-boxRect.width/2;
+    left=Math.max(margin,Math.min(window.innerWidth-boxRect.width-margin,left));
+    let top=anchorRect.top-boxRect.height-14;
+    const minTop=Math.max(arenaRect.top+4,54);
+    const below=top<minTop;
+    if(below) top=Math.min(window.innerHeight-boxRect.height-margin,anchorRect.bottom+14);
+    layer.classList.toggle('bubble-below',below);
+    box.style.left=Math.round(left)+'px';
+    box.style.top=Math.round(top)+'px';
+    box.style.setProperty('--story-tail-x',Math.max(18,Math.min(boxRect.width-18,anchorRect.left+anchorRect.width/2-left))+'px');
+    layer.classList.add('story-bubble-positioned');
+  });
 }
 function maybeShowStory(idx){
   const seq=[];
@@ -4535,10 +4626,10 @@ function maybeShowStory(idx){
 function renderStoryStep(){
   const layer=document.getElementById('storyLayer');
   if(!layer) return;
-  if(!storyQueue.length){ layer.classList.remove('show','cinematic'); layer.style.removeProperty('--story-bg'); return; }
-  layer.classList.add('cinematic');
-  if(activeStageData?.bgUrl) layer.style.setProperty('--story-bg',`url("${activeStageData.bgUrl}")`);
+  if(!storyQueue.length){ clearStoryPresentation(); layer.classList.remove('show','cinematic'); layer.style.removeProperty('--story-bg'); layer.setAttribute('aria-hidden','true'); return; }
+  clearStoryPresentation();
   const step=storyQueue[0];
+  const narrator=!step?.h&&(!step?.name||['narrador','narrator'].includes(storySpeakerToken(step?.name)));
   if(step.h){
     const k=KINGDOMS.find(kk=>kk.id===step.h);
     document.getElementById('storyPortrait').src=k?(k.sprite||k.cardThumb||k.img):'assets/icon.svg';
@@ -4549,7 +4640,20 @@ function renderStoryStep(){
     document.getElementById('storyName').textContent=L(step.name||'???');
     document.getElementById('storyText').textContent=step.t;
   }
+  if(narrator){
+    layer.classList.add('narrator-box','cinematic');
+    if(activeStageData?.bgUrl) layer.style.setProperty('--story-bg',`url("${activeStageData.bgUrl}")`);
+  }else{
+    layer.classList.remove('cinematic');
+    layer.style.removeProperty('--story-bg');
+    layer.classList.add('speaker-bubble');
+    const anchor=storySpeakerAnchor(step);
+    if(anchor) layer.dataset.storyAnchor=anchor.id;
+    else layer.classList.add('story-speaker-fallback');
+  }
   layer.classList.add('show');
+  layer.setAttribute('aria-hidden','false');
+  if(!narrator) positionStorySpeechBubble();
 }
 function advanceStory(){
   storyQueue.shift();
@@ -4560,13 +4664,16 @@ function advanceStory(){
 let storyDoneCallback=null;
 function finishStorySequence(){
   storyQueue=[];
+  clearStoryPresentation();
   document.getElementById('storyLayer')?.classList.remove('show','cinematic');
+  document.getElementById('storyLayer')?.setAttribute('aria-hidden','true');
   const done=storyDoneCallback; storyDoneCallback=null;
   if(typeof done==='function') done();
 }
 function skipStory(complete=false){
   const done=storyDoneCallback; storyDoneCallback=null;
-  storyQueue=[]; document.getElementById('storyLayer')?.classList.remove('show','cinematic');
+  storyQueue=[]; clearStoryPresentation(); document.getElementById('storyLayer')?.classList.remove('show','cinematic');
+  document.getElementById('storyLayer')?.setAttribute('aria-hidden','true');
   if(complete&&typeof done==='function') done();
 }
 function showStorySequence(seq,onDone=null){
@@ -7341,7 +7448,7 @@ document.getElementById('autoActivesToggle')?.addEventListener('click',()=>{
   sfxSelect();
 });
 document.getElementById('restoreDefaultsBtn')?.addEventListener('click',()=>{
-  ['12r_shake','12r_autoactives','12r_difficulty','12r_lang_set','12r_volume','12r_music_volume','12r_sfx_volume','12r_quality','12r_high_contrast','12r_large_text','12r_reduce_flashes','12r_motion','12r_particles','12r_haptics'].forEach(k=>localStorage.removeItem(k));
+  ['12r_shake','12r_autoactives','12r_difficulty','12r_lang_set','12r_volume','12r_music_volume','12r_sfx_volume','12r_quality','12r_high_contrast','12r_large_text','12r_reduce_flashes','12r_motion','12r_particles','12r_haptics','12r_tactical_grid'].forEach(k=>localStorage.removeItem(k));
   setBattleStatus?.(T('Padrões restaurados. Recarregue o jogo.','Defaults restored. Reload the game.','Valores restaurados. Recarga el juego.'));
   location.reload();
 });
@@ -7898,7 +8005,7 @@ const HUMAN_STORY=(()=>{
   ].map((x,i)=>({...x,index:i}));
 })();
 
-/* v10.0.52 · A campanha humana passa a ser gerada do Markdown editável.
+/* v10.0.53 · A campanha humana passa a ser gerada do Markdown editável.
    O bloco histórico acima permanece apenas como fallback de diagnóstico; em
    execução, cenário, inimigos, seleção e roteiro usam uma única fonte. */
 const HUMAN_LORE=globalThis.YGDRIA_HUMANOS_LORE;
@@ -7939,7 +8046,7 @@ function canonicalAfterSequence(faseIndex){
 const STORY_RULES=HUMAN_STORY.map((s)=>({allowed:s.allowed,fixed:s.fixed}));
 /* A revisão 9.3.10 reabre a campanha narrativa uma vez para perfis que
    concluíram missões enquanto as cenas estavam bloqueadas pelo tutorial. */
-const STORY_CAMPAIGN_VERSION='10.0.52';
+const STORY_CAMPAIGN_VERSION='10.0.53';
 function storyMissionKey(f,n){ return `12r_story_${STORY_CAMPAIGN_VERSION}_humanos_${f+1}_${n}`; }
 function storyPhaseKey(f){ return `12r_story_phase_${STORY_CAMPAIGN_VERSION}_humanos_${f+1}`; }
 function storyPhaseDone(f){ return localStorage.getItem(storyPhaseKey(f))==='1'; }

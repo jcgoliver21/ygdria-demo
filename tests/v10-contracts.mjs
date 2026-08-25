@@ -18,13 +18,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=10\.0\.52/);
-  assert.match(html,/v10-config\.js\?v=10\.0\.52/);
-  assert.match(html,/v10-animations\.js\?v=10\.0\.52/);
-  assert.match(html,/humanos-lore-v10\.js\?v=10\.0\.52/);
-  assert.match(html,/game-v10\.js\?v=10\.0\.52/);
-  assert.match(config,/version:'v10\.0\.52'/);
-  assert.match(sw,/12r-v10\.0\.52/);
+  assert.match(html,/styles-v10\.css\?v=10\.0\.53/);
+  assert.match(html,/v10-config\.js\?v=10\.0\.53/);
+  assert.match(html,/v10-animations\.js\?v=10\.0\.53/);
+  assert.match(html,/humanos-lore-v10\.js\?v=10\.0\.53/);
+  assert.match(html,/game-v10\.js\?v=10\.0\.53/);
+  assert.match(config,/version:'v10\.0\.53'/);
+  assert.match(sw,/12r-v10\.0\.53/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -42,14 +42,24 @@ check('Markdown editável é a fonte canônica das dez fases humanas',()=>{
   assert.deepEqual(payload.phases[9].allowed,['adriel-jovem','gareth','roland','elizier']);
   assert.equal(payload.phases[9].visual.missionFive,'darkness');
   assert.equal(payload.phases[9].after.at(-3).speaker,'Cedric');
+  assert.equal(payload.phases[0].missions[0].lines[0].text,'Blub... ploc-ploc... splash!');
+  assert.equal(payload.phases[0].missions[1].lines[1].text,'Grrrr... auuuuu!');
   for(const key of ['cherry-petals','sacred-pink-light','festival-confetti','shadow-fog','library-pages','fireworks','darkness']) assert.ok(css.includes(key),`efeito ${key} ausente`);
   assert.match(game,/const HUMAN_LORE=globalThis\.YGDRIA_HUMANOS_LORE/);
   assert.match(game,/canonicalAfterSequence/);
-  assert.match(game,/STORY_CAMPAIGN_VERSION='10\.0\.52'/);
+  assert.match(game,/STORY_CAMPAIGN_VERSION='10\.0\.53'/);
+});
+
+check('narrador usa caixa e personagens ou feras usam balões ancorados',()=>{
+  for(const needle of ['CREATURE_ONOMATOPOEIAS','function creatureOnomatopoeiaKind','function creatureOnomatopoeia','slime','wolf','harpy','golem','dragon','kraken','function storySpeakerAnchor','function positionStorySpeechBubble','speaker-bubble','data-story-anchor']) assert.ok(game.includes(needle)||css.includes(needle),`${needle} ausente`);
+  for(const selector of ['.story-layer.show.speaker-bubble','.story-layer.speaker-bubble .story-box::after','.story-layer.speaker-bubble.story-speaker-fallback']) assert.ok(css.includes(selector),`${selector} ausente`);
+  assert.match(game,/layer\.classList\.add\('narrator-box','cinematic'\)/);
+  assert.match(game,/layer\.classList\.add\('speaker-bubble'\)/);
+  assert.match(game,/!e\?\.isCard&&creatureOnomatopoeiaKind\(e\)/);
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v10\.0\.52/);
+  assert.match(sw,/12r-v10\.0\.53/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -201,8 +211,9 @@ check('v13 limita o grid perspectivado à Cidade das Cerejeiras',()=>{
   assert.match(html,/id="cerejeiraTacticalGrid"/);
   assert.match(html,/id="physicalFloorGrid"/);
   assert.match(game,/function renderCerejeiraTacticalGrid\(\)/);
-    assert.match(game,/worldRun\.active&&Number\(worldRun\.fase\)===0/);
-    assert.match(game,/arenaEl\.classList\.toggle\('tactical-grid',cityDefault\)/);
+  assert.match(game,/let tacticalGridVisible=localStorage\.getItem\('12r_tactical_grid'\)==='1'/);
+  assert.match(game,/arenaEl\.classList\.toggle\('tactical-grid',tacticalGridVisible\)/);
+  assert.match(game,/localStorage\.setItem\('12r_tactical_grid',active\?'1':'0'\)/);
   assert.match(game,/arenaEl\.classList\.toggle\('tactical-grid-available',available\)/);
   assert.match(game,/const \{top,bot:bottom\}=groundBand\(\)/);
   assert.match(game,/const columns=9/);
@@ -225,7 +236,7 @@ check('v13 limita o grid perspectivado à Cidade das Cerejeiras',()=>{
   assert.match(css,/\.physical-floor-cell\.enemy-grid-cell/);
 });
 
-check('passagem gráfica v10.0.52 mantém física e dá resposta ao combate',()=>{
+check('passagem gráfica v10.0.53 mantém física e dá resposta ao combate',()=>{
   for(const needle of ['ensureArenaVisualLayers','applyArenaVisualProfile','pulseArenaLighting','spawnCombatAttackFx','enemyFxRealm','arena-light-pulse','arena-depth','arena-lighting','arenaEffects','arenaProfiles','fx-attack-signature','attack-fogo','attack-gelo']) assert.ok(game.includes(needle)||css.includes(needle)||config.includes(needle),`${needle} ausente`);
   assert.match(game,/if\(kind==='impact'\|\|kind==='critical'\) pulseArenaLighting\(color,target,kind\)/);
   assert.match(css,/body\.game-active \.unit-ground-shadow\{display:block/);
@@ -312,7 +323,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=10.0.52');
+  const deferredGame=html.indexOf('game-v10.js?v=10.0.53');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);

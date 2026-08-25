@@ -160,7 +160,7 @@ test('v13 mantém a grade da Cidade e libera o validador em todas as fases',asyn
       floorCell:floorCell?{width:rect.width,height:rect.height,offsetWidth:floorCell.offsetWidth,offsetHeight:floorCell.offsetHeight,computedWidth:getComputedStyle(floorCell).width,computedHeight:getComputedStyle(floorCell).height}:null
     };
   });
-  expect(grid).toMatchObject({available:true,active:true});
+  expect(grid).toMatchObject({available:true,active:false});
   expect(grid.cells).toBe(33);
   expect(grid.partyLabels).toEqual(['01','02','03','04','05','06','10','11','12','13','14','15','19','20','21','22','23','24','28','29','30','31','32','33']);
   expect(grid.enemyLabels).toEqual(['07','08','09','16','17','18','25','26','27']);
@@ -169,12 +169,45 @@ test('v13 mantém a grade da Cidade e libera o validador em todas as fases',asyn
   expect(grid.sameFloorHeight).toBe(true);
   expect(grid.floorCell.offsetWidth).toBe(grid.floorCell.offsetHeight);
   expect(grid.floorCell.computedWidth).toBe(grid.floorCell.computedHeight);
+  await page.click('#gridTool');
+  await expect(page.locator('#arena')).toHaveClass(/(?:^|\s)tactical-grid(?:\s|$)/);
+  await expect.poll(()=>page.evaluate(()=>localStorage.getItem('12r_tactical_grid'))).toBe('1');
   await page.evaluate(()=>{ worldRun.fase=1; syncCerejeiraTacticalGrid(); });
   await expect(page.locator('#gridTool')).toBeVisible();
   await expect(page.locator('#arena')).toHaveClass(/tactical-grid-available/);
-  await expect(page.locator('#arena')).not.toHaveClass(/(?:^|\s)tactical-grid(?:\s|$)/);
-  await page.click('#gridTool');
   await expect(page.locator('#arena')).toHaveClass(/(?:^|\s)tactical-grid(?:\s|$)/);
+  await page.click('#gridTool');
+  await expect(page.locator('#arena')).not.toHaveClass(/(?:^|\s)tactical-grid(?:\s|$)/);
+  expect(errors).toEqual([]);
+});
+
+test('narrador mantém a caixa e falas de feras ou heróis acompanham o corpo',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.setViewportSize({width:390,height:844});
+  await page.evaluate(()=>{
+    worldRun.active=true; worldRun.fase=0; worldRun.nivel=1; worldRun.storyMode=true;
+    chosenIds=['adriel-jovem','berenice-jovem','galateia-jovem','acqua-jovem'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    beginGame(0);
+  });
+  await expect(page.locator('#storyLayer')).toHaveClass(/narrator-box/);
+  await expect(page.locator('#storyLayer')).not.toHaveClass(/speaker-bubble/);
+  await expect(page.locator('#storyName')).toHaveText('Narrador');
+  await page.locator('#storyLayer').click({position:{x:4,y:4}});
+  await expect(page.locator('#storyLayer')).toHaveClass(/speaker-bubble/);
+  await expect(page.locator('#storyLayer')).toHaveAttribute('data-story-anchor','enemy-0');
+  await expect(page.locator('#storyText')).toHaveText('Blub... ploc-ploc... splash!');
+  const beastBubble=await page.evaluate(()=>{
+    const bubble=document.querySelector('#storyLayer .story-box').getBoundingClientRect();
+    const anchor=document.getElementById('enemy-0').getBoundingClientRect();
+    return {left:bubble.left,right:bubble.right,top:bubble.top,bottom:bubble.bottom,anchorCenter:anchor.left+anchor.width/2,bubbleCenter:bubble.left+bubble.width/2};
+  });
+  expect(beastBubble.left).toBeGreaterThanOrEqual(0);
+  expect(beastBubble.right).toBeLessThanOrEqual(390);
+  expect(Math.abs(beastBubble.anchorCenter-beastBubble.bubbleCenter)).toBeLessThan(130);
+  await page.evaluate(()=>showStorySequence([{h:'adriel-jovem',t:'Vamos proteger a cidade!'}]));
+  await expect(page.locator('#storyLayer')).toHaveAttribute('data-story-anchor','party-adriel-jovem');
+  await expect(page.locator('#storyText')).toHaveText('Vamos proteger a cidade!');
+  await page.evaluate(()=>skipStory());
   expect(errors).toEqual([]);
 });
 
@@ -1200,7 +1233,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.52');
+  expect(registration.caches).toContain('12r-v10.0.53');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1360,7 +1393,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.52');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.53');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

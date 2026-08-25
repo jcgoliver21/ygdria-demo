@@ -2327,6 +2327,69 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
 .story-skip{ position:absolute; top:-34px; right:0; }
 .story-layer.show .story-copy p{ animation:storyTextRise .55s ease both; }
 @keyframes storyTextRise{ from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+/* v10.0.53 · Diálogo incorporado à arena. O narrador conserva a caixa
+   cinematográfica; personagens e feras falam em balões presos ao próprio
+   corpo, acompanhando formação, perspectiva e rotação do aparelho. */
+.story-layer.show.speaker-bubble{
+  display:block;
+  padding:0;
+  background:linear-gradient(180deg,rgba(3,2,8,.08),rgba(3,2,8,.22));
+}
+.story-layer.speaker-bubble .story-box{
+  position:fixed;
+  width:min(76vw,340px);
+  min-height:56px;
+  align-items:flex-start;
+  gap:0;
+  padding:10px 13px 9px;
+  border:1.5px solid #f0d58e;
+  border-radius:15px;
+  background:linear-gradient(155deg,rgba(29,22,43,.97),rgba(9,7,15,.98));
+  box-shadow:0 8px 24px rgba(0,0,0,.58),inset 0 1px rgba(255,255,255,.12),0 0 14px rgba(212,175,90,.2);
+  animation:storyBubbleIn .28s cubic-bezier(.2,.8,.25,1) both;
+  visibility:hidden;
+}
+.story-layer.speaker-bubble.story-bubble-positioned .story-box,
+.story-layer.speaker-bubble.story-speaker-fallback .story-box{visibility:visible}
+.story-layer.speaker-bubble .story-box::after{
+  content:'';
+  position:absolute;
+  left:var(--story-tail-x,50%);
+  bottom:-10px;
+  width:18px;
+  height:18px;
+  transform:translateX(-50%) rotate(45deg);
+  border-right:1.5px solid #f0d58e;
+  border-bottom:1.5px solid #f0d58e;
+  background:#0b0811;
+}
+.story-layer.speaker-bubble.bubble-below .story-box::after{
+  top:-10px;
+  bottom:auto;
+  border:0;
+  border-left:1.5px solid #f0d58e;
+  border-top:1.5px solid #f0d58e;
+  background:#1c1529;
+}
+.story-layer.speaker-bubble .story-portrait{display:none}
+.story-layer.speaker-bubble .story-copy b{font-size:10px;color:#ffe49a}
+.story-layer.speaker-bubble .story-copy p{margin:3px 0 1px;font-size:12px;line-height:1.35}
+.story-layer.speaker-bubble .story-hint{font-size:8px}
+.story-layer.speaker-bubble .story-skip{top:-29px;right:0}
+.story-layer.speaker-bubble.story-speaker-fallback{
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding:0 8px calc(14px + env(safe-area-inset-bottom));
+}
+.story-layer.speaker-bubble.story-speaker-fallback .story-box{position:relative;left:auto!important;top:auto!important;width:min(92vw,410px)}
+.story-layer.speaker-bubble.story-speaker-fallback .story-box::after{display:none}
+.story-layer.speaker-bubble.story-speaker-fallback .story-portrait{display:block;width:54px;height:54px;margin-right:10px;flex:0 0 54px}
+@keyframes storyBubbleIn{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
+@media (max-width:600px){
+  .story-layer.speaker-bubble .story-box{width:min(78vw,300px);padding:8px 10px 7px}
+  .story-layer.speaker-bubble .story-copy p{font-size:11px;line-height:1.3}
+}
 .select-card.story-disabled{ opacity:.28; filter:grayscale(.85); cursor:not-allowed; position:relative; }
 .select-card.story-disabled::after{ content:'BLOQUEADO NO MODO HISTÓRIA'; position:absolute; inset:auto 4px 5px; text-align:center; font-size:7px; letter-spacing:.4px; color:#ffd98b; }
 /* v9.1 · Perfil */

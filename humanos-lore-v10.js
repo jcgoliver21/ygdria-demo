@@ -5,7 +5,7 @@
   root.YGDRIA_HUMANOS_LORE=Object.freeze({
   "schema": 1,
   "source": "docs/REINO-HUMANOS-FASES-EDITAVEL.md",
-  "sourceHash": "15aeb2c289773a7f9d2fa05c9b6caee8d826acba83790f8f38009e01d213c1b9",
+  "sourceHash": "d43601434925a77f2a9774caaedb0235697dcd625ee6f309323b14c1b864a7f9",
   "generatedAt": "deterministic",
   "phases": [
     {
@@ -44,7 +44,7 @@
             {
               "speaker": "Slime",
               "heroId": "",
-              "text": "(Barulhos de slime)"
+              "text": "Blub... ploc-ploc... splash!"
             },
             {
               "speaker": "Adriel",
@@ -69,12 +69,12 @@
             {
               "speaker": "Slime",
               "heroId": "",
-              "text": "(Barulhos de slime)"
+              "text": "Blub... ploc-ploc... splash!"
             },
             {
               "speaker": "Lobo",
               "heroId": "",
-              "text": "(Barulhos de lobo)"
+              "text": "Grrrr... auuuuu!"
             }
           ]
         },
@@ -89,7 +89,7 @@
             {
               "speaker": "Lobo",
               "heroId": "",
-              "text": "(Barulhos de lobo)"
+              "text": "Grrrr... auuuuu!"
             }
           ]
         },

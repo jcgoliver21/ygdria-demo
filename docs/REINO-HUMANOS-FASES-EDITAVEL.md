@@ -15,15 +15,15 @@ Efeito Visual: Petalas de Cerejeira caem, algumas vão se acumulam no chão e du
 ### Missões
 
 1. **Slime de Cerejeira**
-   - Slime: (Barulhos de slime)
+   - Slime: Blub... ploc-ploc... splash!
    - Adriel: Fiquem Atrás de mim, vou protegê-las
    - Berenice: Nos também sabemos lutar
 
 2. **Slime de Cerejeira + Lobo Raivoso**
-   - Slime: (Barulhos de slime) / - Lobo: (Barulhos de lobo)
+   - Slime: Blub... ploc-ploc... splash! / - Lobo: Grrrr... auuuuu!
 
 3. **Lobo Raivoso ×2**
-   - Lobo: (Barulhos de lobo)
+   - Lobo: Grrrr... auuuuu!
 
 4. **Soldado 1 + Soldado 2**
    - Soldado 1: O que está fazendo? Fique longe das princesas!!!
