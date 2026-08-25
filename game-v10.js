@@ -7727,16 +7727,16 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
       const avatar=document.getElementById('enemyPortrait-0');
       const before={rooted:avatar?.classList.contains('enemy-rooted-idle'),action:avatar?.dataset.action};
       playEnemyAction(0,'attack');
-      return new Promise(resolve=>window.setTimeout(()=>{
-        const settled=document.getElementById('enemyPortrait-0');
-        resolve({
-          before,
-          rooted:settled?.classList.contains('enemy-rooted-idle'),
-          action:settled?.dataset.action,
-          sheetAnimation:getComputedStyle(settled?.querySelector('.enemy-rooted-idle-sheet')).animationName,
-          sheetTransform:getComputedStyle(settled?.querySelector('.enemy-rooted-idle-sheet')).transform
-        });
-      },900));
+      return {before};
+    },
+    rootedEnemyActionSnapshot:()=>{
+      const settled=document.getElementById('enemyPortrait-0');
+      return {
+        rooted:settled?.classList.contains('enemy-rooted-idle'),
+        action:settled?.dataset.action,
+        sheetAnimation:getComputedStyle(settled?.querySelector('.enemy-rooted-idle-sheet')).animationName,
+        sheetTransform:getComputedStyle(settled?.querySelector('.enemy-rooted-idle-sheet')).transform
+      };
     },
     enemyScaleProbe:()=>{
       const cases=[
@@ -8005,7 +8005,7 @@ const HUMAN_STORY=(()=>{
   ].map((x,i)=>({...x,index:i}));
 })();
 
-/* v10.0.53 · A campanha humana passa a ser gerada do Markdown editável.
+/* v10.0.54 · A campanha humana passa a ser gerada do Markdown editável.
    O bloco histórico acima permanece apenas como fallback de diagnóstico; em
    execução, cenário, inimigos, seleção e roteiro usam uma única fonte. */
 const HUMAN_LORE=globalThis.YGDRIA_HUMANOS_LORE;
@@ -8046,7 +8046,7 @@ function canonicalAfterSequence(faseIndex){
 const STORY_RULES=HUMAN_STORY.map((s)=>({allowed:s.allowed,fixed:s.fixed}));
 /* A revisão 9.3.10 reabre a campanha narrativa uma vez para perfis que
    concluíram missões enquanto as cenas estavam bloqueadas pelo tutorial. */
-const STORY_CAMPAIGN_VERSION='10.0.53';
+const STORY_CAMPAIGN_VERSION='10.0.54';
 function storyMissionKey(f,n){ return `12r_story_${STORY_CAMPAIGN_VERSION}_humanos_${f+1}_${n}`; }
 function storyPhaseKey(f){ return `12r_story_phase_${STORY_CAMPAIGN_VERSION}_humanos_${f+1}`; }
 function storyPhaseDone(f){ return localStorage.getItem(storyPhaseKey(f))==='1'; }

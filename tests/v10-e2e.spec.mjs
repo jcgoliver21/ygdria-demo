@@ -138,7 +138,9 @@ test('v13 mantém a grade da Cidade e libera o validador em todas as fases',asyn
   const errors=await boot(page,'flow');
   await page.setViewportSize({width:390,height:844});
   await page.evaluate(()=>{ worldRun.active=true; worldRun.fase=0; worldRun.nivel=1; chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
+  await page.waitForTimeout(400); // respeita a proteção contra toque herdado da entrada na batalha
   await page.click('#battleToolsToggle');
+  await expect(page.locator('#battleToolsPanel')).toHaveClass(/open/);
   const grid=await page.evaluate(()=>{
     const party=[...document.querySelectorAll('#physicalFloorGrid .party-grid-cell')];
     const enemy=[...document.querySelectorAll('#physicalFloorGrid .enemy-grid-cell')];
@@ -307,7 +309,9 @@ test('v10.0.1 restaura escala e anima inimigos-personagem e inimigos comuns',asy
   expect(probe.rootedIdle).toMatchObject({active:true,sheetAnimation:'none',sheetTransform:'none'});
   expect(probe.rootedIdle.source).toContain('/capitao/idle-v3/processed/sheet-transparent.png');
   expect(probe.rootedIdle.sheetTransform).toBe('none');
-  const rootedAction=await page.evaluate(()=>window.__12rQA.rootedEnemyActionProbe());
+  const rootedStart=await page.evaluate(()=>window.__12rQA.rootedEnemyActionProbe());
+  await page.waitForTimeout(900);
+  const rootedAction={...rootedStart,...await page.evaluate(()=>window.__12rQA.rootedEnemyActionSnapshot())};
   expect(rootedAction).toMatchObject({before:{rooted:true,action:'idle'},rooted:true,action:'idle',sheetAnimation:'none',sheetTransform:'none'});
   expect(probe.bossStarCount).toBe(0);
   const deathProbe=await page.evaluate(()=>window.__12rQA.enemyDeathProbe());
@@ -1233,7 +1237,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v10.0.53');
+  expect(registration.caches).toContain('12r-v10.0.54');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1393,7 +1397,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 10');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.53');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v10.0.54');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

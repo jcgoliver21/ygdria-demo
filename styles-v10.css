@@ -2327,7 +2327,7 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
 .story-skip{ position:absolute; top:-34px; right:0; }
 .story-layer.show .story-copy p{ animation:storyTextRise .55s ease both; }
 @keyframes storyTextRise{ from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
-/* v10.0.53 · Diálogo incorporado à arena. O narrador conserva a caixa
+/* v10.0.54 · Diálogo incorporado à arena. O narrador conserva a caixa
    cinematográfica; personagens e feras falam em balões presos ao próprio
    corpo, acompanhando formação, perspectiva e rotação do aparelho. */
 .story-layer.show.speaker-bubble{
