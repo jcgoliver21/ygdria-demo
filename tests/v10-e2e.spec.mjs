@@ -127,7 +127,7 @@ test('lore canônica controla fases, elencos, falas e atmosferas no runtime',asy
   expect(probe.allowed[0]).toEqual(['adriel-jovem','berenice-jovem','galateia-jovem','acqua-jovem']);
   expect(probe.fixed[7]).toEqual(['adriel-jovem','berenice-jovem','galateia-jovem']);
   expect(probe.allowed[9]).toEqual(['adriel-jovem','gareth','roland','elizier']);
-  expect(probe.garethLine).toEqual({name:'Gareth',t:'Não estou gostando nada disso pessoal.'});
+  expect(probe.garethLine).toEqual({h:'gareth',t:'Não estou gostando nada disso pessoal.'});
   expect(probe.finalSpeakers).toEqual(['Narrador','Cedric','Narrador','Narrador']);
   expect(probe.atmospheres).toEqual(['cherry-petals','sacred-pink-light','none','none','festival-confetti','shadow-fog','library-pages','fireworks','darkness','none']);
   expect(probe.missionFive).toBe('total-darkness');
@@ -152,6 +152,7 @@ test('atmosferas canônicas permanecem legíveis no mobile e a missão final usa
       const atmosphere=arena.querySelector('.arena-atmosphere');
       const drift=arena.querySelector('.arena-world-drift');
       const fog=arena.querySelector('.arena-cold-fog');
+      const fireworksCanvas=arena.querySelector('.arena-fireworks-canvas');
       const atmosphereStyle=getComputedStyle(atmosphere);
       const before=getComputedStyle(atmosphere,'::before');
       const after=getComputedStyle(atmosphere,'::after');
@@ -168,6 +169,8 @@ test('atmosferas canônicas permanecem legíveis no mobile e a missão final usa
         afterAnimation:after.animationName,
         driftOpacity:Number(driftStyle.opacity),
         driftAnimation:driftStyle.animationName,
+        fireworksOpacity:Number(getComputedStyle(fireworksCanvas).opacity),
+        fireworksWidth:fireworksCanvas.getBoundingClientRect().width,
         fogOpacity:Number(fogStyle.opacity),
         fogHeight:fog.getBoundingClientRect().height,
         arenaHeight:arena.getBoundingClientRect().height
@@ -192,7 +195,9 @@ test('atmosferas canônicas permanecem legíveis no mobile e a missão final usa
   expect(probe.pagesStart.driftOpacity).toBeGreaterThan(.5);
   expect(probe.pagesEnd.driftOpacity).toBeGreaterThan(probe.pagesStart.driftOpacity);
   expect(probe.pagesEnd.afterOpacity).toBeGreaterThan(probe.pagesStart.afterOpacity);
-  expect(probe.fireworks).toMatchObject({key:'fireworks',driftAnimation:'fireworkBloom',beforeAnimation:'fireworkCrown',afterAnimation:'fireworkCrown'});
+  expect(probe.fireworks).toMatchObject({key:'fireworks',driftAnimation:'none',beforeAnimation:'none',afterAnimation:'none'});
+  expect(probe.fireworks.fireworksOpacity).toBeGreaterThan(.9);
+  expect(probe.fireworks.fireworksWidth).toBeGreaterThan(300);
   expect(probe.darkness.key).toBe('darkness');
   expect(probe.totalDarkness.key).toBe('total-darkness');
   expect(probe.totalDarkness.backgroundColor).toBe('rgba(0, 0, 0, 0.94)');
@@ -274,7 +279,7 @@ test('narrador mantém a caixa e falas de feras ou heróis acompanham o corpo',a
   await expect(page.locator('#storyLayer')).toHaveClass(/narrator-box/);
   await expect(page.locator('#storyLayer')).not.toHaveClass(/speaker-bubble/);
   await expect(page.locator('#storyName')).toHaveText('Narrador');
-  await page.locator('#storyLayer').click({position:{x:4,y:4}});
+  await page.evaluate(()=>advanceStory());
   await expect(page.locator('#storyLayer')).toHaveClass(/speaker-bubble/);
   await expect(page.locator('#storyLayer')).toHaveAttribute('data-story-anchor','enemy-0');
   await expect(page.locator('#storyText')).toHaveText('Blub... ploc-ploc... splash!');
@@ -290,6 +295,75 @@ test('narrador mantém a caixa e falas de feras ou heróis acompanham o corpo',a
   await expect(page.locator('#storyLayer')).toHaveAttribute('data-story-anchor','party-adriel-jovem');
   await expect(page.locator('#storyText')).toHaveText('Vamos proteger a cidade!');
   await page.evaluate(()=>skipStory());
+  expect(errors).toEqual([]);
+});
+
+test('fala canônica do Gareth acompanha o corpo na Praça das Doze Essências',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.setViewportSize({width:390,height:844});
+  await page.evaluate(()=>{
+    worldRun.active=true; worldRun.fase=5; worldRun.nivel=3; worldRun.storyMode=true;
+    chosenIds=['adriel-jovem','berenice-jovem','galateia-jovem','gareth'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    beginGame(0);
+  });
+  await expect(page.locator('#storyLayer')).toHaveClass(/speaker-bubble/);
+  await expect(page.locator('#storyLayer')).not.toHaveClass(/story-speaker-fallback/);
+  await expect(page.locator('#storyLayer')).toHaveAttribute('data-story-anchor','party-gareth');
+  await expect(page.locator('#storyText')).toHaveText('Tá vindo mais...');
+  const bubble=await page.evaluate(()=>{
+    const box=document.querySelector('#storyLayer .story-box').getBoundingClientRect();
+    const gareth=document.getElementById('party-gareth').getBoundingClientRect();
+    const style=getComputedStyle(document.querySelector('#storyLayer .story-box'));
+    return {boxBottom:box.bottom,garethTop:gareth.top,centerGap:Math.abs(box.left+box.width/2-(gareth.left+gareth.width/2)),borderRadius:style.borderRadius,backdropFilter:style.backdropFilter,accent:style.getPropertyValue('--story-accent').trim()};
+  });
+  expect(bubble.boxBottom).toBeLessThanOrEqual(bubble.garethTop+18);
+  expect(bubble.centerGap).toBeLessThan(125);
+  expect(bubble.borderRadius).toContain('15px');
+  expect(bubble.backdropFilter).toContain('blur');
+  expect(bubble.accent).toMatch(/^#/);
+  const skip=await page.evaluate(()=>{
+    const button=document.getElementById('storySkip'),rect=button.getBoundingClientRect(),arena=document.getElementById('arena').getBoundingClientRect();
+    return {text:button.textContent.trim(),left:rect.left,top:rect.top,arenaRight:arena.right,arenaBottom:arena.bottom,border:getComputedStyle(button).border};
+  });
+  expect(skip.text).toBe('»');
+  expect(skip.left).toBeGreaterThan(skip.arenaRight-48);
+  expect(skip.top).toBeGreaterThan(skip.arenaBottom-42);
+  expect(skip.border).toMatch(/^0px none/);
+  await page.evaluate(()=>{
+    skipStory(); worldRun.fase=0; worldRun.nivel=5; worldRun.storyMode=true;
+    chosenIds=['adriel-jovem','berenice-jovem','galateia-jovem','acqua-jovem'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    beginGame(0);
+  });
+  await expect(page.locator('#storyLayer')).toHaveAttribute('data-story-anchor','party-adriel-jovem');
+  await page.evaluate(()=>advanceStory());
+  await expect(page.locator('#storyText')).toHaveText('Só se me derrotar primeiro, moleque!');
+  await expect(page.locator('#storyLayer')).toHaveAttribute('data-story-anchor','enemy-2');
+  expect(errors).toEqual([]);
+});
+
+test('fogos da Muralha lançam projéteis e centelhas com gravidade e arrasto',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.setViewportSize({width:390,height:844});
+  await page.evaluate(()=>{
+    worldRun.active=true; worldRun.fase=7; worldRun.nivel=2; worldRun.storyMode=false;
+    chosenIds=['adriel-jovem','berenice-jovem','galateia-jovem','gareth'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    beginGame(0); skipStory();
+  });
+  await expect(page.locator('.arena-fireworks-canvas')).toBeVisible();
+  await expect.poll(()=>page.evaluate(()=>window.__12rQA.fireworksPhysicsProbe()),{timeout:4000}).toMatchObject({atmosphere:'fireworks',canvas:true,running:true,mode:'ballistic',gravity:true,drag:true});
+  const probe=await page.evaluate(()=>window.__12rQA.fireworksPhysicsProbe());
+  expect(probe.activeParticles).toBeGreaterThan(0);
+  expect(probe.particleCap).toBeLessThanOrEqual(210);
+  const frozen=await page.evaluate(()=>{
+    gamePaused=true;
+    const canvas=document.querySelector('.arena-fireworks-canvas'),ctx=canvas.getContext('2d');
+    const alpha=()=>{ const data=ctx.getImageData(0,0,canvas.width,canvas.height).data; let sum=0; for(let i=3;i<data.length;i+=4) sum+=data[i]; return sum; };
+    return {before:alpha()};
+  });
+  await page.waitForTimeout(150);
+  frozen.after=await page.evaluate(()=>{ const canvas=document.querySelector('.arena-fireworks-canvas'),data=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data; let sum=0; for(let i=3;i<data.length;i+=4) sum+=data[i]; return sum; });
+  expect(frozen.before).toBeGreaterThan(0);
+  expect(frozen.after).toBe(frozen.before);
   expect(errors).toEqual([]);
 });
 

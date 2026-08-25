@@ -64,6 +64,9 @@ const heroIdForSpeaker=name=>{
   if(plain==='berenice') return 'berenice-jovem';
   if(plain==='galateia') return 'galateia-jovem';
   if(plain==='acqua') return 'acqua-jovem';
+  if(plain==='gareth') return 'gareth';
+  if(plain==='roland') return 'roland';
+  if(plain==='elizier') return 'elizier';
   return '';
 };
 const parseEnemyTitle=title=>{
@@ -150,6 +153,12 @@ const phases=sections.map(section=>{
     }
   }
   if(missions.length!==5) throw new Error(`Esperadas 5 missões na fase ${number}; encontradas ${missions.length}.`);
+  /* Gareth, Roland e Elizier também aparecem como adversários. Só marcamos a
+     fala como heroica quando o personagem pertence ao elenco permitido da
+     fase; nos demais casos, o runtime ancora a fala ao inimigo homônimo. */
+  missions.forEach(entry=>entry.lines.forEach(line=>{
+    if(line.heroId&&!allowed.includes(line.heroId)) line.heroId='';
+  }));
 
   const after=[];
   const afterSceneCues=[];
@@ -167,6 +176,7 @@ const phases=sections.map(section=>{
       if(parsed.text) after.push(parsed);
     }
   }
+  after.forEach(line=>{ if(line.heroId&&!allowed.includes(line.heroId)) line.heroId=''; });
   return {number,name,subtitle,bosses,visual:{description:visualText,...classifyAtmosphere(visualText)},before,allowed,fixed,missions,after,afterSceneCues};
 });
 

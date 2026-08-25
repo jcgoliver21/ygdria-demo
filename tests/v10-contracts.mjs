@@ -10,6 +10,7 @@ const css=read('styles-v10.css');
 const config=read('v10-config.js');
 const animations=read('v10-animations.js');
 const lore=read('humanos-lore-v10.js');
+const syncLore=read('tools/sync-humanos-lore.mjs');
 const sw=read('sw.js');
 const workflow=read('.github/workflows/v10-ci.yml');
 const defeatPhysics=JSON.parse(read('assets/characters/defeat-physics-contract.json'));
@@ -38,6 +39,11 @@ check('Markdown editável é a fonte canônica das dez fases humanas',()=>{
   assert.equal(payload.phases.length,10);
   assert.equal(payload.phases[0].subtitle,'O Encontro Predestinado na Capital de Ygdria');
   assert.equal(payload.phases[5].missions[1].lines[0].speaker,'Gareth');
+  assert.equal(payload.phases[5].missions[2].lines[0].heroId,'gareth');
+  assert.equal(payload.phases[0].missions[4].lines[1].heroId,'');
+  for(const phase of payload.phases){
+    for(const mission of phase.missions) for(const line of mission.lines) if(line.heroId) assert.ok(phase.allowed.includes(line.heroId),`${line.speaker} marcado como herói fora do elenco da fase ${phase.number}`);
+  }
   assert.equal(payload.phases[7].fixed.length,3);
   assert.deepEqual(payload.phases[9].allowed,['adriel-jovem','gareth','roland','elizier']);
   assert.equal(payload.phases[9].visual.missionFive,'total-darkness');
@@ -56,6 +62,14 @@ check('narrador usa caixa e personagens ou feras usam balões ancorados',()=>{
   assert.match(game,/layer\.classList\.add\('narrator-box','cinematic'\)/);
   assert.match(game,/layer\.classList\.add\('speaker-bubble'\)/);
   assert.match(game,/!e\?\.isCard&&creatureOnomatopoeiaKind\(e\)/);
+  for(const mapping of ["plain==='gareth'","plain==='roland'","plain==='elizier'"]) assert.ok(syncLore.includes(mapping),`${mapping} ausente do gerador`);
+  for(const needle of ['--story-accent','backdrop-filter:blur(10px) saturate(1.15)','border-radius:15px 15px 15px 7px','width:fit-content','story-copy{flex:0 1 auto','story-copy b::before','story-skip{position:fixed','aria-label="Pular diálogo"']) assert.ok(css.includes(needle)||html.includes(needle),`${needle} ausente`);
+});
+
+check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
+  for(const needle of ['arena-fireworks-canvas','startArenaFireworks','particle.gravity','particle.drag','ResizeObserver','fireworksPhysicsProbe']) assert.ok(game.includes(needle)||css.includes(needle),`${needle} ausente`);
+  assert.match(css,/\.arena\[data-mission-atmosphere="fireworks"\] \.arena-world-drift\{opacity:0;background:none;animation:none\}/);
+  assert.match(css,/\.arena-fireworks-canvas\{/);
 });
 
 check('cache offline da v10 é isolado',()=>{

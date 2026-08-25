@@ -2923,6 +2923,139 @@ function syncCerejeiraTacticalGrid(){
   }
 }
 
+/* Fogos da Muralha dos Heróis: projéteis balísticos sobem, perdem velocidade,
+   explodem e cada centelha sofre arrasto e gravidade. Um único canvas e pools
+   fixos evitam criar elementos por quadro; a simulação é encerrada ao trocar
+   de cenário e vira uma composição estática com movimento reduzido. */
+const FIREWORK_PALETTES=[
+  ['#fff3b0','#ffd05a','#f29a38'],
+  ['#e6fbff','#76ddff','#4398ff'],
+  ['#fff0fa','#ff8dcb','#cf5dff'],
+  ['#efffe8','#89f0aa','#42c7a1']
+];
+let arenaFireworks=null;
+function stopArenaFireworks(){
+  if(!arenaFireworks) return;
+  cancelAnimationFrame(arenaFireworks.raf);
+  arenaFireworks.resizeObserver?.disconnect();
+  const ctx=arenaFireworks.ctx;
+  if(ctx) ctx.clearRect(0,0,arenaFireworks.width,arenaFireworks.height);
+  arenaFireworks=null;
+}
+function drawReducedFireworks(canvas){
+  const rect=canvas.getBoundingClientRect();
+  const dpr=Math.min(devicePixelRatio||1,1.5);
+  canvas.width=Math.max(1,Math.round(rect.width*dpr));
+  canvas.height=Math.max(1,Math.round(rect.height*dpr));
+  const ctx=canvas.getContext('2d');
+  if(!ctx) return;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,rect.width,rect.height);
+  ctx.globalCompositeOperation='lighter';
+  [[.24,.28,24,0],[.73,.24,28,1],[.51,.48,20,2]].forEach(([nx,ny,r,paletteIndex])=>{
+    const palette=FIREWORK_PALETTES[paletteIndex];
+    for(let i=0;i<18;i++){
+      const angle=(Math.PI*2*i)/18;
+      const length=r*(.72+(i%3)*.13);
+      const x=rect.width*nx,y=rect.height*ny;
+      ctx.beginPath();
+      ctx.moveTo(x+Math.cos(angle)*r*.22,y+Math.sin(angle)*r*.22);
+      ctx.quadraticCurveTo(x+Math.cos(angle)*length*.74,y+Math.sin(angle)*length*.66,x+Math.cos(angle)*length,y+Math.sin(angle)*length+length*.12);
+      ctx.strokeStyle=palette[i%palette.length]+'99';
+      ctx.lineWidth=i%3===0?1.6:1;
+      ctx.stroke();
+    }
+  });
+  ctx.globalCompositeOperation='source-over';
+}
+function startArenaFireworks(canvas){
+  stopArenaFireworks();
+  if(!canvas||!particlesEnabled) return;
+  if(reducedMotion||reduceFlashes){ drawReducedFireworks(canvas); return; }
+  const ctx=canvas.getContext('2d',{alpha:true});
+  if(!ctx) return;
+  const quality=resolvedGraphicsQuality();
+  const particleCap=quality==='high'?210:quality==='medium'?138:84;
+  const burstSize=quality==='high'?42:quality==='medium'?30:20;
+  const state={canvas,ctx,quality,particleCap,burstSize,width:0,height:0,dpr:1,raf:0,last:performance.now(),nextLaunch:110,seed:0x12f1a5,
+    rockets:Array.from({length:4},()=>({active:false,x:0,y:0,px:0,py:0,vx:0,vy:0,targetY:0,palette:0,type:0})),
+    particles:Array.from({length:210},()=>({active:false,x:0,y:0,px:0,py:0,vx:0,vy:0,life:0,maxLife:1,color:'#fff',size:1,gravity:.035,drag:.982}))};
+  const random=()=>{ state.seed=(Math.imul(state.seed,1664525)+1013904223)>>>0; return state.seed/4294967296; };
+  const resize=()=>{
+    const rect=canvas.getBoundingClientRect();
+    const dpr=Math.min(devicePixelRatio||1,quality==='high'?1.5:1.25);
+    const width=Math.max(1,Math.round(rect.width)),height=Math.max(1,Math.round(rect.height));
+    if(width===state.width&&height===state.height&&dpr===state.dpr) return;
+    state.width=width; state.height=height; state.dpr=dpr;
+    canvas.width=Math.round(width*dpr); canvas.height=Math.round(height*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  };
+  const acquireParticle=()=>{
+    for(let i=0;i<state.particleCap;i++) if(!state.particles[i].active) return state.particles[i];
+    return null;
+  };
+  const explode=rocket=>{
+    for(let i=0;i<state.burstSize;i++){
+      const particle=acquireParticle();
+      if(!particle) break;
+      const angle=(Math.PI*2*i/state.burstSize)+(random()-.5)*.08;
+      const ring=rocket.type===1;
+      const speed=(ring?3.05:1.75+random()*2.8)*(state.width/390);
+      particle.active=true; particle.x=particle.px=rocket.x; particle.y=particle.py=rocket.y;
+      particle.vx=Math.cos(angle)*speed; particle.vy=Math.sin(angle)*speed;
+      particle.maxLife=particle.life=ring?58:56+Math.floor(random()*32);
+      particle.gravity=rocket.type===2?.022:.035; particle.drag=rocket.type===2?.988:.982;
+      particle.color=FIREWORK_PALETTES[rocket.palette][i%3]; particle.size=1.15+random()*1.25;
+    }
+    rocket.active=false;
+  };
+  const launch=()=>{
+    const rocket=state.rockets.find(item=>!item.active);
+    if(!rocket) return;
+    rocket.active=true; rocket.x=rocket.px=state.width*(.18+random()*.64); rocket.y=rocket.py=state.height+8;
+    rocket.vx=(random()-.5)*.32; rocket.vy=-(4.6+random()*1.25)*(state.height/300);
+    rocket.targetY=state.height*(.16+random()*.38); rocket.palette=Math.floor(random()*FIREWORK_PALETTES.length); rocket.type=Math.floor(random()*3);
+  };
+  const frame=now=>{
+    if(arenaFireworks!==state) return;
+    resize();
+    const dt=Math.min(2,Math.max(.35,(now-state.last)/16.667)); state.last=now;
+    if(!gamePaused&&battlePhase!=='paused'&&!document.hidden){
+      ctx.clearRect(0,0,state.width,state.height);
+      state.nextLaunch-=16.667*dt;
+      if(state.nextLaunch<=0){ launch(); state.nextLaunch=(quality==='economy'?1320:900)+random()*620; }
+      ctx.globalCompositeOperation='lighter';
+      for(const rocket of state.rockets){
+        if(!rocket.active) continue;
+        rocket.px=rocket.x; rocket.py=rocket.y; rocket.x+=rocket.vx*dt; rocket.y+=rocket.vy*dt; rocket.vy+=.045*dt;
+        ctx.beginPath(); ctx.moveTo(rocket.px,rocket.py+7); ctx.lineTo(rocket.x,rocket.y); ctx.strokeStyle=FIREWORK_PALETTES[rocket.palette][0]+'cc'; ctx.lineWidth=1.5; ctx.stroke();
+        if(rocket.y<=rocket.targetY||rocket.vy>=-.25) explode(rocket);
+      }
+      for(let i=0;i<state.particleCap;i++){
+        const p=state.particles[i]; if(!p.active) continue;
+        p.px=p.x; p.py=p.y; p.vx*=Math.pow(p.drag,dt); p.vy=p.vy*Math.pow(p.drag,dt)+p.gravity*dt; p.x+=p.vx*dt; p.y+=p.vy*dt; p.life-=dt;
+        if(p.life<=0||p.y>state.height+12){ p.active=false; continue; }
+        const alpha=Math.max(0,Math.min(1,p.life/p.maxLife));
+        const trail=quality==='economy'?2.5:quality==='medium'?3.8:5;
+        const tailX=p.x-p.vx*trail,tailY=p.y-p.vy*trail;
+        ctx.globalAlpha=alpha*alpha*.28; ctx.beginPath(); ctx.moveTo(tailX,tailY); ctx.lineTo(p.x,p.y); ctx.strokeStyle=p.color; ctx.lineWidth=p.size*3.2; ctx.stroke();
+        ctx.globalAlpha=alpha*alpha; ctx.beginPath(); ctx.moveTo(tailX,tailY); ctx.lineTo(p.x,p.y); ctx.strokeStyle=p.color; ctx.lineWidth=p.size; ctx.stroke();
+        if(i%5===0&&alpha>.28){ ctx.globalAlpha=alpha*.82; ctx.fillStyle='#fff8dc'; ctx.fillRect(p.x-1,p.y-1,2,2); }
+      }
+      ctx.globalAlpha=1; ctx.globalCompositeOperation='source-over';
+    }
+    state.raf=requestAnimationFrame(frame);
+  };
+  state.resizeObserver=new ResizeObserver(resize); state.resizeObserver.observe(canvas); resize();
+  arenaFireworks=state; state.raf=requestAnimationFrame(frame);
+}
+function syncArenaFireworks(atmosphereKey=arenaEl?.dataset.missionAtmosphere){
+  const canvas=arenaEl?.querySelector('.arena-fireworks-canvas');
+  if(atmosphereKey!=='fireworks'||!canvas||!particlesEnabled){ stopArenaFireworks(); return; }
+  if(arenaFireworks?.canvas===canvas&&arenaFireworks?.quality===resolvedGraphicsQuality()&&!reducedMotion&&!reduceFlashes) return;
+  startArenaFireworks(canvas);
+}
+
 function renderStageProgress(){
   stageProgressEl.innerHTML = '';
   const total=worldRun.active?5:towerMode?5:bossRushMode?8:5;
@@ -2964,9 +3097,10 @@ function renderStageProgress(){
     atmosphere=document.createElement('div');
     atmosphere.className='arena-atmosphere';
     atmosphere.setAttribute('aria-hidden','true');
-    atmosphere.innerHTML='<span class="arena-petals"></span><span class="arena-cold-fog"></span><span class="arena-world-drift"></span>';
+    atmosphere.innerHTML='<span class="arena-petals"></span><span class="arena-cold-fog"></span><span class="arena-world-drift"></span><canvas class="arena-fireworks-canvas"></canvas>';
     arenaEl.prepend(atmosphere);
   }
+  syncArenaFireworks(atmosphereKey);
   if(activeStageData?.bgUrl){
     arenaEl.style.setProperty('background-image',`linear-gradient(rgba(6,3,13,.22),rgba(6,3,13,.5)),url('${activeStageData.bgUrl}')`,'important');
     arenaEl.style.setProperty('background-size','cover');
@@ -4405,7 +4539,7 @@ const STATIC_I18N=[
   ["#obPrevLabel","Você será:","You will be:","Serás:"],
   ["#obFinish","Confirmar nome","Confirm name","Confirmar nombre"],
   ["#storyLayer .story-hint","toque para continuar","tap to continue","toca para continuar"],
-  ["#storySkip","Pular","Skip","Saltar"]
+  ["#storySkip","»","»","»"]
 ];
 function applyLanguage(){
   applyI18nArtCss();
@@ -4539,8 +4673,16 @@ function storySpeakerAnchor(step){
     });
     if(hero) return hero;
   }
-  const wanted=storySpeakerToken(step?.name);
+  const wanted=storySpeakerToken(step?.name||step?.h);
   if(!wanted||['narrador','narrator'].includes(wanted)) return null;
+  if(Number.isInteger(step?.enemyIndex)) return document.getElementById('enemy-'+step.enemyIndex);
+  const namedHero=[...partyArenaEl.querySelectorAll('.hero-unit')].find(unit=>{
+    const character=KINGDOMS[Number(unit.dataset.heroIndex)];
+    const id=storySpeakerToken(character?.id);
+    const name=storySpeakerToken(L(character?.nome));
+    return id===wanted||name===wanted||name.includes(wanted)||wanted.includes(name);
+  });
+  if(namedHero) return namedHero;
   const enemyIndex=(enemies||[]).findIndex(enemy=>{
     const candidate=storySpeakerToken(L(enemy?.name));
     return candidate===wanted||candidate.includes(wanted)||wanted.includes(candidate);
@@ -4556,6 +4698,10 @@ function clearStoryPresentation(){
   box.style.removeProperty('left');
   box.style.removeProperty('top');
   box.style.removeProperty('--story-tail-x');
+  box.style.removeProperty('--story-accent');
+  const skip=layer.querySelector('.story-skip');
+  skip?.style.removeProperty('right');
+  skip?.style.removeProperty('bottom');
 }
 function positionStorySpeechBubble(){
   const layer=document.getElementById('storyLayer');
@@ -4563,13 +4709,20 @@ function positionStorySpeechBubble(){
   if(!layer?.classList.contains('speaker-bubble')||!box) return;
   const anchorId=layer.dataset.storyAnchor;
   const anchor=anchorId?document.getElementById(anchorId):null;
+  const skip=layer.querySelector('.story-skip');
+  const arenaRect=arenaEl.getBoundingClientRect();
+  if(skip){
+    skip.style.right=Math.max(8,window.innerWidth-arenaRect.right+8)+'px';
+    skip.style.bottom=Math.max(2,window.innerHeight-arenaRect.bottom+2)+'px';
+  }
   if(!anchor){ layer.classList.add('story-speaker-fallback'); return; }
   layer.classList.remove('story-speaker-fallback');
   requestAnimationFrame(()=>{
     if(!layer.classList.contains('speaker-bubble')) return;
     const anchorRect=anchor.getBoundingClientRect();
     const boxRect=box.getBoundingClientRect();
-    const arenaRect=arenaEl.getBoundingClientRect();
+    const anchorStyle=getComputedStyle(anchor);
+    const accent=anchorStyle.getPropertyValue('--realm').trim()||anchorStyle.getPropertyValue('--aura-inner-light').trim()||'#f0d58e';
     const margin=8;
     let left=anchorRect.left+anchorRect.width/2-boxRect.width/2;
     left=Math.max(margin,Math.min(window.innerWidth-boxRect.width-margin,left));
@@ -4581,6 +4734,7 @@ function positionStorySpeechBubble(){
     box.style.left=Math.round(left)+'px';
     box.style.top=Math.round(top)+'px';
     box.style.setProperty('--story-tail-x',Math.max(18,Math.min(boxRect.width-18,anchorRect.left+anchorRect.width/2-left))+'px');
+    box.style.setProperty('--story-accent',accent);
     layer.classList.add('story-bubble-positioned');
   });
 }
@@ -4613,11 +4767,11 @@ function maybeShowStory(idx){
   }
   /* Inimigos: TODOS se apresentam quando a missão começa; feras só grunhem */
   const ditas=new Set();
-  (enemies||[]).forEach(e=>{
+  (enemies||[]).forEach((e,enemyIndex)=>{
     const fala=enemyLineFor(e);
     if(ditas.has(e.name+fala)) return; /* dois iguais não repetem a mesma fala */
     ditas.add(e.name+fala);
-    seq.push({name:e.name, sprite:e.sprite, t:fala});
+    seq.push({name:e.name, sprite:e.sprite, t:fala, enemyIndex});
   });
   if(!seq.length) return;
   storyQueue=[...seq];
@@ -7186,6 +7340,7 @@ function showMainMenu(options={}){
   if(options?.guard!==false) armTapGuard();
   resetCombatSchedule();
   stopPartyAnimations();
+  stopArenaFireworks();
   gamePaused=false;
   cancelTempoSombrio();
   pendingDimensional=[];
@@ -7220,6 +7375,7 @@ function showSelection(){
      oculto atrás da tela de formação. */
   resetCombatSchedule();
   stopPartyAnimations();
+  stopArenaFireworks();
   cancelTempoSombrio();
   stopMissionTimer();
   stopMusic();
@@ -7420,6 +7576,7 @@ function applySettings(){
   document.getElementById('largeTextToggle').checked=largeText;
   document.getElementById('reduceFlashesToggle').checked=reduceFlashes;
   document.getElementById('muteBtn').textContent=musicMuted?'🔇':'🔊';
+  syncArenaFireworks();
 }
 
 startBtnEl.addEventListener('click',()=>beginGame(pendingStage));
@@ -7559,7 +7716,7 @@ document.getElementById('reduceMotionToggle').addEventListener('change',e=>{
     resetPartyAnimationState();
   }
 });
-document.getElementById('particlesToggle').addEventListener('change',e=>{ particlesEnabled=e.target.checked; localStorage.setItem('12r_particles',String(particlesEnabled)); });
+document.getElementById('particlesToggle').addEventListener('change',e=>{ particlesEnabled=e.target.checked; localStorage.setItem('12r_particles',String(particlesEnabled)); applySettings(); });
 document.getElementById('hapticsToggle').addEventListener('change',e=>{ hapticsEnabled=e.target.checked; localStorage.setItem('12r_haptics',String(hapticsEnabled)); });
 document.getElementById('highContrastToggle').addEventListener('change',e=>{ highContrast=e.target.checked; localStorage.setItem('12r_high_contrast',highContrast?'1':'0'); applySettings(); });
 document.getElementById('largeTextToggle').addEventListener('change',e=>{ largeText=e.target.checked; localStorage.setItem('12r_large_text',largeText?'1':'0'); applySettings(); });
@@ -7668,6 +7825,17 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
       return ability.name;
     },
     setQuality:(value)=>{ if(!V10.quality?.values?.includes(value)) throw new Error('Invalid quality'); graphicsQuality=value; applySettings(); return resolvedGraphicsQuality(); },
+    fireworksPhysicsProbe:()=>{
+      const canvas=arenaEl?.querySelector('.arena-fireworks-canvas');
+      const state=arenaFireworks;
+      return {
+        atmosphere:arenaEl?.dataset.missionAtmosphere||'',canvas:Boolean(canvas),running:Boolean(state?.raf),
+        mode:!particlesEnabled?'disabled':(reducedMotion||reduceFlashes?'reduced-static':'ballistic'),
+        quality:resolvedGraphicsQuality(),particleCap:state?.particleCap||0,burstSize:state?.burstSize||0,
+        activeParticles:state?.particles?.filter(p=>p.active).length||0,activeRockets:state?.rockets?.filter(r=>r.active).length||0,
+        gravity:state?.particles?.some(p=>p.active&&p.gravity>0)||false,drag:state?.particles?.some(p=>p.active&&p.drag<1)||false
+      };
+    },
     setPhase:(value)=>{ setBattlePhase(value); return battlePhase; },
     enemyAnimationProbe:()=>{
       enemies=[

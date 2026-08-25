@@ -581,7 +581,7 @@
           "lines": [
             {
               "speaker": "Gareth",
-              "heroId": "",
+              "heroId": "gareth",
               "text": "Tragam os mais fortes do reino... Glup"
             }
           ]
@@ -676,7 +676,7 @@
           "lines": [
             {
               "speaker": "Gareth",
-              "heroId": "",
+              "heroId": "gareth",
               "text": "Não estou gostando nada disso pessoal."
             },
             {
@@ -701,7 +701,7 @@
           "lines": [
             {
               "speaker": "Gareth",
-              "heroId": "",
+              "heroId": "gareth",
               "text": "Tá vindo mais..."
             }
           ]
@@ -1162,7 +1162,7 @@
           "lines": [
             {
               "speaker": "Roland",
-              "heroId": "",
+              "heroId": "roland",
               "text": "Cedric, afaste-se. Jules é o inimigo!"
             },
             {

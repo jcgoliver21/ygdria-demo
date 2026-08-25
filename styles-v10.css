@@ -2337,15 +2337,18 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
 }
 .story-layer.speaker-bubble .story-box{
   position:fixed;
-  width:min(76vw,340px);
-  min-height:56px;
+  width:fit-content;
+  max-width:min(62vw,245px);
+  box-sizing:border-box;
+  min-height:48px;
   align-items:flex-start;
   gap:0;
-  padding:10px 13px 9px;
-  border:1.5px solid #f0d58e;
-  border-radius:15px;
-  background:linear-gradient(155deg,rgba(29,22,43,.97),rgba(9,7,15,.98));
-  box-shadow:0 8px 24px rgba(0,0,0,.58),inset 0 1px rgba(255,255,255,.12),0 0 14px rgba(212,175,90,.2);
+  padding:8px 11px 7px;
+  border:.8px solid color-mix(in srgb,var(--story-accent,#f0d58e) 68%,#fff 8%);
+  border-radius:15px 15px 15px 7px;
+  background:radial-gradient(circle at 12% 0%,color-mix(in srgb,var(--story-accent,#f0d58e) 15%,transparent),transparent 42%),linear-gradient(155deg,rgba(29,22,43,.96),rgba(7,6,14,.985));
+  backdrop-filter:blur(10px) saturate(1.15);
+  box-shadow:0 7px 20px rgba(0,0,0,.5),inset 0 1px rgba(255,255,255,.12),0 0 12px color-mix(in srgb,var(--story-accent,#f0d58e) 14%,transparent);
   animation:storyBubbleIn .28s cubic-bezier(.2,.8,.25,1) both;
   visibility:hidden;
 }
@@ -2355,27 +2358,32 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
   content:'';
   position:absolute;
   left:var(--story-tail-x,50%);
-  bottom:-10px;
-  width:18px;
-  height:18px;
+  bottom:-8px;
+  width:14px;
+  height:14px;
   transform:translateX(-50%) rotate(45deg);
-  border-right:1.5px solid #f0d58e;
-  border-bottom:1.5px solid #f0d58e;
+  border-right:.8px solid color-mix(in srgb,var(--story-accent,#f0d58e) 68%,#fff 8%);
+  border-bottom:.8px solid color-mix(in srgb,var(--story-accent,#f0d58e) 68%,#fff 8%);
   background:#0b0811;
+  filter:drop-shadow(3px 3px 2px rgba(0,0,0,.18));
 }
 .story-layer.speaker-bubble.bubble-below .story-box::after{
   top:-10px;
   bottom:auto;
   border:0;
-  border-left:1.5px solid #f0d58e;
-  border-top:1.5px solid #f0d58e;
+  border-left:.8px solid color-mix(in srgb,var(--story-accent,#f0d58e) 68%,#fff 8%);
+  border-top:.8px solid color-mix(in srgb,var(--story-accent,#f0d58e) 68%,#fff 8%);
   background:#1c1529;
 }
 .story-layer.speaker-bubble .story-portrait{display:none}
-.story-layer.speaker-bubble .story-copy b{font-size:10px;color:#ffe49a}
-.story-layer.speaker-bubble .story-copy p{margin:3px 0 1px;font-size:12px;line-height:1.35}
-.story-layer.speaker-bubble .story-hint{font-size:8px}
-.story-layer.speaker-bubble .story-skip{top:-29px;right:0}
+.story-layer.speaker-bubble .story-copy{flex:0 1 auto;min-width:0}
+.story-layer.speaker-bubble .story-copy b{display:flex;align-items:center;gap:5px;font-size:8px;color:var(--story-accent,#ffe49a);letter-spacing:.14em;line-height:1.1}
+.story-layer.speaker-bubble .story-copy b::before{content:'';width:4px;height:4px;flex:0 0 4px;border-radius:50%;background:var(--story-accent,#ffe49a);box-shadow:0 0 6px var(--story-accent,#ffe49a)}
+.story-layer.speaker-bubble .story-copy p{margin:4px 0 1px;font-size:11.5px;line-height:1.32;color:#fff7e7;text-wrap:balance}
+.story-layer.speaker-bubble .story-hint{font-size:7px;color:#cdbfda;letter-spacing:.07em}
+.story-layer.speaker-bubble .story-skip{position:fixed;top:auto;right:auto;bottom:auto;width:30px;height:30px;padding:0;border:0;background:transparent;color:#f4d88e;font:700 22px/30px Georgia,serif;letter-spacing:0;text-shadow:0 2px 8px rgba(0,0,0,.9),0 0 8px rgba(244,216,142,.28);opacity:.9}
+.story-layer.speaker-bubble .story-skip:hover,.story-layer.speaker-bubble .story-skip:focus-visible{border:0;background:transparent;color:#fff2bd;opacity:1;transform:translateX(2px)}
+.story-layer.narrator-box .story-skip{position:absolute;top:auto;right:max(10px,calc(50% - min(48vw,230px)));bottom:calc(16px + env(safe-area-inset-bottom));}
 .story-layer.speaker-bubble.story-speaker-fallback{
   display:flex;
   align-items:flex-end;
@@ -2387,8 +2395,9 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
 .story-layer.speaker-bubble.story-speaker-fallback .story-portrait{display:block;width:54px;height:54px;margin-right:10px;flex:0 0 54px}
 @keyframes storyBubbleIn{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
 @media (max-width:600px){
-  .story-layer.speaker-bubble .story-box{width:min(78vw,300px);padding:8px 10px 7px}
-  .story-layer.speaker-bubble .story-copy p{font-size:11px;line-height:1.3}
+  .story-layer.speaker-bubble .story-box{width:fit-content;max-width:min(62vw,235px);padding:7px 9px 6px}
+  .story-layer.speaker-bubble .story-copy b{font-size:7.5px}
+  .story-layer.speaker-bubble .story-copy p{font-size:10.5px;line-height:1.28}
 }
 .select-card.story-disabled{ opacity:.28; filter:grayscale(.85); cursor:not-allowed; position:relative; }
 .select-card.story-disabled::after{ content:'BLOQUEADO NO MODO HISTÓRIA'; position:absolute; inset:auto 4px 5px; text-align:center; font-size:7px; letter-spacing:.4px; color:#ffd98b; }
@@ -3360,6 +3369,11 @@ body.quality-economy .unit-ground-shadow,body.quality-economy .arena-floor{filte
 .arena[data-mission-atmosphere="fireworks"] .arena-world-drift{inset:1% 0 32%;opacity:.94;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='390' height='270' viewBox='0 0 390 270'%3E%3Cg fill='none' stroke-linecap='round'%3E%3Cg stroke='%23ffd96f' stroke-width='3' transform='translate(83 76)'%3E%3Cpath d='M0-12C0-31 0-45 0-62M9-9C23-23 36-35 48-48M12 0C31 0 48 0 64 0M9 9C24 24 36 36 49 49M0 12C0 31 0 47 0 64M-9 9C-24 24-37 37-50 50M-12 0C-31 0-48 0-64 0M-9-9C-23-23-36-36-49-49'/%3E%3C/g%3E%3Cg stroke='%237ddfff' stroke-width='3' transform='translate(301 70)'%3E%3Cpath d='M0-11C0-28 0-44 0-61M8-8C22-22 35-35 47-47M11 0C28 0 44 0 61 0M8 8C22 22 35 35 47 47M0 11C0 28 0 44 0 61M-8 8C-22 22-35 35-47 47M-11 0C-28 0-44 0-61 0M-8-8C-22-22-35-35-47-47'/%3E%3C/g%3E%3Cg stroke='%23ff8fd0' stroke-width='2.7' transform='translate(205 178)'%3E%3Cpath d='M0-10C0-25 0-38 0-52M7-7C19-19 30-30 41-41M10 0C25 0 39 0 53 0M7 7C19 19 30 30 41 41M0 10C0 25 0 39 0 53M-7 7C-19 19-30 30-41 41M-10 0C-25 0-39 0-53 0M-7-7C-19-19-30-30-41-41'/%3E%3C/g%3E%3C/g%3E%3Cg fill='%23fff3c2'%3E%3Ccircle cx='83' cy='9' r='3'/%3E%3Ccircle cx='147' cy='76' r='3'/%3E%3Ccircle cx='301' cy='5' r='3'/%3E%3Ccircle cx='365' cy='70' r='3'/%3E%3Ccircle cx='205' cy='121' r='2.5'/%3E%3Ccircle cx='261' cy='178' r='2.5'/%3E%3C/g%3E%3C/svg%3E");background-size:100% 100%;background-repeat:no-repeat;animation:fireworkBloom 5.2s ease-out infinite}
 .arena[data-mission-atmosphere="fireworks"] .arena-atmosphere::before{inset:5% auto auto -5%;width:56%;aspect-ratio:1;opacity:0;border-radius:50%;background:repeating-conic-gradient(from 6deg,rgba(255,223,111,.95) 0 1.8deg,transparent 2deg 15deg);-webkit-mask:radial-gradient(circle,transparent 0 18%,#000 21% 65%,transparent 68%);mask:radial-gradient(circle,transparent 0 18%,#000 21% 65%,transparent 68%);animation:fireworkCrown 5.2s ease-out infinite -1.75s}
 .arena[data-mission-atmosphere="fireworks"] .arena-atmosphere::after{inset:9% -5% auto auto;width:51%;aspect-ratio:1;opacity:0;border-radius:50%;background:repeating-conic-gradient(from -3deg,rgba(117,220,255,.96) 0 1.7deg,transparent 2deg 13deg);-webkit-mask:radial-gradient(circle,transparent 0 16%,#000 20% 64%,transparent 68%);mask:radial-gradient(circle,transparent 0 16%,#000 20% 64%,transparent 68%);animation:fireworkCrown 5.2s ease-out infinite -3.5s}
+/* A simulação balística em canvas substitui as antigas estrelas geométricas. */
+.arena-fireworks-canvas{position:absolute;z-index:2;inset:0 0 30%;display:block;width:100%;height:70%;opacity:0;pointer-events:none;mix-blend-mode:screen;filter:brightness(1.65) saturate(1.35) drop-shadow(0 0 2px rgba(255,242,196,.68))}
+.arena[data-mission-atmosphere="fireworks"] .arena-fireworks-canvas{opacity:1}
+.arena[data-mission-atmosphere="fireworks"] .arena-world-drift{opacity:0;background:none;animation:none}
+.arena[data-mission-atmosphere="fireworks"] .arena-atmosphere::before,.arena[data-mission-atmosphere="fireworks"] .arena-atmosphere::after{display:none;opacity:0;background:none;animation:none}
 .arena[data-mission-atmosphere="darkness"] .arena-atmosphere{opacity:1;background:radial-gradient(ellipse at 50% 58%,rgba(19,13,31,.18),rgba(2,1,8,.72) 76%)}
 .arena[data-mission-atmosphere="darkness"] .arena-atmosphere::before{opacity:.64;background:linear-gradient(180deg,rgba(3,1,10,.68),transparent 45%,rgba(4,2,12,.38));animation:darknessPulse 7s ease-in-out infinite}
 .arena[data-mission-atmosphere="total-darkness"] .arena-atmosphere{opacity:1;background:rgba(0,0,0,.94)}
@@ -3617,7 +3631,7 @@ body.game-active .enemy-row .unit-stage{height:clamp(112px,18vh,142px)!important
 .arena.arena-light-pulse .arena-lighting{animation:arenaLightPulse .46s cubic-bezier(.18,.72,.24,1) both}
 .arena.arena-light-pulse[data-light-kind="critical"] .arena-lighting{animation-duration:.68s}
 @keyframes arenaLightPulse{0%{opacity:0}18%{opacity:.92}42%{opacity:.42}100%{opacity:0}}
-.arena-atmosphere{z-index:1!important}
+.arena-atmosphere{z-index:3!important}
 
 /* Inimigos exclusivos ganham uma ação legível de arma/gesto sem balançar o
    corpo em idle. O arco é VFX de combate, não uma alteração da arte original. */
