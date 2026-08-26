@@ -1705,7 +1705,16 @@ test.describe('@production publicação real',()=>{
     await expect(page.locator('.hero-unit')).toHaveCount(4);
     await expect(page.locator('.board .gem')).toHaveCount(36);
     await expect(page.locator('#enemyPortrait-0 .enemy-runtime-sheet.grid-sheet')).toHaveCount(1);
-    if(await page.locator('#storySkip').isVisible()) await page.locator('#storySkip').click();
+    /* A primeira fala pode entrar alguns frames após os avatares. Espere a
+       apresentação terminar de montar e descarte a fila inteira antes de
+       continuar o fluxo público; assim o smoke não confunde diálogo com HUD. */
+    await page.waitForTimeout(650);
+    for(let attempt=0;attempt<3;attempt++){
+      if(await page.locator('#storySkip').isVisible()) await page.locator('#storySkip').click();
+      await page.waitForTimeout(220);
+      if(!await page.locator('#storyLayer').evaluate(layer=>layer.classList.contains('show'))) break;
+    }
+    await expect(page.locator('#storyLayer')).not.toHaveClass(/show/);
 
     await page.locator('.mini-card').first().click();
     await expect(page.locator('#motionShowcase')).toBeVisible();
