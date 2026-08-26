@@ -2183,11 +2183,16 @@ function handleHeroBodyPointer(event){
   onHeroAvatarClick(heroIndex);
 }
 
+const heroFacingOverrides = new Set();
 function heroIsFlipped(k){
-  /* heroFlip corrige a arte de origem para que heróis sempre encarem a direita.
-     A direção pertence ao papel da unidade e não é alternada pelo toque. */
-  return Boolean(k.heroFlip);
+  /* A pose de origem varia entre folhas. No papel de herói, a composição
+     canônica aponta para a esquerda; o botão de rotação do HUD inverte apenas
+     o herói escolhido, sem alterar escala, pés ou a animação em curso. */
+  return Boolean(!k.heroFlip) !== heroFacingOverrides.has(k.id);
 }
+/* Sem override o herói usa a orientação de equipe (esquerda); o estado do
+   botão é a fonte de verdade para a inversão voluntária no HUD. */
+function heroFacingDirection(k){ return heroFacingOverrides.has(k.id)?'right':'left'; }
 
 function spriteMarkup(k, action='idle', options={}){
   const spec = k.sprites?.[action];
@@ -2370,8 +2375,8 @@ function enemyAvatarOverlay(e){
 }
 
 function enemyFallbackMarkup(e, action='idle'){
-  /* Inimigos sempre encaram a esquerda, para o centro da arena. */
-  const flip=' flip';
+  /* Inimigos usam a orientação oposta dos heróis: sempre para a direita. */
+  const flip='';
   const actionClass=` enemy-motion-${action}`;
   return `<img class="enemy-sprite-image${flip}${e.etype==='soldado2'?' soldado2-clean':''}${actionClass}" src="${e.sprite}" alt="${L(e.name)}"${e.tint?` style="filter:${e.tint}"`:''}>${enemyAvatarOverlay(e)}`;
 }
@@ -2379,7 +2384,7 @@ function enemyFallbackMarkup(e, action='idle'){
 /* Idle humano enraizado: a folha 3x3 já foi registrada pela base e pelos pés.
    O runtime troca as poses completas, sem transform artificial no corpo. */
 function rootedEnemyIdleMarkup(e){
-  const flip=' flip';
+  const flip='';
   const idle=ROOTED_HUMAN_IDLE_LIBRARY[enemyAnimationKey(e)];
   if(!idle) return enemyFallbackMarkup(e,'idle');
   return `<span class="enemy-rooted-idle-art${flip}" style="--rooted-idle-url:url('${idle.src}')" aria-hidden="true">
@@ -2430,7 +2435,7 @@ function animateEnemyAvatar(avatar,e,action='idle',options={}){
   if(character?.sprites?.idle?.src){
     avatar.classList.remove('enemy-static-avatar','enemy-rooted-idle');
     avatar.classList.add('enemy-avatar');
-    return animateHeroAvatar(avatar,character,action,{...options,enemy:true,enemyRuntime:Boolean(character.enemyRuntime),flip:true,overlayMarkup,
+    return animateHeroAvatar(avatar,character,action,{...options,enemy:true,enemyRuntime:Boolean(character.enemyRuntime),flip:false,overlayMarkup,
       returnToIdle:action==='idle'?undefined:()=>animateEnemyAvatar(avatar,e,'idle',{loop:true})});
   }
   stopHeroAnimation(avatar);
@@ -2591,9 +2596,13 @@ function spawnCombatAttackFx(realmId,source,target,color='#fff',kind='impact',at
   fx.dataset.attackStyle=style;
   fx.style.left=sx+'px';
   fx.style.top=sy+'px';
-  fx.style.color=color;
-  fx.style.setProperty('--attack-color',color);
-  fx.style.setProperty('--attack-light',kind==='critical'?'#fff7cf':color);
+  /* Lâminas usam o tom-base do próprio reino; o brilho claro só cria leitura
+     de velocidade e não substitui a identidade cromática do golpe. */
+  const attackColor=style==='blade'?(attacker?.color||color):color;
+  const attackLight=style==='blade'?(attacker?.colorLight||attackColor):(kind==='critical'?'#fff7cf':color);
+  fx.style.color=attackColor;
+  fx.style.setProperty('--attack-color',attackColor);
+  fx.style.setProperty('--attack-light',attackLight);
   fx.style.setProperty('--attack-angle',Math.atan2(dy,dx)*180/Math.PI+'deg');
   fx.style.setProperty('--attack-length',dist+'px');
   fx.style.setProperty('--attack-dx',dx+'px');
@@ -2671,7 +2680,7 @@ function renderPartyArena(){
     unit.className = 'unit hero-unit rarity-'+(k.stars||0)+(k.id.endsWith('-jovem')?' hero-young':'')+(heroUsesFlightPhysics(k)?' hero-flying':'');
     unit.id = 'party-'+k.id;
     unit.dataset.heroIndex=String(idx);
-    unit.dataset.facing='right';
+    unit.dataset.facing=heroFacingDirection(k);
     unit.dataset.groundPhysics=heroUsesFlightPhysics(k)?'flight':'grounded';
     unit.style.setProperty('--realm',k.color);
     unit.style.setProperty('--aura-inner',k.color);
@@ -2796,7 +2805,27 @@ function onHeroAvatarClick(idx){
   const k=KINGDOMS[idx];
   if(!k) return;
   if(heroReady[idx]) { openAbilityPicker(idx); return; }
-  setBattleStatus(T(`${L(k.nome)} permanece voltado ao inimigo. Carregue a aura para usar a habilidade.`,`${L(k.nome)} remains facing the enemy. Charge the aura to use the ability.`,`${L(k.nome)} permanece mirando al enemigo. Carga el aura para usar la habilidad.`),'system');
+  setBattleStatus(T(`${L(k.nome)}: carregue a aura para usar a habilidade.`,`${L(k.nome)}: charge the aura to use the ability.`,`${L(k.nome)}: carga el aura para usar la habilidad.`),'system');
+}
+function toggleHeroFacing(idx){
+  if(!canAcceptPlayerInput()) return;
+  const k=KINGDOMS[idx];
+  if(!k) return;
+  if(heroFacingOverrides.has(k.id)) heroFacingOverrides.delete(k.id);
+  else heroFacingOverrides.add(k.id);
+  const avatar=document.getElementById('party-'+k.id+'-avatar');
+  if(avatar){
+    const action=avatar.dataset.action||'idle';
+    animateHeroAvatar(avatar,k,action,{loop:action==='idle',hold:action==='victory'});
+  }
+  const direction=heroFacingDirection(k);
+  document.getElementById('party-'+k.id)?.setAttribute('data-facing',direction);
+  const control=document.querySelector(`.mini-rotate[data-hero-index="${idx}"]`);
+  if(control){
+    control.setAttribute('aria-pressed',String(direction==='right'));
+    control.setAttribute('aria-label',T(`${L(k.nome)} agora olha para a ${direction==='left'?'esquerda':'direita'}. Virar personagem.`,`${L(k.nome)} now faces ${direction}. Rotate character.`,`${L(k.nome)} ahora mira a la ${direction==='left'?'izquierda':'derecha'}. Girar personaje.`));
+  }
+  setBattleStatus(T(`${L(k.nome)} agora olha para a ${direction==='left'?'esquerda':'direita'}.`,`${L(k.nome)} now faces ${direction}.`,`${L(k.nome)} ahora mira a la ${direction==='left'?'izquierda':'derecha'}.`),'system');
 }
 arenaEl.addEventListener('pointerup',handleHeroBodyPointer,true);
 
@@ -3494,7 +3523,7 @@ function renderEnemies(){
     const isBoss=enemySlots[idx]?.isBoss===true;
     unit.className = 'unit enemy-unit' + (e.hp<=0 ? ' dead' : (idx===activeIdx ? ' target' : '')) + (selectable && e.hp>0 ? ' selectable' : '') + (isBoss?' boss-unit':'') + (e.isCard?' enemy-card-unit':'') + (e.saCounter?' charging':'');
     unit.id = 'enemy-'+idx;
-    unit.dataset.facing='left';
+    unit.dataset.facing='right';
     const palette=enemyAuraPalette(e);
     unit.style.setProperty('--aura-inner',palette[0]);
     unit.style.setProperty('--aura-inner-light',palette[1]);
@@ -5108,7 +5137,7 @@ const COACH_STEPS_I18N={
   pt:[
     {text:'Bem-vindo aos 12 Reinos! Arraste uma esfera para trocar com a vizinha e formar uma linha de 3 do mesmo reino.', auto:'match'},
     {text:'Quando houver mais de um inimigo, toque nele para mirar. O próximo ataque será direcionado ao alvo marcado.'},
-    {text:'Os heróis encaram os inimigos à direita. Com aura em 100%, toque no retrato iluminado para escolher a habilidade.'},
+    {text:'Heróis encaram os inimigos à esquerda. Use o botão ↻↺ ao lado da carta no HUD para virar um herói quando precisar.'},
     {text:'Use o botão de formação nas ferramentas táticas para alternar a disposição dos quatro heróis.'},
     {text:'Cada combinação enche a aura. Aos 25%, 50% e 75% os heróis disparam passivas automáticas.'},
     {text:'Combine 4 ou mais esferas para criar power-ups: listrados varrem linhas, embrulhados explodem em área e Prismas Reais limpam cores.'},
@@ -7337,20 +7366,21 @@ function renderCardStrip(){
     const gemC=ag?ag.c:(k.orbColor||k.color), gemL=ag?ag.l:(k.orbColorLight||k.colorLight), gemD=ag?ag.d:(k.orbColorDark||k.colorDark);
     const mini = document.createElement('div');
     mini.className = 'mini-card';
-    mini.setAttribute('role','button');
-    mini.setAttribute('tabindex','0');
-    mini.setAttribute('aria-label',T(`Abrir carta de ${L(k.nome)}`,`Open ${L(k.nome)}'s card`,`Abrir la carta de ${L(k.nome)}`));
+    const direction=heroFacingDirection(k);
     mini.innerHTML = `
-      <div class="mini-thumb"><img src="${THUMB(k.cardThumb||k.img)}"${THUMBF(k.cardThumb||k.img)} alt="${L(k.nome)}" decoding="async"></div>
-      <div class="mini-card-copy">
-        <div class="mini-name">${L(k.nome)}</div>
-        <div class="mini-dps" id="dps-${k.id}">⚔ 0</div>
-        <div class="mini-rarity"><span class="unit-gem" style="--ug:${gemC};--ug-l:${gemL};--ug-d:${gemD}" aria-hidden="true"></span>${L(k.rarity||'DIVINA')}</div>
-        <div class="mini-stars" aria-label="${k.stars||7} ${T('estrelas','stars','estrellas')}">${'★'.repeat(k.stars||7)}</div>
-      </div>
+      <button class="mini-rotate" type="button" data-hero-index="${idx}" aria-pressed="${direction==='right'}" aria-label="${T(`${L(k.nome)} agora olha para a ${direction==='left'?'esquerda':'direita'}. Virar personagem.`,`${L(k.nome)} now faces ${direction}. Rotate character.`,`${L(k.nome)} ahora mira a la ${direction==='left'?'izquierda':'derecha'}. Girar personaje.`)}" title="${T('Virar personagem','Rotate character','Girar personaje')}">↻↺</button>
+      <button class="mini-open-card" type="button" aria-label="${T(`Abrir carta de ${L(k.nome)}`,`Open ${L(k.nome)}'s card`,`Abrir la carta de ${L(k.nome)}`)}">
+        <span class="mini-thumb"><img src="${THUMB(k.cardThumb||k.img)}"${THUMBF(k.cardThumb||k.img)} alt="${L(k.nome)}" decoding="async"></span>
+        <span class="mini-card-copy">
+          <span class="mini-name">${L(k.nome)}</span>
+          <span class="mini-dps" id="dps-${k.id}">⚔ 0</span>
+          <span class="mini-rarity"><span class="unit-gem" style="--ug:${gemC};--ug-l:${gemL};--ug-d:${gemD}" aria-hidden="true"></span>${L(k.rarity||'DIVINA')}</span>
+          <span class="mini-stars" aria-label="${k.stars||7} ${T('estrelas','stars','estrellas')}">${'★'.repeat(k.stars||7)}</span>
+        </span>
+      </button>
     `;
-    mini.addEventListener('click', ()=>openCardModal(idx));
-    mini.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openCardModal(idx); } });
+    mini.querySelector('.mini-open-card').addEventListener('click', ()=>openCardModal(idx));
+    mini.querySelector('.mini-rotate').addEventListener('click', ()=>toggleHeroFacing(idx));
     stripEl.appendChild(mini);
   });
 }
