@@ -3856,15 +3856,21 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
    pose sentada isolada e os guardas ocupam o plano do cenário, sempre atrás
    da área de combate e sem capturar toque. */
 .royal-court-cast{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
-.royal-court-bernyce{position:absolute;width:clamp(104px,45%,196px);left:50%;top:27%;transform:translateX(-50%);filter:drop-shadow(0 6px 6px rgba(25,5,20,.68));object-fit:contain}
-.royal-court-guard{position:absolute;width:clamp(74px,23%,112px);aspect-ratio:1;background-repeat:no-repeat;background-size:200% 200%;background-position:0 0;filter:drop-shadow(0 7px 6px rgba(18,4,13,.78));transform-origin:50% 100%}
-.royal-court-jules{left:11%;bottom:15%;background-image:url('assets/characters/runtime-v10/jules/idle-2x2.png')}
-.royal-court-kalander{right:11%;bottom:15%;background-image:url('assets/characters/runtime-v10/kalander/idle-2x2.png')}
+/* Escala narrativa da Rainha Bernyce: 1,5. A pose toca o assento do trono
+   já pintado no cenário; não há móvel extra nem deslocamento de flutuação. */
+.royal-court-bernyce{--court-unit-scale:1.5;position:absolute;width:clamp(88px,33.75%,147px);left:50%;top:31%;transform:translateX(-50%);filter:drop-shadow(0 5px 5px rgba(25,5,20,.68));object-fit:contain}
+/* Jules e Kalander permanecem nos degraus laterais do trono. A animação troca
+   os quatro quadros de idle completos: respiração, tecido e piscada sem
+   deslocar o corpo, alterar a escala ou fazê-los balançar. */
+.royal-court-guard{position:absolute;width:clamp(58px,17%,84px);aspect-ratio:1;background-repeat:no-repeat;background-size:200% 200%;background-position:0 0;filter:drop-shadow(0 5px 5px rgba(18,4,13,.78));transform-origin:50% 100%;animation:royalCourtIdle 1.16s steps(1,end) infinite}
+.royal-court-jules{left:20%;top:43%;background-image:url('assets/characters/runtime-v10/jules/idle-2x2.png')}
+.royal-court-kalander{right:20%;top:43%;background-image:url('assets/characters/runtime-v10/kalander/idle-2x2.png')}
+@keyframes royalCourtIdle{0%,24.9%{background-position:0 0}25%,49.9%{background-position:100% 0}50%,74.9%{background-position:0 100%}75%,100%{background-position:100% 100%}}
 @media (max-width:600px){
-  .royal-court-bernyce{width:43%;top:28%}
-  .royal-court-guard{width:22%;bottom:14%}
-  .royal-court-jules{left:8%}
-  .royal-court-kalander{right:8%}
+  .royal-court-bernyce{width:32.25%;top:31.5%}
+  .royal-court-guard{width:16%;top:43.5%}
+  .royal-court-jules{left:18%}
+  .royal-court-kalander{right:18%}
 }
 body.game-active .game-frame:not(.victory-celebration) .combat-console{
   flex:0 0 30dvh!important;

@@ -2104,8 +2104,6 @@ function resolvedGraphicsQuality(){
   return 'high';
 }
 function particleBudget(){ return V10.quality?.particles?.[resolvedGraphicsQuality()]||MAX_ACTIVE_FX; }
-const heroFacingOverrides = new Set();
-
 function heroUsesFlightPhysics(character){
   const realm=String(character?.reino||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
   return character?.flying===true||character?.realmId==='vento'||character?.id==='vento'||realm.includes('reino do vento');
@@ -2186,7 +2184,9 @@ function handleHeroBodyPointer(event){
 }
 
 function heroIsFlipped(k){
-  return Boolean(k.heroFlip) !== heroFacingOverrides.has(k.id);
+  /* heroFlip corrige a arte de origem para que heróis sempre encarem a direita.
+     A direção pertence ao papel da unidade e não é alternada pelo toque. */
+  return Boolean(k.heroFlip);
 }
 
 function spriteMarkup(k, action='idle', options={}){
@@ -2370,7 +2370,8 @@ function enemyAvatarOverlay(e){
 }
 
 function enemyFallbackMarkup(e, action='idle'){
-  const flip=e.flip||e.isCard?' flip':'';
+  /* Inimigos sempre encaram a esquerda, para o centro da arena. */
+  const flip=' flip';
   const actionClass=` enemy-motion-${action}`;
   return `<img class="enemy-sprite-image${flip}${e.etype==='soldado2'?' soldado2-clean':''}${actionClass}" src="${e.sprite}" alt="${L(e.name)}"${e.tint?` style="filter:${e.tint}"`:''}>${enemyAvatarOverlay(e)}`;
 }
@@ -2378,7 +2379,7 @@ function enemyFallbackMarkup(e, action='idle'){
 /* Idle humano enraizado: a folha 3x3 já foi registrada pela base e pelos pés.
    O runtime troca as poses completas, sem transform artificial no corpo. */
 function rootedEnemyIdleMarkup(e){
-  const flip=e.flip||e.isCard?' flip':'';
+  const flip=' flip';
   const idle=ROOTED_HUMAN_IDLE_LIBRARY[enemyAnimationKey(e)];
   if(!idle) return enemyFallbackMarkup(e,'idle');
   return `<span class="enemy-rooted-idle-art${flip}" style="--rooted-idle-url:url('${idle.src}')" aria-hidden="true">
@@ -2429,7 +2430,7 @@ function animateEnemyAvatar(avatar,e,action='idle',options={}){
   if(character?.sprites?.idle?.src){
     avatar.classList.remove('enemy-static-avatar','enemy-rooted-idle');
     avatar.classList.add('enemy-avatar');
-    return animateHeroAvatar(avatar,character,action,{...options,enemy:true,enemyRuntime:Boolean(character.enemyRuntime),flip:Boolean(e.flip||e.isCard),overlayMarkup,
+    return animateHeroAvatar(avatar,character,action,{...options,enemy:true,enemyRuntime:Boolean(character.enemyRuntime),flip:true,overlayMarkup,
       returnToIdle:action==='idle'?undefined:()=>animateEnemyAvatar(avatar,e,'idle',{loop:true})});
   }
   stopHeroAnimation(avatar);
@@ -2670,6 +2671,7 @@ function renderPartyArena(){
     unit.className = 'unit hero-unit rarity-'+(k.stars||0)+(k.id.endsWith('-jovem')?' hero-young':'')+(heroUsesFlightPhysics(k)?' hero-flying':'');
     unit.id = 'party-'+k.id;
     unit.dataset.heroIndex=String(idx);
+    unit.dataset.facing='right';
     unit.dataset.groundPhysics=heroUsesFlightPhysics(k)?'flight':'grounded';
     unit.style.setProperty('--realm',k.color);
     unit.style.setProperty('--aura-inner',k.color);
@@ -2695,7 +2697,7 @@ function renderPartyArena(){
     avatarEl.style.cursor = 'pointer';
     avatarEl.setAttribute('role','button');
     avatarEl.setAttribute('tabindex','0');
-    avatarEl.setAttribute('aria-label',T(`${L(k.nome)}: espelhar personagem; se houver habilidade carregada, abrir a seleção`,`${L(k.nome)}: mirror character; if an ability is charged, open its selection`,`${L(k.nome)}: espejar personaje; si hay una habilidad cargada, abrir la selección`));
+    avatarEl.setAttribute('aria-label',T(`${L(k.nome)}: tocar para usar a habilidade quando estiver carregada`,`${L(k.nome)}: tap to use the ability when charged`,`${L(k.nome)}: toca para usar la habilidad cuando esté cargada`));
     avatarEl.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); onHeroAvatarClick(idx); } });
     animateHeroAvatar(avatarEl,k,'idle',{loop:true});
     prepareHeroBodyHitTest(avatarEl);
@@ -2794,14 +2796,7 @@ function onHeroAvatarClick(idx){
   const k=KINGDOMS[idx];
   if(!k) return;
   if(heroReady[idx]) { openAbilityPicker(idx); return; }
-  if(heroFacingOverrides.has(k.id)) heroFacingOverrides.delete(k.id);
-  else heroFacingOverrides.add(k.id);
-  const avatar=document.getElementById('party-'+k.id+'-avatar');
-  if(avatar){
-    const action=avatar.dataset.action||'idle';
-    animateHeroAvatar(avatar,k,action,{loop:action==='idle',hold:action==='victory'});
-  }
-  setBattleStatus(T(`${L(k.nome)} mudou o lado para o qual está olhando.`,`${L(k.nome)} changed the direction they are facing.`,`${L(k.nome)} cambió el lado hacia el que mira.`),'system');
+  setBattleStatus(T(`${L(k.nome)} permanece voltado ao inimigo. Carregue a aura para usar a habilidade.`,`${L(k.nome)} remains facing the enemy. Charge the aura to use the ability.`,`${L(k.nome)} permanece mirando al enemigo. Carga el aura para usar la habilidad.`),'system');
 }
 arenaEl.addEventListener('pointerup',handleHeroBodyPointer,true);
 
@@ -3499,6 +3494,7 @@ function renderEnemies(){
     const isBoss=enemySlots[idx]?.isBoss===true;
     unit.className = 'unit enemy-unit' + (e.hp<=0 ? ' dead' : (idx===activeIdx ? ' target' : '')) + (selectable && e.hp>0 ? ' selectable' : '') + (isBoss?' boss-unit':'') + (e.isCard?' enemy-card-unit':'') + (e.saCounter?' charging':'');
     unit.id = 'enemy-'+idx;
+    unit.dataset.facing='left';
     const palette=enemyAuraPalette(e);
     unit.style.setProperty('--aura-inner',palette[0]);
     unit.style.setProperty('--aura-inner-light',palette[1]);
@@ -5112,7 +5108,7 @@ const COACH_STEPS_I18N={
   pt:[
     {text:'Bem-vindo aos 12 Reinos! Arraste uma esfera para trocar com a vizinha e formar uma linha de 3 do mesmo reino.', auto:'match'},
     {text:'Quando houver mais de um inimigo, toque nele para mirar. O próximo ataque será direcionado ao alvo marcado.'},
-    {text:'Toque no retrato de um herói para espelhá-lo e mudar o lado para o qual ele está virado.'},
+    {text:'Os heróis encaram os inimigos à direita. Com aura em 100%, toque no retrato iluminado para escolher a habilidade.'},
     {text:'Use o botão de formação nas ferramentas táticas para alternar a disposição dos quatro heróis.'},
     {text:'Cada combinação enche a aura. Aos 25%, 50% e 75% os heróis disparam passivas automáticas.'},
     {text:'Combine 4 ou mais esferas para criar power-ups: listrados varrem linhas, embrulhados explodem em área e Prismas Reais limpam cores.'},

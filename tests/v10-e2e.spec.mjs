@@ -79,8 +79,10 @@ test('v11 mostra dez formações e seleciona pelo corpo visível sem setas',asyn
   const hitProbe=await page.evaluate(()=>window.__12rQA.heroBodyHitProbe());
   expect(hitProbe).toHaveLength(4);
   expect(hitProbe.every(item=>item.point&&item.groundPhysics==='grounded')).toBe(true);
+  await expect(page.locator('.hero-unit[data-facing="right"]')).toHaveCount(4);
+  await expect(page.locator('.enemy-unit[data-facing="left"]')).toHaveCount(1);
   await page.mouse.click(hitProbe[0].point.x,hitProbe[0].point.y);
-  await expect(page.locator('#battleStatus')).toContainText('mudou o lado');
+  await expect(page.locator('#battleStatus')).toContainText('permanece voltado ao inimigo');
   await page.evaluate(()=>window.__12rQA.grantEnergy(ACTIVE[0],100));
   const chargedProbe=await page.evaluate(()=>window.__12rQA.heroBodyHitProbe());
   await page.mouse.click(chargedProbe[0].point.x,chargedProbe[0].point.y);
@@ -1123,7 +1125,7 @@ test('retomar preserva a trilha da cena e a camada de chefe do Boss Rush',async(
   expect(errors).toEqual([]);
 });
 
-test('espelhar herói mantém a animação idle em execução',async({page})=>{
+test('toque no herói preserva a direção e a animação idle',async({page})=>{
   const errors=await boot(page,'flow');
   const hero=await page.evaluate(()=>{
     const index=KINGDOMS.findIndex(character=>character.heroFlip);
@@ -1145,7 +1147,7 @@ test('espelhar herói mantém a animação idle em execução',async({page})=>{
   await page.evaluate(index=>onHeroAvatarClick(index),hero.index);
 
   await expect(avatar).toHaveAttribute('data-action','idle');
-  await expect.poll(()=>sheet.evaluate(element=>element.classList.contains('flip'))).toBe(!flipBefore);
+  await expect.poll(()=>sheet.evaluate(element=>element.classList.contains('flip'))).toBe(flipBefore);
   await expect.poll(()=>avatar.evaluate(element=>Boolean(element.__actionFrameRaf))).toBe(true);
   await expect.poll(()=>avatar.evaluate(element=>element.__heroAnimationState?.elapsed||0)).toBeGreaterThan(30);
   await expect.poll(()=>sheet.evaluate(element=>
@@ -1481,7 +1483,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.2');
+  expect(registration.caches).toContain('12r-v11.0.3');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1641,7 +1643,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.2');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.3');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 
