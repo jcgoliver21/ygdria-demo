@@ -1688,7 +1688,7 @@ function tacticalGridSlot(...cellNumbers){
    percentuais diferentes entre desktop e celular. */
 const HERO_FORMATIONS = [
   { nome:'Líder',          slots:[tacticalGridSlot(14,23),tacticalGridSlot(3),tacticalGridSlot(12,21),tacticalGridSlot(30)] },
-  { nome:'Guarda-costas',  slots:[tacticalGridSlot(11,20),tacticalGridSlot(5,14),tacticalGridSlot(14,23),tacticalGridSlot(23,32)] },
+  { nome:'Guarda-costas',  slots:[tacticalGridSlot(11,20),tacticalGridSlot(5),tacticalGridSlot(14,23),tacticalGridSlot(32)] },
   { nome:'Cercados',       slots:[tacticalGridSlot(6),tacticalGridSlot(14),tacticalGridSlot(23),tacticalGridSlot(33)] },
   { nome:'Defensiva',      slots:[tacticalGridSlot(2),tacticalGridSlot(11),tacticalGridSlot(20),tacticalGridSlot(29)] },
   { nome:'Ofensiva',       slots:[tacticalGridSlot(5),tacticalGridSlot(14),tacticalGridSlot(23),tacticalGridSlot(32)] },
@@ -2184,11 +2184,21 @@ function handleHeroBodyPointer(event){
 }
 
 const heroFacingOverrides = new Set();
+/* As folhas da família jovem foram normalizadas para a esquerda. Adriel é a
+   exceção física da arte-fonte: o desenho-base já vem espelhado em relação às
+   demais folhas. Esta correção é feita uma única vez na pose inicial e o botão
+   do HUD continua apenas alternando a orientação voluntária. */
+const HERO_LEFT_FACING_FLIP_CORRECTIONS=new Set(['adriel-jovem']);
+function heroInitialFlip(k){
+  const initial=Boolean(!k.heroFlip);
+  return HERO_LEFT_FACING_FLIP_CORRECTIONS.has(k.id)?!initial:initial;
+}
 function heroIsFlipped(k){
   /* A pose de origem varia entre folhas. No papel de herói, a composição
      canônica aponta para a esquerda; o botão de rotação do HUD inverte apenas
      o herói escolhido, sem alterar escala, pés ou a animação em curso. */
-  return Boolean(!k.heroFlip) !== heroFacingOverrides.has(k.id);
+  const initial=heroInitialFlip(k);
+  return heroFacingOverrides.has(k.id)?!initial:initial;
 }
 /* Sem override o herói usa a orientação de equipe (esquerda); o estado do
    botão é a fonte de verdade para a inversão voluntária no HUD. */
@@ -2574,6 +2584,112 @@ function combatAttackStyle(attacker){
   if(CLAW_ATTACK_IDS.has(key)||/lobo|wolf|drag[aã]o/.test(key)) return 'claw';
   if(BODY_ATTACK_IDS.has(key)||/slime|limo|golem|sentinela/.test(key)) return 'body';
   return 'spell';
+}
+
+/* Final da missão 10/5: a conclusão não é uma tela abstrata. Ela encena a
+   derrota descrita no roteiro, preservando os sprites oficiais de cada pessoa
+   e a física de queda (pés, corpo e equipamento assentados no chão). */
+let humanFinaleCinematicRunning=false;
+function isHumanFinaleBattle(){
+  return Boolean(worldRun.active&&worldRun.fase===9&&worldRun.nivel===5&&activeStageData?.bgUrl?.endsWith('fase-10.jpg'));
+}
+function finalSceneSprite(id,action='defeat'){
+  const character=KINGDOMS.find(k=>k.id===id);
+  const spec=character?.sprites?.[action]||character?.sprites?.idle;
+  if(!spec?.src) return '';
+  const cols=Math.max(1,Number(spec.cols||spec.frames||1));
+  const rows=Math.max(1,Number(spec.rows||1));
+  const resting=action!=='idle';
+  const frameX=resting&&cols>1?100:0;
+  const frameY=resting&&rows>1?100:0;
+  return `<span class="human-final-scene-sprite" style="--sprite-url:url('${animationAssetUrl(spec.src)}');--sprite-cols:${cols};--sprite-rows:${rows};--sprite-bg-x:${frameX}%;--sprite-bg-y:${frameY}%"></span>`;
+}
+function finalSceneActor(id,kind='fallen'){
+  const character=KINGDOMS.find(k=>k.id===id);
+  const action=kind==='julius'?'idle':'defeat';
+  return `<span id="finale-${id}" class="human-final-scene-actor finale-${id} finale-${kind}" style="--realm:${character?.color||'#d78be8'}">${finalSceneSprite(id,action)}</span>`;
+}
+function mountHumanFinaleScene(){
+  let scene=arenaEl?.querySelector('.human-final-scene');
+  if(scene) return scene;
+  arenaEl?.querySelector('.royal-court-cast')?.remove();
+  scene=document.createElement('div');
+  scene.className='human-final-scene';
+  scene.setAttribute('aria-hidden','true');
+  scene.innerHTML=`
+    ${finalSceneActor('bernyce')}
+    ${finalSceneActor('kalander')}
+    ${finalSceneActor('cedric')}
+    ${finalSceneActor('julius','julius')}
+    <span class="human-final-shadow-wave"></span>
+    <span class="human-final-teleport" aria-hidden="true"></span>`;
+  arenaEl?.appendChild(scene);
+  return scene;
+}
+function setFinaleHeroDefeat(id){
+  const character=KINGDOMS.find(k=>k.id===id);
+  const unit=character&&document.getElementById('party-'+id);
+  const avatar=character&&document.getElementById('party-'+id+'-avatar');
+  if(!character||!unit||!avatar) return;
+  unit.classList.add('human-final-hero-fallen');
+  animateHeroAvatar(avatar,character,'defeat',{hold:true});
+}
+function placeGarethBeforeAdriel(){
+  const adriel=document.getElementById('party-adriel-jovem');
+  const gareth=document.getElementById('party-gareth');
+  if(!adriel||!gareth) return;
+  gareth.style.setProperty('--slot-x',adriel.style.getPropertyValue('--slot-x'));
+  gareth.style.setProperty('--slot-y',adriel.style.getPropertyValue('--slot-y'));
+  gareth.style.setProperty('--slot-z',String((Number(adriel.style.getPropertyValue('--slot-z'))||20)+8));
+  gareth.classList.add('human-final-gareth-shield');
+}
+function placeFinaleTeleportAtAdriel(scene){
+  const adriel=document.getElementById('party-adriel-jovem');
+  const halo=scene?.querySelector('.human-final-teleport');
+  if(!adriel||!halo||!arenaEl) return;
+  const target=adriel.getBoundingClientRect();
+  const arena=arenaEl.getBoundingClientRect();
+  halo.style.left=(target.left+target.width*.5-arena.left)+'px';
+  halo.style.top=(target.top+target.height*.44-arena.top)+'px';
+  halo.style.width=Math.max(46,target.width*.88)+'px';
+  halo.style.height=Math.max(46,target.height*.72)+'px';
+}
+function triggerHumanFinaleCinematic(){
+  if(!isHumanFinaleBattle()){ onStageCleared(); return; }
+  if(humanFinaleCinematicRunning) return;
+  humanFinaleCinematicRunning=true;
+  busy=true;
+  setBattlePhase('transition');
+  cancelTempoSombrio();
+  const scene=mountHumanFinaleScene();
+  setBattleStatus(T('A sombra de Julius envolve o castelo...','Julius\' shadow engulfs the castle...','La sombra de Julius envuelve el castillo...'),'system');
+  scheduleCombat(()=>{
+    scene?.classList.add('shadow-unleashed');
+    document.getElementById('finale-julius')?.classList.add('dissolving');
+    const juliusIndex=enemies.findIndex(enemy=>enemy?.cardId==='julius');
+    const liveJulius=juliusIndex>=0?document.getElementById('enemy-'+juliusIndex):null;
+    liveJulius?.classList.add('human-final-julius-dissolving');
+    liveJulius?.querySelector('.enemy-avatar')?.classList.add('human-final-julius-dissolving');
+  },480);
+  scheduleCombat(()=>{
+    scene?.classList.add('shadow-struck');
+    const juliusIndex=enemies.findIndex(enemy=>enemy?.cardId==='julius');
+    if(juliusIndex>=0) document.getElementById('enemy-'+juliusIndex)?.classList.add('human-final-julius-hidden');
+    setFinaleHeroDefeat('roland');
+    setFinaleHeroDefeat('elizier');
+    placeGarethBeforeAdriel();
+  },1500);
+  scheduleCombat(()=>{
+    scene?.classList.add('gareth-sacrificed');
+    setFinaleHeroDefeat('gareth');
+  },2580);
+  scheduleCombat(()=>{
+    placeFinaleTeleportAtAdriel(scene);
+    scene?.classList.add('adriel-teleporting');
+    document.getElementById('party-adriel-jovem')?.classList.add('human-final-adriel-vanished');
+    setBattleStatus(T('Cedric reúne suas forças para proteger Adriel.','Cedric gathers his strength to protect Adriel.','Cedric reúne sus fuerzas para proteger a Adriel.'),'support');
+  },3600);
+  scheduleCombat(()=>onStageCleared(),5000);
 }
 /* Ataques físicos viajam como golpes materiais e não usam a trajetória mágica.
    A camada de VFX continua completamente separada do sprite: nada altera
@@ -4190,6 +4306,8 @@ function togglePhotoMode(on){
 
 function loadStage(idx){
   resetCombatSchedule();
+  humanFinaleCinematicRunning=false;
+  arenaEl?.querySelector('.human-final-scene')?.remove();
   resetPartyAnimationState();
   stageTransitioning = false;
   defeatFinalized = false;
@@ -4748,6 +4866,11 @@ function storySpeakerAnchor(step){
   }
   const wanted=storySpeakerToken(step?.name||step?.h);
   if(!wanted||['narrador','narrator'].includes(wanted)) return null;
+  /* A cena final mantém Cedric, Bernyce e Kalander no próprio piso da arena;
+     a fala canônica continua presa a quem a está dizendo, mesmo depois da
+     queda e antes do teleporte de Adriel. */
+  const finaleActor=document.getElementById('finale-'+wanted);
+  if(finaleActor) return finaleActor;
   if(Number.isInteger(step?.enemyIndex)) return document.getElementById('enemy-'+step.enemyIndex);
   const namedHero=[...partyArenaEl.querySelectorAll('.hero-unit')].find(unit=>{
     const character=KINGDOMS[Number(unit.dataset.heroIndex)];
@@ -4768,6 +4891,7 @@ function clearStoryPresentation(){
   if(!layer||!box) return;
   layer.classList.remove('speaker-bubble','story-speaker-fallback','story-bubble-positioned','bubble-below','narrator-box');
   layer.removeAttribute('data-story-anchor');
+  layer.removeAttribute('data-final-cinematic');
   box.style.removeProperty('left');
   box.style.removeProperty('top');
   box.style.removeProperty('--story-tail-x');
@@ -5704,7 +5828,7 @@ function finishRoomIfCleared(reason=T('Todos os inimigos foram derrotados.','All
   selected=null;
   forcedResolution=null;
   setBattleStatus(reason,'system');
-  scheduleCombat(()=>onStageCleared(),260);
+  scheduleCombat(()=>isHumanFinaleBattle()?triggerHumanFinaleCinematic():onStageCleared(),260);
   return true;
 }
 
@@ -6592,12 +6716,13 @@ function handlePlayerDefeat(){
     return;
   }
   stopMissionTimer();
-  /* Julius 10.5 · batalha roteirizada: você PERDE... mas conquista o reino */
+  /* Julius 10.5 · a derrota roteirizada se resolve dentro da arena, em vez
+     de pular diretamente para a tela de vitória. */
   if(worldRun.active && worldRun.fase===9 && worldRun.nivel===5){
     cancelTempoSombrio();
-    setBattleStatus(T('Julius era forte demais... mas vocês sobreviveram — e Ygdria lembrará deste dia.','Julius was too strong... but you survived — and Ygdria will remember this day.','Julius era demasiado fuerte... pero sobrevivieron — e Ygdria recordará este día.'),'system');
+    setBattleStatus(T('A sombra de Julius ainda não terminou seu golpe.','Julius\' shadow has not finished its strike.','La sombra de Julius aún no terminó su golpe.'),'system');
     playerHP=1; updatePlayerHP();
-    scheduleCombat(()=>{ onStageCleared(); },1400);
+    scheduleCombat(()=>triggerHumanFinaleCinematic(),700);
     return;
   }
   /* 🗼 Torre: registra o resultado no ranking mensal antes de encerrar a escalada */
@@ -6823,7 +6948,7 @@ function onStageCleared(){
   busy = true;
   setBattlePhase('transition');
   resetCombatSchedule();
-  ACTIVE.forEach(heroIdx=>playHeroAction(heroIdx,'victory'));
+  if(!humanFinaleCinematicRunning) ACTIVE.forEach(heroIdx=>playHeroAction(heroIdx,'victory'));
   sfxVictory();
   /* Modos são mutuamente exclusivos; a ordem defensiva impede um estado
      legado inconsistente de creditar vitória de desafio à campanha. */
@@ -8638,7 +8763,11 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
   applyVizSettings();
   document.getElementById('achBtn')?.addEventListener('click',()=>openPanel('achScreen'));
   document.getElementById('coachNext')?.addEventListener('click',()=>{ coachStep++; renderCoach(); sfxSelect(); });
-  document.getElementById('storyLayer')?.addEventListener('click',(e)=>{ if(!e.target.closest?.('#storySkip')) advanceStory(); });
+  document.getElementById('storyLayer')?.addEventListener('click',(e)=>{
+    const layer=e.currentTarget;
+    if(layer?.dataset.finalCinematic==='1') return;
+    if(!e.target.closest?.('#storySkip')) advanceStory();
+  });
   document.getElementById('storySkip')?.addEventListener('click',(e)=>{ e.stopPropagation(); skipStory(true); });
   document.getElementById('shareDailyBtn')?.addEventListener('click',async(e)=>{
     await copyTextToClipboard(buildDailyShareText());

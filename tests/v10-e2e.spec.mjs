@@ -101,6 +101,47 @@ test('v11 mostra dez formações e seleciona pelo corpo visível sem setas',asyn
   expect(errors).toEqual([]);
 });
 
+test('Guarda-costas usa exatamente as células definidas e Adriel inicia para a esquerda',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.setViewportSize({width:390,height:844});
+  const probe=await page.evaluate(()=>{
+    chosenIds=['adriel-jovem','gareth','roland','elizier'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    beginGame(0); skipStory();
+    formationIndex=1; applyBattleFormation();
+    const refs=[...document.querySelectorAll('.party-row .hero-unit')].map(unit=>unit.dataset.gridRefs);
+    const adriel=document.querySelector('#party-adriel-jovem .hero-sprite-sheet');
+    return {refs,adrielFlipped:adriel?.classList.contains('flip'),facing:document.getElementById('party-adriel-jovem')?.dataset.facing};
+  });
+  expect(probe.refs).toEqual(['11,20','5','14,23','32']);
+  expect(probe.facing).toBe('left');
+  expect(probe.adrielFlipped).toBe(true);
+  expect(errors).toEqual([]);
+});
+
+test('final humano encena sombras, quedas e teleporte antes do epílogo canônico',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.setViewportSize({width:390,height:844});
+  await page.evaluate(()=>{
+    worldRun={active:true,fase:9,nivel:5,storyMode:true};
+    chosenIds=['adriel-jovem','gareth','roland','elizier'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    beginGame(0); skipStory();
+    triggerHumanFinaleCinematic();
+  });
+  await expect(page.locator('.human-final-scene')).toBeVisible();
+  await page.waitForTimeout(3900);
+  await expect(page.locator('.human-final-scene')).toHaveClass(/adriel-teleporting/);
+  await expect(page.locator('#finale-julius')).toHaveClass(/dissolving/);
+  await expect(page.locator('#party-roland')).toHaveClass(/human-final-hero-fallen/);
+  await expect(page.locator('#party-elizier')).toHaveClass(/human-final-hero-fallen/);
+  await expect(page.locator('#party-gareth')).toHaveClass(/human-final-hero-fallen/);
+  await expect(page.locator('#party-adriel-jovem')).toHaveClass(/human-final-adriel-vanished/);
+  await page.waitForTimeout(1400);
+  await expect(page.locator('#storyLayer')).toHaveClass(/show/);
+  await page.locator('#storyLayer').click();
+  await expect(page.locator('#storyLayer')).toHaveAttribute('data-story-anchor','finale-cedric');
+  expect(errors).toEqual([]);
+});
+
 test('Sophitia e futuros heróis do Vento usam física de voo acima da sombra',async({page})=>{
   const errors=await boot(page,'flow');
   await page.setViewportSize({width:390,height:844});
@@ -406,7 +447,7 @@ test('formações dos heróis seguem exatamente as células e interpolações ca
   expect(probe.map(item=>item.name)).toEqual(['Líder','Guarda-costas','Cercados','Defensiva','Ofensiva','Vanguarda em V','Asa Dupla','Diamante','Escalonada','Berserker']);
   expect(probe.map(item=>item.slots.map(slot=>slot.refs))).toEqual([
     [[14,23],[3],[12,21],[30]],
-    [[11,20],[5,14],[14,23],[23,32]],
+    [[11,20],[5],[14,23],[32]],
     [[6],[14],[23],[33]],
     [[2],[11],[20],[29]],
     [[5],[14],[23],[32]],
@@ -1484,7 +1525,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.4');
+  expect(registration.caches).toContain('12r-v11.0.5');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1644,7 +1685,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.4');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.5');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

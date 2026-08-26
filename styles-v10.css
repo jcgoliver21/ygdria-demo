@@ -3866,11 +3866,41 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
 .royal-court-jules{left:20%;top:43%;background-image:url('assets/characters/runtime-v10/jules/idle-2x2.png')}
 .royal-court-kalander{right:20%;top:43%;background-image:url('assets/characters/runtime-v10/kalander/idle-2x2.png')}
 @keyframes royalCourtIdle{0%,24.9%{background-position:0 0}25%,49.9%{background-position:100% 0}50%,74.9%{background-position:0 100%}75%,100%{background-position:100% 100%}}
+/* Missão 10/5: encenação física do desfecho dentro do piso real do castelo.
+   Nenhum corpo é girado por CSS: cada um usa o último quadro de sua própria
+   folha de derrota, já construída deitado e com o equipamento no solo. */
+.human-final-scene{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden}
+.human-final-scene-actor{position:absolute;display:block;aspect-ratio:1;transform-origin:50% 100%;filter:drop-shadow(0 5px 5px rgba(10,2,12,.72));opacity:1}
+.human-final-scene-sprite{position:absolute;inset:0;display:block;background-image:var(--sprite-url);background-repeat:no-repeat;background-size:calc(var(--sprite-cols,2) * 100%) calc(var(--sprite-rows,2) * 100%);background-position:var(--sprite-bg-x,100%) var(--sprite-bg-y,100%)}
+.finale-fallen{width:clamp(52px,17%,98px)}
+.finale-bernyce{left:49%;bottom:13%}
+.finale-kalander{left:33%;bottom:17%}
+.finale-cedric{left:64%;bottom:19%}
+.finale-julius{width:clamp(54px,18%,102px);right:16%;bottom:28%;--sprite-bg-x:0%;--sprite-bg-y:0%}
+.human-final-shadow-wave{position:absolute;right:-26%;bottom:12%;width:34%;height:39%;border-radius:50%;opacity:0;background:radial-gradient(ellipse at 22% 50%,rgba(210,152,255,.68) 0 5%,rgba(59,13,79,.66) 27%,rgba(8,4,18,.92) 54%,transparent 73%);filter:blur(2px) drop-shadow(0 0 24px rgba(107,34,139,.72));transform:scale(.35)}
+.human-final-scene.shadow-unleashed .human-final-shadow-wave{animation:humanFinalShadowWave 2.35s cubic-bezier(.2,.74,.25,1) both}
+@keyframes humanFinalShadowWave{0%{opacity:0;transform:translateX(0) scale(.3)}12%{opacity:.96}70%{opacity:.82}100%{opacity:0;transform:translateX(-300%) scale(2.6)}}
+.human-final-scene-actor.dissolving{animation:humanFinalDissolve 1.3s cubic-bezier(.25,.72,.28,1) both}
+.enemy-avatar.human-final-julius-dissolving{animation:humanFinalDissolve 1.3s cubic-bezier(.25,.72,.28,1) both!important}
+.enemy-unit.human-final-julius-hidden{visibility:hidden!important}
+@keyframes humanFinalDissolve{0%{opacity:1;filter:drop-shadow(0 5px 5px rgba(10,2,12,.72))}40%{opacity:.86;filter:brightness(.55) saturate(.45) drop-shadow(0 0 13px #6e327f)}100%{opacity:0;filter:brightness(.12) blur(6px) drop-shadow(-25px 0 18px #4d1f68);transform:translateX(-22px) scale(.78)}}
+.human-final-gareth-shield{transition:left .6s cubic-bezier(.2,.8,.22,1),bottom .6s cubic-bezier(.2,.8,.22,1)!important}
+.human-final-hero-fallen .unit-ground-shadow{opacity:.35!important;transform:translateX(-50%) scale(.9)!important;animation:none!important}
+.human-final-hero-fallen .avatar-circle{filter:none!important}
+.human-final-adriel-vanished{opacity:0!important;transition:opacity .52s ease!important}
+.human-final-teleport{position:absolute;width:0;height:0;border-radius:50%;opacity:0;pointer-events:none;background:radial-gradient(circle,rgba(255,255,255,.98) 0 12%,rgba(255,174,227,.95) 29%,rgba(224,100,186,.45) 52%,transparent 72%);box-shadow:0 0 20px 9px rgba(255,122,207,.58),0 0 54px 18px rgba(187,82,210,.34)}
+.human-final-scene.adriel-teleporting .human-final-teleport{animation:humanFinalTeleport 1.35s ease-out both}
+@keyframes humanFinalTeleport{0%{opacity:0;transform:translate(-50%,-50%) scale(.25)}18%{opacity:1}64%{opacity:.92;transform:translate(-50%,-50%) scale(1.08)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.7)}}
 @media (max-width:600px){
   .royal-court-bernyce{width:16%;top:36.5%}
   .royal-court-guard{width:16%;top:43.5%}
   .royal-court-jules{left:18%}
   .royal-court-kalander{right:18%}
+  .finale-fallen{width:19%}
+  .finale-bernyce{left:48%;bottom:12%}
+  .finale-kalander{left:29%;bottom:16%}
+  .finale-cedric{left:63%;bottom:18%}
+  .finale-julius{width:20%;right:12%;bottom:27%}
 }
 body.game-active .game-frame:not(.victory-celebration) .combat-console{
   flex:0 0 30dvh!important;
