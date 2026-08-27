@@ -738,9 +738,15 @@ test('lâmina do Gareth cruza a arena sem projétil mágico ou variação de esc
     const actionDisplayScale=getComputedStyle(source.querySelector('.hero-sprite-sheet')).getPropertyValue('--sprite-scale').trim();
     spawnCombatAttackFx('humanos',source,target,gareth.colorLight,'impact',gareth);
     const fx=document.querySelector('.fx-attack-signature');
-    return {style:fx?.dataset.attackStyle,blade:Boolean(fx?.querySelector('.attack-swing')),trail:Boolean(fx?.querySelector('.attack-trail')),origin:Boolean(fx?.querySelector('.attack-origin')),idleScale,actionDisplayScale,actionScale:ACTION_PHYSICS_SCALE.gareth.attack};
+    const layer=document.getElementById('specialFxLayer').getBoundingClientRect();
+    const sourceRect=source.getBoundingClientRect(), targetRect=target.getBoundingClientRect();
+    const expectedOrigin=sourceRect.left-layer.left+sourceRect.width*.68;
+    const expectedContact=targetRect.left-layer.left+targetRect.width*.36;
+    return {style:fx?.dataset.attackStyle,sheet:Boolean(fx?.querySelector('.attack-sheet')),contact:Boolean(fx?.querySelector('.attack-contact')),trail:Boolean(fx?.querySelector('.attack-trail')),origin:Boolean(fx?.querySelector('.attack-origin')),color:fx?.style.getPropertyValue('--attack-color'),fxOrigin:Number.parseFloat(fx?.style.left||'0'),expectedOrigin,expectedContact,idleScale,actionDisplayScale,actionScale:ACTION_PHYSICS_SCALE.gareth.attack};
   });
-  expect(attack).toMatchObject({style:'blade',blade:true,trail:false,origin:false,actionScale:1});
+  expect(attack).toMatchObject({style:'blade',sheet:true,contact:true,trail:false,origin:false,color:'#ed5b9c',actionScale:1});
+  expect(Math.abs(attack.fxOrigin-attack.expectedOrigin)).toBeLessThan(1);
+  expect(attack.expectedContact).toBeGreaterThan(attack.expectedOrigin);
   expect(attack.actionDisplayScale).toBe(attack.idleScale);
   expect(errors).toEqual([]);
 });
@@ -1525,7 +1531,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.6');
+  expect(registration.caches).toContain('12r-v11.0.7');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1685,7 +1691,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.6');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.7');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

@@ -19,13 +19,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.6/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.6/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.6/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.6/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.6/);
-  assert.match(config,/version:'v11\.0\.6'/);
-  assert.match(sw,/12r-v11\.0\.6/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.7/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.7/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.7/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.7/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.7/);
+  assert.match(config,/version:'v11\.0\.7'/);
+  assert.match(sw,/12r-v11\.0\.7/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -87,6 +87,7 @@ check('narrador usa caixa e personagens ou feras usam balões ancorados',()=>{
   for(const needle of ['CREATURE_ONOMATOPOEIAS','function creatureOnomatopoeiaKind','function creatureOnomatopoeia','slime','wolf','harpy','golem','dragon','kraken','function storySpeakerAnchor','function positionStorySpeechBubble','speaker-bubble','data-story-anchor']) assert.ok(game.includes(needle)||css.includes(needle),`${needle} ausente`);
   for(const selector of ['.story-layer.show.speaker-bubble','.story-layer.speaker-bubble .story-box::after','.story-layer.speaker-bubble.story-speaker-fallback']) assert.ok(css.includes(selector),`${selector} ausente`);
   assert.match(game,/layer\.classList\.add\('narrator-box','cinematic'\)/);
+  for(const needle of ['HUMAN_REALM_ATTACK_COLOR','data-story-speaker','humanSpeaker=isHumanRealmAttacker']) assert.ok(game.includes(needle),`${needle} ausente`);
   assert.match(game,/layer\.classList\.add\('speaker-bubble'\)/);
   assert.match(game,/!e\?\.isCard&&creatureOnomatopoeiaKind\(e\)/);
   for(const mapping of ["plain==='gareth'","plain==='roland'","plain==='elizier'"]) assert.ok(syncLore.includes(mapping),`${mapping} ausente do gerador`);
@@ -100,7 +101,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.6/);
+  assert.match(sw,/12r-v11\.0\.7/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -313,9 +314,13 @@ check('passagem gráfica v10.0.54 mantém física e dá resposta ao combate',()=
 });
 
 check('v11 usa folhas reais no repouso, VFX separado e fallback de derrota sem giro horizontal',()=>{
-  for(const needle of ['arena-midground-light','attack-origin','attack-mote','attackOrigin','attackMote','enemyDefeatGroundedFallback','BLADE_ATTACK_IDS','combatAttackStyle','attack-swing','physicalSlash']) assert.ok(game.includes(needle)||css.includes(needle),`${needle} ausente`);
-  assert.match(game,/fx\.innerHTML=style==='blade'/);
+  for(const needle of ['arena-midground-light','attack-origin','attack-mote','attackOrigin','attackMote','enemyDefeatGroundedFallback','BLADE_ATTACK_IDS','combatAttackStyle','attack-swing','physicalSlash','HUMAN_CHAPTER_ATTACK_SHEETS','attackSheetProfile','attack-sheet-signature']) assert.ok(game.includes(needle)||css.includes(needle),`${needle} ausente`);
+  assert.match(game,/fx\.innerHTML=sheet/);
+  assert.match(game,/const fallbackAccent=humanSpeaker\?HUMAN_REALM_ATTACK_COLOR:'#f0d58e'/);
   assert.match(game,/style==='spell'\?`attack-\$\{realm\}`:''/);
+  assert.match(css,/\.attack-sheet-signature \.attack-sheet/);
+  assert.match(css,/@keyframes attackSheetFrames/);
+  assert.match(game,/pointsRight \? \.68 : \.32/);
   assert.match(css,/\.attack-blade \.attack-swing/);
   assert.match(css,/\.hero-sprite-image\{ animation:none; transform-origin:50% 100%; \}/);
   assert.match(css,/\.summon-sprite\{ animation:none!important; \}/);
@@ -410,7 +415,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.6');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.7');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);

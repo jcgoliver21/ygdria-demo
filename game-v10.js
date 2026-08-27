@@ -2576,6 +2576,36 @@ function spawnCombatFx(kind,target,color='#fff',duration=650){
 const BLADE_ATTACK_IDS=new Set(['adriel-jovem','gareth','roland','kalander','capitao','soldado1','soldado2','sold-bib1','sold-bib2','sold-bib3','infantaria','cavalaria','comandante','trono']);
 const CLAW_ATTACK_IDS=new Set(['lobo-raivoso','shadow-wolf','crimson-dragon']);
 const BODY_ATTACK_IDS=new Set(['slime-cereja','rune-slime','stone-sentinel']);
+/* O Reino dos Humanos usa a mesma assinatura rosa em ataque, fala e impacto.
+   A arte particular do personagem continua intacta: apenas a camada VFX é
+   tonalizada. Julius não entra nesta regra porque pertence às Sombras. */
+const HUMAN_REALM_ATTACK_COLOR='#ed5b9c';
+const HUMAN_REALM_ATTACK_LIGHT='#ffe0ee';
+const HUMAN_REALM_ATTACK_IDS=new Set(['gareth','cedric','elizier','roland','berenice-jovem','adriel-jovem','jules','kalander','bernyce']);
+const HUMAN_CHAPTER_ATTACK_SHEETS=Object.freeze({
+  gareth:'assets/vfx/v11-review/human/gareth/attack/processed/sheet-transparent.png',
+  cedric:'assets/vfx/v11-review/human/cedric/attack/processed/sheet-transparent.png',
+  elizier:'assets/vfx/v11-review/human/elizier/attack/processed/sheet-transparent.png',
+  roland:'assets/vfx/v11-review/human/roland/attack/processed/sheet-transparent.png',
+  'berenice-jovem':'assets/vfx/v11-review/human/berenice-jovem/attack/processed/sheet-transparent.png',
+  'galateia-jovem':'assets/vfx/v11-review/human/galateia-jovem/attack/processed/sheet-transparent.png',
+  'adriel-jovem':'assets/vfx/v11-review/human/adriel-jovem/attack/processed/sheet-transparent.png',
+  'acqua-jovem':'assets/vfx/v11-review/human/acqua-jovem/attack/processed/sheet-transparent.png',
+  jules:'assets/vfx/v11-review/human/jules/attack/processed/sheet-transparent.png',
+  kalander:'assets/vfx/v11-review/human/kalander/attack/processed/sheet-transparent.png',
+  bernyce:'assets/vfx/v11-review/human/bernyce/attack/processed/sheet-transparent.png',
+  julius:'assets/vfx/v11-review/human/julius/attack/processed/sheet-transparent.png'
+});
+function combatActorId(attacker){ return String(attacker?.id||attacker?.heroId||attacker?.characterId||attacker?.cardId||'').toLowerCase(); }
+function isHumanRealmAttacker(attacker){
+  const id=combatActorId(attacker);
+  return HUMAN_REALM_ATTACK_IDS.has(id)||attacker?.iconId==='humanos'||attacker?.deck==='humanos'||attacker?.reino==='Reino dos Humanos';
+}
+function attackSheetProfile(attacker){
+  const id=combatActorId(attacker),src=HUMAN_CHAPTER_ATTACK_SHEETS[id];
+  if(!src) return null;
+  return {id,src,humanPink:isHumanRealmAttacker(attacker),shadow:id==='julius'};
+}
 function combatAttackStyle(attacker){
   if(!attacker) return 'spell';
   const heroId=String(attacker.id||attacker.heroId||attacker.characterId||attacker.cardId||'').toLowerCase();
@@ -2701,12 +2731,18 @@ function spawnCombatAttackFx(realmId,source,target,color='#fff',kind='impact',at
   const quality=resolvedGraphicsQuality();
   if(V10.quality?.arenaEffects?.[quality]===false && kind!=='critical') return;
   const lr=layer.getBoundingClientRect(), sr=source.getBoundingClientRect(), tr=target.getBoundingClientRect();
-  const sx=sr.left-lr.left+sr.width/2, sy=sr.top-lr.top+sr.height/2;
-  const tx=tr.left-lr.left+tr.width/2, ty=tr.top-lr.top+tr.height/2;
+  /* O golpe deixa a mão/arma que aponta para o alvo e toca a borda dele, não
+     o centro dos dois retratos. Isso resolve VFX solto sem alterar sprite,
+     escala, sombra ou linha dos pés. */
+  const sourceCenterX=sr.left+sr.width/2, targetCenterX=tr.left+tr.width/2;
+  const pointsRight=targetCenterX>=sourceCenterX;
+  const sx=sr.left-lr.left+sr.width*(pointsRight ? .68 : .32), sy=sr.top-lr.top+sr.height*.48;
+  const tx=tr.left-lr.left+tr.width*(pointsRight ? .36 : .64), ty=tr.top-lr.top+tr.height*.47;
   const dx=tx-sx, dy=ty-sy, dist=Math.max(24,Math.hypot(dx,dy));
   const realm=REALM_FX_PROFILE[realmId]?realmId:'humanos';
   const style=combatAttackStyle(attacker);
-  const fx=acquireCombatFx(`fx-attack-signature attack-${style} ${style==='spell'?`attack-${realm}`:''}`);
+  const sheet=attackSheetProfile(attacker);
+  const fx=acquireCombatFx(`fx-attack-signature ${sheet?'attack-sheet-signature':`attack-${style} ${style==='spell'?`attack-${realm}`:''}`}`);
   const lease=fx.__fxLease;
   fx.dataset.fx='attack-signature';
   fx.dataset.attackKind=kind;
@@ -2715,8 +2751,9 @@ function spawnCombatAttackFx(realmId,source,target,color='#fff',kind='impact',at
   fx.style.top=sy+'px';
   /* Lâminas usam o tom-base do próprio reino; o brilho claro só cria leitura
      de velocidade e não substitui a identidade cromática do golpe. */
-  const attackColor=style==='blade'?(attacker?.color||color):color;
-  const attackLight=style==='blade'?(attacker?.colorLight||attackColor):(kind==='critical'?'#fff7cf':color);
+  const humanPink=isHumanRealmAttacker(attacker)||realmId==='humanos';
+  const attackColor=humanPink?HUMAN_REALM_ATTACK_COLOR:(style==='blade'?(attacker?.color||color):color);
+  const attackLight=humanPink?HUMAN_REALM_ATTACK_LIGHT:(style==='blade'?(attacker?.colorLight||attackColor):(kind==='critical'?'#fff7cf':color));
   fx.style.color=attackColor;
   fx.style.setProperty('--attack-color',attackColor);
   fx.style.setProperty('--attack-light',attackLight);
@@ -2726,11 +2763,19 @@ function spawnCombatAttackFx(realmId,source,target,color='#fff',kind='impact',at
   fx.style.setProperty('--attack-dy',dy+'px');
   fx.style.setProperty('--maril-water-width',Math.min(300,Math.max(116,dist*.96))+'px');
   fx.style.setProperty('--maril-water-height',Math.min(154,Math.max(78,dist*.46))+'px');
+  if(sheet){
+    fx.style.setProperty('--attack-sheet',`url("${sheet.src}")`);
+    fx.style.setProperty('--attack-sheet-width',Math.min(196,Math.max(102,dist*.68))+'px');
+    fx.style.setProperty('--attack-sheet-height',Math.min(132,Math.max(76,dist*.42))+'px');
+    fx.style.setProperty('--attack-sheet-filter',sheet.shadow?'grayscale(1) contrast(1.12) drop-shadow(0 0 6px rgba(212,220,234,.36))':sheet.humanPink?'grayscale(1) sepia(1) saturate(5) hue-rotate(284deg) brightness(1.08) contrast(1.04) drop-shadow(0 0 7px rgba(255,105,177,.86))':'drop-shadow(0 0 6px rgba(255,255,255,.42))');
+  }
   /* O corpo nunca recebe o efeito: origem, trajetória e contato são elementos
      independentes na camada de VFX. Assim a leitura fica mais rica sem alterar
      escala, linha dos pés ou nitidez do sprite em WebViews móveis. */
-  fx.innerHTML=style==='blade'
-    ? '<span class="attack-swing"></span><span class="attack-swing echo"></span><span class="attack-contact physical"></span>'
+  fx.innerHTML=sheet
+    ? '<span class="attack-sheet"></span><span class="attack-contact physical"></span>'
+    : style==='blade'
+      ? '<span class="attack-swing"></span><span class="attack-swing echo"></span><span class="attack-contact physical"></span>'
     : style==='water-jet'
       ? '<span class="maril-water-blast-sheet" aria-hidden="true"></span>'
     : style==='claw'
@@ -4896,6 +4941,7 @@ function clearStoryPresentation(){
   if(!layer||!box) return;
   layer.classList.remove('speaker-bubble','story-speaker-fallback','story-bubble-positioned','bubble-below','narrator-box');
   layer.removeAttribute('data-story-anchor');
+  layer.removeAttribute('data-story-speaker');
   layer.removeAttribute('data-final-cinematic');
   box.style.removeProperty('left');
   box.style.removeProperty('top');
@@ -4919,6 +4965,13 @@ function positionStorySpeechBubble(){
     skip.style.bottom=Math.max(2,window.innerHeight-arenaRect.bottom+2)+'px';
   }
   if(!isSpeaker) return;
+  const speakerId=layer.dataset.storySpeaker||'';
+  const speaker=KINGDOMS.find(character=>character.id===speakerId);
+  const humanSpeaker=isHumanRealmAttacker(speaker)||(!speaker&&worldRun.active&&speakerId!=='julius');
+  const fallbackAccent=humanSpeaker?HUMAN_REALM_ATTACK_COLOR:'#f0d58e';
+  /* Mesmo se a fala precisar do fallback (personagem fora da arena), a
+     assinatura cromática do reino não pode voltar ao dourado genérico. */
+  box.style.setProperty('--story-accent',fallbackAccent);
   if(!anchor){ layer.classList.add('story-speaker-fallback'); return; }
   layer.classList.remove('story-speaker-fallback');
   requestAnimationFrame(()=>{
@@ -4926,7 +4979,9 @@ function positionStorySpeechBubble(){
     const anchorRect=anchor.getBoundingClientRect();
     const boxRect=box.getBoundingClientRect();
     const anchorStyle=getComputedStyle(anchor);
-    const accent=anchorStyle.getPropertyValue('--realm').trim()||anchorStyle.getPropertyValue('--aura-inner-light').trim()||'#f0d58e';
+    /* Roland, Cedric e toda pessoa ou inimigo humano recebem a assinatura rosa
+       do reino no balão; outras origens preservam sua própria identidade. */
+    const accent=humanSpeaker?HUMAN_REALM_ATTACK_COLOR:(anchorStyle.getPropertyValue('--realm').trim()||anchorStyle.getPropertyValue('--aura-inner-light').trim()||fallbackAccent);
     const margin=8;
     let left=anchorRect.left+anchorRect.width/2-boxRect.width/2;
     left=Math.max(margin,Math.min(window.innerWidth-boxRect.width-margin,left));
@@ -5005,6 +5060,7 @@ function renderStoryStep(){
     layer.classList.remove('cinematic');
     layer.style.removeProperty('--story-bg');
     layer.classList.add('speaker-bubble');
+    layer.dataset.storySpeaker=step.h||storySpeakerToken(step?.name||'');
     const anchor=storySpeakerAnchor(step);
     if(anchor) layer.dataset.storyAnchor=anchor.id;
     else layer.classList.add('story-speaker-fallback');
