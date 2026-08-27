@@ -29,7 +29,7 @@
     <div id="content"></div>
   </main>
   <div id="toast" class="toast" role="status"></div>
-  <script src="../v10-animations.js?v=11.0.6"></script>
+  <script src="../v10-animations.js?v=11.0.8"></script>
   <script>
     let cards=[
       ['luz','Galatéia'],['humanos','Berenice'],['agua','Maril'],['fogo','Lucius'],['natureza','Ninfa Queen'],['terra','Kallendra'],['areia','Rashid'],['sombras','Berenice das Sombras'],['raio','Mardogear'],['vento','Sophitia'],['chuvas','Regnar'],['gelo','Blizzardo'],['gareth','Gareth'],['cedric','Cedric'],['elizier','Elizier'],['roland','Roland'],['berenice-jovem','Berenice Jovem'],['galateia-jovem','Galatéia Jovem'],['adriel-jovem','Adriel Jovem'],['acqua-jovem','Acqua Jovem'],['jules','Jules'],['kalander','Kalander'],['bernyce','Bernyce'],['julius','Julius']
@@ -63,14 +63,14 @@
     let choices={...approvedChoices}; try{choices={...choices,...JSON.parse(localStorage.getItem(storeKey)||'{}')}}catch(_){choices={...approvedChoices}}
     let animationNotes=JSON.parse(JSON.stringify(chapterMode?humanChapterApprovedNotes:approvedAnimationNotes)); try{const savedNotes=JSON.parse(localStorage.getItem(notesKey)||'{}');animationNotes=chapterMode?{...animationNotes,...savedNotes}:{...animationNotes,...savedNotes,agua:{...(approvedAnimationNotes.agua||{}),...(savedNotes.agua||{})}}}catch(_){}
     let generatedPreviews={}; try{generatedPreviews=JSON.parse(localStorage.getItem(previewKey)||'{}')}catch(_){generatedPreviews={}}
-    const reviewRevision=chapterMode?'R6 · GOLPES ANCORADOS':'R5 · ÁGUA REAL';
+    const reviewRevision=chapterMode?'R7 · GOLPES CORPORAIS E ALVOS':'R5 · ÁGUA REAL';
     if(chapterMode){document.title='Ygdria · Vitrine do Reino dos Humanos';document.querySelector('h1').childNodes[0].nodeValue='Vitrine de animações — Reino dos Humanos ';document.querySelector('.revision').textContent=reviewRevision;document.querySelector('header p').innerHTML='Apenas personagens, inimigos e feras que aparecem nas dez fases do <b>Reino dos Humanos</b>. Use as setas para revisar o lado e os seis controles de pose para registrar ajustes reais de animação.';document.querySelector('.note').textContent='Os efeitos de ataque agora nascem na mão ou arma, avançam na direção escolhida e não cobrem o corpo. As cartas do Reino dos Humanos usam assinatura rosa; Jules arremessa o ás; Julius mantém sombra neutra, sem magia roxa.';}
     const content=document.getElementById('content'),status=document.getElementById('status'),toast=document.getElementById('toast'),sprites=[],fxLayers=[];let previewAction=chapterMode?'attack':'idle';
     const animationFields=[['idle','Idle'],['attack','Ataque'],['cast','Magia'],['hit','Dano'],['victory','Vitória'],['defeat','Derrota']];
     const poseLabels=Object.fromEntries(animationFields);
     const realmColors={luz:'#ffe0a1',humanos:'#ff9fce',agua:'#72c9ff',fogo:'#ff7b57',natureza:'#83d996',terra:'#d9b063',areia:'#f1cc79',sombras:'#a47bdf',raio:'#c68cff',vento:'#9deeff',chuvas:'#6aaeff',gelo:'#b6e8ff',gareth:'#e9c484',cedric:'#dca7ff',elizier:'#79dfff',roland:'#e8b07a','berenice-jovem':'#ffa4bd','galateia-jovem':'#fff4d4','adriel-jovem':'#f4d7a1','acqua-jovem':'#76baff',jules:'#d9a6e9',kalander:'#e9b975',bernyce:'#ff9dd4',julius:'#a890e4'};
     const humanReviewAttacks=Object.fromEntries([
-      ...['gareth','cedric','elizier','roland','berenice-jovem','galateia-jovem','adriel-jovem','acqua-jovem','jules','kalander','bernyce','julius'].map(id=>[id,{src:`../assets/characters/v11-review/${id}/attack/processed/sheet-transparent.png`}]),
+      ...['gareth','cedric','elizier','roland','berenice-jovem','galateia-jovem','adriel-jovem','acqua-jovem','jules','kalander','bernyce','julius'].map(id=>[id,{src:(id==='gareth'||id==='julius')?`../assets/characters/v11-review/${id}/attack-r2/processed/sheet-transparent.png`:`../assets/characters/v11-review/${id}/attack/processed/sheet-transparent.png`}]),
       ...['capitao','soldado1','soldado2','sold-bib1','sold-bib2','sold-bib3','infantaria','cavalaria','comandante','trono','morto','vulto','slime-cereja','lobo-raivoso','espectro'].map(id=>[id,{src:`../assets/enemies/v11-review/${id}/attack/processed/sheet-transparent.png`}])
     ]);
     const humanRealmReviewIds=new Set(['gareth','cedric','elizier','roland','berenice-jovem','adriel-jovem','jules','kalander','bernyce']);
@@ -162,8 +162,9 @@
       return side==='right'?1:-1;
     }
     function roleMarkup(entry,role){
-      const side=getSide(entry,role); const label=role==='playable'?'Jogável':'Inimigo';
-      return `<section class="role" data-role="${role}"><div class="role-title">${label}<span>${role==='playable'?'campo esquerdo':'campo direito'}</span></div><div class="stage"><span class="motion-label">Idle</span><span class="floor-tag">linha dos pés</span><span class="fx-layer" aria-hidden="true"></span><span class="sprite" aria-label="${escape(entry.name)} como ${label}"></span></div><div class="direction"><button type="button" data-side="left">← esquerda</button><button type="button" data-side="right">direita →</button></div><p class="current">marcado: <strong>${side==='left'?'esquerda':'direita'}</strong></p></section>`;
+      const side=getSide(entry,role); const label=role==='playable'?'Herói':'Inimigo';
+      const arenaSide=role==='playable'?'lado dos Heróis · esquerda da arena':'lado dos Inimigos · direita da arena';
+      return `<section class="role" data-role="${role}"><div class="role-title">${label}<span>${arenaSide}</span></div><div class="stage"><span class="motion-label">Idle</span><span class="floor-tag">linha dos pés</span><span class="fx-layer" aria-hidden="true"></span><span class="sprite" aria-label="${escape(entry.name)} como ${label}"></span></div><div class="direction"><button type="button" data-side="left">← esquerda</button><button type="button" data-side="right">direita →</button></div><p class="current">marcado: <strong>${side==='left'?'esquerda':'direita'}</strong></p></section>`;
     }
     function makeEntry(entry){
       const node=document.createElement('article');node.className='entry';node.dataset.kind=entry.kind;node.dataset.id=entry.id;

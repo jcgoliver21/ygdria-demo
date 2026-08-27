@@ -19,13 +19,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.7/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.7/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.7/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.7/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.7/);
-  assert.match(config,/version:'v11\.0\.7'/);
-  assert.match(sw,/12r-v11\.0\.7/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.8/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.8/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.8/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.8/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.8/);
+  assert.match(config,/version:'v11\.0\.8'/);
+  assert.match(sw,/12r-v11\.0\.8/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -101,7 +101,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.7/);
+  assert.match(sw,/12r-v11\.0\.8/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -266,7 +266,7 @@ check('v11 substitui formações antigas e mantém seleção direta dos heróis'
 check('v12 fixa a física de escala das ações e a leitura mobile',()=>{
   assert.match(game,/const ACTION_PHYSICS_SCALE=Object\.freeze\(/);
   assert.match(game,/fogo:\{attack:\.8082/);
-  assert.match(game,/const physics=Number\(ACTION_PHYSICS_SCALE\[character\?\.id\]\?\.\[action\]\|\|1\)/);
+  assert.match(game,/HUMAN_CHAPTER_BODY_ATTACK_IDS\.has\(character\?\.id\)&&action==='attack'/);
   assert.match(css,/body\.game-active \.party-row \.unit-stage\{height:106px!important\}/);
   assert.match(css,/body\.game-active \.enemy-row \.unit-stage\{height:102px!important\}/);
   assert.match(html,/class="game-logo" src="assets\/icon\.svg"/);
@@ -320,13 +320,30 @@ check('v11 usa folhas reais no repouso, VFX separado e fallback de derrota sem g
   assert.match(game,/style==='spell'\?`attack-\$\{realm\}`:''/);
   assert.match(css,/\.attack-sheet-signature \.attack-sheet/);
   assert.match(css,/@keyframes attackSheetFrames/);
-  assert.match(game,/pointsRight \? \.68 : \.32/);
+  assert.match(game,/pointsRight \? \(sheet\?\.sourceXRight\?\?\.68\) : \(sheet\?\.sourceXLeft\?\?\.32\)/);
   assert.match(css,/\.attack-blade \.attack-swing/);
   assert.match(css,/\.hero-sprite-image\{ animation:none; transform-origin:50% 100%; \}/);
   assert.match(css,/\.summon-sprite\{ animation:none!important; \}/);
   assert.doesNotMatch(css,/enemyDefeatFall/);
   assert.doesNotMatch(css,/enemyDefeatGroundedFallback[^}]*rotate\(-90deg\)/);
   assert.doesNotMatch(css,/enemyDefeatGroundedFallback[^}]*rotate\(90deg\)/);
+});
+
+check('ataques humanos usam corpo, alvo de arena e trajetória física',()=>{
+  const ids=['gareth','cedric','elizier','roland','berenice-jovem','galateia-jovem','adriel-jovem','acqua-jovem','jules','kalander','bernyce','julius'];
+  for(const id of ids){
+    assert.ok(game.includes(`assets/characters/v11-review/${id}/attack`),`folha corporal ausente: ${id}`);
+  }
+  assert.match(game,/gareth:'assets\/characters\/v11-review\/gareth\/attack-r2\/processed\/sheet-transparent\.png'/);
+  assert.match(game,/julius:'assets\/characters\/v11-review\/julius\/attack-r2\/processed\/sheet-transparent\.png'/);
+  assert.match(game,/const enemyAvatar=document\.getElementById\('enemyPortrait-'\+idx\)\|\|enemyUnit/);
+  assert.match(game,/function frontHeroAttackTarget\(source\)/);
+  assert.match(game,/const playerTarget=frontHero\?\.avatar\|\|document\.getElementById\('playerHpAnchor'\)/);
+  assert.match(game,/fx\.dataset\.targetAnchor=target\.id\|\|''/);
+  assert.match(game,/sourceXRight:id==='elizier' \? \.78 : null/);
+  assert.match(css,/\.fx-attack-signature\.attack-projectile \.attack-sheet/);
+  assert.match(css,/@keyframes attackSheetProjectile/);
+  for(const id of ['gareth','julius']) assert.ok(fs.existsSync(path.join(root,`assets/characters/v11-review/${id}/attack-r2/processed/sheet-transparent.png`)),`folha processada ausente: ${id}`);
 });
 
 check('vitória preserva a arena e separa cabeçalho do relatório inferior',()=>{
@@ -401,7 +418,7 @@ check('folhas de ação preservam a estatura ancorada nos pés',()=>{
   assert.match(game,/function normalizedActionDisplayScale\(character,action,displayScale\)/);
   assert.doesNotMatch(game,/ACTION_BODY_SCALE_NORMALIZATION/);
   assert.match(game,/const idleScale=Number\(character\?\.sprites\?\.idle\?\.displayScale\)/);
-  assert.match(game,/const physics=Number\(ACTION_PHYSICS_SCALE\[character\?\.id\]\?\.\[action\]\|\|1\)/);
+  assert.match(game,/\? 1 : Number\(ACTION_PHYSICS_SCALE\[character\?\.id\]\?\.\[action\]\|\|1\)/);
   assert.match(game,/const displayScale=normalizedActionDisplayScale\(k,action,meta\.displayScale\)/);
   assert.match(css,/\.hero-sprite-sheet\{transform:scale\(var\(--sprite-scale,1\)\);transform-origin:50% 100%\}/);
   assert.match(css,/body\.game-active \.enemy-unit \.enemy-rooted-idle-art/);
@@ -415,7 +432,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.7');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.8');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
@@ -565,7 +582,7 @@ check('carregamento de animação é sob demanda e possui fallback',()=>{
 check('escala corporal não varia entre ações e impacto não duplica animações',()=>{
   assert.doesNotMatch(game,/ACTION_BODY_SCALE_NORMALIZATION/);
   assert.match(game,/const idleScale=Number\(character\?\.sprites\?\.idle\?\.displayScale\)/);
-  assert.match(game,/const physics=Number\(ACTION_PHYSICS_SCALE\[character\?\.id\]\?\.\[action\]\|\|1\)/);
+  assert.match(game,/\? 1 : Number\(ACTION_PHYSICS_SCALE\[character\?\.id\]\?\.\[action\]\|\|1\)/);
   assert.match(game,/playEnemyAction\(idx,'hit'\);/);
   assert.doesNotMatch(game,/enemyUnit\.classList\.remove\('hit'\);/);
   assert.doesNotMatch(game,/partyArenaEl\.classList\.add\('party-hurt'\);/);

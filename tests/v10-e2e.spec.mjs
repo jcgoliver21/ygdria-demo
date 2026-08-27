@@ -732,7 +732,7 @@ test('lâmina do Gareth cruza a arena sem projétil mágico ou variação de esc
   const attack=await page.evaluate(()=>{
     const gareth=KINGDOMS.find(hero=>hero.id==='gareth');
     const source=document.getElementById('party-gareth-avatar');
-    const target=document.querySelector('.enemy-unit');
+    const target=document.getElementById('enemyPortrait-0');
     const idleScale=getComputedStyle(source.querySelector('.hero-sprite-sheet')).getPropertyValue('--sprite-scale').trim();
     playHeroAction(KINGDOMS.findIndex(hero=>hero.id==='gareth'),'attack');
     const actionDisplayScale=getComputedStyle(source.querySelector('.hero-sprite-sheet')).getPropertyValue('--sprite-scale').trim();
@@ -742,12 +742,51 @@ test('lâmina do Gareth cruza a arena sem projétil mágico ou variação de esc
     const sourceRect=source.getBoundingClientRect(), targetRect=target.getBoundingClientRect();
     const expectedOrigin=sourceRect.left-layer.left+sourceRect.width*.68;
     const expectedContact=targetRect.left-layer.left+targetRect.width*.36;
-    return {style:fx?.dataset.attackStyle,sheet:Boolean(fx?.querySelector('.attack-sheet')),contact:Boolean(fx?.querySelector('.attack-contact')),trail:Boolean(fx?.querySelector('.attack-trail')),origin:Boolean(fx?.querySelector('.attack-origin')),color:fx?.style.getPropertyValue('--attack-color'),fxOrigin:Number.parseFloat(fx?.style.left||'0'),expectedOrigin,expectedContact,idleScale,actionDisplayScale,actionScale:ACTION_PHYSICS_SCALE.gareth.attack};
+    return {style:fx?.dataset.attackStyle,sheet:Boolean(fx?.querySelector('.attack-sheet')),contact:Boolean(fx?.querySelector('.attack-contact')),trail:Boolean(fx?.querySelector('.attack-trail')),origin:Boolean(fx?.querySelector('.attack-origin')),color:fx?.style.getPropertyValue('--attack-color'),sourceAnchor:fx?.dataset.sourceAnchor,targetAnchor:fx?.dataset.targetAnchor,fxOrigin:Number.parseFloat(fx?.style.left||'0'),expectedOrigin,expectedContact,idleScale,actionDisplayScale,actionScale:ACTION_PHYSICS_SCALE.gareth.attack};
   });
   expect(attack).toMatchObject({style:'blade',sheet:true,contact:true,trail:false,origin:false,color:'#ed5b9c',actionScale:1});
   expect(Math.abs(attack.fxOrigin-attack.expectedOrigin)).toBeLessThan(1);
   expect(attack.expectedContact).toBeGreaterThan(attack.expectedOrigin);
+  expect(attack.sourceAnchor).toBe('party-gareth-avatar');
+  expect(attack.targetAnchor).toBe('enemyPortrait-0');
   expect(attack.actionDisplayScale).toBe(attack.idleScale);
+  expect(errors).toEqual([]);
+});
+
+test('Elizier parte do arco e contra-ataques miram um herói corporal da frente',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.evaluate(()=>{
+    worldRun={active:true,fase:5,nivel:1,storyMode:false};
+    chosenIds=['elizier','roland','gareth','cedric'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    beginGame(0); skipStory();
+  });
+  const targeting=await page.evaluate(()=>{
+    const elizier=KINGDOMS.find(hero=>hero.id==='elizier');
+    const elizierAvatar=document.getElementById('party-elizier-avatar');
+    const enemyAvatar=document.getElementById('enemyPortrait-0');
+    playHeroAction(KINGDOMS.findIndex(hero=>hero.id==='elizier'),'attack');
+    spawnCombatAttackFx('humanos',elizierAvatar,enemyAvatar,elizier.colorLight,'impact',elizier);
+    const elizierFx=document.querySelector('.fx-attack-signature');
+    const enemy=enemies[0];
+    const front=frontHeroAttackTarget(enemyAvatar);
+    spawnCombatAttackFx(enemyFxRealm(enemy),enemyAvatar,front.avatar,enemyAuraPalette(enemy)[1],'impact',enemy);
+    const fx=[...document.querySelectorAll('.fx-attack-signature')].at(-1);
+    return {
+      projectile:elizierFx?.classList.contains('attack-projectile'),
+      elizierOrigin:elizierFx?.dataset.sourceAnchor,
+      elizierTarget:elizierFx?.dataset.targetAnchor,
+      enemyOrigin:fx?.dataset.sourceAnchor,
+      enemyTarget:fx?.dataset.targetAnchor,
+      computedFront:front.avatar.id,
+      pointsToHud:fx?.dataset.targetAnchor==='playerHpAnchor'
+    };
+  });
+  expect(targeting.projectile).toBe(true);
+  expect(targeting.elizierOrigin).toBe('party-elizier-avatar');
+  expect(targeting.elizierTarget).toBe('enemyPortrait-0');
+  expect(targeting.enemyOrigin).toBe('enemyPortrait-0');
+  expect(targeting.enemyTarget).toBe(targeting.computedFront);
+  expect(targeting.pointsToHud).toBe(false);
   expect(errors).toEqual([]);
 });
 
@@ -1531,7 +1570,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.7');
+  expect(registration.caches).toContain('12r-v11.0.8');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1691,7 +1730,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.7');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.8');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

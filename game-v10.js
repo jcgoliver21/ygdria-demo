@@ -2044,6 +2044,29 @@ const HERO_ACTIONS = Object.freeze({
   defeat:  { frames:4, cols:2, rows:2, duration:900, loop:false, holdLast:true }
 });
 
+/* Folhas corporais do capítulo humano. A ação mora no corpo, e o VFX é uma
+   segunda camada: assim espada, arco e lança realmente se movem sem mexer em
+   escala, sombra ou linha dos pés. Gareth e Julius usam a revisão R2. */
+const HUMAN_CHAPTER_BODY_ATTACK_SHEETS=Object.freeze({
+  gareth:'assets/characters/v11-review/gareth/attack-r2/processed/sheet-transparent.png',
+  cedric:'assets/characters/v11-review/cedric/attack/processed/sheet-transparent.png',
+  elizier:'assets/characters/v11-review/elizier/attack/processed/sheet-transparent.png',
+  roland:'assets/characters/v11-review/roland/attack/processed/sheet-transparent.png',
+  'berenice-jovem':'assets/characters/v11-review/berenice-jovem/attack/processed/sheet-transparent.png',
+  'galateia-jovem':'assets/characters/v11-review/galateia-jovem/attack/processed/sheet-transparent.png',
+  'adriel-jovem':'assets/characters/v11-review/adriel-jovem/attack/processed/sheet-transparent.png',
+  'acqua-jovem':'assets/characters/v11-review/acqua-jovem/attack/processed/sheet-transparent.png',
+  jules:'assets/characters/v11-review/jules/attack/processed/sheet-transparent.png',
+  kalander:'assets/characters/v11-review/kalander/attack/processed/sheet-transparent.png',
+  bernyce:'assets/characters/v11-review/bernyce/attack/processed/sheet-transparent.png',
+  julius:'assets/characters/v11-review/julius/attack-r2/processed/sheet-transparent.png'
+});
+const HUMAN_CHAPTER_BODY_ATTACK_IDS=new Set(Object.keys(HUMAN_CHAPTER_BODY_ATTACK_SHEETS));
+for(const character of KINGDOMS){
+  const src=HUMAN_CHAPTER_BODY_ATTACK_SHEETS[character.id];
+  if(src) character.sprites={...(character.sprites||{}),attack:{src,frames:6,rows:2,cols:3,duration:720,loop:false,format:'sheet'}};
+}
+
 /* Física das folhas: razão entre a altura média do corpo em idle e a altura
    média do corpo na ação. Os PNGs continuam intactos; esta compensação só
    impede que uma folha com recorte mais alto faça o personagem crescer. */
@@ -2079,7 +2102,11 @@ function normalizedActionDisplayScale(character,action,displayScale){
   const idleScale=Number(character?.sprites?.idle?.displayScale);
   const fallback=Number(displayScale||1);
   const base=Number.isFinite(idleScale)&&idleScale>0?idleScale:(Number.isFinite(fallback)&&fallback>0?fallback:1);
-  const physics=Number(ACTION_PHYSICS_SCALE[character?.id]?.[action]||1);
+  /* As folhas corporais humanas foram normalizadas com âncora nos pés. Não
+     aplique compensações legadas sobre elas: isso era a origem de personagens
+     crescendo ao atacar no mobile. */
+  const physics=HUMAN_CHAPTER_BODY_ATTACK_IDS.has(character?.id)&&action==='attack'
+    ? 1 : Number(ACTION_PHYSICS_SCALE[character?.id]?.[action]||1);
   const fixed=base*physics;
   return Number(fixed.toFixed(4));
 }
@@ -2604,7 +2631,14 @@ function isHumanRealmAttacker(attacker){
 function attackSheetProfile(attacker){
   const id=combatActorId(attacker),src=HUMAN_CHAPTER_ATTACK_SHEETS[id];
   if(!src) return null;
-  return {id,src,humanPink:isHumanRealmAttacker(attacker),shadow:id==='julius'};
+  const projectile=new Set(['cedric','elizier','acqua-jovem','jules','bernyce']).has(id);
+  return {
+    id,src,humanPink:isHumanRealmAttacker(attacker),shadow:id==='julius',projectile,
+    /* Elizier parte da ponta do arco, não do centro do retrato. */
+    sourceXRight:id==='elizier' ? .78 : null,
+    sourceXLeft:id==='elizier' ? .22 : null,
+    sourceY:id==='elizier' ? .39 : null
+  };
 }
 function combatAttackStyle(attacker){
   if(!attacker) return 'spell';
@@ -2731,22 +2765,24 @@ function spawnCombatAttackFx(realmId,source,target,color='#fff',kind='impact',at
   const quality=resolvedGraphicsQuality();
   if(V10.quality?.arenaEffects?.[quality]===false && kind!=='critical') return;
   const lr=layer.getBoundingClientRect(), sr=source.getBoundingClientRect(), tr=target.getBoundingClientRect();
+  const sheet=attackSheetProfile(attacker);
   /* O golpe deixa a mão/arma que aponta para o alvo e toca a borda dele, não
      o centro dos dois retratos. Isso resolve VFX solto sem alterar sprite,
      escala, sombra ou linha dos pés. */
   const sourceCenterX=sr.left+sr.width/2, targetCenterX=tr.left+tr.width/2;
   const pointsRight=targetCenterX>=sourceCenterX;
-  const sx=sr.left-lr.left+sr.width*(pointsRight ? .68 : .32), sy=sr.top-lr.top+sr.height*.48;
+  const sx=sr.left-lr.left+sr.width*(pointsRight ? (sheet?.sourceXRight??.68) : (sheet?.sourceXLeft??.32)), sy=sr.top-lr.top+sr.height*(sheet?.sourceY??.48);
   const tx=tr.left-lr.left+tr.width*(pointsRight ? .36 : .64), ty=tr.top-lr.top+tr.height*.47;
   const dx=tx-sx, dy=ty-sy, dist=Math.max(24,Math.hypot(dx,dy));
   const realm=REALM_FX_PROFILE[realmId]?realmId:'humanos';
   const style=combatAttackStyle(attacker);
-  const sheet=attackSheetProfile(attacker);
   const fx=acquireCombatFx(`fx-attack-signature ${sheet?'attack-sheet-signature':`attack-${style} ${style==='spell'?`attack-${realm}`:''}`}`);
   const lease=fx.__fxLease;
   fx.dataset.fx='attack-signature';
   fx.dataset.attackKind=kind;
   fx.dataset.attackStyle=style;
+  fx.dataset.sourceAnchor=source.id||'';
+  fx.dataset.targetAnchor=target.id||'';
   fx.style.left=sx+'px';
   fx.style.top=sy+'px';
   /* Lâminas usam o tom-base do próprio reino; o brilho claro só cria leitura
@@ -2767,6 +2803,10 @@ function spawnCombatAttackFx(realmId,source,target,color='#fff',kind='impact',at
     fx.style.setProperty('--attack-sheet',`url("${sheet.src}")`);
     fx.style.setProperty('--attack-sheet-width',Math.min(196,Math.max(102,dist*.68))+'px');
     fx.style.setProperty('--attack-sheet-height',Math.min(132,Math.max(76,dist*.42))+'px');
+    const sheetTravel=Math.max(0,dist-Math.min(104,Math.max(52,dist*.24)));
+    fx.style.setProperty('--attack-sheet-travel',sheetTravel+'px');
+    fx.style.setProperty('--attack-sheet-travel-28',(sheetTravel*.28)+'px');
+    fx.style.setProperty('--attack-sheet-travel-58',(sheetTravel*.58)+'px');
     fx.style.setProperty('--attack-sheet-filter',sheet.shadow?'grayscale(1) contrast(1.12) drop-shadow(0 0 6px rgba(212,220,234,.36))':sheet.humanPink?'grayscale(1) sepia(1) saturate(5) hue-rotate(284deg) brightness(1.08) contrast(1.04) drop-shadow(0 0 7px rgba(255,105,177,.86))':'drop-shadow(0 0 6px rgba(255,255,255,.42))');
   }
   /* O corpo nunca recebe o efeito: origem, trajetória e contato são elementos
@@ -2782,7 +2822,8 @@ function spawnCombatAttackFx(realmId,source,target,color='#fff',kind='impact',at
       ? '<span class="attack-claw-mark claw-one"></span><span class="attack-claw-mark claw-two"></span><span class="attack-claw-mark claw-three"></span><span class="attack-contact physical"></span>'
       : style==='body'
         ? '<span class="attack-body-wave"></span><span class="attack-contact physical"></span>'
-        : '<span class="attack-origin"></span><span class="attack-trail"></span><span class="attack-trail secondary"></span><span class="attack-mote mote-a"></span><span class="attack-mote mote-b"></span><span class="attack-contact"></span>';
+      : '<span class="attack-origin"></span><span class="attack-trail"></span><span class="attack-trail secondary"></span><span class="attack-mote mote-a"></span><span class="attack-mote mote-b"></span><span class="attack-contact"></span>';
+  fx.classList.toggle('attack-projectile',Boolean(sheet?.projectile));
   layer.appendChild(fx);
   trimCombatFx();
   window.setTimeout(()=>releaseCombatFx(fx,lease),kind==='critical'?980:820);
@@ -3632,6 +3673,28 @@ function currentTargetIndex(){
   }
   if(manualTarget!==null && enemies[manualTarget] && enemies[manualTarget].hp>0) return manualTarget;
   return enemies.findIndex(e=>e.hp>0);
+}
+
+/* O alvo visual é sempre um corpo na arena. Para contra-ataques escolhemos a
+   fileira que está mais à frente em relação ao inimigo; se dois ou mais
+   heróis partilham essa fileira, o do meio recebe o impacto. HP e tabuleiro
+   continuam apenas como HUD, nunca como destino da trajetória. */
+function frontHeroAttackTarget(source){
+  const candidates=ACTIVE.map(index=>{
+    const character=KINGDOMS[index];
+    const avatar=character&&document.getElementById('party-'+character.id+'-avatar');
+    if(!avatar) return null;
+    const rect=avatar.getBoundingClientRect();
+    return {index,avatar,centerX:rect.left+rect.width*.5,centerY:rect.top+rect.height*.5,width:rect.width};
+  }).filter(Boolean);
+  if(!candidates.length) return null;
+  const sourceRect=source?.getBoundingClientRect();
+  const sourceX=sourceRect?sourceRect.left+sourceRect.width*.5:Infinity;
+  const enemyOnRight=sourceX>=Math.max(...candidates.map(candidate=>candidate.centerX));
+  const frontX=enemyOnRight?Math.max(...candidates.map(candidate=>candidate.centerX)):Math.min(...candidates.map(candidate=>candidate.centerX));
+  const tolerance=Math.max(10,Math.max(...candidates.map(candidate=>candidate.width))*.32);
+  const front=candidates.filter(candidate=>Math.abs(candidate.centerX-frontX)<=tolerance).sort((a,b)=>a.centerY-b.centerY);
+  return front[Math.floor(front.length/2)]||candidates[0];
 }
 
 function selectTarget(idx){
@@ -6683,10 +6746,11 @@ function applyDamageToEnemy(dmg, colorIdx, targetIdxOverride){
     const hitColor = colorIdx!==null && colorIdx!==undefined && KINGDOMS[colorIdx] ? KINGDOMS[colorIdx].colorLight : '#fff';
     const sourceUnit = colorIdx!==null && colorIdx!==undefined && KINGDOMS[colorIdx]
       ? document.getElementById('party-'+KINGDOMS[colorIdx].id+'-avatar') : null;
-    if(sourceUnit) spawnCombatAttackFx(KINGDOMS[colorIdx].iconId||KINGDOMS[colorIdx].id,sourceUnit,enemyUnit,hitColor,finalDamage>=100?'critical':'impact',KINGDOMS[colorIdx]);
-    spawnCombatFx(finalDamage>=100?'critical':'impact',enemyUnit,hitColor,560);
-    spawnCombatFx('hit',enemyUnit,hitColor,440);
-    if(colorIdx!==null && colorIdx!==undefined && KINGDOMS[colorIdx]) spawnRealmParticles(KINGDOMS[colorIdx].iconId||KINGDOMS[colorIdx].id,enemyUnit,8);
+    const enemyAvatar=document.getElementById('enemyPortrait-'+idx)||enemyUnit;
+    if(sourceUnit) spawnCombatAttackFx(KINGDOMS[colorIdx].iconId||KINGDOMS[colorIdx].id,sourceUnit,enemyAvatar,hitColor,finalDamage>=100?'critical':'impact',KINGDOMS[colorIdx]);
+    spawnCombatFx(finalDamage>=100?'critical':'impact',enemyAvatar,hitColor,560);
+    spawnCombatFx('hit',enemyAvatar,hitColor,440);
+    if(colorIdx!==null && colorIdx!==undefined && KINGDOMS[colorIdx]) spawnRealmParticles(KINGDOMS[colorIdx].iconId||KINGDOMS[colorIdx].id,enemyAvatar,8);
   }
 
   if(enemy.hp<=0){
@@ -6871,7 +6935,10 @@ function enemyCounterAttack(){
     }
     if(enemy.timeStopped && enemy.hp<=enemy.maxHp*0.25){ enemy.timeStopped=false; }
     playEnemyAction(idx,'attack');
-    if(enemy.isBoss) spawnCombatFx('telegraph',document.getElementById('playerHpAnchor'),enemyAuraPalette(enemy)[1],500);
+    const enemySource=document.getElementById('enemyPortrait-'+idx);
+    const frontHero=frontHeroAttackTarget(enemySource);
+    const playerTarget=frontHero?.avatar||document.getElementById('playerHpAnchor');
+    if(enemy.isBoss) spawnCombatFx('telegraph',playerTarget,enemyAuraPalette(enemy)[1],500);
     const variance = 0.85 + gameRandom()*0.3;
     let dmg = Math.round(enemy.atk * variance * Math.pow(0.8, damageReductionStacks));
     if(invulnerableTurns>0){
@@ -6900,10 +6967,10 @@ function enemyCounterAttack(){
     if(dmg>0) stageTookDamage=true;
     updatePlayerHP();
     if(dmg>0) pulseHpEffect('damage',800);
+    /* O dano segue a regra da missão e todos reagem, mas o projétil e o
+       impacto visual usam apenas o herói da linha frontal calculado acima. */
     if(dmg>0) ACTIVE.forEach(heroIdx=>playHeroAction(heroIdx,'hit'));
     if(dmg>0){
-      const enemySource=document.getElementById('enemyPortrait-'+idx);
-      const playerTarget=document.getElementById('playerHpAnchor');
       const enemyColor=enemyAuraPalette(enemy)[1];
       spawnCombatAttackFx(enemyFxRealm(enemy),enemySource,playerTarget,enemyColor,enemy.isBoss?'critical':'impact',enemy);
       spawnCombatFx(enemy.isBoss?'critical':'impact',playerTarget,enemyColor,560);
