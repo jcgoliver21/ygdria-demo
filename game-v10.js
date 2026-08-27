@@ -2580,6 +2580,7 @@ function combatAttackStyle(attacker){
   if(!attacker) return 'spell';
   const heroId=String(attacker.id||attacker.heroId||attacker.characterId||attacker.cardId||'').toLowerCase();
   const key=enemyAnimationKey(attacker)||heroId;
+  if(heroId==='agua') return 'water-jet';
   if(BLADE_ATTACK_IDS.has(heroId)||BLADE_ATTACK_IDS.has(key)) return 'blade';
   if(CLAW_ATTACK_IDS.has(key)||/lobo|wolf|drag[aã]o/.test(key)) return 'claw';
   if(BODY_ATTACK_IDS.has(key)||/slime|limo|golem|sentinela/.test(key)) return 'body';
@@ -2723,11 +2724,15 @@ function spawnCombatAttackFx(realmId,source,target,color='#fff',kind='impact',at
   fx.style.setProperty('--attack-length',dist+'px');
   fx.style.setProperty('--attack-dx',dx+'px');
   fx.style.setProperty('--attack-dy',dy+'px');
+  fx.style.setProperty('--maril-water-width',Math.min(300,Math.max(116,dist*.96))+'px');
+  fx.style.setProperty('--maril-water-height',Math.min(154,Math.max(78,dist*.46))+'px');
   /* O corpo nunca recebe o efeito: origem, trajetória e contato são elementos
      independentes na camada de VFX. Assim a leitura fica mais rica sem alterar
      escala, linha dos pés ou nitidez do sprite em WebViews móveis. */
   fx.innerHTML=style==='blade'
     ? '<span class="attack-swing"></span><span class="attack-swing echo"></span><span class="attack-contact physical"></span>'
+    : style==='water-jet'
+      ? '<span class="maril-water-blast-sheet" aria-hidden="true"></span>'
     : style==='claw'
       ? '<span class="attack-claw-mark claw-one"></span><span class="attack-claw-mark claw-two"></span><span class="attack-claw-mark claw-three"></span><span class="attack-contact physical"></span>'
       : style==='body'
@@ -6032,7 +6037,7 @@ function triggerHeroCastAnim(colorIdx){
    O container recebe --sx/--sy (origem), --tx/--ty (alvo) e --ddx/--ddy (delta). */
 const SPECIAL_CAST_BUILDERS={
   fogo(el){ el.innerHTML='<div class="sc-fireball" style="--d:0ms"></div><div class="sc-fireball" style="--d:130ms"></div><div class="sc-fireball" style="--d:260ms"></div><div class="sc-fire-burst"></div>'; },
-  agua(el){ el.innerHTML='<div class="sc-wave"></div><div class="sc-geyser"></div>'; },
+  agua(el){ el.innerHTML='<div class="maril-water-bubble-sheet" aria-hidden="true"></div>'; },
   luz(el){ el.innerHTML='<div class="sc-lightbeam"></div><div class="sc-lightrays"></div>'; },
   humanos(el){ el.innerHTML='<div class="sc-chrono-ring" style="--d:0ms"></div><div class="sc-chrono-ring" style="--d:160ms"></div><div class="sc-chrono-ring" style="--d:320ms"></div><div class="sc-chrono-hand"></div>'; },
   natureza(el){ el.innerHTML='<div class="sc-vine" style="--vx:-18px;--d:0ms"></div><div class="sc-vine" style="--vx:0px;--d:110ms"></div><div class="sc-vine" style="--vx:18px;--d:220ms"></div>'; },

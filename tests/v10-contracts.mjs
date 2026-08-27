@@ -19,13 +19,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.5/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.5/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.5/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.5/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.5/);
-  assert.match(config,/version:'v11\.0\.5'/);
-  assert.match(sw,/12r-v11\.0\.5/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.6/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.6/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.6/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.6/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.6/);
+  assert.match(config,/version:'v11\.0\.6'/);
+  assert.match(sw,/12r-v11\.0\.6/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -100,7 +100,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.5/);
+  assert.match(sw,/12r-v11\.0\.6/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -190,6 +190,22 @@ check('inimigos exclusivos usam folhas reais, impactos e arena viva',()=>{
   assert.match(game,/return e\?\.etype\|\|null;/,'arte humana individual não pode cair no guarda genérico');
   assert.doesNotMatch(game,/assets\\\/enemies\\\/humanos\\\/.+human-guard/,'arte humana não pode ser mapeada ao guarda genérico');
   for(const needle of ['enemyOriginalAttack','arena-petals','arena-cold-fog','arena-world-drift','.enemy-unit.dead .unit-ground-shadow','@keyframes enemyDefeatGroundedFallback']) assert.ok(css.includes(needle),`${needle} ausente`);
+});
+
+check('Maril usa folhas corporais aprovadas e efeitos reais de água separados',()=>{
+  for(const asset of [
+    'assets/characters/runtime-v10/agua/attack-maril-trident-3x2.png',
+    'assets/characters/runtime-v10/agua/cast-maril-bubbles-3x2.png',
+    'assets/characters/runtime-v10/agua/attack-water-blast-3x2.png',
+    'assets/characters/runtime-v10/agua/cast-water-bubbles-3x2.png'
+  ]) assert.ok(fs.existsSync(path.join(root,asset)),`folha da Maril ausente: ${asset}`);
+  assert.match(animations,/agua\/attack-maril-trident-3x2\.png/);
+  assert.match(animations,/agua\/cast-maril-bubbles-3x2\.png/);
+  assert.match(game,/heroId==='agua'\) return 'water-jet'/);
+  assert.match(game,/maril-water-blast-sheet/);
+  assert.match(game,/maril-water-bubble-sheet/);
+  assert.match(css,/\.attack-water-jet \.maril-water-blast-sheet/);
+  assert.match(css,/\.maril-water-bubble-sheet/);
 });
 
 check('Biblioteca da Eternidade faz as páginas cair e acumular',()=>{
@@ -394,7 +410,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.5');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.6');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);

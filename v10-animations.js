@@ -134,7 +134,7 @@
       "rows": 2,
       "duration": 720,
       "format": "sheet",
-      "src": "assets/characters/runtime-v10/agua/attack-3x2.png",
+      "src": "assets/characters/runtime-v10/agua/attack-maril-trident-3x2.png",
       "displayScale": 0.9978
     },
     "cast": {
@@ -143,7 +143,7 @@
       "rows": 2,
       "duration": 840,
       "format": "sheet",
-      "src": "assets/characters/runtime-v10/agua/cast-3x2.png",
+      "src": "assets/characters/runtime-v10/agua/cast-maril-bubbles-3x2.png",
       "displayScale": 0.9978
     },
     "hit": {

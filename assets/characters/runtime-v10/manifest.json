@@ -2,7 +2,7 @@
   "version": 10,
   "generatedAt": "2026-08-14T16:21:26.332Z",
   "totalSheets": 120,
-  "totalBytes": 23333422,
+  "totalBytes": 23468388,
   "displayScales": {
     "luz": 1.0221,
     "humanos": 1.0237,
@@ -189,12 +189,12 @@
         "rows": 2,
         "duration": 720,
         "format": "sheet",
-        "src": "assets/characters/runtime-v10/agua/attack-3x2.png",
-        "bytes": 230898,
+        "src": "assets/characters/runtime-v10/agua/attack-maril-trident-3x2.png",
+        "bytes": 246531,
         "width": 768,
         "height": 512,
         "displayScale": 0.9978,
-        "sha256": "eeeb71b536c601754532480fe6848469f068259364d6f922dfb4f9d6b7f0051c"
+        "sha256": "ef5175375e165a6dd89253dbfaf7d7221adf4a66ee77da830d0389db683fe909"
       },
       "cast": {
         "frames": 6,
@@ -202,12 +202,12 @@
         "rows": 2,
         "duration": 840,
         "format": "sheet",
-        "src": "assets/characters/runtime-v10/agua/cast-3x2.png",
-        "bytes": 222425,
+        "src": "assets/characters/runtime-v10/agua/cast-maril-bubbles-3x2.png",
+        "bytes": 341758,
         "width": 768,
         "height": 512,
         "displayScale": 0.9978,
-        "sha256": "9bb0a7fffa2668a3517b3cbe7d81eeace0e577a2301879eb689280333616f0c8"
+        "sha256": "393b3dad3e72c0b51a0bd22cf73e27b1215443b57b6d48c6ca294b086cd73860"
       },
       "hit": {
         "frames": 4,
