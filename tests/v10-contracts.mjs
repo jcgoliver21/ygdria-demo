@@ -19,13 +19,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.9/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.9/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.9/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.9/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.9/);
-  assert.match(config,/version:'v11\.0\.9'/);
-  assert.match(sw,/12r-v11\.0\.9/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.10/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.10/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.10/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.10/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.10/);
+  assert.match(config,/version:'v11\.0\.10'/);
+  assert.match(sw,/12r-v11\.0\.10/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -43,7 +43,7 @@ check('janela pública de teste libera as fases sem adulterar o save e usa o tro
   assert.match(css,/--court-unit-scale:1;/);
   assert.match(css,/@keyframes royalCourtIdle/);
   assert.match(game,/unit\.dataset\.facing=heroFacingDirection\(k\)/);
-  assert.match(game,/unit\.dataset\.facing='right'/);
+  assert.match(game,/unit\.dataset\.facing=enemyFacingDirection\(e\)/);
   assert.match(game,/function toggleHeroFacing\(/);
   assert.match(game,/HERO_LEFT_FACING_FLIP_CORRECTIONS=new Set\(\['adriel-jovem'\]\)/);
   assert.match(game,/function triggerHumanFinaleCinematic\(/);
@@ -55,7 +55,7 @@ check('janela pública de teste libera as fases sem adulterar o save e usa o tro
   assert.match(css,/\.human-final-scene/);
   assert.match(css,/@keyframes humanFinalShadowWave/);
   assert.match(css,/@keyframes humanFinalTeleport/);
-  assert.match(game,/const flip='';/);
+  assert.match(game,/const flip=enemySpriteFlip\(e\)\?' flip':'';/);
   assert.ok(fs.existsSync(path.join(root,'assets/characters/runtime-v10/bernyce/scene-seated.png')),'sprite sentada de Bernyce ausente');
 });
 
@@ -101,7 +101,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.9/);
+  assert.match(sw,/12r-v11\.0\.10/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -163,7 +163,7 @@ check('papéis de herói e inimigo usam direções opostas',()=>{
   assert.match(game,/elizier:\{[^\n]+flip:true\}/);
   assert.match(game,/roland:\{[^\n]+flip:true\}/);
   assert.match(game,/julius:\{[^\n]+flip:true\}/);
-  assert.match(game,/const flip='';/);
+  assert.match(game,/function enemySpriteFlip\(e\)/);
   assert.match(css,/enemy-static-avatar\[data-action="idle"\] \.enemy-sprite-image\.flip/);
 });
 
@@ -173,17 +173,18 @@ check('inimigos usam animação por ação e aura corporal sem moldura',()=>{
 });
 
 check('inimigos exclusivos usam folhas reais, impactos e arena viva',()=>{
-  for(const id of ['capitao','soldado1','soldado2','sold-bib1','sold-bib2','sold-bib3','infantaria','cavalaria','comandante','trono','morto','vulto','slime-cereja','lobo-raivoso','espectro','human-guard','rune-slime','shadow-wolf','cursed-wraith','stone-sentinel','crimson-dragon']){
-    const asset=`assets/enemies/runtime-v10/${id}/processed/sheet-transparent.png`;
+  const physicsIds=new Set(['capitao','soldado1','soldado2','sold-bib1','sold-bib2','sold-bib3','infantaria','cavalaria','comandante','trono','morto','vulto','slime-cereja','lobo-raivoso','espectro']);
+  for(const id of [...physicsIds,'human-guard','rune-slime','shadow-wolf','cursed-wraith','stone-sentinel','crimson-dragon']){
+    const asset=physicsIds.has(id)?`assets/physics-v11/humanos/enemies/${id}/actions/sheet-transparent.png`:`assets/enemies/runtime-v10/${id}/processed/sheet-transparent.png`;
     assert.ok(game.includes(asset),`${id} sem folha no runtime`);
     assert.ok(fs.existsSync(path.join(root,...asset.split('/'))),`${id} sem asset`);
   }
-  for(const id of ['capitao','soldado1','soldado2','sold-bib1','sold-bib2','sold-bib3','infantaria','cavalaria','comandante','trono','morto','vulto','slime-cereja','lobo-raivoso','espectro','human-guard','rune-slime','shadow-wolf','cursed-wraith','stone-sentinel','crimson-dragon']){
-    const idleAsset=`assets/enemies/runtime-v10/${id}/idle/processed/sheet-transparent.png`;
+  for(const id of [...physicsIds,'human-guard','rune-slime','shadow-wolf','cursed-wraith','stone-sentinel','crimson-dragon']){
+    const idleAsset=physicsIds.has(id)?`assets/physics-v11/humanos/enemies/${id}/idle/sheet-transparent.png`:`assets/enemies/runtime-v10/${id}/idle/processed/sheet-transparent.png`;
     assert.ok(fs.existsSync(path.join(root,...idleAsset.split('/'))),`${id} sem folha de idle`);
   }
   for(const id of ['capitao','soldado1','soldado2','sold-bib1','sold-bib2','sold-bib3','infantaria','cavalaria','comandante','trono']){
-    const rootedIdle=`assets/enemies/runtime-v10/${id}/idle-v3/processed/sheet-transparent.png`;
+    const rootedIdle=`assets/physics-v11/humanos/enemies/${id}/idle/sheet-transparent.png`;
     assert.ok(fs.existsSync(path.join(root,...rootedIdle.split('/'))),`${id} sem idle normalizado pela base`);
   }
   for(const needle of ['ENEMY_ANIMATION_LIBRARY','HUMAN_ENEMY_IDLE_IDS','ROOTED_HUMAN_IDLE_LIBRARY','ENEMY_IDLE_LIBRARY','rootedEnemyIdleMarkup','startRootedEnemyIdle','usesRootedHumanIdle','enemy-rooted-idle-sheet','returnToIdle','ENEMY_FRAME_SEQUENCES','actionFrames','function enemyAnimationCharacter','defeatEnemyAvatar','freezeEnemyAvatar','fx-impact-burst','fx-critical-impact','arena-atmosphere','canonicalVisual']) assert.ok(game.includes(needle)||css.includes(needle),`${needle} ausente`);
@@ -266,7 +267,7 @@ check('v11 substitui formações antigas e mantém seleção direta dos heróis'
 check('v12 fixa a física de escala das ações e a leitura mobile',()=>{
   assert.match(game,/const ACTION_PHYSICS_SCALE=Object\.freeze\(/);
   assert.match(game,/fogo:\{attack:\.8082/);
-  assert.match(game,/HUMAN_CHAPTER_BODY_ATTACK_IDS\.has\(character\?\.id\)\n    \? 1/);
+  assert.match(game,/HUMAN_CHAPTER_BODY_PHYSICS_IDS\.has\(character\?\.id\)\n    \? 1/);
   assert.match(css,/body\.game-active \.party-row \.unit-stage\{height:106px!important\}/);
   assert.match(css,/body\.game-active \.enemy-row \.unit-stage\{height:102px!important\}/);
   assert.match(html,/class="game-logo" src="assets\/icon\.svg"/);
@@ -329,18 +330,17 @@ check('v11 usa folhas reais no repouso, VFX separado e fallback de derrota sem g
   assert.doesNotMatch(css,/enemyDefeatGroundedFallback[^}]*rotate\(90deg\)/);
 });
 
-check('ataques humanos usam corpo, alvo de arena e trajetória física',()=>{
+check('ataques humanos usam corpo normalizado, alvo de arena e trajetória física',()=>{
   const ids=['gareth','cedric','elizier','roland','berenice-jovem','galateia-jovem','adriel-jovem','acqua-jovem','jules','kalander','bernyce','julius'];
-  for(const id of ids){
-    assert.ok(game.includes(`assets/characters/v11-review/${id}/attack`),`folha corporal ausente: ${id}`);
-  }
-  assert.match(game,/gareth:\{src:'assets\/characters\/v11-review\/gareth\/attack-r2\/processed\/sheet-transparent\.png',footY:\.92578125,frameScales:\[1,1,1,1,1,1\]/);
-  assert.match(game,/roland:\{src:'assets\/characters\/v11-review\/roland\/attack\/processed\/sheet-transparent\.png',footY:\.92578125,frameScales:\[\.964,1,1\.125,1,1\.015,\.951\]/);
-  assert.match(game,/julius:\{src:'assets\/characters\/v11-review\/julius\/attack-r2\/processed\/sheet-transparent\.png',footY:\.92578125,frameScales:\[\.983,1\.018,\.963,1\.047,1\.047,\.983\]/);
+  assert.match(game,/assets\/physics-v11\/humanos\/heroes\/\$\{character\.id\}\/\$\{action\}\/sheet-transparent\.png/);
+  for(const id of ids) assert.ok(fs.existsSync(path.join(root,'assets','physics-v11','humanos','heroes',id,'attack','sheet-transparent.png')),`folha física ausente: ${id}`);
+  assert.match(game,/HUMAN_CHAPTER_BODY_PHYSICS_ACTIONS=Object\.freeze\(\['idle','attack','cast','hit','victory'\]\)/);
+  assert.match(game,/assets\/physics-v11\/humanos\/enemies\/slime-cereja\/actions\/sheet-transparent\.png/);
+  assert.match(game,/const ENEMY_LEFT_FACING_KEYS=new Set\(\['slime-cereja','lobo-raivoso'\]\)/);
   assert.match(game,/const stableBaseScale=normalizedActionDisplayScale\(k,requested,meta\.displayScale\)/);
-  assert.match(game,/sheet\.style\.setProperty\('--sprite-scale',String\(Number\(\(stableBaseScale\*frameScale\)\.toFixed\(4\)\)\)\)/);
-  assert.match(game,/const footCompensation=\(frameScale-1\)\*\(1-footY\)\*sheet\.offsetHeight\*unitScale/);
-  assert.match(game,/sheet\.style\.translate=`0 \$\{Number\(footCompensation\.toFixed\(3\)\)\}px`/);
+  assert.match(game,/sheet\.style\.setProperty\('--sprite-scale',String\(stableBaseScale\)\)/);
+  assert.match(game,/sheet\.style\.translate='0 0'/);
+  assert.doesNotMatch(game,/stableBaseScale\*frameScale|footCompensation/);
   assert.match(game,/const enemyAvatar=document\.getElementById\('enemyPortrait-'\+idx\)\|\|enemyUnit/);
   assert.match(game,/function frontHeroAttackTarget\(source\)/);
   assert.match(game,/const playerTarget=frontHero\?\.avatar\|\|document\.getElementById\('playerHpAnchor'\)/);
@@ -437,7 +437,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.9');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.10');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);

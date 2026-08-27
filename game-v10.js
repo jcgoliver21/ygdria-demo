@@ -1543,21 +1543,21 @@ const SUMMON_ANIMATIONS={golem:{src:'assets/summons/golem/attack-2x3.png',rows:3
    receberem uma folha animada criada a partir dessa identidade — nunca uma
    arte genérica de outro combatente. */
 const ENEMY_ANIMATION_LIBRARY=Object.freeze({
-  'capitao':{src:'assets/enemies/runtime-v10/capitao/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,4,5],cast:[2,3,4],hit:[4,5],victory:[5]}},
-  'soldado1':{src:'assets/enemies/runtime-v10/soldado1/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
-  'soldado2':{src:'assets/enemies/runtime-v10/soldado2/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
-  'sold-bib2':{src:'assets/enemies/runtime-v10/sold-bib2/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
-  'sold-bib1':{src:'assets/enemies/runtime-v10/sold-bib1/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
-  'sold-bib3':{src:'assets/enemies/runtime-v10/sold-bib3/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
-  'infantaria':{src:'assets/enemies/runtime-v10/infantaria/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
-  'cavalaria':{src:'assets/enemies/runtime-v10/cavalaria/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
-  'comandante':{src:'assets/enemies/runtime-v10/comandante/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:760,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
-  'trono':{src:'assets/enemies/runtime-v10/trono/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:760,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
-  'morto':{src:'assets/enemies/runtime-v10/morto/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:760,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
-  'vulto':{src:'assets/enemies/runtime-v10/vulto/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:700,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
-  'slime-cereja':{src:'assets/enemies/runtime-v10/slime-cereja/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:650,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
-  'lobo-raivoso':{src:'assets/enemies/runtime-v10/lobo-raivoso/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:700,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
-  'espectro':{src:'assets/enemies/runtime-v10/espectro/processed/sheet-transparent.png',cols:3,rows:2,frames:6,duration:680,flying:true,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'capitao':{src:'assets/physics-v11/humanos/enemies/capitao/actions/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,4,5],cast:[2,3,4],hit:[4,5],victory:[5]}},
+  'soldado1':{src:'assets/physics-v11/humanos/enemies/soldado1/actions/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'soldado2':{src:'assets/physics-v11/humanos/enemies/soldado2/actions/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'sold-bib2':{src:'assets/physics-v11/humanos/enemies/sold-bib2/actions/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'sold-bib1':{src:'assets/physics-v11/humanos/enemies/sold-bib1/actions/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'sold-bib3':{src:'assets/physics-v11/humanos/enemies/sold-bib3/actions/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'infantaria':{src:'assets/physics-v11/humanos/enemies/infantaria/actions/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'cavalaria':{src:'assets/physics-v11/humanos/enemies/cavalaria/actions/sheet-transparent.png',cols:3,rows:2,frames:6,duration:720,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'comandante':{src:'assets/physics-v11/humanos/enemies/comandante/actions/sheet-transparent.png',cols:3,rows:2,frames:6,duration:760,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'trono':{src:'assets/physics-v11/humanos/enemies/trono/actions/sheet-transparent.png',cols:3,rows:2,frames:6,duration:760,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'morto':{src:'assets/physics-v11/humanos/enemies/morto/actions/sheet-transparent.png',cols:3,rows:2,frames:6,duration:760,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'vulto':{src:'assets/physics-v11/humanos/enemies/vulto/actions/sheet-transparent.png',cols:3,rows:2,frames:6,duration:700,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'slime-cereja':{src:'assets/physics-v11/humanos/enemies/slime-cereja/actions/sheet-transparent.png',cols:3,rows:2,frames:6,duration:650,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'lobo-raivoso':{src:'assets/physics-v11/humanos/enemies/lobo-raivoso/actions/sheet-transparent.png',cols:3,rows:2,frames:6,duration:700,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
+  'espectro':{src:'assets/physics-v11/humanos/enemies/espectro/actions/sheet-transparent.png',cols:3,rows:2,frames:6,duration:680,flying:true,actionFrames:{idle:[0,1],attack:[2,3,5],cast:[2,3],hit:[4,5],victory:[5]}},
   'human-guard':{src:'assets/enemies/runtime-v10/human-guard/processed/sheet-transparent.png',cols:2,rows:3,frames:6,duration:720},
   'rune-slime':{src:'assets/enemies/runtime-v10/rune-slime/processed/sheet-transparent.png',cols:2,rows:3,frames:6,duration:650},
   'shadow-wolf':{src:'assets/enemies/runtime-v10/shadow-wolf/processed/sheet-transparent.png',cols:2,rows:3,frames:6,duration:700},
@@ -1573,7 +1573,7 @@ const HUMAN_ENEMY_IDLE_IDS=new Set([
   'infantaria','cavalaria','comandante','trono'
 ]);
 const ROOTED_HUMAN_IDLE_LIBRARY=Object.freeze(Object.fromEntries([...HUMAN_ENEMY_IDLE_IDS].map(id=>[
-  id,{src:`assets/enemies/runtime-v10/${id}/idle-v3/processed/sheet-transparent.png`,cols:3,rows:3,frames:9}
+  id,{src:`assets/physics-v11/humanos/enemies/${id}/idle/sheet-transparent.png`,cols:3,rows:3,frames:9}
 ])));
 const ENEMY_IDLE_LIBRARY=Object.freeze(Object.fromEntries([
   'morto','vulto','espectro',
@@ -1581,7 +1581,7 @@ const ENEMY_IDLE_LIBRARY=Object.freeze(Object.fromEntries([
   'stone-sentinel','crimson-dragon'
 ].map(id=>{
   return [id,{
-    src:`assets/enemies/runtime-v10/${id}/idle/processed/sheet-transparent.png`,
+    src:`assets/physics-v11/humanos/enemies/${id}/idle/sheet-transparent.png`,
     cols:3,rows:2,frames:6,duration:2100,
     frameOrder:[0,1,2,3,4,5,4,3,2,1]
   }];
@@ -1631,6 +1631,11 @@ function enemyAnimationKey(e){
   if(/sentinela|golem|guardião/.test(descriptor)) return 'stone-sentinel';
   return e?.etype||null;
 }
+/* Orientações aprovadas na vitrine: inimigos humanos encaram a direita;
+   Slime de Cerejeira e Lobo Raivoso encaram a esquerda em todas as poses. */
+const ENEMY_LEFT_FACING_KEYS=new Set(['slime-cereja','lobo-raivoso']);
+function enemyFacingDirection(e){return ENEMY_LEFT_FACING_KEYS.has(enemyAnimationKey(e))?'left':'right'}
+function enemySpriteFlip(e){return enemyFacingDirection(e)==='left'}
 function enemyAnimationCharacter(e){
   const key=enemyAnimationKey(e),library=key&&ENEMY_ANIMATION_LIBRARY[key];
   if(!library) return null;
@@ -2047,26 +2052,21 @@ const HERO_ACTIONS = Object.freeze({
 /* Folhas corporais do capítulo humano. A ação mora no corpo, e o VFX é uma
    segunda camada: assim espada, arco e lança realmente se movem sem mexer em
    escala, sombra ou linha dos pés. Gareth e Julius usam a revisão R2. */
-const HUMAN_CHAPTER_BODY_ATTACK_SHEETS=Object.freeze({
-  gareth:{src:'assets/characters/v11-review/gareth/attack-r2/processed/sheet-transparent.png',footY:.92578125,frameScales:[1,1,1,1,1,1]},
-  cedric:{src:'assets/characters/v11-review/cedric/attack/processed/sheet-transparent.png',footY:.92578125,frameScales:[1,1,1,1,1,1]},
-  elizier:{src:'assets/characters/v11-review/elizier/attack/processed/sheet-transparent.png',footY:.92578125,frameScales:[1,1,1,1,1,1]},
-  /* A investida de Roland baixa o corpo no quadro central; estabilizar a
-     silhueta pelo pé evita que a lança faça a heroína parecer encolher. */
-  roland:{src:'assets/characters/v11-review/roland/attack/processed/sheet-transparent.png',footY:.92578125,frameScales:[.964,1,1.125,1,1.015,.951]},
-  'berenice-jovem':{src:'assets/characters/v11-review/berenice-jovem/attack/processed/sheet-transparent.png',footY:.92578125,frameScales:[.993,.986,1.038,1.038,1.007,.993]},
-  'galateia-jovem':{src:'assets/characters/v11-review/galateia-jovem/attack/processed/sheet-transparent.png',footY:.92578125,frameScales:[1,1,1,1,1,1]},
-  'adriel-jovem':{src:'assets/characters/v11-review/adriel-jovem/attack/processed/sheet-transparent.png',footY:.92578125,frameScales:[1,1,1,1,1,1]},
-  'acqua-jovem':{src:'assets/characters/v11-review/acqua-jovem/attack/processed/sheet-transparent.png',footY:.92578125,frameScales:[1.007,1,1,.967,.993,1]},
-  jules:{src:'assets/characters/v11-review/jules/attack/processed/sheet-transparent.png',footY:.92578125,frameScales:[1,1,1,1,1,1]},
-  kalander:{src:'assets/characters/v11-review/kalander/attack/processed/sheet-transparent.png',footY:.92578125,frameScales:[.98,1,1,1.007,1.028,1]},
-  bernyce:{src:'assets/characters/v11-review/bernyce/attack/processed/sheet-transparent.png',footY:.92578125,frameScales:[1,1,1,1,1,1]},
-  julius:{src:'assets/characters/v11-review/julius/attack-r2/processed/sheet-transparent.png',footY:.92578125,frameScales:[.983,1.018,.963,1.047,1.047,.983]}
-});
-const HUMAN_CHAPTER_BODY_ATTACK_IDS=new Set(Object.keys(HUMAN_CHAPTER_BODY_ATTACK_SHEETS));
+const HUMAN_CHAPTER_BODY_PHYSICS_IDS=new Set([
+  'gareth','cedric','elizier','roland','berenice-jovem','galateia-jovem',
+  'adriel-jovem','acqua-jovem','jules','kalander','bernyce','julius'
+]);
+const HUMAN_CHAPTER_BODY_PHYSICS_ACTIONS=Object.freeze(['idle','attack','cast','hit','victory']);
 for(const character of KINGDOMS){
-  const review=HUMAN_CHAPTER_BODY_ATTACK_SHEETS[character.id];
-  if(review) character.sprites={...(character.sprites||{}),attack:{src:review.src,footY:review.footY,frameScales:review.frameScales,frames:6,rows:2,cols:3,duration:720,loop:false,format:'sheet'}};
+  if(!HUMAN_CHAPTER_BODY_PHYSICS_IDS.has(character.id)) continue;
+  const sprites={...(character.sprites||{})};
+  HUMAN_CHAPTER_BODY_PHYSICS_ACTIONS.forEach(action=>{
+    const existing={...(sprites[action]||{})};
+    delete existing.frameScales;
+    delete existing.footY;
+    sprites[action]={...existing,src:`assets/physics-v11/humanos/heroes/${character.id}/${action}/sheet-transparent.png`,format:'sheet'};
+  });
+  character.sprites=sprites;
 }
 
 /* Física das folhas: razão entre a altura média do corpo em idle e a altura
@@ -2107,7 +2107,7 @@ function normalizedActionDisplayScale(character,action,displayScale){
   /* As folhas corporais humanas foram normalizadas com âncora nos pés. Não
      aplique compensações legadas sobre elas: isso era a origem de personagens
      crescendo ao atacar no mobile. */
-  const physics=HUMAN_CHAPTER_BODY_ATTACK_IDS.has(character?.id)
+  const physics=HUMAN_CHAPTER_BODY_PHYSICS_IDS.has(character?.id)
     ? 1 : Number(ACTION_PHYSICS_SCALE[character?.id]?.[action]||1);
   const fixed=base*physics;
   return Number(fixed.toFixed(4));
@@ -2354,16 +2354,12 @@ function animateHeroAvatar(avatar,k,action='idle',options={}){
       const progress=Math.max(0,loop?(state.elapsed%duration)/duration:Math.min(.999999,state.elapsed/duration));
       const frame=Math.min(frames-1,Math.floor(progress*frames));
       const sourceFrame=frameOrder?frameOrder[frame]:frame;
-      const frameScale=Number(meta.frameScales?.[sourceFrame]||1);
-      const footY=Number(meta.footY??1), unitScale=Number(getComputedStyle(sheet).scale)||1;
-      const footCompensation=(frameScale-1)*(1-footY)*sheet.offsetHeight*unitScale;
       sheet.style.setProperty('--sprite-bg-x',positions[sourceFrame].x+'%');
       sheet.style.setProperty('--sprite-bg-y',positions[sourceFrame].y+'%');
-      /* A escala de cada quadro parte sempre do mesmo idle. O ajuste, quando
-         necessário, gira no ponto dos pés e compensa apenas uma pose muito
-         baixa/alta — jamais cria squash, salto ou mudança de porte. */
-      sheet.style.setProperty('--sprite-scale',String(Number((stableBaseScale*frameScale).toFixed(4))));
-      sheet.style.translate=`0 ${Number(footCompensation.toFixed(3))}px`;
+      /* A física é gravada na folha: trocar de pose não altera escala, origem
+         ou linha dos pés.  Só a arte e o VFX descrevem o movimento. */
+      sheet.style.setProperty('--sprite-scale',String(stableBaseScale));
+      sheet.style.translate='0 0';
       if(loop||state.elapsed<duration) avatar.__actionFrameRaf=requestAnimationFrame(tick);
       else{
         avatar.__actionFrameRaf=null;
@@ -2423,8 +2419,7 @@ function enemyAvatarOverlay(e){
 }
 
 function enemyFallbackMarkup(e, action='idle'){
-  /* Inimigos usam a orientação oposta dos heróis: sempre para a direita. */
-  const flip='';
+  const flip=enemySpriteFlip(e)?' flip':'';
   const actionClass=` enemy-motion-${action}`;
   return `<img class="enemy-sprite-image${flip}${e.etype==='soldado2'?' soldado2-clean':''}${actionClass}" src="${e.sprite}" alt="${L(e.name)}"${e.tint?` style="filter:${e.tint}"`:''}>${enemyAvatarOverlay(e)}`;
 }
@@ -2432,7 +2427,7 @@ function enemyFallbackMarkup(e, action='idle'){
 /* Idle humano enraizado: a folha 3x3 já foi registrada pela base e pelos pés.
    O runtime troca as poses completas, sem transform artificial no corpo. */
 function rootedEnemyIdleMarkup(e){
-  const flip='';
+  const flip=enemySpriteFlip(e)?' flip':'';
   const idle=ROOTED_HUMAN_IDLE_LIBRARY[enemyAnimationKey(e)];
   if(!idle) return enemyFallbackMarkup(e,'idle');
   return `<span class="enemy-rooted-idle-art${flip}" style="--rooted-idle-url:url('${idle.src}')" aria-hidden="true">
@@ -2483,7 +2478,7 @@ function animateEnemyAvatar(avatar,e,action='idle',options={}){
   if(character?.sprites?.idle?.src){
     avatar.classList.remove('enemy-static-avatar','enemy-rooted-idle');
     avatar.classList.add('enemy-avatar');
-    return animateHeroAvatar(avatar,character,action,{...options,enemy:true,enemyRuntime:Boolean(character.enemyRuntime),flip:false,overlayMarkup,
+    return animateHeroAvatar(avatar,character,action,{...options,enemy:true,enemyRuntime:Boolean(character.enemyRuntime),flip:enemySpriteFlip(e),overlayMarkup,
       returnToIdle:action==='idle'?undefined:()=>animateEnemyAvatar(avatar,e,'idle',{loop:true})});
   }
   stopHeroAnimation(avatar);
@@ -3763,7 +3758,7 @@ function renderEnemies(){
     const isBoss=enemySlots[idx]?.isBoss===true;
     unit.className = 'unit enemy-unit' + (e.hp<=0 ? ' dead' : (idx===activeIdx ? ' target' : '')) + (selectable && e.hp>0 ? ' selectable' : '') + (isBoss?' boss-unit':'') + (e.isCard?' enemy-card-unit':'') + (e.saCounter?' charging':'');
     unit.id = 'enemy-'+idx;
-    unit.dataset.facing='right';
+    unit.dataset.facing=enemyFacingDirection(e);
     const palette=enemyAuraPalette(e);
     unit.style.setProperty('--aura-inner',palette[0]);
     unit.style.setProperty('--aura-inner-light',palette[1]);
