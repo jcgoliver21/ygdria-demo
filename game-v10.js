@@ -2048,23 +2048,25 @@ const HERO_ACTIONS = Object.freeze({
    segunda camada: assim espada, arco e lança realmente se movem sem mexer em
    escala, sombra ou linha dos pés. Gareth e Julius usam a revisão R2. */
 const HUMAN_CHAPTER_BODY_ATTACK_SHEETS=Object.freeze({
-  gareth:'assets/characters/v11-review/gareth/attack-r2/processed/sheet-transparent.png',
-  cedric:'assets/characters/v11-review/cedric/attack/processed/sheet-transparent.png',
-  elizier:'assets/characters/v11-review/elizier/attack/processed/sheet-transparent.png',
-  roland:'assets/characters/v11-review/roland/attack/processed/sheet-transparent.png',
-  'berenice-jovem':'assets/characters/v11-review/berenice-jovem/attack/processed/sheet-transparent.png',
-  'galateia-jovem':'assets/characters/v11-review/galateia-jovem/attack/processed/sheet-transparent.png',
-  'adriel-jovem':'assets/characters/v11-review/adriel-jovem/attack/processed/sheet-transparent.png',
-  'acqua-jovem':'assets/characters/v11-review/acqua-jovem/attack/processed/sheet-transparent.png',
-  jules:'assets/characters/v11-review/jules/attack/processed/sheet-transparent.png',
-  kalander:'assets/characters/v11-review/kalander/attack/processed/sheet-transparent.png',
-  bernyce:'assets/characters/v11-review/bernyce/attack/processed/sheet-transparent.png',
-  julius:'assets/characters/v11-review/julius/attack-r2/processed/sheet-transparent.png'
+  gareth:{src:'assets/characters/v11-review/gareth/attack-r2/processed/sheet-transparent.png',footY:.92578125,frameScales:[1,1,1,1,1,1]},
+  cedric:{src:'assets/characters/v11-review/cedric/attack/processed/sheet-transparent.png',footY:.92578125,frameScales:[1,1,1,1,1,1]},
+  elizier:{src:'assets/characters/v11-review/elizier/attack/processed/sheet-transparent.png',footY:.92578125,frameScales:[1,1,1,1,1,1]},
+  /* A investida de Roland baixa o corpo no quadro central; estabilizar a
+     silhueta pelo pé evita que a lança faça a heroína parecer encolher. */
+  roland:{src:'assets/characters/v11-review/roland/attack/processed/sheet-transparent.png',footY:.92578125,frameScales:[.964,1,1.125,1,1.015,.951]},
+  'berenice-jovem':{src:'assets/characters/v11-review/berenice-jovem/attack/processed/sheet-transparent.png',footY:.92578125,frameScales:[.993,.986,1.038,1.038,1.007,.993]},
+  'galateia-jovem':{src:'assets/characters/v11-review/galateia-jovem/attack/processed/sheet-transparent.png',footY:.92578125,frameScales:[1,1,1,1,1,1]},
+  'adriel-jovem':{src:'assets/characters/v11-review/adriel-jovem/attack/processed/sheet-transparent.png',footY:.92578125,frameScales:[1,1,1,1,1,1]},
+  'acqua-jovem':{src:'assets/characters/v11-review/acqua-jovem/attack/processed/sheet-transparent.png',footY:.92578125,frameScales:[1.007,1,1,.967,.993,1]},
+  jules:{src:'assets/characters/v11-review/jules/attack/processed/sheet-transparent.png',footY:.92578125,frameScales:[1,1,1,1,1,1]},
+  kalander:{src:'assets/characters/v11-review/kalander/attack/processed/sheet-transparent.png',footY:.92578125,frameScales:[.98,1,1,1.007,1.028,1]},
+  bernyce:{src:'assets/characters/v11-review/bernyce/attack/processed/sheet-transparent.png',footY:.92578125,frameScales:[1,1,1,1,1,1]},
+  julius:{src:'assets/characters/v11-review/julius/attack-r2/processed/sheet-transparent.png',footY:.92578125,frameScales:[.983,1.018,.963,1.047,1.047,.983]}
 });
 const HUMAN_CHAPTER_BODY_ATTACK_IDS=new Set(Object.keys(HUMAN_CHAPTER_BODY_ATTACK_SHEETS));
 for(const character of KINGDOMS){
-  const src=HUMAN_CHAPTER_BODY_ATTACK_SHEETS[character.id];
-  if(src) character.sprites={...(character.sprites||{}),attack:{src,frames:6,rows:2,cols:3,duration:720,loop:false,format:'sheet'}};
+  const review=HUMAN_CHAPTER_BODY_ATTACK_SHEETS[character.id];
+  if(review) character.sprites={...(character.sprites||{}),attack:{src:review.src,footY:review.footY,frameScales:review.frameScales,frames:6,rows:2,cols:3,duration:720,loop:false,format:'sheet'}};
 }
 
 /* Física das folhas: razão entre a altura média do corpo em idle e a altura
@@ -2105,7 +2107,7 @@ function normalizedActionDisplayScale(character,action,displayScale){
   /* As folhas corporais humanas foram normalizadas com âncora nos pés. Não
      aplique compensações legadas sobre elas: isso era a origem de personagens
      crescendo ao atacar no mobile. */
-  const physics=HUMAN_CHAPTER_BODY_ATTACK_IDS.has(character?.id)&&action==='attack'
+  const physics=HUMAN_CHAPTER_BODY_ATTACK_IDS.has(character?.id)
     ? 1 : Number(ACTION_PHYSICS_SCALE[character?.id]?.[action]||1);
   const fixed=base*physics;
   return Number(fixed.toFixed(4));
@@ -2321,6 +2323,7 @@ function animateHeroAvatar(avatar,k,action='idle',options={}){
   avatar.classList.toggle('hero-action',requested!=='idle');
   const loop=options.loop??Boolean(meta.loop);
   const duration=Math.max(80,Number(meta.duration||520));
+  const stableBaseScale=normalizedActionDisplayScale(k,requested,meta.displayScale);
   const frameOrder=Array.isArray(meta.frameOrder)&&meta.frameOrder.length?meta.frameOrder:null;
   const frames=frameOrder?frameOrder.length:Math.max(1,Number(meta.frames||1));
   if(action==='defeat'&&reducedMotion&&spec?.format==='sheet'&&frames>1){
@@ -2351,8 +2354,16 @@ function animateHeroAvatar(avatar,k,action='idle',options={}){
       const progress=Math.max(0,loop?(state.elapsed%duration)/duration:Math.min(.999999,state.elapsed/duration));
       const frame=Math.min(frames-1,Math.floor(progress*frames));
       const sourceFrame=frameOrder?frameOrder[frame]:frame;
+      const frameScale=Number(meta.frameScales?.[sourceFrame]||1);
+      const footY=Number(meta.footY??1), unitScale=Number(getComputedStyle(sheet).scale)||1;
+      const footCompensation=(frameScale-1)*(1-footY)*sheet.offsetHeight*unitScale;
       sheet.style.setProperty('--sprite-bg-x',positions[sourceFrame].x+'%');
       sheet.style.setProperty('--sprite-bg-y',positions[sourceFrame].y+'%');
+      /* A escala de cada quadro parte sempre do mesmo idle. O ajuste, quando
+         necessário, gira no ponto dos pés e compensa apenas uma pose muito
+         baixa/alta — jamais cria squash, salto ou mudança de porte. */
+      sheet.style.setProperty('--sprite-scale',String(Number((stableBaseScale*frameScale).toFixed(4))));
+      sheet.style.translate=`0 ${Number(footCompensation.toFixed(3))}px`;
       if(loop||state.elapsed<duration) avatar.__actionFrameRaf=requestAnimationFrame(tick);
       else{
         avatar.__actionFrameRaf=null;

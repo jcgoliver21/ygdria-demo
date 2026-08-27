@@ -19,13 +19,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.8/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.8/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.8/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.8/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.8/);
-  assert.match(config,/version:'v11\.0\.8'/);
-  assert.match(sw,/12r-v11\.0\.8/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.9/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.9/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.9/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.9/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.9/);
+  assert.match(config,/version:'v11\.0\.9'/);
+  assert.match(sw,/12r-v11\.0\.9/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -101,7 +101,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.8/);
+  assert.match(sw,/12r-v11\.0\.9/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -266,7 +266,7 @@ check('v11 substitui formações antigas e mantém seleção direta dos heróis'
 check('v12 fixa a física de escala das ações e a leitura mobile',()=>{
   assert.match(game,/const ACTION_PHYSICS_SCALE=Object\.freeze\(/);
   assert.match(game,/fogo:\{attack:\.8082/);
-  assert.match(game,/HUMAN_CHAPTER_BODY_ATTACK_IDS\.has\(character\?\.id\)&&action==='attack'/);
+  assert.match(game,/HUMAN_CHAPTER_BODY_ATTACK_IDS\.has\(character\?\.id\)\n    \? 1/);
   assert.match(css,/body\.game-active \.party-row \.unit-stage\{height:106px!important\}/);
   assert.match(css,/body\.game-active \.enemy-row \.unit-stage\{height:102px!important\}/);
   assert.match(html,/class="game-logo" src="assets\/icon\.svg"/);
@@ -334,8 +334,13 @@ check('ataques humanos usam corpo, alvo de arena e trajetória física',()=>{
   for(const id of ids){
     assert.ok(game.includes(`assets/characters/v11-review/${id}/attack`),`folha corporal ausente: ${id}`);
   }
-  assert.match(game,/gareth:'assets\/characters\/v11-review\/gareth\/attack-r2\/processed\/sheet-transparent\.png'/);
-  assert.match(game,/julius:'assets\/characters\/v11-review\/julius\/attack-r2\/processed\/sheet-transparent\.png'/);
+  assert.match(game,/gareth:\{src:'assets\/characters\/v11-review\/gareth\/attack-r2\/processed\/sheet-transparent\.png',footY:\.92578125,frameScales:\[1,1,1,1,1,1\]/);
+  assert.match(game,/roland:\{src:'assets\/characters\/v11-review\/roland\/attack\/processed\/sheet-transparent\.png',footY:\.92578125,frameScales:\[\.964,1,1\.125,1,1\.015,\.951\]/);
+  assert.match(game,/julius:\{src:'assets\/characters\/v11-review\/julius\/attack-r2\/processed\/sheet-transparent\.png',footY:\.92578125,frameScales:\[\.983,1\.018,\.963,1\.047,1\.047,\.983\]/);
+  assert.match(game,/const stableBaseScale=normalizedActionDisplayScale\(k,requested,meta\.displayScale\)/);
+  assert.match(game,/sheet\.style\.setProperty\('--sprite-scale',String\(Number\(\(stableBaseScale\*frameScale\)\.toFixed\(4\)\)\)\)/);
+  assert.match(game,/const footCompensation=\(frameScale-1\)\*\(1-footY\)\*sheet\.offsetHeight\*unitScale/);
+  assert.match(game,/sheet\.style\.translate=`0 \$\{Number\(footCompensation\.toFixed\(3\)\)\}px`/);
   assert.match(game,/const enemyAvatar=document\.getElementById\('enemyPortrait-'\+idx\)\|\|enemyUnit/);
   assert.match(game,/function frontHeroAttackTarget\(source\)/);
   assert.match(game,/const playerTarget=frontHero\?\.avatar\|\|document\.getElementById\('playerHpAnchor'\)/);
@@ -432,7 +437,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.8');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.9');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);

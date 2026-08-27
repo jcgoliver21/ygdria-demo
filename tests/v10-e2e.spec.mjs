@@ -753,6 +753,44 @@ test('lâmina do Gareth cruza a arena sem projétil mágico ou variação de esc
   expect(errors).toEqual([]);
 });
 
+test('Julius, Gareth e Roland mantêm a estatura e o pé fixo durante cada ataque',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.evaluate(()=>{
+    worldRun={active:true,fase:5,nivel:1,storyMode:false};
+    chosenIds=['gareth','roland','julius','adriel-jovem'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    beginGame(0); skipStory();
+  });
+  const samples=await page.evaluate(async()=>{
+    const ids=['gareth','roland','julius'];
+    const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+    const frame=async(id,action,delay=0)=>{
+      const index=KINGDOMS.findIndex(hero=>hero.id===id);
+      playHeroAction(index,action); if(delay) await wait(delay);
+      const sheet=document.querySelector(`#party-${id}-avatar .hero-sprite-sheet`);
+      const rect=sheet.getBoundingClientRect(), scale=Number(sheet.style.getPropertyValue('--sprite-scale')||1);
+      const anchor=Number.parseFloat(getComputedStyle(sheet).transformOrigin.split(' ')[1]);
+      return {scale,anchor,foot:rect.top+rect.height*.92578125};
+    };
+    const result={};
+    for(const id of ids){
+      const idle=await frame(id,'idle');
+      const early=await frame(id,'attack',40);
+      const middle=await frame(id,'attack',360);
+      result[id]={idle,early,middle};
+    }
+    const juliusCast=await frame('julius','cast');
+    return {result,juliusCast};
+  });
+  for(const id of ['gareth','roland','julius']){
+    const row=samples.result[id];
+    expect(Math.abs(row.idle.foot-row.early.foot),JSON.stringify({id,phase:'early',row})).toBeLessThan(1.1);
+    expect(Math.abs(row.idle.foot-row.middle.foot),JSON.stringify({id,phase:'middle',row})).toBeLessThan(1.1);
+    expect(row.early.anchor).toBeGreaterThan(120);
+  }
+  expect(samples.juliusCast.scale).toBeCloseTo(samples.result.julius.idle.scale,4);
+  expect(errors).toEqual([]);
+});
+
 test('Elizier parte do arco e contra-ataques miram um herói corporal da frente',async({page})=>{
   const errors=await boot(page,'flow');
   await page.evaluate(()=>{
@@ -1570,7 +1608,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.8');
+  expect(registration.caches).toContain('12r-v11.0.9');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1730,7 +1768,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.8');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.9');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

@@ -29,7 +29,7 @@
     <div id="content"></div>
   </main>
   <div id="toast" class="toast" role="status"></div>
-  <script src="../v10-animations.js?v=11.0.8"></script>
+  <script src="../v10-animations.js?v=11.0.9"></script>
   <script>
     let cards=[
       ['luz','Galatéia'],['humanos','Berenice'],['agua','Maril'],['fogo','Lucius'],['natureza','Ninfa Queen'],['terra','Kallendra'],['areia','Rashid'],['sombras','Berenice das Sombras'],['raio','Mardogear'],['vento','Sophitia'],['chuvas','Regnar'],['gelo','Blizzardo'],['gareth','Gareth'],['cedric','Cedric'],['elizier','Elizier'],['roland','Roland'],['berenice-jovem','Berenice Jovem'],['galateia-jovem','Galatéia Jovem'],['adriel-jovem','Adriel Jovem'],['acqua-jovem','Acqua Jovem'],['jules','Jules'],['kalander','Kalander'],['bernyce','Bernyce'],['julius','Julius']
@@ -69,8 +69,9 @@
     const animationFields=[['idle','Idle'],['attack','Ataque'],['cast','Magia'],['hit','Dano'],['victory','Vitória'],['defeat','Derrota']];
     const poseLabels=Object.fromEntries(animationFields);
     const realmColors={luz:'#ffe0a1',humanos:'#ff9fce',agua:'#72c9ff',fogo:'#ff7b57',natureza:'#83d996',terra:'#d9b063',areia:'#f1cc79',sombras:'#a47bdf',raio:'#c68cff',vento:'#9deeff',chuvas:'#6aaeff',gelo:'#b6e8ff',gareth:'#e9c484',cedric:'#dca7ff',elizier:'#79dfff',roland:'#e8b07a','berenice-jovem':'#ffa4bd','galateia-jovem':'#fff4d4','adriel-jovem':'#f4d7a1','acqua-jovem':'#76baff',jules:'#d9a6e9',kalander:'#e9b975',bernyce:'#ff9dd4',julius:'#a890e4'};
+    const chapterAttackFrameScales={gareth:[1,1,1,1,1,1],cedric:[1,1,1,1,1,1],elizier:[1,1,1,1,1,1],roland:[.964,1,1.125,1,1.015,.951],'berenice-jovem':[.993,.986,1.038,1.038,1.007,.993],'galateia-jovem':[1,1,1,1,1,1],'adriel-jovem':[1,1,1,1,1,1],'acqua-jovem':[1.007,1,1,.967,.993,1],jules:[1,1,1,1,1,1],kalander:[.98,1,1,1.007,1.028,1],bernyce:[1,1,1,1,1,1],julius:[.983,1.018,.963,1.047,1.047,.983]};
     const humanReviewAttacks=Object.fromEntries([
-      ...['gareth','cedric','elizier','roland','berenice-jovem','galateia-jovem','adriel-jovem','acqua-jovem','jules','kalander','bernyce','julius'].map(id=>[id,{src:(id==='gareth'||id==='julius')?`../assets/characters/v11-review/${id}/attack-r2/processed/sheet-transparent.png`:`../assets/characters/v11-review/${id}/attack/processed/sheet-transparent.png`}]),
+      ...['gareth','cedric','elizier','roland','berenice-jovem','galateia-jovem','adriel-jovem','acqua-jovem','jules','kalander','bernyce','julius'].map(id=>[id,{src:(id==='gareth'||id==='julius')?`../assets/characters/v11-review/${id}/attack-r2/processed/sheet-transparent.png`:`../assets/characters/v11-review/${id}/attack/processed/sheet-transparent.png`,frameScales:chapterAttackFrameScales[id]}]),
       ...['capitao','soldado1','soldado2','sold-bib1','sold-bib2','sold-bib3','infantaria','cavalaria','comandante','trono','morto','vulto','slime-cereja','lobo-raivoso','espectro'].map(id=>[id,{src:`../assets/enemies/v11-review/${id}/attack/processed/sheet-transparent.png`}])
     ]);
     const humanRealmReviewIds=new Set(['gareth','cedric','elizier','roland','berenice-jovem','adriel-jovem','jules','kalander','bernyce']);
@@ -129,7 +130,7 @@
     function setSide(entry,role,side){choices[entry.id]={...(choices[entry.id]||{}),[role]:side};localStorage.setItem(storeKey,JSON.stringify(choices));renderChoices(entry,role);updateStatus()}
     function specFor(entry,action=previewAction){
       const chapterAttack=chapterMode&&action==='attack'?humanReviewAttacks[entry.id]:null;
-      if(chapterAttack)return {...chapterAttack,cols:3,rows:2,scale:1,order:[0,1,2,3,4,5],duration:720,native:true,reviewed:true};
+      if(chapterAttack)return {...chapterAttack,cols:3,rows:2,scale:1,footY:.92578125,order:[0,1,2,3,4,5],duration:720,native:true,reviewed:true};
       if(entry.kind==='card'){
         const reviewed=entry.id==='agua'&&action==='attack'?{src:'../assets/characters/runtime-v10/agua/attack-maril-trident-3x2.png',duration:720}:entry.id==='agua'&&action==='cast'?{src:'../assets/characters/runtime-v10/agua/cast-maril-bubbles-3x2.png',duration:840}:null;
         if(reviewed)return {...reviewed,cols:3,rows:2,scale:.9978,order:[0,1,2,3,4,5],native:true,reviewed:true};
@@ -172,7 +173,7 @@
       node.innerHTML=`<div class="entry-head"><b>${escape(entry.name)}</b><small>${escape(entry.id)}</small><em>${entry.kind==='card'?'carta':'cenário'}</em></div><div class="roles">${entry.kind==='card'?roleMarkup(entry,'playable'):''}${roleMarkup(entry,'enemy')}</div><details class="animation-notes"><summary>Escrever ajustes de animação</summary><div class="note-grid">${fields}</div><div class="generation-actions"><button type="button" data-generate>Salvar as 6 instruções</button><span class="generation-state">${generatedState(entry)}${chapterMode&&humanReviewAttacks[entry.id]?'':' · folha corporal nova necessária para movimentos reais'}</span></div></details>`;
       const spec=specFor(entry);node.querySelectorAll('.role').forEach(role=>{
         const roleName=role.dataset.role,sprite=role.querySelector('.sprite'),fx=role.querySelector('.fx-layer');sprite.style.backgroundImage=`url('${spec.src}')`;sprite.style.backgroundSize=`${spec.cols*100}% ${spec.rows*100}%`;sprite.style.setProperty('--art-scale',spec.scale);sprite.dataset.entry=entry.id;sprite.dataset.role=roleName;sprite.dataset.cols=spec.cols;sprite.dataset.rows=spec.rows;sprite.dataset.duration=spec.duration;sprite.dataset.order=JSON.stringify(spec.order);sprite.__entry=entry;sprites.push(sprite);fx.__entry=entry;fx.__role=roleName;fxLayers.push(fx);applyFxLayer(fx);
-        role.querySelectorAll('[data-side]').forEach(button=>button.addEventListener('click',()=>setSide(entry,roleName,button.dataset.side)));
+        sprite.dataset.baseScale=spec.scale;sprite.dataset.frameScales=JSON.stringify(spec.frameScales||[]);sprite.dataset.frameFootY=String(spec.footY??1);role.querySelectorAll('[data-side]').forEach(button=>button.addEventListener('click',()=>setSide(entry,roleName,button.dataset.side)));
       });node.querySelector('[data-generate]').addEventListener('click',()=>generateEntry(entry));node.querySelectorAll('.sprite').forEach(applyGeneratedPreview);return node;
     }
     function renderChoices(entry,role){
@@ -195,7 +196,7 @@
     document.getElementById('copy').addEventListener('click',async()=>{const lines=['# Decisões de orientação e animação — Ygdria','','## Personagens-carta'];cards.forEach(entry=>{lines.push(`- ${entry.name}: jogável = ${getSide(entry,'playable')}; inimigo = ${getSide(entry,'enemy')}`);animationFields.forEach(([action,label])=>{const note=String(animationNotes[entry.id]?.[action]||'').trim();if(note)lines.push(`  - ${label}: ${note}`);});});lines.push('','## Inimigos de cenário e invocações');sceneEnemies.forEach(entry=>{lines.push(`- ${entry.name}: inimigo = ${getSide(entry,'enemy')}`);animationFields.forEach(([action,label])=>{const note=String(animationNotes[entry.id]?.[action]||'').trim();if(note)lines.push(`  - ${label}: ${note}`);});});try{await navigator.clipboard.writeText(lines.join('\n'));showToast('Decisões e instruções copiadas.');}catch(_){showToast('Selecione e copie o resumo manualmente.');}});
     function renderFxDirection(fx,side){if(!fx)return;fx.classList.toggle('face-left',side==='left');fx.classList.toggle('face-right',side==='right')}
     function applyFxLayer(fx){const spec=fxSpecFor(fx.__entry);if(!spec){fx.className='fx-layer';fx.style.backgroundImage='none';return}fx.className=`fx-layer active ${spec.kind}`;fx.style.backgroundImage=`url('${spec.src}')`;fx.style.backgroundSize=`${spec.cols*100}% ${spec.rows*100}%`;fx.dataset.cols=spec.cols;fx.dataset.rows=spec.rows;fx.dataset.duration=spec.duration;fx.dataset.order=JSON.stringify(spec.order);renderFxDirection(fx,getSide(fx.__entry,fx.__role))}
-    function animateLayer(layer,now){const cols=Number(layer.dataset.cols),rows=Number(layer.dataset.rows),order=JSON.parse(layer.dataset.order||'[]'),frames=order.length||cols*rows,duration=Number(layer.dataset.duration),frame=order[Math.floor(now/(duration/frames))%frames]??0,col=frame%cols,row=Math.floor(frame/cols);layer.style.backgroundPosition=`${cols===1?0:col*100/(cols-1)}% ${rows===1?0:row*100/(rows-1)}%`}
+    function animateLayer(layer,now){const cols=Number(layer.dataset.cols),rows=Number(layer.dataset.rows),order=JSON.parse(layer.dataset.order||'[]'),frames=order.length||cols*rows,duration=Number(layer.dataset.duration),frame=order[Math.floor(now/(duration/frames))%frames]??0,col=frame%cols,row=Math.floor(frame/cols);layer.style.backgroundPosition=`${cols===1?0:col*100/(cols-1)}% ${rows===1?0:row*100/(rows-1)}%`;if(layer.dataset.frameScales){const scales=JSON.parse(layer.dataset.frameScales||'[]'),base=Number(layer.dataset.baseScale||1),calibration=Number(scales[frame]||1),footY=Number(layer.dataset.frameFootY||1),shift=(calibration-1)*(1-footY)*layer.offsetHeight;layer.style.setProperty('--art-scale',String(Number((base*calibration).toFixed(4))));layer.style.translate=`0 ${Number(shift.toFixed(3))}px`}}
     function animate(now){sprites.forEach(sprite=>animateLayer(sprite,now));fxLayers.filter(fx=>fx.classList.contains('active')).forEach(fx=>animateLayer(fx,now));requestAnimationFrame(animate)}requestAnimationFrame(animate);
   </script>
 </body>
