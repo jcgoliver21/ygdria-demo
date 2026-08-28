@@ -2057,6 +2057,12 @@ const HUMAN_CHAPTER_BODY_PHYSICS_IDS=new Set([
   'adriel-jovem','acqua-jovem','jules','kalander','bernyce','julius'
 ]);
 const HUMAN_CHAPTER_BODY_PHYSICS_ACTIONS=Object.freeze(['idle','attack','cast','hit','victory']);
+function humanBodyPhysicsSource(id,action){
+  /* Cedric recebeu uma pose de ataque específica; a folha genérica não pode
+     voltar a substituí-la no combate real. */
+  const resolvedAction=id==='cedric'&&action==='attack'?'attack-r4':action;
+  return `assets/physics-v11/humanos/heroes/${id}/${resolvedAction}/sheet-transparent.png`;
+}
 for(const character of KINGDOMS){
   if(!HUMAN_CHAPTER_BODY_PHYSICS_IDS.has(character.id)) continue;
   const sprites={...(character.sprites||{})};
@@ -2064,7 +2070,7 @@ for(const character of KINGDOMS){
     const existing={...(sprites[action]||{})};
     delete existing.frameScales;
     delete existing.footY;
-    sprites[action]={...existing,src:`assets/physics-v11/humanos/heroes/${character.id}/${action}/sheet-transparent.png`,format:'sheet'};
+    sprites[action]={...existing,src:humanBodyPhysicsSource(character.id,action),format:'sheet'};
   });
   character.sprites=sprites;
 }
@@ -2114,6 +2120,9 @@ function normalizedActionDisplayScale(character,action,displayScale){
 }
 const MAX_ACTIVE_FX = 28;
 const failedSpriteAssets = new Set();
+/* Uma troca de background antes da decodificação é a causa clássica de quadro
+   vazio/piscar no WebView móvel. Ação só substitui o idle depois deste selo. */
+const readySpriteAssets = new Set();
 let spriteFallbackRenderTimer=0;
 function markSpriteFailed(src){
   if(!src) return;
@@ -2394,7 +2403,25 @@ function playHeroAction(idx, action='attack'){
   /* A comemoração precisa continuar visível enquanto o relatório está aberto.
      O estado de derrota dos inimigos continua segurando o último frame; aqui
      apenas a pose positiva dos heróis fica em loop. */
-  animateHeroAvatar(avatar,k,action,{loop:action==='victory',hold:false});
+  const spec=k.sprites?.[action];
+  const request=String((Number(avatar.dataset.actionRequest||0)||0)+1);
+  avatar.dataset.actionRequest=request;
+  const commit=()=>{
+    if(!avatar.isConnected||avatar.dataset.actionRequest!==request) return;
+    animateHeroAvatar(avatar,k,action,{loop:action==='victory',hold:false});
+  };
+  /* Mantém o corpo idle visível até a folha de ação estar pronta. O VFX segue
+     usando o avatar já presente como origem, sem quadro preto entre as poses. */
+  /* Vitória e derrota são poses finais: precisam aparecer no mesmo instante
+     para não atrasar uma cena concluída ou uma queda já decidida. */
+  const terminalPose=action==='victory'||action==='defeat';
+  if(spec?.src&&!terminalPose&&!readySpriteAssets.has(spec.src)){
+    preloadSpriteSource(spec.src).then(commit).catch(()=>{
+      if(avatar.dataset.actionRequest===request) avatar.dataset.actionRequest='';
+    });
+    return;
+  }
+  commit();
 }
 
 function playHeroDefeatPoses(){
@@ -6146,15 +6173,16 @@ async function flyEnergyToHero(colorIdx){
 function triggerHeroAttackAnim(colorIdx){
   const k = KINGDOMS[colorIdx];
   const unit = document.getElementById('party-'+k.id);
-  if(unit){ unit.classList.remove('attacking'); void unit.offsetWidth; unit.classList.add('attacking'); }
+  /* A folha corporal já tem antecipação e golpe. Não aplicar uma segunda
+     animação no contêiner: em mobile ela concorria com a troca de frames. */
+  unit?.classList.remove('attacking','casting');
   playHeroAction(colorIdx,'attack');
 }
 
 function triggerHeroCastAnim(colorIdx){
   const k = KINGDOMS[colorIdx];
   const unit = document.getElementById('party-'+k.id);
-  if(unit){ unit.classList.remove('casting'); void unit.offsetWidth; unit.classList.add('casting');
-    scheduleCombat(()=>unit.classList.remove('casting'),950); }
+  unit?.classList.remove('attacking','casting');
   playHeroAction(colorIdx,'cast');
 }
 
@@ -8141,11 +8169,18 @@ function preloadHeroActions(indices=ACTIVE){
      precisa entrar no lote crítico junto do idle; deixá-la para um
      requestIdleCallback fazia o primeiro contra-ataque trocar a textura
      ainda não decodificada durante a composição do palco. */
-  const allowedActions=economy?['idle','hit']:Object.keys(HERO_ACTIONS);
-  const sources=[...new Set(indices.flatMap(i=>allowedActions.map(action=>KINGDOMS[i]?.sprites?.[action]?.src)).filter(Boolean))];
+  const allowedActions=economy?['idle','hit','attack']:Object.keys(HERO_ACTIONS);
+  const sources=[...new Set([
+    ...indices.flatMap(i=>allowedActions.map(action=>KINGDOMS[i]?.sprites?.[action]?.src)).filter(Boolean),
+    /* A assinatura do golpe é parte da primeira ação, não um enfeite tardio. */
+    ...indices.map(i=>HUMAN_CHAPTER_ATTACK_SHEETS[KINGDOMS[i]?.id]).filter(Boolean)
+  ])];
   const load=src=>preloadSpriteSource(src).then(()=>true).catch(()=>{ markSpriteFailed(src); return false; });
-  const criticalActions=mobileViewport?['idle','hit']:['idle'];
-  const criticalSources=new Set(indices.flatMap(i=>criticalActions.map(action=>KINGDOMS[i]?.sprites?.[action]?.src)).filter(Boolean));
+  const criticalActions=mobileViewport?['idle','attack','cast','hit']:['idle','attack','cast'];
+  const criticalSources=new Set([
+    ...indices.flatMap(i=>criticalActions.map(action=>KINGDOMS[i]?.sprites?.[action]?.src)).filter(Boolean),
+    ...indices.map(i=>HUMAN_CHAPTER_ATTACK_SHEETS[KINGDOMS[i]?.id]).filter(Boolean)
+  ]);
   return Promise.allSettled(sources.filter(src=>criticalSources.has(src)).map(load)).then(()=>{
     if(economy) return;
     const requestIdle=window.requestIdleCallback||((cb)=>setTimeout(cb,700));
@@ -8164,7 +8199,7 @@ function preloadSpriteSource(src){
          the bitmap to the compositor after onload. Await decode when it is
          available so a hit-sheet swap never exposes an empty frame. */
       const decoded=(matchMedia('(max-width:700px)').matches||navigator.maxTouchPoints>0)&&typeof image.decode==='function'?image.decode().catch(()=>{}):Promise.resolve();
-      decoded.then(()=>resolve(src));
+      decoded.then(()=>{ readySpriteAssets.add(src); resolve(src); });
     };
     image.onerror=()=>{ markSpriteFailed(src); spritePreloadCache.delete(src); reject(new Error('Falha ao carregar '+src)); };
     image.decoding='async';

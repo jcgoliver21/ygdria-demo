@@ -19,13 +19,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.11/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.11/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.11/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.11/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.11/);
-  assert.match(config,/version:'v11\.0\.11'/);
-  assert.match(sw,/12r-v11\.0\.11/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.12/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.12/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.12/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.12/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.12/);
+  assert.match(config,/version:'v11\.0\.12'/);
+  assert.match(sw,/12r-v11\.0\.12/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -101,7 +101,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.11/);
+  assert.match(sw,/12r-v11\.0\.12/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -332,7 +332,8 @@ check('v11 usa folhas reais no repouso, VFX separado e fallback de derrota sem g
 
 check('ataques humanos usam corpo normalizado, alvo de arena e trajetória física',()=>{
   const ids=['gareth','cedric','elizier','roland','berenice-jovem','galateia-jovem','adriel-jovem','acqua-jovem','jules','kalander','bernyce','julius'];
-  assert.match(game,/assets\/physics-v11\/humanos\/heroes\/\$\{character\.id\}\/\$\{action\}\/sheet-transparent\.png/);
+  assert.match(game,/function humanBodyPhysicsSource\(id,action\)/);
+  assert.match(game,/id==='cedric'&&action==='attack'\?'attack-r4':action/);
   for(const id of ids) assert.ok(fs.existsSync(path.join(root,'assets','physics-v11','humanos','heroes',id,'attack','sheet-transparent.png')),`folha física ausente: ${id}`);
   assert.match(game,/HUMAN_CHAPTER_BODY_PHYSICS_ACTIONS=Object\.freeze\(\['idle','attack','cast','hit','victory'\]\)/);
   assert.match(game,/assets\/physics-v11\/humanos\/enemies\/slime-cereja\/actions\/sheet-transparent\.png/);
@@ -437,7 +438,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.11');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.12');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);

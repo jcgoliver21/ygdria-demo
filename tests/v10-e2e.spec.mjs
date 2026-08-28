@@ -622,14 +622,16 @@ test('inimigos humanos mantêm a escala entre idle enraizado e ação',async({pa
 test('escala do porte permanece fixa e folhas de ação preservam a correção corporal',async({page})=>{
   const errors=await boot(page,'flow');
   await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
-  const result=await page.evaluate(()=>{
+  const result=await page.evaluate(async()=>{
     const samples=[];
     for(const heroIdx of ACTIVE){
       const avatar=document.getElementById('party-'+KINGDOMS[heroIdx].id+'-avatar');
       const actions=['idle','attack','cast','hit','victory'];
       const scales=[];
       for(const action of actions){
+        await preloadSpriteSource(KINGDOMS[heroIdx].sprites[action].src);
         window.__12rQA.playHeroAction(heroIdx,action);
+        await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
         const sheet=avatar?.querySelector('.hero-sprite-sheet');
         scales.push({action,actionScale:sheet?.style.getPropertyValue('--sprite-scale')||'',unitScale:getComputedStyle(sheet).scale,filter:getComputedStyle(avatar).filter});
       }
@@ -860,6 +862,59 @@ test('Elizier parte do arco e contra-ataques miram um herói corporal da frente'
   expect(targeting.enemyOrigin).toBe('enemyPortrait-0');
   expect(targeting.enemyTarget).toBe(targeting.computedFront);
   expect(targeting.pointsToHud).toBe(false);
+  expect(errors).toEqual([]);
+});
+
+test('auditoria mobile: os doze humanos atacam o alvo sem piscar, sumir ou trocar de corpo',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.setViewportSize({width:390,height:844});
+  const audit=await page.evaluate(async()=>{
+    const ids=['gareth','cedric','elizier','roland','berenice-jovem','galateia-jovem','adriel-jovem','acqua-jovem','jules','kalander','bernyce','julius'];
+    const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+    const rows=[];
+    for(let offset=0;offset<ids.length;offset+=4){
+      const batch=ids.slice(offset,offset+4);
+      chosenIds=batch.map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+      worldRun={active:true,fase:5,nivel:1,storyMode:false};
+      beginGame(0); skipStory();
+      await preloadHeroActions(ACTIVE);
+      for(const id of batch){
+        const index=KINGDOMS.findIndex(hero=>hero.id===id);
+        const avatar=document.getElementById(`party-${id}-avatar`);
+        const target=document.getElementById('enemyPortrait-0');
+        const idle=avatar.querySelector('.hero-sprite-sheet').getBoundingClientRect();
+        triggerHeroAttackAnim(index);
+        applyDamageToEnemy(1,index,0);
+        await wait(130);
+        const sheet=avatar.querySelector('.hero-sprite-sheet');
+        const fx=[...document.querySelectorAll('.fx-attack-signature')].at(-1);
+        const action=sheet.getBoundingClientRect();
+        const expectedDirection=Math.sign((target.getBoundingClientRect().left+target.getBoundingClientRect().width*.5)-(avatar.getBoundingClientRect().left+avatar.getBoundingClientRect().width*.5));
+        rows.push({
+          id,action:avatar.dataset.action,src:sheet.style.getPropertyValue('--sprite-url'),
+          opacity:Number(getComputedStyle(avatar).opacity),visibility:getComputedStyle(avatar).visibility,
+          heightDelta:Math.abs(action.height-idle.height),footDelta:Math.abs(action.bottom-idle.bottom),
+          target:fx?.dataset.targetAnchor,source:fx?.dataset.sourceAnchor,
+          vector:Number.parseFloat(fx?.style.getPropertyValue('--attack-dx')||'0'),expectedDirection
+        });
+        await wait(760);
+      }
+    }
+    return rows;
+  });
+  expect(audit).toHaveLength(12);
+  for(const row of audit){
+    expect(row.action,JSON.stringify(row)).toBe('attack');
+    expect(row.src,JSON.stringify(row)).toContain(`assets/physics-v11/humanos/heroes/${row.id}/`);
+    if(row.id==='cedric') expect(row.src).toContain('/attack-r4/');
+    expect(row.opacity,JSON.stringify(row)).toBeGreaterThan(.98);
+    expect(row.visibility,JSON.stringify(row)).toBe('visible');
+    expect(row.heightDelta,JSON.stringify(row)).toBeLessThan(1.1);
+    expect(row.footDelta,JSON.stringify(row)).toBeLessThan(1.1);
+    expect(row.source,JSON.stringify(row)).toBe(`party-${row.id}-avatar`);
+    expect(row.target,JSON.stringify(row)).toBe('enemyPortrait-0');
+    expect(Math.sign(row.vector),JSON.stringify(row)).toBe(row.expectedDirection);
+  }
   expect(errors).toEqual([]);
 });
 
@@ -1643,7 +1698,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.11');
+  expect(registration.caches).toContain('12r-v11.0.12');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1803,7 +1858,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.11');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.12');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 
