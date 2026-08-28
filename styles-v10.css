@@ -645,6 +645,11 @@
      para que somente a luz e a água sejam compostas sobre a arena. */
   .maril-water-bubble-sheet{left:var(--sx);top:var(--sy);width:132px;height:148px;transform:translate(-44%,-83%);background-image:url('assets/characters/runtime-v10/agua/cast-water-bubbles-3x2.png');background-repeat:no-repeat;background-size:300% 200%;background-position:0 0;mix-blend-mode:screen;filter:drop-shadow(0 0 7px rgba(86,220,255,.86));animation:marilWaterBubbleFrames .84s steps(1,end) both}
   @keyframes marilWaterBubbleFrames{0%,13%{opacity:0;background-position:0 0}14%,28%{opacity:1;background-position:50% 0}29%,43%{background-position:100% 0}44%,61%{background-position:0 100%}62%,79%{background-position:50% 100%}80%,100%{opacity:0;background-position:100% 100%}}
+  /* Reino dos Humanos: o mesmo sprite de magia percorre concentração, fluxo
+     pelo corpo e descarga. As variáveis são distâncias reais entre o lançador
+     e o alvo, portanto a emanação não nasce nos pés nem para no tabuleiro. */
+  .human-magic-fx-sheet{left:var(--sx);top:var(--sy);width:164px;height:154px;transform:translate(-48%,-70%);background-repeat:no-repeat;background-size:300% 200%;background-position:0 0;mix-blend-mode:screen;filter:drop-shadow(0 0 9px rgba(255,143,194,.76));will-change:transform,opacity,background-position;animation:humanMagicFrames .84s steps(1,end) both}
+  @keyframes humanMagicFrames{0%,8%{opacity:0;background-position:0 0;transform:translate(-48%,-70%)}14%,25%{opacity:1;background-position:50% 0;transform:translate(-48%,-70%)}26%,40%{background-position:100% 0;transform:translate(-48%,-70%)}41%,57%{background-position:0 100%;transform:translate(calc(-48% + var(--magic-half-x)),calc(-70% + var(--magic-half-y)))}58%,76%{opacity:1;background-position:50% 100%;transform:translate(calc(-48% + var(--ddx)),calc(-70% + var(--ddy)))}77%,100%{opacity:0;background-position:100% 100%;transform:translate(calc(-48% + var(--ddx)),calc(-70% + var(--ddy)))}}
   /* LUZ: feixe divino descendo + raios girantes */
   .sc-lightbeam{ left:calc(var(--tx) - 17px); top:0; width:34px; height:calc(var(--ty) + 14px);
     transform-origin:50% 0%;

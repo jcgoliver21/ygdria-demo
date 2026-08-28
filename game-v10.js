@@ -6181,6 +6181,23 @@ const SPECIAL_ABILITY_BUILDERS={
   laminaDimensional(el){ el.innerHTML='<div class="sc-void-vortex"></div><div class="sc-shadow-claw" style="--d:.18s"></div><div class="sc-shadow-claw" style="--d:.36s"></div><div class="sc-shadow-claw" style="--d:.54s"></div>'; }
 };
 
+/* Magias das cartas do Reino dos Humanos: a folha corporal continua sendo a
+   animação do personagem, enquanto este segundo plano descreve três etapas
+   legíveis, concentração na origem, energia canalizada e emanação até o alvo.
+   Nunca reutiliza o VFX do ataque e não altera a escala do sprite. */
+const HUMAN_MAGIC_FX_SHEETS=Object.freeze(Object.fromEntries([
+  'gareth','cedric','elizier','roland','berenice-jovem','galateia-jovem',
+  'adriel-jovem','acqua-jovem','jules','kalander','bernyce','julius'
+].map(id=>[id,`assets/vfx/v12-magic/humanos/${id}/cast/processed-v2/sheet-transparent.png`])));
+function buildHumanMagicFx(el,characterId){
+  const src=HUMAN_MAGIC_FX_SHEETS[characterId];
+  if(!src) return false;
+  el.innerHTML='<div class="human-magic-fx-sheet" aria-hidden="true"></div>';
+  const sheet=el.firstElementChild;
+  sheet.style.backgroundImage=`url('${src}')`;
+  return true;
+}
+
 function launchSpecialFx(idx,a){
   if(!particlesEnabled) return;
   const k = KINGDOMS[idx];
@@ -6215,7 +6232,9 @@ function launchSpecialFx(idx,a){
     castEl.style.setProperty('--sx',sx+'px'); castEl.style.setProperty('--sy',sy+'px');
     castEl.style.setProperty('--tx',tx+'px'); castEl.style.setProperty('--ty',ty+'px');
     castEl.style.setProperty('--ddx',(tx-sx)+'px'); castEl.style.setProperty('--ddy',(ty-sy)+'px');
-    builder(castEl);
+    castEl.style.setProperty('--magic-half-x',((tx-sx)*.46)+'px');
+    castEl.style.setProperty('--magic-half-y',((ty-sy)*.46)+'px');
+    if(!buildHumanMagicFx(castEl,k.id)) builder(castEl);
     layer.append(castEl,ring);
   }else{
     castEl=document.createElement('div');

@@ -19,13 +19,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.10/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.10/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.10/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.10/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.10/);
-  assert.match(config,/version:'v11\.0\.10'/);
-  assert.match(sw,/12r-v11\.0\.10/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.11/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.11/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.11/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.11/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.11/);
+  assert.match(config,/version:'v11\.0\.11'/);
+  assert.match(sw,/12r-v11\.0\.11/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -101,7 +101,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.10/);
+  assert.match(sw,/12r-v11\.0\.11/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -437,7 +437,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.10');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.11');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
@@ -465,6 +465,17 @@ check('motor v10 cobre e conecta seis movimentos',()=>{
   assert.match(game,/ACTIVE\.forEach\(heroIdx=>playHeroAction\(heroIdx,'victory'\)\)/);
   assert.match(game,/playHeroDefeatPoses\(\)/);
   assert.match(animations,/YGDRIA_V10_ANIMATIONS/);
+});
+
+check('magias humanas usam VFX próprios em três etapas',()=>{
+  assert.match(game,/const HUMAN_MAGIC_FX_SHEETS=Object\.freeze/);
+  assert.match(game,/function buildHumanMagicFx\(el,characterId\)/);
+  for(const id of ['gareth','cedric','elizier','roland','berenice-jovem','galateia-jovem','adriel-jovem','acqua-jovem','jules','kalander','bernyce','julius']){
+    assert.match(game,new RegExp(`'${id}'`),`${id}: VFX de magia não mapeado`);
+  }
+  assert.match(game,/if\(!buildHumanMagicFx\(castEl,k\.id\)\) builder\(castEl\)/);
+  assert.match(css,/\.human-magic-fx-sheet\{/);
+  assert.match(css,/@keyframes humanMagicFrames/);
 });
 
 check('pausa, reinício e revive não deixam callbacks órfãos',()=>{

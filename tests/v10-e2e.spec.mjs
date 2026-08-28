@@ -753,6 +753,41 @@ test('lâmina do Gareth cruza a arena sem projétil mágico ou variação de esc
   expect(errors).toEqual([]);
 });
 
+test('magia humana concentra no herói, atravessa a arena e não altera a escala corporal',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.evaluate(()=>{
+    worldRun={active:true,fase:5,nivel:1,storyMode:false};
+    chosenIds=['gareth','roland','julius','adriel-jovem'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    beginGame(0); skipStory();
+  });
+  const spell=await page.evaluate(async()=>{
+    const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+    const index=KINGDOMS.findIndex(hero=>hero.id==='gareth');
+    const source=document.getElementById('party-gareth-avatar');
+    const target=document.getElementById('enemy-0');
+    const idleScale=getComputedStyle(source.querySelector('.hero-sprite-sheet')).getPropertyValue('--sprite-scale').trim();
+    triggerHeroCastAnim(index);
+    launchSpecialFx(index,{tipo:'damage',kind:'active'});
+    await wait(180);
+    const sheet=document.querySelector('.human-magic-fx-sheet');
+    const special=sheet?.closest('.special-cast');
+    const castingScale=getComputedStyle(source.querySelector('.hero-sprite-sheet')).getPropertyValue('--sprite-scale').trim();
+    const active={
+      sheet:Boolean(sheet),src:getComputedStyle(sheet||document.body).backgroundImage,
+      source:Boolean(source),target:Boolean(target),action:source.dataset.action,
+      originX:special?.style.getPropertyValue('--sx'),targetX:special?.style.getPropertyValue('--tx'),
+      travelX:special?.style.getPropertyValue('--ddx'),idleScale,castingScale
+    };
+    await wait(1780);
+    return {...active,returned:source.dataset.action,remaining:document.querySelectorAll('.human-magic-fx-sheet').length};
+  });
+  expect(spell).toMatchObject({sheet:true,source:true,target:true,action:'cast',returned:'idle',remaining:0});
+  expect(spell.src).toContain('/assets/vfx/v12-magic/humanos/gareth/cast/processed-v2/sheet-transparent.png');
+  expect(Number.parseFloat(spell.travelX)).toBeGreaterThan(0);
+  expect(spell.castingScale).toBe(spell.idleScale);
+  expect(errors).toEqual([]);
+});
+
 test('Julius, Gareth e Roland mantêm a estatura e o pé fixo durante cada ataque',async({page})=>{
   const errors=await boot(page,'flow');
   await page.evaluate(()=>{
@@ -1608,7 +1643,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.10');
+  expect(registration.caches).toContain('12r-v11.0.11');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1768,7 +1803,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.10');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.11');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

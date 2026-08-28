@@ -138,6 +138,23 @@ for(const id of enemySheets){
 }
 assert.ok(enemyBytes<=2*1024*1024,'folhas de inimigos excederam orçamento de 2 MiB');
 
+/* Magias humanas v12 são uma camada exclusiva: devem permanecer em PNG RGBA,
+   ter as seis etapas legíveis e nunca encostar na borda do seu próprio quadro.
+   Isso impede o retorno de efeitos do ataque reutilizados ou cortados. */
+const humanMagicIds=['gareth','cedric','elizier','roland','berenice-jovem','galateia-jovem','adriel-jovem','acqua-jovem','jules','kalander','bernyce','julius'];
+let humanMagicBytes=0;
+for(const id of humanMagicIds){
+  const file=path.join(root,'assets','vfx','v12-magic','humanos',id,'cast','processed-v2','sheet-transparent.png');
+  assert.ok(fs.existsSync(file),`${id}: VFX de magia v12 ausente`);
+  const bytes=fs.readFileSync(file);
+  assert.equal(bytes[25],6,`${id}: VFX de magia precisa preservar alfa`);
+  const decoded=decodeRgba(bytes);
+  assert.deepEqual([decoded.width,decoded.height],[768,512],`${id}: VFX de magia precisa ser uma grade 3×2 de 256px`);
+  verifyCells(id,'magic-v12',decoded,6,3,2);
+  humanMagicBytes+=bytes.length;
+}
+assert.ok(humanMagicBytes<=5*1024*1024,'VFX de magia humanos excederam orçamento de 5 MiB');
+
 /* As ações abaixo têm VFX amplos, porém o corpo precisa preservar a mesma
    estatura que o Idle. O render aplica um multiplicador de escala ancorado
    nos pés; esta verificação impede a regressão vista na vitrine do catálogo. */
@@ -161,4 +178,4 @@ for(const [characterId,actionsToLock] of Object.entries(crossActionStature)){
   }
 }
 
-console.log(`v10 assets: ${sheets}/120 folhas válidas, ${(computedBytes/1024/1024).toFixed(2)} MiB + ${(enemyBytes/1024/1024).toFixed(2)} MiB de inimigos`);
+console.log(`v10 assets: ${sheets}/120 folhas válidas, ${(computedBytes/1024/1024).toFixed(2)} MiB + ${(enemyBytes/1024/1024).toFixed(2)} MiB de inimigos + ${(humanMagicBytes/1024/1024).toFixed(2)} MiB de VFX humanos`);
