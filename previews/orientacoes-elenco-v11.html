@@ -71,7 +71,7 @@
     let choices={...approvedChoices}; try{choices={...choices,...JSON.parse(localStorage.getItem(storeKey)||'{}')}}catch(_){choices={...approvedChoices}}
     let animationNotes=JSON.parse(JSON.stringify(chapterMode?humanChapterApprovedNotes:approvedAnimationNotes)); try{const savedNotes=JSON.parse(localStorage.getItem(notesKey)||'{}');animationNotes=chapterMode?{...animationNotes,...savedNotes}:{...animationNotes,...savedNotes,agua:{...(approvedAnimationNotes.agua||{}),...(savedNotes.agua||{})}}}catch(_){}
     let generatedPreviews={}; try{generatedPreviews=JSON.parse(localStorage.getItem(previewKey)||'{}')}catch(_){generatedPreviews={}}
-    const reviewRevision='R15 · AURAS ASSINATURA';
+    const reviewRevision='R16 · AURAS HUMANAS E SOMBRIAS';
     if(chapterMode){document.title='Ygdria · Vitrine do Reino dos Humanos';document.querySelector('h1').childNodes[0].nodeValue='Vitrine de animações — Reino dos Humanos ';document.querySelector('.revision').textContent=reviewRevision;document.querySelector('header p').innerHTML='Apenas personagens, inimigos e feras que aparecem nas dez fases do <b>Reino dos Humanos</b>. Selecione alguém e teste o mesmo movimento como <b>herói</b> e como <b>inimigo</b> no cenário da primeira fase.';document.querySelector('.note').innerHTML='Toque no nome para levar o personagem ao laboratório. Use os controles logo abaixo de cada personagem no cenário: <b>I</b> idle, <b>A</b> ataque, <b>M</b> conjuração, <b>D</b> dano, <b>V</b> vitória e <b>R</b> derrota. A conjuração concentra a aura do reino no próprio personagem.';}
     const content=document.getElementById('content'),status=document.getElementById('status'),toast=document.getElementById('toast'),sprites=[],fxLayers=[],labSprites=[],labFxLayers=[],labImpacts=[],labAuras=[];const readySpriteAssets=new Set(),pendingSpriteAssets=new Map();let previewAction='idle',selectedLabEntry=null,labAction='idle',labSequence=0;
     const animationFields=[['idle','Idle'],['attack','Ataque'],['cast','Conjuração'],['hit','Dano'],['victory','Vitória'],['defeat','Derrota']];
@@ -98,10 +98,10 @@
     );
     const conjurationAuraVfx={src:'../assets/vfx/v13-conjuration/aura-runes/processed/sheet-transparent.png',cols:3,rows:2,duration:840,order:[0,1,2,3,4,5],masked:true};
     const specialConjurationVfx={
-      kalander:{src:'../assets/vfx/v14-conjuration/special/kalander/processed/sheet-transparent.png',cols:3,rows:2,duration:840,order:[0,1,2,3,4,5],className:'kalander-aura'},
+      kalander:{src:'../assets/vfx/v15-conjuration/special/kalander/processed/sheet-transparent.png',cols:3,rows:2,duration:840,order:[0,1,2,3,4,5],className:'kalander-aura'},
       bernyce:{src:'../assets/vfx/v14-conjuration/special/bernyce/processed/sheet-transparent.png',cols:3,rows:2,duration:840,order:[0,1,2,3,4,5],className:'bernyce-aura'},
-      jules:{src:'../assets/vfx/v14-conjuration/special/jules/processed/sheet-transparent.png',cols:3,rows:2,duration:840,order:[0,1,2,3,4,5],className:'jules-aura'},
-      julius:{src:'../assets/vfx/v14-conjuration/special/julius/processed/sheet-transparent.png',cols:3,rows:2,duration:840,order:[0,1,2,3,4,5],className:'julius-aura'}
+      jules:{src:'../assets/vfx/v15-conjuration/special/jules/processed/sheet-transparent.png',cols:3,rows:2,duration:840,order:[0,1,2,3,4,5],className:'jules-aura'},
+      julius:{src:'../assets/vfx/v15-conjuration/special/julius/processed/sheet-transparent.png',cols:3,rows:2,duration:840,order:[0,1,2,3,4,5],className:'julius-aura'}
     };
     const conjurationVfxFor=entry=>specialConjurationVfx[entry.id]||conjurationAuraVfx;
     const sceneReviewEffects={
