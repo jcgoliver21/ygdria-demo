@@ -4016,3 +4016,11 @@ body.game-active .battle-row::before{
   .combat-console .mini-open-card{grid-template-columns:25px minmax(0,1fr)}
   .combat-console .mini-open-card .mini-thumb{width:25px!important}
 }
+
+/* Auras assinatura aprovadas na vitrine: uma camada VFX independente envolve
+   o lançador durante a conjuração, sem tocar em escala, sombra ou pés. */
+.human-conjuration-aura{position:absolute;z-index:60;width:1px;height:1px;pointer-events:none;overflow:visible}
+.human-conjuration-aura .conjuration-aura-sheet{position:absolute;left:0;top:0;width:202px;height:202px;transform:translate(-50%,-57%);transform-origin:50% 65%;background-image:var(--conjuration-aura-sheet);background-repeat:no-repeat;background-size:300% 200%;background-position:0 0;filter:var(--conjuration-aura-filter);animation:humanConjurationAuraFrames .84s steps(1,end) both;will-change:opacity,transform,background-position}
+.human-conjuration-aura.julius-aura .conjuration-aura-sheet{width:218px;height:218px;transform:translate(-50%,-59%);animation-name:humanConjurationAuraFramesJulius}
+@keyframes humanConjurationAuraFrames{0%,8%{opacity:0;transform:translate(-50%,-57%) scale(.84);background-position:0 0}12%,24%{opacity:.94;background-position:50% 0}25%,39%{background-position:100% 0}40%,55%{background-position:0 100%;transform:translate(-50%,-57%) scale(1)}56%,73%{opacity:.98;background-position:50% 100%;transform:translate(-50%,-57%) scale(1.035)}74%,100%{opacity:0;background-position:100% 100%;transform:translate(-50%,-57%) scale(.94)}}
+@keyframes humanConjurationAuraFramesJulius{0%,8%{opacity:0;transform:translate(-50%,-59%) scale(.82);background-position:0 0}12%,24%{opacity:.96;background-position:50% 0}25%,39%{background-position:100% 0}40%,55%{background-position:0 100%;transform:translate(-50%,-59%) scale(1.02)}56%,73%{opacity:1;background-position:50% 100%;transform:translate(-50%,-59%) scale(1.07)}74%,100%{opacity:0;background-position:100% 100%;transform:translate(-50%,-59%) scale(.96)}}

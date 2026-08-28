@@ -155,6 +155,25 @@ for(const id of humanMagicIds){
 }
 assert.ok(humanMagicBytes<=5*1024*1024,'VFX de magia humanos excederam orçamento de 5 MiB');
 
+/* Auras assinatura R16: a mesma fonte aprovada na vitrine precisa existir no
+   runtime, manter alfa e nunca criar uma caixa pintada em volta do personagem. */
+const humanConjurationSignatures={
+  default:'assets/vfx/v13-conjuration/aura-runes/processed/sheet-transparent.png',
+  kalander:'assets/vfx/v15-conjuration/special/kalander/processed/sheet-transparent.png',
+  bernyce:'assets/vfx/v14-conjuration/special/bernyce/processed/sheet-transparent.png',
+  jules:'assets/vfx/v15-conjuration/special/jules/processed/sheet-transparent.png',
+  julius:'assets/vfx/v15-conjuration/special/julius/processed/sheet-transparent.png'
+};
+for(const [id,relative] of Object.entries(humanConjurationSignatures)){
+  const file=path.join(root,...relative.split('/'));
+  assert.ok(fs.existsSync(file),`${id}: aura assinatura ausente`);
+  const bytes=fs.readFileSync(file);
+  assert.equal(bytes[25],6,`${id}: aura assinatura precisa preservar alfa`);
+  const decoded=decodeRgba(bytes);
+  assert.deepEqual([decoded.width,decoded.height],[768,512],`${id}: aura assinatura precisa ser 3×2 em 256px`);
+  verifyCells(id,'conjuration-signature',decoded,6,3,2);
+}
+
 /* As ações abaixo têm VFX amplos, porém o corpo precisa preservar a mesma
    estatura que o Idle. O render aplica um multiplicador de escala ancorado
    nos pés; esta verificação impede a regressão vista na vitrine do catálogo. */

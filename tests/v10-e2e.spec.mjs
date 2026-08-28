@@ -790,6 +790,48 @@ test('magia humana concentra no herói, atravessa a arena e não altera a escala
   expect(errors).toEqual([]);
 });
 
+test('auras assinatura R16 aparecem no avatar e são limpas após a conjuração',async({page})=>{
+  const errors=await boot(page,'flow');
+  const result=await page.evaluate(async()=>{
+    const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+    const cast=async id=>{
+      const index=KINGDOMS.findIndex(hero=>hero.id===id);
+      const source=document.getElementById('party-'+id+'-avatar');
+      const idleScale=getComputedStyle(source.querySelector('.hero-sprite-sheet')).getPropertyValue('--sprite-scale').trim();
+      triggerHeroCastAnim(index);
+      launchSpecialFx(index,{tipo:'damage',kind:'active'});
+      await wait(150);
+      const aura=document.querySelector(`.human-conjuration-aura[data-owner="${id}"] .conjuration-aura-sheet`);
+      const castingScale=getComputedStyle(source.querySelector('.hero-sprite-sheet')).getPropertyValue('--sprite-scale').trim();
+      const active={id,action:source.dataset.action,aura:Boolean(aura),source:getComputedStyle(aura||document.body).backgroundImage,idleScale,castingScale};
+      await wait(940);
+      return {...active,remaining:document.querySelectorAll(`.human-conjuration-aura[data-owner="${id}"]`).length};
+    };
+    worldRun={active:true,fase:5,nivel:1,storyMode:false};
+    chosenIds=['kalander','jules','bernyce','julius'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    beginGame(0); skipStory();
+    const specials=[];
+    for(const id of ['kalander','jules','bernyce','julius']) specials.push(await cast(id));
+    chosenIds=['gareth','roland','elizier','adriel-jovem'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    beginGame(0); skipStory();
+    const defaultAura=await cast('gareth');
+    return {specials,defaultAura};
+  });
+  const expected={
+    kalander:'v15-conjuration/special/kalander',
+    jules:'v15-conjuration/special/jules',
+    bernyce:'v14-conjuration/special/bernyce',
+    julius:'v15-conjuration/special/julius',
+    gareth:'v13-conjuration/aura-runes'
+  };
+  for(const sample of [...result.specials,result.defaultAura]){
+    expect(sample).toMatchObject({action:'cast',aura:true,remaining:0});
+    expect(sample.source).toContain(expected[sample.id]);
+    expect(sample.castingScale).toBe(sample.idleScale);
+  }
+  expect(errors).toEqual([]);
+});
+
 test('Julius, Gareth e Roland mantêm a estatura e o pé fixo durante cada ataque',async({page})=>{
   const errors=await boot(page,'flow');
   await page.evaluate(()=>{
@@ -1698,7 +1740,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.12');
+  expect(registration.caches).toContain('12r-v11.0.13');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1858,7 +1900,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.12');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.13');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

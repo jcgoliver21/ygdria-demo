@@ -2060,6 +2060,7 @@ const HUMAN_CHAPTER_BODY_PHYSICS_ACTIONS=Object.freeze(['idle','attack','cast','
 function humanBodyPhysicsSource(id,action){
   /* Cedric recebeu uma pose de ataque específica; a folha genérica não pode
      voltar a substituí-la no combate real. */
+  if(id==='julius'&&action==='cast') return 'assets/physics-v11/humanos/heroes/julius/cast-r5/processed/sheet-transparent.png';
   const resolvedAction=id==='cedric'&&action==='attack'?'attack-r4':action;
   return `assets/physics-v11/humanos/heroes/${id}/${resolvedAction}/sheet-transparent.png`;
 }
@@ -6209,6 +6210,46 @@ const SPECIAL_ABILITY_BUILDERS={
   laminaDimensional(el){ el.innerHTML='<div class="sc-void-vortex"></div><div class="sc-shadow-claw" style="--d:.18s"></div><div class="sc-shadow-claw" style="--d:.36s"></div><div class="sc-shadow-claw" style="--d:.54s"></div>'; }
 };
 
+/* Auras de conjuração aprovadas na vitrine humana. Elas pertencem ao lançador
+   (não percorrem o cenário), rodam em uma camada própria e são limpas pelo
+   pool de combate. Assim o corpo continua com escala e pés invariáveis. */
+const HUMAN_CONJURATION_AURA_DEFAULT=Object.freeze({
+  src:'assets/vfx/v13-conjuration/aura-runes/processed/sheet-transparent.png',
+  humanPink:true,className:'human-aura'
+});
+const HUMAN_CONJURATION_AURA_SHEETS=Object.freeze({
+  kalander:{src:'assets/vfx/v15-conjuration/special/kalander/processed/sheet-transparent.png',humanPink:true,className:'kalander-aura'},
+  bernyce:{src:'assets/vfx/v14-conjuration/special/bernyce/processed/sheet-transparent.png',humanPink:true,className:'bernyce-aura'},
+  jules:{src:'assets/vfx/v15-conjuration/special/jules/processed/sheet-transparent.png',humanPink:true,className:'jules-aura'},
+  julius:{src:'assets/vfx/v15-conjuration/special/julius/processed/sheet-transparent.png',shadow:true,className:'julius-aura'}
+});
+function humanConjurationAuraSpec(characterId){
+  if(!HUMAN_CHAPTER_BODY_PHYSICS_IDS.has(characterId)) return null;
+  return HUMAN_CONJURATION_AURA_SHEETS[characterId]||HUMAN_CONJURATION_AURA_DEFAULT;
+}
+function spawnHumanConjurationAura(character,source){
+  const spec=humanConjurationAuraSpec(character?.id);
+  const layer=document.getElementById('specialFxLayer');
+  if(!spec||!layer||!source||!particlesEnabled||reducedMotion) return false;
+  const lr=layer.getBoundingClientRect(),sr=source.getBoundingClientRect();
+  const fx=acquireCombatFx(`human-conjuration-aura ${spec.className}`);
+  const lease=fx.__fxLease;
+  fx.dataset.fx='human-conjuration-aura';
+  fx.dataset.owner=character.id;
+  fx.style.left=(sr.left-lr.left+sr.width*.5)+'px';
+  fx.style.top=(sr.top-lr.top+sr.height*.54)+'px';
+  fx.style.setProperty('--conjuration-aura-sheet',`url("${animationAssetUrl(spec.src)}")`);
+  fx.style.setProperty('--conjuration-aura-filter',spec.shadow
+    ? 'brightness(1.26) contrast(1.14) drop-shadow(0 0 10px rgba(185,193,207,.42))'
+    : spec.humanPink
+      ? 'grayscale(1) sepia(1) saturate(5) hue-rotate(284deg) brightness(1.1) contrast(1.04) drop-shadow(0 0 9px rgba(255,112,183,.84))'
+      : 'drop-shadow(0 0 8px rgba(255,255,255,.4))');
+  fx.innerHTML='<span class="conjuration-aura-sheet" aria-hidden="true"></span>';
+  layer.appendChild(fx); trimCombatFx();
+  scheduleCombat(()=>releaseCombatFx(fx,lease),900);
+  return true;
+}
+
 /* Magias das cartas do Reino dos Humanos: a folha corporal continua sendo a
    animação do personagem, enquanto este segundo plano descreve três etapas
    legíveis, concentração na origem, energia canalizada e emanação até o alvo.
@@ -6238,6 +6279,7 @@ function launchSpecialFx(idx,a){
   const targetIdx = currentTargetIndex();
   const target = boardEffect ? boardEl : (defensive ? document.getElementById('playerHpAnchor') : document.getElementById('enemy-'+targetIdx));
   if(!layer||!source||!target) return;
+  if(a.kind!=='passive') spawnHumanConjurationAura(k,source);
   spawnCombatFx('telegraph',target,k.colorLight,500);
   if(reducedMotion||reduceFlashes){
     target.classList.remove('fx-target-flash'); void target.offsetWidth; target.classList.add('fx-target-flash');
