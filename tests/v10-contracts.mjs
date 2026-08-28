@@ -644,9 +644,10 @@ check('final da fase aguarda a história e mostra classificação',()=>{
 });
 
 check('vitrine humana pré-carrega poses e trata M como conjuração local',()=>{
-  for(const needle of ['function preloadSpriteSource(','function preloadLabAction(','readySpriteAssets','pendingSpriteAssets','await preloadLabAction(entry,action)','Conjuração','lab-aura','configureLabAura','action===\'cast\'&&chapterMode']) assert.ok(animationShowcase.includes(needle),`${needle} ausente da vitrine`);
+  for(const needle of ['function preloadSpriteSource(','function preloadLabAction(','readySpriteAssets','pendingSpriteAssets','await preloadLabAction(entry,action)','Conjuração','lab-aura','configureLabAura','conjurationAuraVfx','v13-conjuration/aura-runes/processed/sheet-transparent.png','webkitMaskImage','dataset.masked','action===\'cast\'&&chapterMode']) assert.ok(animationShowcase.includes(needle),`${needle} ausente da vitrine`);
   assert.match(animationShowcase,/if\(action==='cast'\)\{impact\.className='lab-impact'/);
   assert.match(animationShowcase,/if\(action==='cast'&&chapterMode\)return null;/);
+  assert.doesNotMatch(animationShowcase,/radial-gradient\(circle at 50% 62%/,'aura não pode voltar a usar luzinhas CSS');
 });
 
 
