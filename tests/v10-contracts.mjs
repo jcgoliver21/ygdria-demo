@@ -13,6 +13,7 @@ const lore=read('humanos-lore-v10.js');
 const syncLore=read('tools/sync-humanos-lore.mjs');
 const sw=read('sw.js');
 const workflow=read('.github/workflows/v10-ci.yml');
+const animationShowcase=read('previews/orientacoes-elenco-v11.html');
 const defeatPhysics=JSON.parse(read('assets/characters/defeat-physics-contract.json'));
 
 const checks=[];
@@ -640,6 +641,12 @@ check('final da fase aguarda a história e mostra classificação',()=>{
   assert.match(html,/id="victoryStars"/);
   assert.match(html,/id="victoryReport"/);
   assert.match(game,/Ranking das cartas usadas/);
+});
+
+check('vitrine humana pré-carrega poses e trata M como conjuração local',()=>{
+  for(const needle of ['function preloadSpriteSource(','function preloadLabAction(','readySpriteAssets','pendingSpriteAssets','await preloadLabAction(entry,action)','Conjuração','lab-aura','configureLabAura','action===\'cast\'&&chapterMode']) assert.ok(animationShowcase.includes(needle),`${needle} ausente da vitrine`);
+  assert.match(animationShowcase,/if\(action==='cast'\)\{impact\.className='lab-impact'/);
+  assert.match(animationShowcase,/if\(action==='cast'&&chapterMode\)return null;/);
 });
 
 
