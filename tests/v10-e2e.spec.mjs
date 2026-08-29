@@ -800,7 +800,12 @@ test('auras assinatura R16 aparecem no avatar e são limpas após a conjuração
       const index=KINGDOMS.findIndex(hero=>hero.id===id);
       const source=document.getElementById('party-'+id+'-avatar');
       const idleScale=getComputedStyle(source.querySelector('.hero-sprite-sheet')).getPropertyValue('--sprite-scale').trim();
-      triggerHeroCastAnim(index);
+      /* A mesma ordem do combate: a folha corporal de conjuração precisa
+         estar decodificada antes de o VFX começar. Sem essa espera, um cache
+         frio testa um estado transitório (idle + aura) que o jogador nunca
+         vê no uso de habilidade. */
+      await triggerHeroCastAnim(index);
+      await wait(32);
       launchSpecialFx(index,{tipo:'damage',kind:'active'});
       await wait(150);
       const aura=document.querySelector(`.human-conjuration-aura[data-owner="${id}"] .conjuration-aura-sheet`);
