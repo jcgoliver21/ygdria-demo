@@ -20,13 +20,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.15/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.15/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.15/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.15/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.15/);
-  assert.match(config,/version:'v11\.0\.15'/);
-  assert.match(sw,/12r-v11\.0\.15/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.16/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.16/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.16/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.16/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.16/);
+  assert.match(config,/version:'v11\.0\.16'/);
+  assert.match(sw,/12r-v11\.0\.16/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -102,7 +102,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.15/);
+  assert.match(sw,/12r-v11\.0\.16/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -386,9 +386,10 @@ check('início revalida a fase narrativa e o HUD de leitura fica fora da arena',
   assert.match(css,/\.battle-info-dock/);
 });
 
-check('Torre usa cada encontro da campanha e invocações não bloqueiam heróis',()=>{
-  assert.match(game,/One floor per actual encounter/);
-  assert.doesNotMatch(game,/vistos\.has\(key\)/);
+check('Torre fecha um ciclo sem repetir oponentes e invocações não bloqueiam heróis',()=>{
+  assert.match(game,/const vistos=new Set\(\);/);
+  assert.match(game,/if\(vistos\.has\(opponentId\)\) return;/);
+  assert.match(game,/const escala=1\+\(ciclo\*\.20\);/);
   assert.match(css,/\.summon-unit\{pointer-events:none!important;\}/);
   assert.match(game,/SPECIAL_ABILITY_BUILDERS/);
   assert.match(game,/summonHarpies\(el\)/);
@@ -447,7 +448,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.15');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.16');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
@@ -504,8 +505,14 @@ check('auras assinatura R16 da vitrine também são disparadas no combate',()=>{
 });
 
 check('aura é VFX de missão e vitrine ancora efeitos nos corpos e alvos',()=>{
-  for(const needle of ['function canRunHeroAuraInMission()','clearHeroConjurationLoops();','travelsToTarget:true','fx.classList.toggle(\'attack-projectile\',Boolean(sheet?.travelsToTarget))','function positionMotionShowcaseVfx(action)','motionShowcaseAvatar','motionShowcaseTarget','function positionAbilityPicker(idx)']) assert.ok(game.includes(needle),`${needle} ausente do runtime`);
+  for(const needle of ['function canRunHeroAuraInMission()','missionFieldStarted','function beginMissionField()','clearHeroConjurationLoops();','travelsToTarget:true','fx.classList.toggle(\'attack-projectile\',Boolean(sheet?.travelsToTarget))','function positionMotionShowcaseVfx(action)','motionShowcaseAvatar','motionShowcaseTarget','function positionAbilityPicker(idx)']) assert.ok(game.includes(needle),`${needle} ausente do runtime`);
   for(const selector of ['#abilityPickerScreen{background:transparent!important','pointer-events:none!important','.motion-showcase-avatar{position:absolute;left:9%;bottom:0}','--showcase-travel-x']) assert.ok(css.includes(selector),`${selector} ausente do CSS`);
+});
+
+check('Torre usa andares únicos, Game Over no tabuleiro e orientações corrigidas',()=>{
+  for(const needle of ['const vistos=new Set();','card.nome','type.n','const escala=1+(ciclo*.20);','function showTowerGameOverPanel()','towerGameOverPanel','HERO_DEFAULT_RIGHT_FACING_IDS=new Set([\'bernyce\',\'kalander\',\'jules\'])','ENEMY_LEFT_FACING_CARD_IDS=new Set([\'elizier\'])']) assert.ok(game.includes(needle),`${needle} ausente do runtime`);
+  assert.match(html,/id="towerGameOverPanel"/);
+  for(const selector of ['.tower-game-over-panel{','.tower-board-hidden{display:none!important}', '.tower-game-over-title']) assert.ok(css.includes(selector),`${selector} ausente do CSS`);
 });
 
 check('pausa, reinício e revive não deixam callbacks órfãos',()=>{
@@ -530,7 +537,7 @@ check('pausa, reinício e revive não deixam callbacks órfãos',()=>{
 });
 
 check('derrota encerra relógios uma vez e entra em transição',()=>{
-  assert.match(game,/function finalizeDefeat\(\)/);
+  assert.match(game,/function finalizeDefeat\(\{towerGameOver=false\}=\{\}\)/);
   assert.match(game,/if\(defeatFinalized\) return false/);
   assert.match(game,/cancelTempoSombrio\(\)/);
   assert.match(game,/setBattlePhase\('transition'\)/);

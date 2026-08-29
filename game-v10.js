@@ -1103,6 +1103,10 @@ let heroReady = {};
 let heroActiveQueue = {};
 let pendingRoomPassives = [];
 let roomClearScheduled = false;
+/* A sala só passa a existir para efeitos persistentes depois que a abertura
+   terminou. Isso impede que a aura de uma carga preservada apareça na tela
+   de transição ou sobre a fala de entrada da próxima sala. */
+let missionFieldStarted = false;
 let playerShield = 0;
 let enemyDots = [];
 let enemyStunTurns = 0;
@@ -1477,11 +1481,9 @@ function buildBossRushStage(n){
     enemies:[{name:c.nome, hp:Math.round(c.hp*1.6*escala), atk:Math.round(c.atk*1.1*escala), sprite:c.sprite, flip:!!c.flip, cardId:key, isBoss:true, maxHp:Math.round(c.hp*1.6*escala)}]
   };
 }
-/* v9.2 · TORRE DE ACESSO À ETERNIDADE (Torre Infinita) — modo SURVIVOR sem fim:
-   TODOS os personagens do jogo, na ordem de aparição (a própria ordem de KINGDOMS —
-   personagens novos entram na torre automaticamente), 1 por missão. Ao derrotar o
-   último, o ciclo recomeça MAIS FORTE (mesmo os de nível fraco). Regras: só no
-   Pesadelo; a vida NÃO renova entre missões; consumíveis liberados; ranking MENSAL. */
+/* Torre de Acesso à Eternidade — survivor em andares. A primeira volta usa
+   cada oponente uma única vez, pela primeira aparição no roteiro. Só depois
+   de completar todo o elenco o ciclo reinicia, com +20% por volta completa. */
 let towerMode=false, towerFloor=1;
 let towerPrevDifficulty=null; /* restaura a dificuldade do jogador ao sair da torre */
 function towerMonthKey(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
@@ -1510,24 +1512,31 @@ const TOWER_RANK_REWARDS=[
   ['🎖 Top 100','300 🪙']
 ];
 function towerStoryOrder(){
-  /* One floor per actual encounter. Repeated enemies remain repeated so a
-     chapter's final boss stays at its true campaign position. */
+  /* Cada adversário entra uma só vez no primeiro ciclo. O roteiro pode ter
+     encontros repetidos, mas a Torre precisa apresentar todo o elenco antes
+     de repetir alguém. Os campos oficiais são `nome` (cartas) e `n` (feras). */
   const ordem=[];
+  const vistos=new Set();
   (WORLDS||[]).forEach(world=>world.fases.forEach(fase=>fase.missoes.forEach(missao=>missao.forEach(key=>{
     const card=HUMANOS_CARDS[key], type=HUMANOS_ETYPES[key];
     if(!card&&!type) return;
-    ordem.push(card?{name:card.name,hp:card.hp,atk:card.atk,sprite:card.sprite,cardId:key,isCard:true}:{name:type.name,hp:type.hp,atk:type.atk,sprite:type.sprite,etype:key,flip:Boolean(type.flip)});
+    const opponentId=card?`card:${key}`:`enemy:${key}`;
+    if(vistos.has(opponentId)) return;
+    vistos.add(opponentId);
+    ordem.push(card
+      ? {name:card.nome,hp:card.hp,atk:card.atk,sprite:card.sprite,cardId:key,isCard:true}
+      : {name:type.n,hp:type.hp,atk:type.atk,sprite:type.sprite,etype:key,flip:Boolean(type.flip)});
   }))));
   return ordem;
 }
 function buildTowerStage(floor){
-  const ordem=towerStoryOrder(); /* chronology from story stages */
-  const n=ordem.length;
+  const ordem=towerStoryOrder();
+  const n=Math.max(1,ordem.length);
   const ciclo=Math.floor((floor-1)/n);
-  const k=ordem[(floor-1)%n]||{name:'Sentinela',hp:200,atk:20,sprite:GOLEM_SPRITE};
+  const k=ordem[(floor-1)%n]||{name:'Sentinela de Pedra',hp:200,atk:20,sprite:GOLEM_SPRITE,etype:'stone-sentinel'};
   const hpBase=Math.round((k.hp||200)*1.4);
   const atkBase=Math.max(6,Number(k.atk||20));
-  const escala=Math.pow(1.35,ciclo)*(1+((floor-1)%n)*0.03);
+  const escala=1+(ciclo*.20);
   const hp=Math.round(hpBase*escala), atk=Math.round(atkBase*escala);
   return {
     title:`${T('Torre de Acesso à Eternidade','Tower of Access to Eternity','Torre de Acceso a la Eternidad')} · ${T('Andar','Floor','Piso')} ${floor}${ciclo>0?` · ${T('Ciclo','Cycle','Ciclo')} ${ciclo+1}`:''}`,
@@ -1632,9 +1641,11 @@ function enemyAnimationKey(e){
   return e?.etype||null;
 }
 /* Orientações aprovadas na vitrine: inimigos humanos encaram a direita;
-   Slime de Cerejeira e Lobo Raivoso encaram a esquerda em todas as poses. */
+   Slime de Cerejeira, Lobo Raivoso e Elizier como adversária encaram a
+   esquerda em todas as poses. */
 const ENEMY_LEFT_FACING_KEYS=new Set(['slime-cereja','lobo-raivoso']);
-function enemyFacingDirection(e){return ENEMY_LEFT_FACING_KEYS.has(enemyAnimationKey(e))?'left':'right'}
+const ENEMY_LEFT_FACING_CARD_IDS=new Set(['elizier']);
+function enemyFacingDirection(e){return ENEMY_LEFT_FACING_KEYS.has(enemyAnimationKey(e))||ENEMY_LEFT_FACING_CARD_IDS.has(e?.cardId)?'left':'right'}
 function enemySpriteFlip(e){return enemyFacingDirection(e)==='left'}
 function enemyAnimationCharacter(e){
   const key=enemyAnimationKey(e),library=key&&ENEMY_ANIMATION_LIBRARY[key];
@@ -2241,11 +2252,17 @@ function heroIsFlipped(k){
      canônica aponta para a esquerda; o botão de rotação do HUD inverte apenas
      o herói escolhido, sem alterar escala, pés ou a animação em curso. */
   const initial=heroInitialFlip(k);
-  return heroFacingOverrides.has(k.id)?!initial:initial;
+  const baseline=HERO_DEFAULT_RIGHT_FACING_IDS.has(k.id)?!initial:initial;
+  return heroFacingOverrides.has(k.id)?!baseline:baseline;
 }
-/* Sem override o herói usa a orientação de equipe (esquerda); o estado do
-   botão é a fonte de verdade para a inversão voluntária no HUD. */
-function heroFacingDirection(k){ return heroFacingOverrides.has(k.id)?'right':'left'; }
+/* A direção padrão é esquerda. Bernyce, Kalander e Jules/The Joker receberam
+   a inversão solicitada para quando entram como heróis; o botão do HUD segue
+   apenas alternando a base individual sem alterar a física do sprite. */
+const HERO_DEFAULT_RIGHT_FACING_IDS=new Set(['bernyce','kalander','jules']);
+function heroFacingDirection(k){
+  const baseline=HERO_DEFAULT_RIGHT_FACING_IDS.has(k.id)?'right':'left';
+  return heroFacingOverrides.has(k.id)?(baseline==='left'?'right':'left'):baseline;
+}
 
 function spriteMarkup(k, action='idle', options={}){
   const spec = k.sprites?.[action];
@@ -2413,7 +2430,7 @@ function playHeroAction(idx, action='attack'){
   avatar.dataset.actionRequest=request;
   const commit=()=>{
     if(!avatar.isConnected||avatar.dataset.actionRequest!==request) return;
-    animateHeroAvatar(avatar,k,action,{loop:action==='victory',hold:false});
+    animateHeroAvatar(avatar,k,action,{loop:action==='victory',hold:action==='defeat'});
   };
   /* Mantém o corpo idle visível até a folha de ação estar pronta. O VFX segue
      usando o avatar já presente como origem, sem quadro preto entre as poses. */
@@ -4516,6 +4533,8 @@ function loadStage(idx){
   stageTransitioning = false;
   defeatFinalized = false;
   roomClearScheduled = false;
+  missionFieldStarted = false;
+  hideTowerGameOverPanel();
   selected = null;
   stageIndex = idx;
   if(towerMode && difficulty==='pesadelo' && playerHP>0) survivorStageStartHP=playerHP;
@@ -4530,6 +4549,10 @@ function loadStage(idx){
   }
   const stageData = bossRushMode ? buildBossRushStage(bossRushIdx) : worldRun.active ? buildWorldLevel() : buildTowerStage(towerFloor);
   activeStageData = stageData;
+  const clearHeading=document.querySelector('#stageClearOverlay h2');
+  if(clearHeading) clearHeading.textContent=towerMode
+    ? T('Andar Concluído!','Floor Cleared!','¡Piso Superado!')
+    : T('Fase Concluída!','Stage Cleared!','¡Fase Superada!');
   const diffM=DIFFICULTY_MULTS[difficulty]||DIFFICULTY_MULTS.normal;
   enemies = stageData.enemies.map(e=>{
     const hp=Math.round(e.hp*diffM.hp), atk=Math.round(e.atk*diffM.atk);
@@ -4592,7 +4615,6 @@ function loadStage(idx){
   }
   consumeInventoryOnBattleStart();
   if(worldRun.active&&worldRun.fase===0&&worldRun.nivel===1&&!towerMode) startCoach();
-  maybeShowStory(idx);
   playStageMusic(stageData.scene);
   const introTitle=worldRun.active?L(stageData.title.split(' · ')[1]||stageData.title):towerMode?L(stageData.title):T(`Fase ${idx+1}`,`Stage ${idx+1}`,`Fase ${idx+1}`);
   setBattleStatus(T(`${introTitle}: combine esferas para enfrentar ${stageData.enemies.map(e=>L(e.name)).join(' e ')}.`,`${introTitle}: match spheres to face ${stageData.enemies.map(e=>L(e.name)).join(' and ')}.`,`${introTitle}: combina esferas para enfrentar a ${stageData.enemies.map(e=>L(e.name)).join(' y ')}.`));
@@ -4638,16 +4660,23 @@ function loadStage(idx){
     });
     setBattleStatus('QA: todas as habilidades ativas carregadas para a matriz de especiais.','system');
   }
-  if(pendingRoomPassives.length){
-    scheduleCombat(()=>launchPendingRoomPassives(),260);
-  }
+  const introRunning=maybeShowStory(idx,beginMissionField);
+  if(!introRunning) beginMissionField();
+  saveProgress();
+}
+
+/* A transição para o próximo andar/sala só libera efeitos persistentes quando
+   a apresentação do encontro terminou. Passivas preservadas e auras prontas
+   começam aqui — nunca durante o intervalo entre uma sala e outra. */
+function beginMissionField(){
+  if(missionFieldStarted||!activeStageData||stageTransitioning||defeatFinalized) return false;
+  missionFieldStarted=true;
   setBattlePhase('idle');
-  /* Cargas preservadas só voltam a emanar quando a próxima missão terminou
-     de montar inimigos, chão e estado idle — nunca no intervalo anterior. */
+  if(pendingRoomPassives.length) scheduleCombat(()=>launchPendingRoomPassives(),260);
   ACTIVE.forEach(idx2=>{
     if((heroActiveQueue[idx2]||[]).length) beginHeroConjurationLoop(idx2);
   });
-  saveProgress();
+  return true;
 }
 
 function randColorIndex(){
@@ -5156,7 +5185,7 @@ function positionStorySpeechBubble(){
     layer.classList.add('story-bubble-positioned');
   });
 }
-function maybeShowStory(idx){
+function maybeShowStory(idx,onDone=null){
   const seq=[];
   /* v9.3.7 · roteiro oficial do Reino dos Humanos. A primeira entrada usa
      as falas escritas para a missão; repetições mantêm apenas a apresentação
@@ -5170,7 +5199,10 @@ function maybeShowStory(idx){
         if(s?.h) seq.push(s);
         else seq.push({...s,sprite:s?.sprite||storySpeakerSprite(s?.name)});
       });
-      if(seq.length){ storyQueue=[...seq]; renderStoryStep(); return; }
+      if(seq.length){
+        storyDoneCallback=typeof onDone==='function'?onDone:null;
+        storyQueue=[...seq]; renderStoryStep(); return true;
+      }
       const regra=STORY_RULES[worldRun.fase];
       const extra=ACTIVE.map(i=>KINGDOMS[i]).find(k=>k&&!regra?.allowed.includes(k.id));
       if(extra) seq.push({h:extra.id,t:extra.frase||`${L(extra.nome)} está pronto para ajudar.`});
@@ -5191,9 +5223,11 @@ function maybeShowStory(idx){
     ditas.add(e.name+fala);
     seq.push({name:e.name, sprite:e.sprite, t:fala, enemyIndex});
   });
-  if(!seq.length) return;
+  if(!seq.length) return false;
+  storyDoneCallback=typeof onDone==='function'?onDone:null;
   storyQueue=[...seq];
   renderStoryStep();
+  return true;
 }
 function renderStoryStep(){
   const layer=document.getElementById('storyLayer');
@@ -5243,7 +5277,7 @@ function finishStorySequence(){
   const done=storyDoneCallback; storyDoneCallback=null;
   if(typeof done==='function') done();
 }
-function skipStory(complete=false){
+function skipStory(complete=true){
   const done=storyDoneCallback; storyDoneCallback=null;
   storyQueue=[]; clearStoryPresentation(); document.getElementById('storyLayer')?.classList.remove('show','cinematic');
   document.getElementById('storyLayer')?.setAttribute('aria-hidden','true');
@@ -6367,6 +6401,7 @@ function spawnHumanConjurationAura(character,source,options={}){
 function canRunHeroAuraInMission(){
   return Boolean(
     activeStageData &&
+    missionFieldStarted &&
     !stageTransitioning &&
     !roomClearScheduled &&
     !gamePaused &&
@@ -7180,14 +7215,16 @@ function handlePlayerDefeat(){
     localStorage.setItem('12r_tower_best',String(best));
   }
   if(towerMode&&!dailyRunMode){
-    finalizeDefeat();
-    scheduleCombat(()=>{ showMainMenu({guard:false}); window.renderTowerScreen?.(); openPanel('towerScreen'); },430);
+    /* A derrota da Torre é um Game Over no próprio andar: o grupo permanece
+       caído na arena e o ranking ocupa o espaço do tabuleiro. A tentativa só
+       é reiniciada quando o jogador escolhe recomeçar. */
+    finalizeDefeat({towerGameOver:true});
     return;
   }
   finalizeDefeat();
 }
 
-function finalizeDefeat(){
+function finalizeDefeat({towerGameOver=false}={}){
   if(defeatFinalized) return false;
   defeatFinalized=true;
   busy=true;
@@ -7200,7 +7237,12 @@ function finalizeDefeat(){
   playHeroDefeatPoses();
   flushRunToProfile(false);
   renderBattleReport('defeatReport');
-  scheduleCombat(()=>showOverlay('defeatOverlay'),1000);
+  if(towerGameOver){
+    hideOverlay('defeatOverlay');
+    scheduleCombat(()=>showTowerGameOverPanel(),1000);
+  }else{
+    scheduleCombat(()=>showOverlay('defeatOverlay'),1000);
+  }
   return true;
 }
 
@@ -7358,16 +7400,47 @@ function recordStars(stageIdx){
   if((all[stageIdx]||0)<stars){ all[stageIdx]=stars; localStorage.setItem('12r_stars',JSON.stringify(all)); }
   return stars;
 }
-function renderBattleReport(elId){
-  const el=document.getElementById(elId); if(!el) return;
-  const entries=Object.entries(runStats.damage).map(([idx,dmg])=>({idx:+idx,dmg})).sort((a,b)=>b.dmg-a.dmg);
-  if(!entries.length){ el.innerHTML=''; return; }
+function battleReportMarkup({includeAllHeroes=false}={}){
+  const entries=includeAllHeroes
+    ? ACTIVE.map(idx=>({idx,dmg:Number(runStats.damage[idx]||0)})).sort((a,b)=>b.dmg-a.dmg)
+    : Object.entries(runStats.damage).map(([idx,dmg])=>({idx:+idx,dmg})).sort((a,b)=>b.dmg-a.dmg);
+  if(!entries.length) return '';
   const top=entries[0]; const mvp=KINGDOMS[top.idx]; const maxD=top.dmg||1;
-  el.innerHTML=`
+  return `
     <div class="report-mvp"><img src="${mvp.cardThumb||mvp.img}" alt="${L(mvp.nome)}"><div><small>${T('MVP DA BATALHA','BATTLE MVP','MVP DE LA BATALLA')}</small><strong>${L(mvp.nome)}</strong><span>${top.dmg} ${T('de dano total','total damage','de daño total')}</span></div></div>
     <div class="report-ranking-title">${T('Ranking das cartas usadas','Cards used ranking','Ranking de cartas usadas')}</div>
     <div class="report-rows">${entries.map((e,rank)=>{const k=KINGDOMS[e.idx];const medal=['🥇','🥈','🥉'][rank]||`${rank+1}º`;return `<div class="report-row"><span class="rr-rank">${medal}</span><span class="rr-name">${L(k.nome)}</span><div class="rr-bar"><i style="width:${Math.max(6,Math.round(e.dmg/maxD*100))}%;background:${k.color}"></i></div><span class="rr-val">${e.dmg}</span></div>`;}).join('')}</div>
     <div class="report-meta">${T('Maior combo','Best combo','Mayor combo')} ×${runStats.maxCombo} · ${T('Power-ups criados:','Power-ups created:','Power-ups creados:')} ${runStats.powerUps}</div>`;
+}
+function renderBattleReport(elId,options={}){
+  const el=document.getElementById(elId); if(!el) return;
+  el.innerHTML=battleReportMarkup(options);
+}
+function hideTowerGameOverPanel(){
+  const panel=document.getElementById('towerGameOverPanel');
+  if(panel){ panel.classList.remove('show'); panel.setAttribute('aria-hidden','true'); panel.replaceChildren(); }
+  document.getElementById('board')?.classList.remove('tower-board-hidden');
+  document.querySelector('.game-frame')?.classList.remove('tower-game-over');
+}
+function showTowerGameOverPanel(){
+  const panel=document.getElementById('towerGameOverPanel');
+  if(!panel) return false;
+  const defeatedFloor=Math.max(1,Number(towerFloor)||1);
+  const cleared=Math.max(0,defeatedFloor-1);
+  const best=Math.max(Number(localStorage.getItem('12r_tower_best')||0),cleared);
+  const month=towerMonthly()[towerMonthKey()]||0;
+  panel.innerHTML=`
+    <div class="tower-game-over-title">${T('GAME OVER','GAME OVER','GAME OVER')}</div>
+    <p>${T(`A escalada terminou no Andar ${defeatedFloor}.`,`The climb ended on Floor ${defeatedFloor}.`,`La escalada terminó en el Piso ${defeatedFloor}.`)}</p>
+    <div class="tower-game-over-record"><span>${T('Andares vencidos','Floors cleared','Pisos superados')}: <b>${cleared}</b></span><span>${T('Melhor marca','Best run','Mejor marca')}: <b>${best}</b></span><span>${T('Ranking do mês','Monthly rank','Ranking mensual')}: <b>${month}</b></span></div>
+    <div class="battle-report tower-defeat-report">${battleReportMarkup({includeAllHeroes:true})}</div>
+    <button class="overlay-btn tower-game-over-restart" id="towerGameOverRestart" type="button">${T('Recomeçar a Torre','Restart Tower','Reiniciar la Torre')}</button>`;
+  document.getElementById('board')?.classList.add('tower-board-hidden');
+  document.querySelector('.game-frame')?.classList.add('tower-game-over');
+  panel.classList.add('show');
+  panel.setAttribute('aria-hidden','false');
+  panel.querySelector('#towerGameOverRestart')?.addEventListener('click',retryAfterDefeat);
+  return true;
 }
 function renderVictoryStars(stars=3){
   const value=Math.max(1,Math.min(3,Number(stars)||1));
@@ -7561,8 +7634,8 @@ function onStageCleared(){
     towerRecordMonthly(towerFloor-1); /* ranking mensal em tempo real */
     const starsEl=document.getElementById('stageStars');
     if(starsEl) starsEl.innerHTML='';
-    const proxDesafiante=KINGDOMS[(towerFloor-1)%KINGDOMS.length];
-    document.getElementById('stageClearText').textContent = T(`Andar ${towerFloor-1} superado! Próximo desafiante: ${proxDesafiante?.nome||'???'}.`,`Floor ${towerFloor-1} cleared! Next challenger: ${proxDesafiante?.nome||'???'}.`,`¡Piso ${towerFloor-1} superado! Próximo desafiante: ${proxDesafiante?.nome||'???'}.`);
+    const proxDesafiante=buildTowerStage(towerFloor).enemies[0];
+    document.getElementById('stageClearText').textContent = T(`Andar ${towerFloor-1} superado! Próximo oponente: ${L(proxDesafiante?.name||'???')}.`,`Floor ${towerFloor-1} cleared! Next opponent: ${L(proxDesafiante?.name||'???')}.`,`¡Piso ${towerFloor-1} superado! Próximo oponente: ${L(proxDesafiante?.name||'???')}.`);
     showOverlay('stageClearOverlay');
     scheduleCombat(()=>{ hideOverlay('stageClearOverlay'); loadStage(0); busy=false; },1600);
     return;
@@ -8107,7 +8180,8 @@ function showMainMenu(options={}){
   pendingDimensional=[];
   incineratePhaseKey=null; incinerateActive=false; incinerateStacks=0;
   stopMissionTimer();
-  skipStory(); /* diálogos de missão nunca sobrevivem à volta ao menu */
+  skipStory(false); /* diálogos de missão nunca sobrevivem à volta ao menu */
+  hideTowerGameOverPanel();
   /* Torre força Pesadelo: devolve a dificuldade escolhida pelo jogador ao sair */
   if(towerPrevDifficulty){ difficulty=towerPrevDifficulty; towerPrevDifficulty=null; applyDifficultyUI(); }
   towerMode=false;
@@ -9265,9 +9339,9 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
   function renderTowerScreen(){
     const rules=document.getElementById('towerRules');
     if(rules) rules.textContent=T(
-      'Modo SURVIVOR sem fim: enfrente TODOS os personagens do jogo, um por missão, na ordem em que surgiram em Ygdria. Ao vencer o último, o ciclo recomeça mais forte. Só no PESADELO, a vida NÃO renova entre as missões — mas a mochila de consumíveis está liberada.',
-      'Endless SURVIVOR mode: face ALL game characters, one per mission, in order of appearance. Beat the last one and the cycle restarts stronger. NIGHTMARE only, HP does NOT refresh between missions — but your consumables bag is allowed.',
-      'Modo SURVIVOR sin fin: enfrenta a TODOS los personajes, uno por misión, en orden de aparición. Al vencer al último, el ciclo reinicia más fuerte. Solo PESADILLA, la vida NO se renueva — pero la mochila está permitida.');
+      'Modo SURVIVOR sem fim: enfrente todos os oponentes, um por andar, na ordem em que surgiram em Ygdria. O ciclo só recomeça depois de todos; então cada adversário recebe +20%. Só no PESADELO, a vida NÃO renova entre os andares — mas a mochila de consumíveis está liberada.',
+      'Endless SURVIVOR mode: face every opponent, one per floor, in Ygdria appearance order. The cycle restarts only after all of them; then every opponent gains +20%. NIGHTMARE only, HP does NOT refresh between floors — but your consumables bag is allowed.',
+      'Modo SURVIVOR sin fin: enfrenta a todos los oponentes, uno por piso, en orden de aparición en Ygdria. El ciclo reinicia solo después de todos; entonces cada adversario recibe +20%. Solo PESADILLA, la vida NO se renueva entre los pisos — pero la mochila está permitida.');
     const box=document.getElementById('towerRankBox');
     if(box){
       const tm=towerMonthly(); const mk=towerMonthKey();

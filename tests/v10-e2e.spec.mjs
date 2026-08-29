@@ -1077,6 +1077,74 @@ test('VFXs usam ancoragem real, Kalander alcança o alvo e a aura não vaza entr
   expect(errors).toEqual([]);
 });
 
+test('Torre inicia a aura só no andar, roda o elenco sem repetição e mantém Game Over na arena',async({page})=>{
+  const errors=await boot(page,'flow');
+  const audit=await page.evaluate(async()=>{
+    const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+    towerMode=true; towerFloor=1; bossRushMode=false; worldRun.active=false;
+    chosenIds=[0,1,2,3]; beginGame(0);
+    const heroIdx=ACTIVE[0];
+    const active=KINGDOMS[heroIdx].abilities.find(ability=>ability.kind==='active');
+    heroActiveQueue[heroIdx]=[active]; heroReady[heroIdx]=true; updateHeroProgressUI(heroIdx);
+    const before={
+      field:missionFieldStarted,
+      blocked:beginHeroConjurationLoop(heroIdx),
+      aura:document.querySelectorAll('.human-conjuration-aura').length,
+      intro:document.getElementById('storyLayer')?.classList.contains('show')
+    };
+    skipStory(true);
+    await wait(120);
+    const after={
+      field:missionFieldStarted,
+      aura:document.querySelectorAll(`.human-conjuration-aura[data-owner="${KINGDOMS[heroIdx].id}"]`).length
+    };
+    clearHeroConjurationLoops();
+    const order=towerStoryOrder();
+    const first=buildTowerStage(1);
+    const repeat=buildTowerStage(order.length+1);
+    const roster={
+      size:order.length,
+      unique:new Set(order.map(opponent=>opponent.cardId||opponent.etype)).size,
+      named:order.every(opponent=>typeof opponent.name==='string'&&opponent.name.length>0),
+      first:first.enemies[0].name,
+      scale:repeat.enemies[0].maxHp/first.enemies[0].maxHp,
+      label:document.getElementById('stageLabel')?.textContent
+    };
+    const facing={
+      bernyce:heroFacingDirection(KINGDOMS.find(hero=>hero.id==='bernyce')),
+      kalander:heroFacingDirection(KINGDOMS.find(hero=>hero.id==='kalander')),
+      jules:heroFacingDirection(KINGDOMS.find(hero=>hero.id==='jules')),
+      elizierEnemy:enemyFacingDirection({cardId:'elizier'})
+    };
+    eternalReviveCharges=0; chamarizCharges=0; playerHP=0;
+    handlePlayerDefeat();
+    await wait(1120);
+    return {
+      before,after,roster,facing,
+      gameOver:{
+        panel:document.getElementById('towerGameOverPanel')?.classList.contains('show'),
+        boardHidden:document.getElementById('board')?.classList.contains('tower-board-hidden'),
+        defeatOverlay:document.getElementById('defeatOverlay')?.classList.contains('show'),
+        report:document.getElementById('towerGameOverPanel')?.textContent||'',
+        downed:[...document.querySelectorAll('.hero-unit .avatar-circle')].every(avatar=>avatar.dataset.action==='defeat')
+      }
+    };
+  });
+  expect(audit.before).toMatchObject({field:false,blocked:false,aura:0,intro:true});
+  expect(audit.after.field).toBe(true);
+  expect(audit.after.aura).toBeGreaterThan(0);
+  expect(audit.roster.size).toBeGreaterThan(8);
+  expect(audit.roster.unique).toBe(audit.roster.size);
+  expect(audit.roster.named).toBe(true);
+  expect(audit.roster.first).toBe('Slime de Cerejeira');
+  expect(audit.roster.scale).toBeCloseTo(1.2,1);
+  expect(audit.roster.label).toContain('Andar 1');
+  expect(audit.facing).toEqual({bernyce:'right',kalander:'right',jules:'right',elizierEnemy:'left'});
+  expect(audit.gameOver).toMatchObject({panel:true,boardHidden:true,defeatOverlay:false,downed:true});
+  expect(audit.gameOver.report).toContain('Ranking das cartas usadas');
+  expect(errors).toEqual([]);
+});
+
 test('inimigo-carta só manifesta aura VFX durante a habilidade de fase',async({page})=>{
   const errors=await boot(page,'flow');
   const audit=await page.evaluate(async()=>{
@@ -2015,7 +2083,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.15');
+  expect(registration.caches).toContain('12r-v11.0.16');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2175,7 +2243,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.15');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.16');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

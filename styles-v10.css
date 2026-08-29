@@ -1680,6 +1680,50 @@ body.game-active .status-tray{
   border-radius:10px!important;
   align-self:center!important;
 }
+.tower-game-over-panel{
+  display:none;
+  grid-column:2;
+  grid-row:1;
+  width:min(100%,calc(30dvh - 8px));
+  height:min(100%,calc(30dvh - 8px));
+  min-height:0;
+  box-sizing:border-box;
+  align-self:center;
+  overflow:auto;
+  padding:8px 9px;
+  text-align:center;
+  color:#f5e9d0;
+  border:1px solid rgba(224,111,116,.6);
+  border-radius:10px;
+  background:linear-gradient(155deg,rgba(46,8,18,.97),rgba(11,5,14,.98));
+  box-shadow:inset 0 1px rgba(255,208,206,.12),0 5px 18px rgba(0,0,0,.45);
+}
+.tower-game-over-panel.show{display:flex;flex-direction:column;justify-content:flex-start;gap:4px}
+.tower-board-hidden{display:none!important}
+.tower-game-over-title{color:#ff9b9e;font:800 clamp(15px,3.6vw,24px)/1 Georgia,serif;letter-spacing:1.8px;text-shadow:0 2px 8px rgba(0,0,0,.8)}
+.tower-game-over-panel>p{margin:0;color:#edd5cf;font-size:8px;line-height:1.25}
+.tower-game-over-record{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;color:#e7bfad;font-size:6.3px;line-height:1.15}
+.tower-game-over-record span{padding:3px 2px;border-radius:5px;background:rgba(255,255,255,.045);border:1px solid rgba(255,196,181,.13)}
+.tower-game-over-record b{display:block;color:#fff3dd;font-size:8px}
+.tower-game-over-panel .tower-defeat-report{display:block;width:100%;margin:1px 0 2px;padding:4px 5px;border-color:rgba(239,150,151,.28);background:rgba(6,3,10,.46)}
+.tower-game-over-panel .report-mvp{gap:5px;margin-bottom:3px}
+.tower-game-over-panel .report-mvp img{width:25px;height:34px}
+.tower-game-over-panel .report-mvp small{font-size:5.8px;letter-spacing:.8px}
+.tower-game-over-panel .report-mvp strong{font-size:9px}
+.tower-game-over-panel .report-mvp span{font-size:6.5px}
+.tower-game-over-panel .report-ranking-title{margin:2px 0 1px;font-size:6.2px;letter-spacing:.7px}
+.tower-game-over-panel .report-row{gap:3px;margin:1px 0;font-size:6.5px}
+.tower-game-over-panel .rr-rank{width:13px;flex-basis:13px;font-size:6px}
+.tower-game-over-panel .rr-name{width:52px;font-size:6px}
+.tower-game-over-panel .rr-bar{height:4px}
+.tower-game-over-panel .rr-val{width:20px;font-size:6px}
+.tower-game-over-panel .report-meta{margin-top:3px;font-size:6px;letter-spacing:.2px}
+.tower-game-over-restart{align-self:center;margin:0!important;padding:5px 10px!important;font-size:8px!important}
+@media (max-width:600px){
+  .tower-game-over-panel{padding:6px 7px}
+  .tower-game-over-title{font-size:16px}
+  .tower-game-over-panel>p{font-size:7px}
+}
 .combat-console .vertical-hp{
   position:relative;
   grid-column:1;
