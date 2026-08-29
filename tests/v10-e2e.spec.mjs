@@ -89,8 +89,10 @@ test('v11 mostra dez formações e seleciona pelo corpo visível sem setas',asyn
   await page.mouse.click(chargedProbe[0].point.x,chargedProbe[0].point.y);
   await expect(page.locator('#abilityPickerScreen')).toHaveClass(/show/);
   await page.locator('[data-close="abilityPickerScreen"]').click();
+  await expect(page.locator('#abilityPickerScreen')).not.toHaveClass(/show/);
   await page.click('#battleToolsToggle');
   await expect(page.locator('#battleToolsPanel')).toHaveClass(/open/);
+  await expect(page.locator('#formationTool')).toBeVisible();
   const names=[];
   for(let i=0;i<10;i++){
     await page.click('#formationTool');
@@ -829,6 +831,164 @@ test('auras assinatura R16 aparecem no avatar e são limpas após a conjuração
     expect(sample.source).toContain(expected[sample.id]);
     expect(sample.castingScale).toBe(sample.idleScale);
   }
+  expect(errors).toEqual([]);
+});
+
+test('aura em 100% sustenta a conjuração e a ativa encerra em ataque no alvo',async({page})=>{
+  const errors=await boot(page,'flow');
+  const choreography=await page.evaluate(async()=>{
+    const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+    const waitFor=async(predicate,timeout=2800)=>{
+      const deadline=performance.now()+timeout;
+      while(performance.now()<deadline){ if(predicate()) return true; await wait(40); }
+      return predicate();
+    };
+    worldRun={active:true,fase:5,nivel:1,storyMode:false};
+    chosenIds=['julius','gareth','roland','cedric'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    beginGame(0); skipStory();
+    const idx=KINGDOMS.findIndex(hero=>hero.id==='julius');
+    const hero=KINGDOMS[idx];
+    const passive=hero.abilities.find(ability=>ability.kind==='passive');
+    const active=hero.abilities.find(ability=>ability.kind==='active');
+    const avatar=document.getElementById('party-julius-avatar');
+    triggerAbility(idx,passive,{deferRoomCheck:true});
+    await waitFor(()=>avatar.dataset.action==='cast'&&Boolean(document.querySelector('.human-conjuration-aura[data-owner="julius"]'))&&Boolean(document.querySelector('[data-fx="conjuration"]')));
+    const passiveCast={
+      action:avatar.dataset.action,
+      aura:Boolean(document.querySelector('.human-conjuration-aura[data-owner="julius"]')),
+      castFx:Boolean(document.querySelector('[data-fx="conjuration"]'))
+    };
+    await waitFor(()=>avatar.dataset.action==='attack'&&Boolean(document.querySelector('.fx-attack-signature')));
+    const passiveAttack={
+      action:avatar.dataset.action,
+      target:document.querySelector('.fx-attack-signature')?.dataset.targetAnchor||''
+    };
+    await wait(900);
+    heroActiveQueue[idx]=[active]; heroReady[idx]=true;
+    updateHeroProgressUI(idx); beginHeroConjurationLoop(idx);
+    await waitFor(()=>avatar.dataset.action==='cast'&&Boolean(document.querySelector('.human-conjuration-aura.sustained[data-owner="julius"]')));
+    const held={
+      action:avatar.dataset.action,
+      sustained:Boolean(document.querySelector('.human-conjuration-aura.sustained[data-owner="julius"]')),
+      ready:document.getElementById('party-julius')?.classList.contains('conjuring-ready'),
+      bar:document.getElementById('charge-'+hero.id)?.style.width,
+      label:document.getElementById('chargeText-'+hero.id)?.textContent||''
+    };
+    useQueuedActive(idx,active);
+    await waitFor(()=>avatar.dataset.action==='attack'&&Boolean(document.querySelector('.fx-attack-signature')));
+    const released={
+      action:avatar.dataset.action,
+      sustained:Boolean(document.querySelector('.human-conjuration-aura.sustained[data-owner="julius"]')),
+      target:document.querySelector('.fx-attack-signature')?.dataset.targetAnchor||''
+    };
+    await waitFor(()=>avatar.dataset.action==='idle');
+    return {passiveCast,passiveAttack,held,released,returned:avatar.dataset.action};
+  });
+  expect(choreography.passiveCast).toMatchObject({action:'cast',aura:true,castFx:true});
+  expect(choreography.passiveAttack.action).toBe('attack');
+  expect(choreography.passiveAttack.target).toBe('enemyPortrait-0');
+  expect(choreography.held).toMatchObject({action:'cast',sustained:true,ready:true,bar:'100%'});
+  expect(choreography.held.label).toContain('100/100');
+  expect(choreography.released).toMatchObject({action:'attack',sustained:false,target:'enemyPortrait-0'});
+  expect(choreography.returned).toBe('idle');
+  expect(errors).toEqual([]);
+});
+
+test('galeria individual reproduz os VFX de ataque e conjuração aprovados',async({page})=>{
+  const errors=await boot(page,'flow');
+  const gallery=await page.evaluate(async()=>{
+    const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+    const idx=KINGDOMS.findIndex(hero=>hero.id==='julius');
+    openCardModal(idx);
+    await wait(120);
+    document.querySelector('#motionShowcaseActions [data-motion="cast"]')?.click();
+    await wait(160);
+    const cast={
+      action:document.getElementById('motionShowcaseAvatar')?.dataset.action,
+      aura:getComputedStyle(document.getElementById('motionShowcaseAura')).backgroundImage,
+      magic:getComputedStyle(document.getElementById('motionShowcaseVfx')).backgroundImage,
+      target:document.getElementById('motionShowcaseTarget')?.classList.contains('visible')
+    };
+    document.querySelector('#motionShowcaseActions [data-motion="attack"]')?.click();
+    await wait(160);
+    const attack={
+      action:document.getElementById('motionShowcaseAvatar')?.dataset.action,
+      vfx:getComputedStyle(document.getElementById('motionShowcaseVfx')).backgroundImage,
+      target:document.getElementById('motionShowcaseTarget')?.classList.contains('visible'),
+      impact:document.getElementById('motionShowcaseImpact')?.classList.contains('active')
+    };
+    closeCardModalFn();
+    return {cast,attack};
+  });
+  expect(gallery.cast.action).toBe('cast');
+  expect(gallery.cast.aura).toContain('v15-conjuration/special/julius');
+  expect(gallery.cast.magic).toContain('v12-magic/humanos/julius');
+  expect(gallery.cast.target).toBe(false);
+  expect(gallery.attack).toMatchObject({action:'attack',target:true,impact:true});
+  expect(gallery.attack.vfx).toContain('v11-review/human/julius/attack');
+  expect(errors).toEqual([]);
+});
+
+test('galeria individual cobre as cinco poses e os VFX das doze cartas humanas',async({page})=>{
+  const errors=await boot(page,'flow');
+  const audit=await page.evaluate(async()=>{
+    const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+    const ids=['gareth','cedric','elizier','roland','berenice-jovem','galateia-jovem','adriel-jovem','acqua-jovem','jules','kalander','bernyce','julius'];
+    const actions=['idle','attack','cast','hit','victory'];
+    const rows=[];
+    for(const id of ids){
+      const hero=KINGDOMS.find(candidate=>candidate.id===id);
+      openCardModal(KINGDOMS.indexOf(hero));
+      await wait(72);
+      const row={id,poses:{},attackFx:'',castFx:'',aura:''};
+      for(const action of actions){
+        document.querySelector(`#motionShowcaseActions [data-motion="${action}"]`)?.click();
+        await wait(84);
+        row.poses[action]=document.getElementById('motionShowcaseAvatar')?.dataset.action||'';
+        if(action==='attack') row.attackFx=getComputedStyle(document.getElementById('motionShowcaseVfx')).backgroundImage;
+        if(action==='cast'){
+          row.castFx=getComputedStyle(document.getElementById('motionShowcaseVfx')).backgroundImage;
+          row.aura=getComputedStyle(document.getElementById('motionShowcaseAura')).backgroundImage;
+        }
+      }
+      closeCardModalFn();
+      rows.push(row);
+    }
+    return rows;
+  });
+  expect(audit).toHaveLength(12);
+  for(const row of audit){
+    expect(row.poses,JSON.stringify(row)).toMatchObject({idle:'idle',attack:'attack',cast:'cast',hit:'hit',victory:'victory'});
+    expect(row.attackFx,JSON.stringify(row)).toContain(`v11-review/human/${row.id}/attack`);
+    expect(row.castFx,JSON.stringify(row)).toContain(`v12-magic/humanos/${row.id}/cast`);
+    const expectedAura={kalander:'v15-conjuration/special/kalander',bernyce:'v14-conjuration/special/bernyce',jules:'v15-conjuration/special/jules',julius:'v15-conjuration/special/julius'}[row.id]||'v13-conjuration/aura-runes';
+    expect(row.aura,JSON.stringify(row)).toContain(expectedAura);
+  }
+  expect(errors).toEqual([]);
+});
+
+test('habilidade de fase inimiga conjura antes de atacar o herói frontal',async({page})=>{
+  const errors=await boot(page,'flow');
+  const choreography=await page.evaluate(async()=>{
+    const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+    worldRun={active:true,fase:5,nivel:1,storyMode:false};
+    chosenIds=['gareth','roland','elizier','cedric'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    beginGame(0); skipStory();
+    const enemy=enemies[0];
+    const avatar=document.getElementById('enemyPortrait-0');
+    const running=performEnemyStageAbility(0,enemy,{nome:'Dreno de Aura',tipo:'drenarTodosECurar',valor:6,curaMult:1,desc:'teste'});
+    await wait(160);
+    const cast={action:avatar.dataset.action,telegraph:Boolean(document.querySelector('[data-fx="telegraph"]'))};
+    await wait(770);
+    const fx=document.querySelector('.fx-attack-signature');
+    const attack={action:avatar.dataset.action,target:fx?.dataset.targetAnchor||''};
+    await running;
+    return {cast,attack,charging:document.getElementById('enemy-0')?.classList.contains('charging')};
+  });
+  expect(choreography.cast).toMatchObject({action:'cast',telegraph:true});
+  expect(choreography.attack.action).toBe('attack');
+  expect(choreography.attack.target).toMatch(/^party-.*-avatar$/);
+  expect(choreography.charging).toBe(false);
   expect(errors).toEqual([]);
 });
 
@@ -1740,7 +1900,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.13');
+  expect(registration.caches).toContain('12r-v11.0.14');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -1900,7 +2060,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.13');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.14');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

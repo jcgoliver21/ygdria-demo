@@ -2215,6 +2215,10 @@ function resolveHeroBodyAtPoint(clientX,clientY){
 }
 function handleHeroBodyPointer(event){
   if((event.button!==undefined&&event.button!==0)||event.isPrimary===false||!canAcceptPlayerInput()) return;
+  /* O hit-test alfa procura o corpo visível mesmo sob outra unidade. Ele não
+     deve, porém, transformar um toque em controles da HUD (que compartilham a
+     área visual da arena no mobile) em um toque no herói. */
+  if(event.target instanceof Element && event.target.closest('button, input, select, textarea, a, [role="button"], .battle-tools-panel, .battle-tools-toggle, .pro-overlay, .overlay')) return;
   const unit=resolveHeroBodyAtPoint(event.clientX,event.clientY);
   const heroIndex=Number(unit?.dataset.heroIndex);
   if(!unit||!Number.isInteger(heroIndex)) return;
@@ -2573,6 +2577,7 @@ function resumeEnemyAnimations(){
 }
 
 function resetPartyAnimationState(){
+  clearHeroConjurationLoops();
   partyArenaEl?.classList.remove('party-hurt');
   ACTIVE.forEach(idx=>{
     const k=KINGDOMS[idx];
@@ -3025,8 +3030,11 @@ function renderHarpyUnits(spawned=false){
 
 function updateHeroProgressUI(idx){
   const k = KINGDOMS[idx];
-  const total = Math.max(0,Math.min(99,heroProgress[idx]||0));
   const queued = (heroActiveQueue[idx]||[]).length;
+  /* A reserva interna volta a contar a próxima volta de aura, porém para o
+     jogador uma ativa disponível é sempre 100/100 — inclusive enquanto a
+     conjuração fica sustentada no próprio herói. */
+  const total = queued>0 ? 100 : Math.max(0,Math.min(99,heroProgress[idx]||0));
   const bar = document.getElementById('charge-'+k.id);
   const txt = document.getElementById('chargeText-'+k.id);
   const unit = document.getElementById('party-'+k.id);
@@ -3124,11 +3132,16 @@ function useQueuedActive(idx,a){
   questEvent('active');
   queue.splice(queueIndex,1);
   heroActiveQueue[idx]=queue;
+  /* O estado de 100% só termina aqui, nunca ao encher a barra. A aura não é
+     reiniciada: ela é liberada para a sequência de ataque/suporte desta ativa. */
+  const sustainedRecord=sustainedHeroConjurations.get(idx);
+  const wasSustained=endHeroConjurationLoop(idx,{returnToIdle:false});
+  const hasNextActive=queue.length>0;
   updateHeroProgressUI(idx);
   document.getElementById('abilityPickerScreen').classList.remove('show');
   busy=true;
   setBattlePhase('heroes');
-  triggerAbility(idx,a);
+  triggerAbility(idx,a,{fromSustained:wasSustained,castReady:sustainedRecord?.castReady,resumeConjuration:hasNextActive});
   setBattleStatus(T(`${L(KINGDOMS[idx].nome)} liberou ${L(a.name)}!`,`${L(KINGDOMS[idx].nome)} unleashed ${L(a.name)}!`,`¡${L(KINGDOMS[idx].nome)} liberó ${L(a.name)}!`));
   haptic([30,25,55]);
   scheduleCombat(()=>{
@@ -4015,25 +4028,52 @@ function saAnnounce(e, sa){
   const el=anchor?.querySelector('.dmg-float:last-child');
   if(el){ el.textContent=L(sa.nome)+'!'; el.style.color='#ffb3c8'; el.style.fontSize='11px'; }
 }
-function runStageAbilities(){
-  if(busy) return; /* nunca mutar o tabuleiro com uma resolução de combos em voo */
-  enemies.forEach(e=>{
-    if(e.hp<=0) return;
+const STAGE_ABILITY_TARGETS_HERO=new Set(['drenarTodosECurar','drenarMaisCarregado','sobrecarga','encharcar']);
+function stageAbilityTargetsHero(ability){ return STAGE_ABILITY_TARGETS_HERO.has(ability?.tipo); }
+async function performEnemyStageAbility(enemyIdx,enemy,ability){
+  const epoch=combatEpoch;
+  const unit=document.getElementById('enemy-'+enemyIdx);
+  const source=document.getElementById('enemyPortrait-'+enemyIdx);
+  const actor=enemyCharacterFor(enemy);
+  unit?.classList.add('charging');
+  playEnemyAction(enemyIdx,'cast');
+  if(actor&&source) spawnHumanConjurationAura(actor,source);
+  else if(source) spawnCombatFx('telegraph',source,enemyAuraPalette(enemy)[1],520);
+  await wait(CONJURATION_LEAD_MS);
+  if(epoch!==combatEpoch||enemy.hp<=0){ unit?.classList.remove('charging'); return; }
+  if(stageAbilityTargetsHero(ability)){
+    playEnemyAction(enemyIdx,'attack');
+    const target=frontHeroAttackTarget(source)?.avatar||document.getElementById('playerHpAnchor');
+    if(source&&target){
+      const color=enemyAuraPalette(enemy)[1];
+      spawnCombatAttackFx(enemyFxRealm(enemy),source,target,color,'impact',enemy);
+      spawnCombatFx('impact',target,color,520);
+    }
+    await wait(360);
+    if(epoch!==combatEpoch||enemy.hp<=0){ unit?.classList.remove('charging'); return; }
+  }
+  try{ execStageAbility(enemy,ability); saAnnounce(enemy,ability); }catch(err){ console.warn('stageAbility', err); }
+  unit?.classList.remove('charging');
+}
+async function runStageAbilities(){
+  if(busy&&battlePhase!=='enemies') return; /* nunca mutar o tabuleiro com uma resolução de combos em voo */
+  const epoch=combatEpoch;
+  for(const e of enemies){
+    if(epoch!==combatEpoch||e.hp<=0) continue;
     const sa=stageAbilityFor(e.cardId);
-    if(!sa||sa.tempoReal) return;
+    if(!sa||sa.tempoReal) continue;
     e.saCounter=(e.saCounter||0)+1;
-    { const iEn=enemies.indexOf(e);
-      const anc=document.getElementById('enemy-'+iEn);
-      let bdg=anc?.querySelector('.sa-count');
-      if(anc&&!bdg){ bdg=document.createElement('div'); bdg.className='sa-count'; anc.appendChild(bdg); }
-      if(bdg) bdg.textContent='🗡'+Math.max(0,sa.cd-e.saCounter); }
-    document.getElementById('enemy-'+enemies.indexOf(e))?.classList.toggle('charging',e.saCounter>0);
-    if(e.saCounter<sa.cd) return;
+    const iEn=enemies.indexOf(e);
+    const anc=document.getElementById('enemy-'+iEn);
+    let bdg=anc?.querySelector('.sa-count');
+    if(anc&&!bdg){ bdg=document.createElement('div'); bdg.className='sa-count'; anc.appendChild(bdg); }
+    if(bdg) bdg.textContent='🗡'+Math.max(0,sa.cd-e.saCounter);
+    anc?.classList.toggle('charging',e.saCounter>0);
+    if(e.saCounter<sa.cd) continue;
     e.saCounter=0;
-    document.getElementById('enemy-'+enemies.indexOf(e))?.classList.remove('charging');
-    playEnemyAction(enemies.indexOf(e),'cast');
-    try{ execStageAbility(e,sa); saAnnounce(e,sa); }catch(err){ console.warn('stageAbility', err); }
-  });
+    await performEnemyStageAbility(iEn,e,sa);
+    if(epoch!==combatEpoch) return;
+  }
 }
 function execStageAbility(e, sa){
   let mexeuBoard=false;
@@ -6171,6 +6211,12 @@ async function flyEnergyToHero(colorIdx){
   return epoch===combatEpoch;
 }
 
+function awaitHeroActionAsset(colorIdx,action){
+  const k=KINGDOMS[colorIdx];
+  const src=k?.sprites?.[action]?.src;
+  if(!src||readySpriteAssets.has(src)) return Promise.resolve();
+  return preloadSpriteSource(src).catch(()=>{});
+}
 function triggerHeroAttackAnim(colorIdx){
   const k = KINGDOMS[colorIdx];
   const unit = document.getElementById('party-'+k.id);
@@ -6178,6 +6224,7 @@ function triggerHeroAttackAnim(colorIdx){
      animação no contêiner: em mobile ela concorria com a troca de frames. */
   unit?.classList.remove('attacking','casting');
   playHeroAction(colorIdx,'attack');
+  return awaitHeroActionAsset(colorIdx,'attack');
 }
 
 function triggerHeroCastAnim(colorIdx){
@@ -6185,7 +6232,33 @@ function triggerHeroCastAnim(colorIdx){
   const unit = document.getElementById('party-'+k.id);
   unit?.classList.remove('attacking','casting');
   playHeroAction(colorIdx,'cast');
+  return awaitHeroActionAsset(colorIdx,'cast');
 }
+
+/* Uma habilidade não deve "virar um ataque" só porque nasceu da aura. Esta
+   lista separa o que realmente alcança um adversário (dano, controle ou
+   debuff) do que atua no próprio grupo/tabuleiro. A coreografia usa a mesma
+   regra para passivas e ativas. */
+const ABILITY_OPPONENT_TYPES=new Set([
+  'dano','dot','danoDot','curaDano','danoCura','danoDobro','danoTodos','danoUltimoX5',
+  'damageAllFromLast','damageAllPartySum','echoAll','critBase','damageFromLast',
+  'damageFromHeroLast','damageAllFixed','stunAndDamageFromLast','damagePerRealmGem',
+  'danoArea','stunPerRealmGem','freezeBlast','freezeExecute','percentAtualCega','dotAll',
+  'laminaDimensional','damageTargetPercent','critBaseAll','weakestHalfOrDamage',
+  'damageAllPerRealmGem','damageAllAndVulnerable','sacrificeGolems','blind','atordoa',
+  'escudoAtordoa','vulnerableTurns','paralisiaTempo','sombrasDevoradoras'
+]);
+const ABILITY_IMMEDIATE_DAMAGE_TYPES=new Set([
+  'dano','danoDot','curaDano','danoCura','danoDobro','danoTodos','danoUltimoX5',
+  'damageAllFromLast','damageAllPartySum','echoAll','critBase','damageFromLast',
+  'damageFromHeroLast','damageAllFixed','stunAndDamageFromLast','damagePerRealmGem',
+  'danoArea','freezeBlast','freezeExecute','percentAtualCega','laminaDimensional',
+  'damageTargetPercent','critBaseAll','weakestHalfOrDamage','damageAllPerRealmGem',
+  'damageAllAndVulnerable','sacrificeGolems'
+]);
+const CONJURATION_LEAD_MS=840;
+function abilityTargetsOpponent(ability){ return ABILITY_OPPONENT_TYPES.has(ability?.tipo); }
+function abilityDealsImmediateDamage(ability){ return ABILITY_IMMEDIATE_DAMAGE_TYPES.has(ability?.tipo); }
 
 /* v9 · Coreografias de especial por reino: cada builder monta a cena do cast.
    O container recebe --sx/--sy (origem), --tx/--ty (alvo) e --ddx/--ddy (delta). */
@@ -6227,27 +6300,80 @@ function humanConjurationAuraSpec(characterId){
   if(!HUMAN_CHAPTER_BODY_PHYSICS_IDS.has(characterId)) return null;
   return HUMAN_CONJURATION_AURA_SHEETS[characterId]||HUMAN_CONJURATION_AURA_DEFAULT;
 }
-function spawnHumanConjurationAura(character,source){
-  const spec=humanConjurationAuraSpec(character?.id);
+const GENERIC_CONJURATION_AURA=Object.freeze({
+  src:'assets/vfx/v13-conjuration/aura-runes/processed/sheet-transparent.png',
+  masked:true,className:'realm-aura'
+});
+const sustainedHeroConjurations=new Map();
+function conjurationAuraSpecFor(character){
+  return humanConjurationAuraSpec(character?.id)||GENERIC_CONJURATION_AURA;
+}
+function spawnHumanConjurationAura(character,source,options={}){
+  const spec=conjurationAuraSpecFor(character);
   const layer=document.getElementById('specialFxLayer');
   if(!spec||!layer||!source||!particlesEnabled||reducedMotion) return false;
   const lr=layer.getBoundingClientRect(),sr=source.getBoundingClientRect();
-  const fx=acquireCombatFx(`human-conjuration-aura ${spec.className}`);
+  const fx=acquireCombatFx(`human-conjuration-aura ${spec.className}${options.persistent?' sustained':''}`);
   const lease=fx.__fxLease;
   fx.dataset.fx='human-conjuration-aura';
   fx.dataset.owner=character.id;
+  if(options.persistent) fx.dataset.persistent='true';
   fx.style.left=(sr.left-lr.left+sr.width*.5)+'px';
   fx.style.top=(sr.top-lr.top+sr.height*.54)+'px';
   fx.style.setProperty('--conjuration-aura-sheet',`url("${animationAssetUrl(spec.src)}")`);
+  fx.style.setProperty('--conjuration-aura-color',character?.colorLight||character?.color||'#fff0d0');
   fx.style.setProperty('--conjuration-aura-filter',spec.shadow
     ? 'brightness(1.26) contrast(1.14) drop-shadow(0 0 10px rgba(185,193,207,.42))'
     : spec.humanPink
       ? 'grayscale(1) sepia(1) saturate(5) hue-rotate(284deg) brightness(1.1) contrast(1.04) drop-shadow(0 0 9px rgba(255,112,183,.84))'
       : 'drop-shadow(0 0 8px rgba(255,255,255,.4))');
   fx.innerHTML='<span class="conjuration-aura-sheet" aria-hidden="true"></span>';
+  const sheet=fx.firstElementChild;
+  if(spec.masked&&sheet){
+    sheet.style.backgroundImage='none';
+    sheet.style.backgroundColor='var(--conjuration-aura-color)';
+    sheet.style.webkitMaskImage=`url("${animationAssetUrl(spec.src)}")`;
+    sheet.style.maskImage=`url("${animationAssetUrl(spec.src)}")`;
+  }
   layer.appendChild(fx); trimCombatFx();
-  scheduleCombat(()=>releaseCombatFx(fx,lease),900);
+  if(!options.persistent) scheduleCombat(()=>releaseCombatFx(fx,lease),900);
+  return {fx,lease};
+}
+function beginHeroConjurationLoop(idx){
+  const k=KINGDOMS[idx];
+  const avatar=k&&document.getElementById('party-'+k.id+'-avatar');
+  const unit=k&&document.getElementById('party-'+k.id);
+  if(!k||!avatar||!unit||(heroActiveQueue[idx]||[]).length===0) return false;
+  const existing=sustainedHeroConjurations.get(idx);
+  if(existing?.avatar===avatar&&avatar.dataset.action==='cast') return true;
+  endHeroConjurationLoop(idx,{returnToIdle:false});
+  const request=String((Number(avatar.dataset.actionRequest||0)||0)+1);
+  avatar.dataset.actionRequest=request;
+  const start=()=>{
+    if(!avatar.isConnected||avatar.dataset.actionRequest!==request||(heroActiveQueue[idx]||[]).length===0) return;
+    animateHeroAvatar(avatar,k,'cast',{loop:true});
+  };
+  const castSource=k.sprites?.cast?.src;
+  const castReady=castSource&&!readySpriteAssets.has(castSource)
+    ? preloadSpriteSource(castSource).then(start).catch(()=>{})
+    : Promise.resolve().then(start);
+  unit.classList.add('conjuring-ready');
+  const aura=spawnHumanConjurationAura(k,avatar,{persistent:true});
+  sustainedHeroConjurations.set(idx,{avatar,unit,fx:aura?.fx||null,lease:aura?.lease||0,castReady});
   return true;
+}
+function endHeroConjurationLoop(idx,{returnToIdle=true}={}){
+  const record=sustainedHeroConjurations.get(idx);
+  const k=KINGDOMS[idx];
+  const avatar=record?.avatar||(k&&document.getElementById('party-'+k.id+'-avatar'));
+  record?.unit?.classList.remove('conjuring-ready');
+  if(record?.fx) releaseCombatFx(record.fx,record.lease);
+  sustainedHeroConjurations.delete(idx);
+  if(returnToIdle&&avatar&&k&&avatar.dataset.action==='cast') animateHeroAvatar(avatar,k,'idle',{loop:true});
+  return Boolean(record);
+}
+function clearHeroConjurationLoops(){
+  [...sustainedHeroConjurations.keys()].forEach(idx=>endHeroConjurationLoop(idx));
 }
 
 /* Magias das cartas do Reino dos Humanos: a folha corporal continua sendo a
@@ -6267,19 +6393,39 @@ function buildHumanMagicFx(el,characterId){
   return true;
 }
 
-function launchSpecialFx(idx,a){
+function launchSpecialFx(idx,a,options={}){
   if(!particlesEnabled) return;
   const k = KINGDOMS[idx];
   /* Cartas novas herdam AUTOMATICAMENTE a coreografia do seu reino (iconId) */
   const realmFx = k.iconId||k.id;
   const layer = document.getElementById('specialFxLayer');
   const source = document.getElementById('party-'+k.id+'-avatar');
+  const conjurationOnly=options.conjurationOnly===true;
   const defensive = ['cura','escudo','escudoAtordoa','escudoCura','buff','curaBuff','healPercent','shieldTurns','reflectTurns','invulnerableTurns','lifestealCharges','activateAllUltimates','stoneArmor'].includes(a.tipo);
   const boardEffect = ['doubleRedOnce','spawnPowerUps'].includes(a.tipo);
   const targetIdx = currentTargetIndex();
-  const target = boardEffect ? boardEl : (defensive ? document.getElementById('playerHpAnchor') : document.getElementById('enemy-'+targetIdx));
+  const target = conjurationOnly ? source : (boardEffect ? boardEl : (defensive ? document.getElementById('playerHpAnchor') : document.getElementById('enemy-'+targetIdx)));
   if(!layer||!source||!target) return;
-  if(a.kind!=='passive') spawnHumanConjurationAura(k,source);
+  /* Passivas também são habilidades de aura: o corpo conjura antes de qualquer
+     ataque. A camada é independente do sprite e nunca muda a estatura. */
+  spawnHumanConjurationAura(k,source);
+  if(conjurationOnly){
+    const lr=layer.getBoundingClientRect(),sr=source.getBoundingClientRect();
+    const sx=sr.left-lr.left+sr.width/2-16, sy=sr.top-lr.top+sr.height/2-16;
+    const builder=SPECIAL_ABILITY_BUILDERS[a.tipo]||SPECIAL_CAST_BUILDERS[realmFx];
+    const castEl=document.createElement('div');
+    castEl.className='special-cast sc-'+realmFx+(a.kind==='active'?' ultimate':'');
+    castEl.dataset.fx='conjuration';
+    castEl.style.setProperty('--sx',sx+'px'); castEl.style.setProperty('--sy',sy+'px');
+    castEl.style.setProperty('--tx',sx+'px'); castEl.style.setProperty('--ty',sy+'px');
+    castEl.style.setProperty('--ddx','0px'); castEl.style.setProperty('--ddy','0px');
+    castEl.style.setProperty('--magic-half-x','0px'); castEl.style.setProperty('--magic-half-y','0px');
+    if(!buildHumanMagicFx(castEl,k.id)&&builder) builder(castEl);
+    layer.append(castEl);
+    trimCombatFx();
+    scheduleCombat(()=>castEl.remove(),980);
+    return;
+  }
   spawnCombatFx('telegraph',target,k.colorLight,500);
   if(reducedMotion||reduceFlashes){
     target.classList.remove('fx-target-flash'); void target.offsetWidth; target.classList.add('fx-target-flash');
@@ -6377,8 +6523,10 @@ function registerHeroProgress(idx, count){
   });
   if(heroActiveQueue[idx].length){
     heroReady[idx]=true;
+    beginHeroConjurationLoop(idx);
   }else{
     heroReady[idx]=false;
+    endHeroConjurationLoop(idx);
   }
   firedTiers[idx]=new Set(k.abilities.filter(a=>a.kind==='passive'&&a.gems<=heroProgress[idx]).map(a=>a.gems));
   updateHeroProgressUI(idx);
@@ -6393,6 +6541,7 @@ function grantActiveSetToAll(){
     });
     heroReady[heroIdx]=true;
     updateHeroProgressUI(heroIdx);
+    beginHeroConjurationLoop(heroIdx);
   });
 }
 
@@ -6493,18 +6642,39 @@ function doubleRedGemsOnce(){
   return doubleRealmGemsOnce(fireIdx);
 }
 
+function launchAbilityAttackPresentation(idx,a){
+  const k=KINGDOMS[idx];
+  const source=k&&document.getElementById('party-'+k.id+'-avatar');
+  const targetIdx=currentTargetIndex();
+  const target=targetIdx>=0?document.getElementById('enemyPortrait-'+targetIdx):null;
+  if(!k||!source||!target) return;
+  /* Habilidades de controle sem número de dano ainda precisam sair da arma/mão
+     e alcançar o alvo. Dano direto já chama este mesmo VFX por applyDamage. */
+  spawnCombatAttackFx(k.iconId||k.id,source,target,k.colorLight,'impact',k);
+  playEnemyAction(targetIdx,'hit');
+  spawnCombatFx('impact',target,k.colorLight,520);
+}
+
 function triggerAbility(idx, a, options={}){
   const k = KINGDOMS[idx];
+  if(!k||!a) return false;
   explainMechanicOnce('ability-'+a.name,`${L(a.name)}: ${L(a.desc||'habilidade especial do personagem')}`);
   const isPassive=a.kind==='passive';
+  const targetsOpponent=abilityTargetsOpponent(a);
+  const fromSustained=options.fromSustained===true;
   showAbilityBanner(k, a, isPassive);
-  if(isPassive) triggerHeroAttackAnim(idx); else triggerHeroCastAnim(idx);
-  launchSpecialFx(idx,a);
+  /* Toda habilidade nasce em conjuração. A ativa já carregada conserva a
+     própria pose/aura até o toque; nesse caso não reiniciamos o loop. */
   if(isPassive){ sfxPassive(); }
   else{ sfxUltimate(); sfxElemental(k.iconId||k.id); showUltimateCutin(k,a); }
   sfxHeroSignature(k.iconId||k.id,!isPassive);
   setBattleStatus(T(`${L(k.nome).split(',')[0]} lançou ${L(a.name)}.`,`${L(k.nome).split(',')[0]} cast ${L(a.name)}.`,`${L(k.nome).split(',')[0]} lanzó ${L(a.name)}.`));
   haptic(isPassive ? 22 : [35,20,70]);
+  const resolveAbility=async()=>{
+    if(targetsOpponent){
+      await triggerHeroAttackAnim(idx);
+      if(!abilityDealsImmediateDamage(a)) launchAbilityAttackPresentation(idx,a);
+    }
   switch(a.tipo){
     case 'dano': applyDamageToEnemy(a.valor, idx); break;
     case 'dot': addDot(a.valor, a.turnos); break;
@@ -6623,7 +6793,7 @@ function triggerAbility(idx, a, options={}){
       break;
     }
     case 'healFixed': healPlayer(a.valor||300); break;
-    case 'percentAtualCega': { const ti=currentTargetIndex(); if(ti>=0){ applyDamageToEnemy(Math.max(1,Math.round(enemies[ti].hp*(a.pct||0.2)))); enemyBlindTurns+=1; } break; }
+    case 'percentAtualCega': { const ti=currentTargetIndex(); if(ti>=0){ applyDamageToEnemy(Math.max(1,Math.round(enemies[ti].hp*(a.pct||0.2))),idx,ti); enemyBlindTurns+=1; } break; }
     case 'paralisiaTempo': { const ti=currentTargetIndex(); if(ti>=0){ enemies[ti].timeStopped=true; setBattleStatus(T(`O tempo de ${L(enemies[ti].name)} foi paralisado!`,`${L(enemies[ti].name)}'s time has been frozen!`,`¡El tiempo de ${L(enemies[ti].name)} fue paralizado!`)); } break; }
     case 'sombrasDevoradoras': sombrasDevoradorasOn=true; break;
     case 'laminaDimensional': {
@@ -6705,6 +6875,28 @@ function triggerAbility(idx, a, options={}){
   if(!options.deferRoomCheck&&allEnemiesDefeated()){
     scheduleCombat(()=>finishRoomIfCleared(T(`${L(a.name)} derrotou todos os inimigos da sala.`,`${L(a.name)} defeated every enemy in the room.`,`${L(a.name)} derrotó a todos los enemigos de la sala.`)),40);
   }
+    if(options.resumeConjuration){
+      scheduleCombat(()=>beginHeroConjurationLoop(idx),targetsOpponent?780:260);
+    }else if(fromSustained&&!targetsOpponent){
+      /* Uma ativa de cura/suporte não ataca: ela conclui a conjuração e o
+         personagem retorna ao idle depois da liberação visual. */
+      scheduleCombat(()=>{
+        const avatar=document.getElementById('party-'+k.id+'-avatar');
+        if(avatar?.dataset.action==='cast') animateHeroAvatar(avatar,k,'idle',{loop:true});
+      },520);
+    }
+  };
+  /* A duração respeita a folha corporal 3×2 e mantém a leitura temporal:
+     conjurar → atacar (se houver alvo) → efeito. */
+  const castReady=fromSustained?(options.castReady||Promise.resolve()):triggerHeroCastAnim(idx);
+  const scheduleResolve=()=>{
+    /* A pose corporal entra primeiro. Só depois dela estar renderizável o VFX
+       de conjuração aparece e começa a janela para o ataque/efeito. */
+    if(!fromSustained) launchSpecialFx(idx,a,{conjurationOnly:true});
+    scheduleCombat(()=>{ void resolveAbility(); },fromSustained?140:CONJURATION_LEAD_MS);
+  };
+  Promise.resolve(castReady).then(scheduleResolve,scheduleResolve);
+  return {targetsOpponent,delay:fromSustained?140:CONJURATION_LEAD_MS};
 }
 
 function showAbilityBanner(k, a, isTierMessage){
@@ -6976,7 +7168,7 @@ function finalizeDefeat(){
   return true;
 }
 
-function enemyCounterAttack(){
+async function enemyCounterAttack(){
   setBattlePhase('enemies');
   if(playerHP<=0){ busy=false; return; }
   /* Difícil/Pesadelo: TODOS os inimigos vivos atacam, um de cada vez, após a sua jogada */
@@ -7010,7 +7202,8 @@ function enemyCounterAttack(){
     encerrar();
     return;
   }
-  runStageAbilities(); /* Habilidades de Fase dos inimigos-carta (suprimidas por stun/cegueira) */
+  await runStageAbilities(); /* conjuração inimiga conclui antes do contra-ataque comum */
+  if(playerHP<=0||stageTransitioning){ busy=false; return; }
   const compasso=Math.max(180,Math.round(560/(BATTLE_SPEEDS[battleSpeedIndex]||1)));
   let passo=0;
   const proximo=()=>{
@@ -7602,6 +7795,67 @@ const MOTION_ACTION_LABELS={
   hit:()=>T('Impacto','Hit','Impacto'),
   victory:()=>T('Vitória','Victory','Victoria')
 };
+function motionShowcaseFxSpec(k,action){
+  if(action==='attack'){
+    const human=HUMAN_CHAPTER_ATTACK_SHEETS[k.id];
+    if(human) return {src:human,attack:true,humanPink:isHumanRealmAttacker(k),shadow:k.id==='julius'};
+    if(k.id==='agua') return {src:'assets/characters/runtime-v10/agua/attack-water-blast-3x2.png',attack:true};
+  }
+  if(action==='cast'){
+    const human=HUMAN_MAGIC_FX_SHEETS[k.id];
+    if(human) return {src:human,cast:true,humanPink:isHumanRealmAttacker(k),shadow:k.id==='julius'};
+    if(k.id==='agua') return {src:'assets/characters/runtime-v10/agua/cast-water-bubbles-3x2.png',cast:true};
+  }
+  return null;
+}
+function resetMotionShowcaseVfx(){
+  const aura=document.getElementById('motionShowcaseAura');
+  const fx=document.getElementById('motionShowcaseVfx');
+  const impact=document.getElementById('motionShowcaseImpact');
+  const target=document.getElementById('motionShowcaseTarget');
+  if(aura){ aura.className='motion-showcase-aura'; aura.removeAttribute('style'); }
+  if(fx){ fx.className='motion-showcase-vfx'; fx.removeAttribute('style'); }
+  if(impact){ impact.className='motion-showcase-impact'; impact.removeAttribute('style'); }
+  if(target){ target.className='motion-showcase-target'; target.removeAttribute('style'); }
+}
+function renderMotionShowcaseVfx(k,action){
+  resetMotionShowcaseVfx();
+  const showcase=document.getElementById('motionShowcase');
+  const aura=document.getElementById('motionShowcaseAura');
+  const fx=document.getElementById('motionShowcaseVfx');
+  const impact=document.getElementById('motionShowcaseImpact');
+  const target=document.getElementById('motionShowcaseTarget');
+  if(!showcase||!aura||!fx||!impact||!target) return;
+  const color=k.colorLight||k.color||'#ffd893';
+  showcase.style.setProperty('--showcase-color',color);
+  if(action==='cast'){
+    const auraSpec=humanConjurationAuraSpec(k.id)||GENERIC_CONJURATION_AURA;
+    aura.className='motion-showcase-aura active'+(auraSpec.masked?' masked':'')+(auraSpec.className?` ${auraSpec.className}`:'');
+    aura.style.setProperty('--showcase-color',color);
+    aura.style.setProperty('--showcase-aura-filter',auraSpec.shadow
+      ? 'brightness(1.26) contrast(1.14) drop-shadow(0 0 9px rgba(185,193,207,.42))'
+      : auraSpec.humanPink
+        ? 'grayscale(1) sepia(1) saturate(5) hue-rotate(284deg) brightness(1.1) contrast(1.04) drop-shadow(0 0 8px rgba(255,112,183,.84))'
+        : `drop-shadow(0 0 8px ${color})`);
+    if(auraSpec.masked){
+      aura.style.webkitMaskImage=`url("${animationAssetUrl(auraSpec.src)}")`;
+      aura.style.maskImage=`url("${animationAssetUrl(auraSpec.src)}")`;
+    }else aura.style.backgroundImage=`url("${animationAssetUrl(auraSpec.src)}")`;
+  }
+  const spec=motionShowcaseFxSpec(k,action);
+  if(!spec) return;
+  fx.className='motion-showcase-vfx active'+(spec.attack?' attack':'')+(spec.humanPink?' human-pink':'')+(spec.shadow?' shadow-fx':'');
+  fx.style.backgroundImage=`url("${animationAssetUrl(spec.src)}")`;
+  fx.style.setProperty('--showcase-fx-filter',spec.shadow
+    ? 'grayscale(1) contrast(1.14) drop-shadow(0 0 7px rgba(204,214,225,.3))'
+    : spec.humanPink
+      ? 'grayscale(1) sepia(1) saturate(5) hue-rotate(284deg) brightness(1.08) contrast(1.04) drop-shadow(0 0 8px rgba(255,116,181,.84))'
+      : `drop-shadow(0 0 7px ${color})`);
+  if(spec.attack){
+    target.classList.add('visible');
+    impact.classList.add('active');
+  }
+}
 function renderMotionShowcase(k){
   const showcase=document.getElementById('motionShowcase');
   const avatar=document.getElementById('motionShowcaseAvatar');
@@ -7614,17 +7868,18 @@ function renderMotionShowcase(k){
   const available=Object.keys(MOTION_ACTION_LABELS).filter(action=>k.sprites?.[action]?.src);
   showcase.hidden=!available.length;
   if(!available.length){ avatar.innerHTML=''; actions.innerHTML=''; return; }
-    const play=async action=>{
+  const play=async action=>{
       actions.querySelectorAll('button').forEach(button=>button.classList.toggle('active',button.dataset.motion===action));
       avatar.dataset.requestedAction=action;
       const spec=k.sprites?.[action];
-      if(spec?.src&&!failedSpriteAssets.has(spec.src)){
-        try{ await preloadSpriteSource(spec.src); }
-        catch(error){ markSpriteFailed(spec.src); }
-      }
+      const fxSpec=motionShowcaseFxSpec(k,action);
+      const auraSpec=action==='cast'?(humanConjurationAuraSpec(k.id)||GENERIC_CONJURATION_AURA):null;
+      const sources=[spec?.src,fxSpec?.src,auraSpec?.src].filter(Boolean);
+      await Promise.all(sources.map(src=>preloadSpriteSource(src).catch(()=>{ markSpriteFailed(src); })));
       const modal=document.getElementById('cardModal');
       if(avatar.dataset.requestedAction!==action||avatar.dataset.showcaseGeneration!==showcaseToken||avatar.dataset.showcaseHero!==k.id||window.__modalIdx!==KINGDOMS.indexOf(k)||!modal?.classList.contains('show')) return;
       animateHeroAvatar(avatar,k,action,{loop:action==='idle',hold:action==='victory'});
+      renderMotionShowcaseVfx(k,action);
   };
   actions.innerHTML=available.map(action=>`<button type="button" data-motion="${action}" aria-label="${MOTION_ACTION_LABELS[action]()} de ${L(k.nome)}">${MOTION_ACTION_LABELS[action]()}</button>`).join('');
   actions.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>play(button.dataset.motion)));
@@ -7694,6 +7949,7 @@ function closeCardModalFn(){
   const avatar=document.getElementById('motionShowcaseAvatar');
   if(avatar){ avatar.dataset.showcaseGeneration=String((Number(avatar.dataset.showcaseGeneration)||0)+1); delete avatar.dataset.requestedAction; delete avatar.dataset.showcaseHero; }
   stopHeroAnimation(avatar);
+  resetMotionShowcaseVfx();
   window.__modalIdx=null;
   modal.classList.remove('show','character-view');
   modal.setAttribute('aria-hidden','true');
@@ -8263,7 +8519,7 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
       heroProgress[heroIdx]=Math.max(0,Math.min(99,amount));
       if(amount>=100){
         const active=KINGDOMS[heroIdx]?.abilities.find(ability=>ability.kind==='active');
-        if(active){ heroActiveQueue[heroIdx]=[active]; heroReady[heroIdx]=true; }
+        if(active){ heroActiveQueue[heroIdx]=[active]; heroReady[heroIdx]=true; beginHeroConjurationLoop(heroIdx); }
       }
       updateHeroProgressUI(heroIdx);
       return {progress:heroProgress[heroIdx],queued:(heroActiveQueue[heroIdx]||[]).length};
@@ -9350,7 +9606,9 @@ async function runSmokeTest(){
     ok('4 heróis na arena', document.querySelectorAll('#partyArena .hero-unit').length===4);
     const hpAntes=enemies[0].hp;
     triggerAbility(11,KINGDOMS[11].abilities[3]);
-    await wait(300);
+    /* A habilidade passa pela leitura completa conjurar → ataque; o smoke
+       precisa esperar a janela real da coreografia antes de aferir o HP. */
+    await wait(CONJURATION_LEAD_MS+180);
     ok('habilidade causou dano', enemies[0].hp<hpAntes);
     enemies.forEach((e,i)=>{ if(e.hp>0) applyDamageToEnemy(e.hp,3,i); });
     finishRoomIfCleared();
