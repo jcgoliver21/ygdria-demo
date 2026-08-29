@@ -2060,6 +2060,29 @@ body.game-active .battle-row::after{
   min-width:27px;padding:4px;border-radius:12px;background:rgba(255,255,255,.1);
   color:#ffe8a3;font:900 9px/1 Arial,sans-serif;text-align:center;
 }
+/* A lista de ativas é contextual: pequena, próxima ao herói e sem escurecer
+   nem bloquear a arena inteira. Somente a própria caixa recebe toque. */
+#abilityPickerScreen{background:transparent!important;backdrop-filter:none!important;padding:0!important;pointer-events:none!important}
+#abilityPickerScreen.show{display:block!important}
+#abilityPickerScreen .ability-picker-dialog{
+  position:fixed;z-index:1;left:var(--ability-picker-x,50vw);top:var(--ability-picker-y,50dvh);
+  width:min(244px,calc(100vw - 24px));max-height:min(39dvh,288px);padding:9px 10px!important;
+  overflow:auto;pointer-events:auto;transform:translate(-50%,-100%);
+  border-radius:13px!important;background:linear-gradient(145deg,rgba(31,17,41,.95),rgba(8,5,15,.96))!important;
+  box-shadow:0 10px 28px rgba(0,0,0,.46);backdrop-filter:blur(7px);
+}
+#abilityPickerScreen.ability-picker-below .ability-picker-dialog{transform:translateX(-50%)}
+#abilityPickerScreen .dialog-header{margin-bottom:6px;padding-bottom:5px}
+#abilityPickerScreen .dialog-title{font-size:11px;letter-spacing:1px}
+#abilityPickerScreen .dialog-header .ghost-btn{min-width:42px;min-height:28px;padding:4px 7px;font-size:8px}
+#abilityPickerScreen .ability-picker-summary{margin:0 0 6px;font-size:8px;line-height:1.25}
+#abilityPickerScreen .ability-picker-list{gap:5px}
+#abilityPickerScreen .ability-choice{grid-template-columns:30px minmax(0,1fr) auto;gap:6px;padding:6px 7px;border-radius:8px}
+#abilityPickerScreen .ability-tier{width:27px;height:27px;font-size:8px}
+#abilityPickerScreen .ability-choice-copy b{font-size:9px}
+#abilityPickerScreen .ability-choice-copy small{font-size:7px;line-height:1.15}
+#abilityPickerScreen .ability-charge-count{min-width:22px;padding:3px;font-size:8px}
+@media (max-width:520px){#abilityPickerScreen .ability-picker-dialog{width:min(214px,calc(100vw - 18px));max-height:34dvh}}
 .card-modal-ability-section{margin:8px 0 4px;color:#f1cf75;font-size:10px;letter-spacing:1.2px;text-transform:uppercase}
 @media (max-height:700px){
   .combat-console{grid-template-columns:48px minmax(0,1fr) 86px!important}
@@ -3358,6 +3381,21 @@ body.quality-economy .unit-ground-shadow,body.quality-economy .arena-floor{filte
 .motion-showcase-actions button:focus-visible{outline:2px solid #fff1a7;outline-offset:2px}
 @media (max-width:520px){.motion-showcase-actions{grid-template-columns:repeat(3,minmax(0,1fr))}.motion-showcase-stage{height:142px}.motion-showcase-avatar{width:130px;height:130px}.motion-showcase-aura{width:144px;height:144px;bottom:3px}.motion-showcase-vfx{width:124px;height:94px}.motion-showcase-target{right:8%}}
 
+/* Vitrine individual: cada VFX nasce de um ponto corporal do avatar e, em
+   ataque, percorre até o marcador do alvo. Não há mais efeitos presos no alto
+   do palco ou centrados sem relação com personagem/impacto. */
+.motion-showcase-stage{position:relative}
+.motion-showcase-avatar{position:absolute;left:9%;bottom:0}
+.motion-showcase-target{right:auto;bottom:auto;transform:translate(-50%,-50%)}
+.motion-showcase-aura{left:50%;top:50%;bottom:auto;transform:translate(-50%,-57%)}
+.motion-showcase-vfx{left:50%;top:50%;bottom:auto;transform:translate(-50%,-50%)}
+.motion-showcase-impact{right:auto;bottom:auto;transform:translate(-50%,-50%)}
+@keyframes motionShowcaseTarget{0%,52%{transform:translate(-50%,-50%) scale(.45);opacity:0}62%{transform:translate(-50%,-50%) scale(1);opacity:.88}100%{transform:translate(-50%,-50%) scale(1.22);opacity:0}}
+@keyframes motionShowcaseFxFrames{0%,8%{opacity:0;background-position:0 0;transform:translate(-50%,-50%) scale(.86)}12%,24%{opacity:.94;background-position:50% 0;transform:translate(-50%,-50%) scale(1)}25%,39%{background-position:100% 0}40%,55%{background-position:0 100%;transform:translate(-50%,-50%) scale(1.03)}56%,73%{opacity:.98;background-position:50% 100%;transform:translate(-50%,-50%) scale(1.04)}74%,100%{opacity:0;background-position:100% 100%;transform:translate(-50%,-50%) scale(.95)}}
+@keyframes motionShowcaseAttackFrames{0%,8%{opacity:0;background-position:0 0;transform:translate(-50%,-50%) scale(.8)}14%,27%{opacity:1;background-position:50% 0;transform:translate(-50%,-50%) scale(1)}28%,42%{background-position:100% 0;transform:translate(calc(-50% + var(--showcase-travel-x-28,0px)),calc(-50% + var(--showcase-travel-y-28,0px))) scale(1.03)}43%,59%{background-position:0 100%;transform:translate(calc(-50% + var(--showcase-travel-x-58,0px)),calc(-50% + var(--showcase-travel-y-58,0px))) scale(1.06)}60%,76%{opacity:.96;background-position:50% 100%;transform:translate(calc(-50% + var(--showcase-travel-x,0px)),calc(-50% + var(--showcase-travel-y,0px))) scale(1)}77%,100%{opacity:0;background-position:100% 100%;transform:translate(calc(-50% + var(--showcase-travel-x,0px)),calc(-50% + var(--showcase-travel-y,0px))) scale(.92)}}
+@keyframes motionShowcaseImpact{0%,54%{opacity:0;transform:translate(-50%,-50%) scale(.35)}66%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.45)}}
+@media (max-width:520px){.motion-showcase-avatar{left:4%;bottom:0}.motion-showcase-aura{bottom:auto}.motion-showcase-vfx{bottom:auto}.motion-showcase-target{right:auto}}
+
 /* ===== v10.0.33 · Física de derrota grounded para todo o elenco ===== */
 .arena-atmosphere{position:absolute;inset:0;z-index:3;overflow:hidden;pointer-events:none;isolation:isolate;opacity:.9}
 .arena-atmosphere::before,.arena-atmosphere::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0}
@@ -3484,6 +3522,9 @@ body.game-active .enemy-row .unit-stage{height:clamp(112px,18vh,142px)!important
 @keyframes bodyAuraEmanate{0%,100%{transform:translateX(-50%);filter:blur(.2px);opacity:.72}50%{transform:translateX(-50%) translateY(-3px);filter:blur(.55px);opacity:1}}
 @keyframes bodyAuraFlame{from{clip-path:polygon(50% 8%,59% 23%,72% 25%,66% 45%,85% 58%,67% 77%,73% 100%,27% 100%,33% 77%,15% 58%,34% 45%,28% 25%,41% 23%)}to{clip-path:polygon(50% 0,63% 20%,75% 34%,70% 48%,91% 64%,68% 79%,77% 100%,23% 100%,32% 79%,9% 64%,30% 48%,25% 34%,37% 20%)}}
 @keyframes bodyAuraSparks{to{background-position:0 -66px,0 -58px,0 -44px}}
+/* Aura corporal antiga desativada permanentemente. A leitura de conjuração
+   pertence apenas às folhas VFX da camada especial. */
+.unit-charge-aura{display:none!important}
 
 /* Inimigos de arte unica recebem movimento de respiracao, investida, conjuro e
    impacto; inimigos-personagem usam acima as folhas v10 de cinco acoes. */

@@ -532,7 +532,7 @@ test('v10.0.1 restaura escala e anima inimigos-personagem e inimigos comuns',asy
   const errors=await boot(page,'flow');
   await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
   const probe=await page.evaluate(()=>window.__12rQA.enemyAnimationProbe());
-  expect(probe).toMatchObject({characterSheet:true,characterAction:'attack',genericAction:'cast',genericMotion:true,genericSheet:true,chargeAura:true});
+  expect(probe).toMatchObject({characterSheet:true,characterAction:'attack',genericAction:'cast',genericMotion:true,genericSheet:true,legacyBodyAura:false});
   expect(probe.idleSource).toContain('/physics-v11/humanos/enemies/slime-cereja/idle/sheet-transparent.png');
   expect(probe.idleFrameCount).toBe(10);
   expect(probe.rootedIdle).toMatchObject({active:true,sheetAnimation:'none',sheetTransform:'none'});
@@ -675,11 +675,11 @@ test('Torre ancora personagens no pátio real da arte',async({page})=>{
   expect(errors).toEqual([]);
 });
 
-test('aura de habilidade carregada emana do corpo, sem moldura quadrada',async({page})=>{
+test('aura de habilidade carregada usa VFX no corpo, sem aura de sprite nem moldura',async({page})=>{
   const errors=await boot(page,'flow');
   await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
   const aura=await page.evaluate(()=>window.__12rQA.heroAuraProbe());
-  expect(aura).toEqual({ready:true,aura:true,rectangularGlow:'none'});
+  expect(aura).toEqual({ready:true,legacyBodyAura:false,vfx:true,rectangularGlow:'none'});
   expect(errors).toEqual([]);
 });
 
@@ -989,6 +989,116 @@ test('habilidade de fase inimiga conjura antes de atacar o herói frontal',async
   expect(choreography.attack.action).toBe('attack');
   expect(choreography.attack.target).toMatch(/^party-.*-avatar$/);
   expect(choreography.charging).toBe(false);
+  expect(errors).toEqual([]);
+});
+
+test('VFXs usam ancoragem real, Kalander alcança o alvo e a aura não vaza entre missões',async({page})=>{
+  const errors=await boot(page,'flow');
+  const audit=await page.evaluate(async()=>{
+    const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+    const heroIdx=KINGDOMS.findIndex(hero=>hero.id==='kalander');
+    chosenIds=['kalander','gareth','roland','cedric'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    beginGame(0); skipStory();
+    const hero=KINGDOMS[heroIdx];
+    const source=document.getElementById('party-kalander-avatar');
+    const target=document.getElementById('enemyPortrait-0');
+    spawnCombatAttackFx('humanos',source,target,hero.colorLight,'impact',hero);
+    const kalanderFx=document.querySelector('.fx-attack-signature');
+    const kalander={
+      travels:kalanderFx?.classList.contains('attack-projectile'),
+      source:kalanderFx?.dataset.sourceAnchor||'',target:kalanderFx?.dataset.targetAnchor||'',
+      distance:Number.parseFloat(kalanderFx?.style.getPropertyValue('--attack-sheet-travel')||'0')
+    };
+    const active={kind:'active',name:'QA Aura',gems:100,tipo:'cura',valor:1};
+    heroActiveQueue[heroIdx]=[active]; heroReady[heroIdx]=true; updateHeroProgressUI(heroIdx);
+    openAbilityPicker(heroIdx);
+    const picker=document.getElementById('abilityPickerScreen');
+    const pickerDialog=picker?.querySelector('.ability-picker-dialog');
+    const pickerStyle=getComputedStyle(picker);
+    const pickerProbe={
+      overlayPointerEvents:pickerStyle.pointerEvents,
+      overlayTransparent:pickerStyle.backgroundColor==='rgba(0, 0, 0, 0)',
+      dialogPointerEvents:getComputedStyle(pickerDialog).pointerEvents,
+      width:pickerDialog?.getBoundingClientRect().width||0
+    };
+    picker?.classList.remove('show');
+    openCardModal(heroIdx);
+    await wait(80);
+    /* A interação já é coberta pela vitrine integral; aqui verificamos a
+       mesma função de renderização que ela chama, sem competir com o preload
+       assíncrono das folhas ao abrir o modal. */
+    renderMotionShowcaseVfx(hero,'attack');
+    await wait(32);
+    const showcaseFx=document.getElementById('motionShowcaseVfx');
+    const showcaseTarget=document.getElementById('motionShowcaseTarget');
+    const galleryAttack={
+      source:showcaseFx?.dataset.sourceAnchor||'',target:showcaseFx?.dataset.targetAnchor||'',
+      dx:Number.parseFloat(showcaseFx?.style.getPropertyValue('--showcase-travel-x')||'0'),
+      targetVisible:showcaseTarget?.classList.contains('visible')
+    };
+    renderMotionShowcaseVfx(hero,'cast');
+    await wait(32);
+    const caster=document.getElementById('motionShowcaseAvatar')?.getBoundingClientRect();
+    const aura=document.getElementById('motionShowcaseAura');
+    const galleryCast={
+      auraX:Number.parseFloat(aura?.style.left||'0'),
+      casterX:caster?caster.left-document.querySelector('.motion-showcase-stage').getBoundingClientRect().left+caster.width*.5:0
+    };
+    closeCardModalFn();
+    enemies.forEach(enemy=>enemy.hp=0);
+    roomClearScheduled=true;
+    heroActiveQueue[heroIdx]=[active]; heroReady[heroIdx]=true;
+    const blocked=beginHeroConjurationLoop(heroIdx);
+    const between={blocked,legacy:document.querySelectorAll('.unit-charge-aura').length,conjuration:document.querySelectorAll('.human-conjuration-aura').length};
+    roomClearScheduled=false;
+    enemies[0].hp=1;
+    setBattlePhase('idle');
+    const inMission=beginHeroConjurationLoop(heroIdx);
+    await wait(90);
+    const mission={inMission,vfx:document.querySelectorAll('.human-conjuration-aura[data-owner="kalander"]').length};
+    clearHeroConjurationLoops();
+    return {kalander,picker:pickerProbe,galleryAttack,galleryCast,between,mission};
+  });
+  expect(audit.kalander).toMatchObject({travels:true,source:'party-kalander-avatar',target:'enemyPortrait-0'});
+  expect(audit.kalander.distance).toBeGreaterThan(25);
+  expect(audit.picker).toMatchObject({overlayPointerEvents:'none',overlayTransparent:true,dialogPointerEvents:'auto'});
+  expect(audit.picker.width).toBeLessThan(300);
+  expect(audit.galleryAttack).toMatchObject({source:'motionShowcaseAvatar',target:'motionShowcaseTarget',targetVisible:true});
+  expect(audit.galleryAttack.dx).toBeGreaterThan(60);
+  expect(Math.abs(audit.galleryCast.auraX-audit.galleryCast.casterX)).toBeLessThan(2);
+  expect(audit.between).toEqual({blocked:false,legacy:0,conjuration:0});
+  expect(audit.mission.inMission).toBe(true);
+  expect(audit.mission.vfx).toBeGreaterThan(0);
+  expect(errors).toEqual([]);
+});
+
+test('inimigo-carta só manifesta aura VFX durante a habilidade de fase',async({page})=>{
+  const errors=await boot(page,'flow');
+  const audit=await page.evaluate(async()=>{
+    const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+    chosenIds=['gareth','roland','elizier','cedric'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    beginGame(0); skipStory();
+    enemies=[{name:'Gareth',cardId:'gareth',hp:180,maxHp:180,atk:20,sprite:'assets/enemies/humanos/gareth.png'}];
+    renderEnemies();
+    const idle={
+      legacy:document.querySelectorAll('.unit-charge-aura').length,
+      charging:document.getElementById('enemy-0')?.classList.contains('charging'),
+      vfx:document.querySelectorAll('.human-conjuration-aura[data-owner="gareth"]').length
+    };
+    const running=performEnemyStageAbility(0,enemies[0],{nome:'Investida de Teste',tipo:'drenarTodosECurar',valor:1,curaMult:1});
+    await wait(150);
+    const casting={
+      action:document.getElementById('enemyPortrait-0')?.dataset.action,
+      legacy:document.querySelectorAll('.unit-charge-aura').length,
+      vfx:document.querySelectorAll('.human-conjuration-aura[data-owner="gareth"]').length
+    };
+    await running;
+    await wait(90);
+    return {idle,casting};
+  });
+  expect(audit.idle).toEqual({legacy:0,charging:false,vfx:0});
+  expect(audit.casting).toMatchObject({action:'cast',legacy:0});
+  expect(audit.casting.vfx).toBeGreaterThan(0);
   expect(errors).toEqual([]);
 });
 
@@ -1900,7 +2010,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.14');
+  expect(registration.caches).toContain('12r-v11.0.15');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2060,7 +2170,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.14');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.15');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

@@ -2673,6 +2673,9 @@ function attackSheetProfile(attacker){
   const projectile=new Set(['cedric','elizier','acqua-jovem','jules','bernyce']).has(id);
   return {
     id,src,humanPink:isHumanRealmAttacker(attacker),shadow:id==='julius',projectile,
+    /* A folha VFX é sempre uma extensão do golpe: inclusive o X de Kalander
+       percorre a trajetória até o inimigo selecionado. */
+    travelsToTarget:true,
     /* Elizier parte da ponta do arco, não do centro do retrato. */
     sourceXRight:id==='elizier' ? .78 : null,
     sourceXLeft:id==='elizier' ? .22 : null,
@@ -2862,7 +2865,7 @@ function spawnCombatAttackFx(realmId,source,target,color='#fff',kind='impact',at
       : style==='body'
         ? '<span class="attack-body-wave"></span><span class="attack-contact physical"></span>'
       : '<span class="attack-origin"></span><span class="attack-trail"></span><span class="attack-trail secondary"></span><span class="attack-mote mote-a"></span><span class="attack-mote mote-b"></span><span class="attack-contact"></span>';
-  fx.classList.toggle('attack-projectile',Boolean(sheet?.projectile));
+  fx.classList.toggle('attack-projectile',Boolean(sheet?.travelsToTarget));
   layer.appendChild(fx);
   trimCombatFx();
   window.setTimeout(()=>releaseCombatFx(fx,lease),kind==='critical'?980:820);
@@ -2938,7 +2941,6 @@ function renderPartyArena(){
     const stageHtml=`
       <div class="unit-stage">
         <div class="unit-ground-shadow"></div>
-        <div class="unit-charge-aura" aria-hidden="true"></div>
         <div class="avatar-circle" id="party-${k.id}-avatar" data-hero-id="${k.id}" data-action="idle">${avatarContent}</div>
       </div>`;
     const nomeHtml=vizPrefs.heroNames==='off'?'':`
@@ -3093,6 +3095,23 @@ function abilityCanBeUsed(a){
   return true;
 }
 
+function positionAbilityPicker(idx){
+  const picker=document.getElementById('abilityPickerScreen');
+  const k=KINGDOMS[idx];
+  const anchor=k&&document.getElementById('party-'+k.id);
+  if(!picker||!anchor) return;
+  const rect=anchor.getBoundingClientRect();
+  const gutter=12;
+  const x=Math.max(126,Math.min(window.innerWidth-126,rect.left+rect.width*.5));
+  const useBelow=rect.top<164;
+  const y=useBelow
+    ? Math.min(window.innerHeight-10,rect.bottom+8)
+    : Math.max(10,rect.top-7);
+  picker.classList.toggle('ability-picker-below',useBelow);
+  picker.style.setProperty('--ability-picker-x',x+'px');
+  picker.style.setProperty('--ability-picker-y',y+'px');
+  picker.style.setProperty('--ability-picker-gutter',gutter+'px');
+}
 function openAbilityPicker(idx){
   const k = KINGDOMS[idx];
   const queue=heroActiveQueue[idx]||[];
@@ -3120,7 +3139,9 @@ function openAbilityPicker(idx){
     btn.addEventListener('click',()=>useQueuedActive(idx,a));
     list.appendChild(btn);
   });
-  document.getElementById('abilityPickerScreen').classList.add('show');
+  const picker=document.getElementById('abilityPickerScreen');
+  picker.classList.add('show');
+  positionAbilityPicker(idx);
 }
 
 function useQueuedActive(idx,a){
@@ -3810,7 +3831,6 @@ function renderEnemies(){
       <div class="unit-stage">
         <div class="target-arrow"></div>
         <div class="unit-ground-shadow"></div>
-        <div class="unit-charge-aura" aria-hidden="true"></div>
         <div class="avatar-circle enemy-avatar" id="enemyPortrait-${idx}" data-action="idle">${enemyFallbackMarkup(e)}</div>
       </div>`;
     const nomeHtml=vizPrefs.enemyNames==='off'?'':`
@@ -4035,12 +4055,11 @@ async function performEnemyStageAbility(enemyIdx,enemy,ability){
   const unit=document.getElementById('enemy-'+enemyIdx);
   const source=document.getElementById('enemyPortrait-'+enemyIdx);
   const actor=enemyCharacterFor(enemy);
-  unit?.classList.add('charging');
   playEnemyAction(enemyIdx,'cast');
   if(actor&&source) spawnHumanConjurationAura(actor,source);
   else if(source) spawnCombatFx('telegraph',source,enemyAuraPalette(enemy)[1],520);
   await wait(CONJURATION_LEAD_MS);
-  if(epoch!==combatEpoch||enemy.hp<=0){ unit?.classList.remove('charging'); return; }
+  if(epoch!==combatEpoch||enemy.hp<=0) return;
   if(stageAbilityTargetsHero(ability)){
     playEnemyAction(enemyIdx,'attack');
     const target=frontHeroAttackTarget(source)?.avatar||document.getElementById('playerHpAnchor');
@@ -4050,10 +4069,9 @@ async function performEnemyStageAbility(enemyIdx,enemy,ability){
       spawnCombatFx('impact',target,color,520);
     }
     await wait(360);
-    if(epoch!==combatEpoch||enemy.hp<=0){ unit?.classList.remove('charging'); return; }
+    if(epoch!==combatEpoch||enemy.hp<=0) return;
   }
   try{ execStageAbility(enemy,ability); saAnnounce(enemy,ability); }catch(err){ console.warn('stageAbility', err); }
-  unit?.classList.remove('charging');
 }
 async function runStageAbilities(){
   if(busy&&battlePhase!=='enemies') return; /* nunca mutar o tabuleiro com uma resolução de combos em voo */
@@ -4068,7 +4086,6 @@ async function runStageAbilities(){
     let bdg=anc?.querySelector('.sa-count');
     if(anc&&!bdg){ bdg=document.createElement('div'); bdg.className='sa-count'; anc.appendChild(bdg); }
     if(bdg) bdg.textContent='🗡'+Math.max(0,sa.cd-e.saCounter);
-    anc?.classList.toggle('charging',e.saCounter>0);
     if(e.saCounter<sa.cd) continue;
     e.saCounter=0;
     await performEnemyStageAbility(iEn,e,sa);
@@ -4625,6 +4642,11 @@ function loadStage(idx){
     scheduleCombat(()=>launchPendingRoomPassives(),260);
   }
   setBattlePhase('idle');
+  /* Cargas preservadas só voltam a emanar quando a próxima missão terminou
+     de montar inimigos, chão e estado idle — nunca no intervalo anterior. */
+  ACTIVE.forEach(idx2=>{
+    if((heroActiveQueue[idx2]||[]).length) beginHeroConjurationLoop(idx2);
+  });
   saveProgress();
 }
 
@@ -6020,6 +6042,7 @@ function finishRoomIfCleared(reason=T('Todos os inimigos foram derrotados.','All
   if(!allEnemiesDefeated() || roomClearScheduled || stageTransitioning) return false;
   if(board.some(row=>row.some(v=>v===-1))){ collapseAndRefill(); renderBoard(); }
   roomClearScheduled=true;
+  clearHeroConjurationLoops();
   busy=true;
   setBattlePhase('transition');
   comboStep=0;
@@ -6339,11 +6362,23 @@ function spawnHumanConjurationAura(character,source,options={}){
   if(!options.persistent) scheduleCombat(()=>releaseCombatFx(fx,lease),900);
   return {fx,lease};
 }
+/* Aura carregada existe apenas enquanto uma missão está em campo. A vitória e
+   a passagem entre salas não podem cortar animações com uma nova conjuração. */
+function canRunHeroAuraInMission(){
+  return Boolean(
+    activeStageData &&
+    !stageTransitioning &&
+    !roomClearScheduled &&
+    !gamePaused &&
+    battlePhase!=='transition' &&
+    enemies.some(enemy=>enemy.hp>0)
+  );
+}
 function beginHeroConjurationLoop(idx){
   const k=KINGDOMS[idx];
   const avatar=k&&document.getElementById('party-'+k.id+'-avatar');
   const unit=k&&document.getElementById('party-'+k.id);
-  if(!k||!avatar||!unit||(heroActiveQueue[idx]||[]).length===0) return false;
+  if(!k||!avatar||!unit||(heroActiveQueue[idx]||[]).length===0||!canRunHeroAuraInMission()) return false;
   const existing=sustainedHeroConjurations.get(idx);
   if(existing?.avatar===avatar&&avatar.dataset.action==='cast') return true;
   endHeroConjurationLoop(idx,{returnToIdle:false});
@@ -6523,7 +6558,8 @@ function registerHeroProgress(idx, count){
   });
   if(heroActiveQueue[idx].length){
     heroReady[idx]=true;
-    beginHeroConjurationLoop(idx);
+    if(canRunHeroAuraInMission()) beginHeroConjurationLoop(idx);
+    else endHeroConjurationLoop(idx);
   }else{
     heroReady[idx]=false;
     endHeroConjurationLoop(idx);
@@ -6541,7 +6577,7 @@ function grantActiveSetToAll(){
     });
     heroReady[heroIdx]=true;
     updateHeroProgressUI(heroIdx);
-    beginHeroConjurationLoop(heroIdx);
+    if(canRunHeroAuraInMission()) beginHeroConjurationLoop(heroIdx);
   });
 }
 
@@ -7814,9 +7850,41 @@ function resetMotionShowcaseVfx(){
   const impact=document.getElementById('motionShowcaseImpact');
   const target=document.getElementById('motionShowcaseTarget');
   if(aura){ aura.className='motion-showcase-aura'; aura.removeAttribute('style'); }
-  if(fx){ fx.className='motion-showcase-vfx'; fx.removeAttribute('style'); }
+  if(fx){ fx.className='motion-showcase-vfx'; fx.removeAttribute('style'); delete fx.dataset.sourceAnchor; delete fx.dataset.targetAnchor; }
   if(impact){ impact.className='motion-showcase-impact'; impact.removeAttribute('style'); }
   if(target){ target.className='motion-showcase-target'; target.removeAttribute('style'); }
+}
+function positionMotionShowcaseVfx(action){
+  const showcase=document.getElementById('motionShowcase');
+  const stage=showcase?.querySelector('.motion-showcase-stage');
+  const avatar=document.getElementById('motionShowcaseAvatar');
+  const aura=document.getElementById('motionShowcaseAura');
+  const fx=document.getElementById('motionShowcaseVfx');
+  const impact=document.getElementById('motionShowcaseImpact');
+  const target=document.getElementById('motionShowcaseTarget');
+  if(!stage||!avatar||!aura||!fx||!impact||!target) return;
+  const sr=stage.getBoundingClientRect(), ar=avatar.getBoundingClientRect();
+  if(sr.width<1||ar.width<1) return;
+  const sourceX=ar.left-sr.left+ar.width*(action==='attack'?.68:.5);
+  const sourceY=ar.top-sr.top+ar.height*(action==='attack'?.43:.48);
+  const auraX=ar.left-sr.left+ar.width*.5;
+  const auraY=ar.top-sr.top+ar.height*.54;
+  aura.style.left=auraX+'px'; aura.style.top=auraY+'px';
+  fx.style.left=sourceX+'px'; fx.style.top=sourceY+'px';
+  fx.dataset.sourceAnchor='motionShowcaseAvatar';
+  if(action!=='attack') return;
+  const targetX=Math.min(sr.width-26,Math.max(sourceX+72,sr.width*.82));
+  const targetY=Math.max(26,Math.min(sr.height-26,sourceY+2));
+  const dx=targetX-sourceX,dy=targetY-sourceY;
+  fx.dataset.targetAnchor='motionShowcaseTarget';
+  fx.style.setProperty('--showcase-travel-x',dx+'px');
+  fx.style.setProperty('--showcase-travel-y',dy+'px');
+  fx.style.setProperty('--showcase-travel-x-28',(dx*.28)+'px');
+  fx.style.setProperty('--showcase-travel-y-28',(dy*.28)+'px');
+  fx.style.setProperty('--showcase-travel-x-58',(dx*.58)+'px');
+  fx.style.setProperty('--showcase-travel-y-58',(dy*.58)+'px');
+  target.style.left=targetX+'px'; target.style.top=targetY+'px';
+  impact.style.left=targetX+'px'; impact.style.top=targetY+'px';
 }
 function renderMotionShowcaseVfx(k,action){
   resetMotionShowcaseVfx();
@@ -7855,6 +7923,8 @@ function renderMotionShowcaseVfx(k,action){
     target.classList.add('visible');
     impact.classList.add('active');
   }
+  positionMotionShowcaseVfx(action);
+  requestAnimationFrame(()=>positionMotionShowcaseVfx(action));
 }
 function renderMotionShowcase(k){
   const showcase=document.getElementById('motionShowcase');
@@ -8574,7 +8644,7 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
         genericMotion:Boolean(generic?.querySelector('.enemy-runtime-sheet,.enemy-motion-cast')),
         genericSheet:Boolean(generic?.querySelector('.enemy-runtime-sheet.grid-sheet')),
         idleSource,idleFrameCount,rootedIdle,bossStarCount,
-        chargeAura:Boolean(document.querySelector('#enemy-0 .unit-charge-aura')),
+        legacyBodyAura:Boolean(document.querySelector('#enemy-0 .unit-charge-aura')),
         rectangularGlow:getComputedStyle(character).boxShadow
       };
     },
@@ -8682,7 +8752,8 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
       heroActiveQueue[heroIdx]=active?[active]:[]; heroReady[heroIdx]=Boolean(active); updateHeroProgressUI(heroIdx);
       const unit=document.getElementById('party-'+KINGDOMS[heroIdx]?.id);
       const avatar=unit?.querySelector('.avatar-circle');
-      return {ready:Boolean(unit?.classList.contains('ready')),aura:Boolean(unit?.querySelector('.unit-charge-aura')),rectangularGlow:getComputedStyle(avatar).boxShadow};
+      beginHeroConjurationLoop(heroIdx);
+      return {ready:Boolean(unit?.classList.contains('ready')),legacyBodyAura:Boolean(unit?.querySelector('.unit-charge-aura')),vfx:Boolean(document.querySelector(`.human-conjuration-aura[data-owner="${KINGDOMS[heroIdx]?.id}"]`)),rectangularGlow:getComputedStyle(avatar).boxShadow};
     },
     openCard:(heroIdx)=>{ openCardModal(heroIdx); return KINGDOMS[heroIdx]?.id||null; },
     playHeroAction:(heroIdx,action)=>{ playHeroAction(heroIdx,action); return document.getElementById('party-'+KINGDOMS[heroIdx]?.id+'-avatar')?.dataset.action||null; },
