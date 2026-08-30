@@ -146,16 +146,51 @@ test('final humano encena prólogo, quedas e teleporte antes do epílogo canôni
   await page.evaluate(()=>YGDRIA_HUMAN_FINALE.run('victory',{speed:.02}));
   await expect(page.locator('.human-final-scene')).toBeVisible();
   await page.waitForTimeout(180);
-  await expect(page.locator('.human-final-scene')).toHaveClass(/adriel-teleporting/);
   await expect(page.locator('.finale-shadow')).toHaveClass(/dissolving/);
   await expect(page.locator('.human-final-shadow-strike')).toHaveCount(3);
+  await expect(page.locator('.human-final-shadow-skull')).toHaveCount(3);
+  await page.waitForTimeout(300);
+  await expect(page.locator('.human-final-scene')).toHaveClass(/adriel-teleporting/);
   await expect(page.locator('.human-final-teleport-vfx')).toHaveCount(1);
+  await page.waitForTimeout(160);
   await expect(page.locator('#party-roland')).toHaveClass(/human-final-hero-fallen/);
   await expect(page.locator('#party-elizier')).toHaveClass(/human-final-hero-fallen/);
   await expect(page.locator('#party-gareth')).toHaveClass(/human-final-hero-fallen/);
   await expect(page.locator('#party-adriel-jovem')).toHaveClass(/human-final-adriel-vanished/);
-  await page.waitForTimeout(180);
+  /* Cedric termina a conjuração antes de a narração assumir a cena. O marco
+     persiste para auditar a passagem mesmo na prévia acelerada. */
+  await expect(page.locator('.human-final-scene')).toHaveAttribute('data-final-cedric-line','shown');
+  await page.waitForTimeout(520);
   await expect(page.locator('#storyLayer')).toHaveClass(/show/);
+  await expect(page.locator('#storyName')).toContainText('Narrador');
+  await expect(page.locator('.human-final-scene')).toHaveAttribute('data-final-narration','active');
+  expect(errors).toEqual([]);
+});
+
+test('os dois finais humanos terminam em Capítulo Concluído depois da narração',async({page})=>{
+  const errors=await boot(page,'flow');
+  const proof=await page.evaluate(async()=>{
+    const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+    const result={};
+    for(const mode of ['victory','defeat']){
+      worldRun={active:true,fase:9,nivel:5,storyMode:false};
+      chosenIds=['adriel-jovem','gareth','roland','elizier'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+      hideOverlay('dungeonClearOverlay');
+      beginGame(0); skipStory();
+      triggerHumanFinaleCinematic(mode,{speed:.02});
+      await wait(2350);
+      result[mode]={
+        resolved:humanFinaleOutcomeResolved,
+        overlay:document.getElementById('dungeonClearOverlay')?.classList.contains('show'),
+        title:document.getElementById('grandClearTitle')?.textContent,
+        adrielGone:document.getElementById('party-adriel-jovem')?.classList.contains('human-final-adriel-vanished')
+      };
+    }
+    return result;
+  });
+  for(const mode of ['victory','defeat']){
+    expect(proof[mode]).toEqual({resolved:true,overlay:true,title:'Capítulo Concluído!',adrielGone:true});
+  }
   expect(errors).toEqual([]);
 });
 
@@ -2110,7 +2145,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.22');
+  expect(registration.caches).toContain('12r-v11.0.23');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2270,7 +2305,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.22');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.23');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

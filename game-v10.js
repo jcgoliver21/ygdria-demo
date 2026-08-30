@@ -2805,27 +2805,37 @@ function spawnFinaleShadowStrike(scene,source,target,options={}){
   const distance=Math.hypot(dx,dy);
   if(distance<8) return false;
   const fx=document.createElement('span');
-  const duration=Math.max(880,Math.round(1180*Math.max(.35,Number(options.speed||1))));
+  const duration=Math.max(240,Math.round(1180*(Number(options.speed||1))));
   fx.className='human-final-shadow-strike';
   fx.setAttribute('aria-hidden','true');
   fx.style.setProperty('--finale-sx',sx+'px');
   fx.style.setProperty('--finale-sy',sy+'px');
   fx.style.setProperty('--finale-dx',dx+'px');
   fx.style.setProperty('--finale-dy',dy+'px');
+  fx.style.setProperty('--finale-dx-34',(dx*.34)+'px');
+  fx.style.setProperty('--finale-dy-34',(dy*.34)+'px');
+  fx.style.setProperty('--finale-dx-68',(dx*.68)+'px');
+  fx.style.setProperty('--finale-dy-68',(dy*.68)+'px');
   fx.style.setProperty('--finale-angle',Math.atan2(dy,dx)*180/Math.PI+'deg');
   fx.style.setProperty('--finale-vfx-duration',duration+'ms');
-  fx.innerHTML='<i class="human-final-shadow-blade"></i><i class="human-final-shadow-trail"></i><i class="human-final-shadow-impact"></i><i class="human-final-shadow-shards"></i>';
+  fx.innerHTML='<i class="human-final-shadow-skull"></i><i class="human-final-shadow-blade"></i><i class="human-final-shadow-trail"></i><i class="human-final-shadow-impact"></i><i class="human-final-shadow-shards"></i>';
   scene.appendChild(fx);
   scheduleCombat(()=>fx.remove(),duration+140);
   return true;
 }
+/* Este valor pertence à linha do tempo, não à duração visual do CSS. `at()`
+   já aplica a velocidade da prévia; multiplicar aqui fazia cada cena rápida
+   colapsar as batidas antes de a fala de Cedric terminar. */
+function finaleShadowImpactDelay(){ return 980; }
 function spawnFinaleTeleportVfx(scene,targetId='adriel-jovem',options={}){
   const target=document.getElementById('party-'+targetId);
   if(!scene||!target) return false;
   const frame=scene.getBoundingClientRect(), tr=target.getBoundingClientRect();
   if(frame.width<1||frame.height<1||tr.width<1) return false;
   const fx=document.createElement('span');
-  const duration=Math.max(1180,Math.round(1550*Math.max(.35,Number(options.speed||1))));
+  /* Mesmo na prévia acelerada, a bolha precisa permanecer tempo suficiente
+     para o jogador ler a conjuração e o desaparecimento de Adriel. */
+  const duration=Math.max(900,Math.round(1550*(Number(options.speed||1))));
   fx.className='human-final-teleport-vfx';
   fx.setAttribute('aria-hidden','true');
   fx.style.setProperty('--teleport-x',(tr.left-frame.left+tr.width*.5)+'px');
@@ -2905,6 +2915,8 @@ function triggerHumanFinalePrelude(options={}){
   at(10050,()=>{
     const targets=['bernyce','kalander','cedric'].map(id=>finaleActor(scene,id,id==='cedric'?'prelude':'prelude-arena')).filter(Boolean);
     unleashFinaleShadow(scene,juliusAvatar,targets,{speed});
+  });
+  at(10050+finaleShadowImpactDelay(),()=>{
     ['bernyce','kalander','cedric'].forEach(id=>{
       const actor=finaleActor(scene,id,id==='cedric'?'prelude':'prelude-arena');
       if(actor){ actor.innerHTML=finalSceneSprite(id,'defeat'); actor.classList.add('fallen'); }
@@ -2960,6 +2972,12 @@ function triggerHumanFinaleCinematic(outcome='defeat',options={}){
     original?.classList.add('casting');
   }
   const auraAt=outcome==='victory'?2600:650;
+  const impactDelay=finaleShadowImpactDelay();
+  const garethFallAt=auraAt+3050+impactDelay;
+  /* Gareth só cai depois de a caveira/corte o alcançar; deixamos uma batida
+     de leitura antes de Cedric erguer o teleporte. */
+  const teleportAt=Math.max(auraAt+4100,garethFallAt+900);
+  const cedricLineAt=teleportAt+1000;
   at(auraAt,()=>{
     const julius=KINGDOMS.find(k=>k.id==='julius');
     if(original) original.innerHTML=finalSceneSprite('julius','cast');
@@ -2971,6 +2989,10 @@ function triggerHumanFinaleCinematic(outcome='defeat',options={}){
     const victims=ACTIVE.map(i=>KINGDOMS[i]?.id).filter(id=>id&&id!==protectedId&&id!=='gareth');
     const targets=victims.map(id=>document.getElementById('party-'+id)).filter(Boolean);
     unleashFinaleShadow(scene,original,targets,{speed});
+  });
+  at(auraAt+1500+impactDelay,()=>{
+    const protectedId='adriel-jovem';
+    const victims=ACTIVE.map(i=>KINGDOMS[i]?.id).filter(id=>id&&id!==protectedId&&id!=='gareth');
     victims.forEach(setFinaleHeroDefeat);
     scene?.classList.add('heroes-struck');
     placeGarethBeforeAdriel();
@@ -2979,18 +3001,20 @@ function triggerHumanFinaleCinematic(outcome='defeat',options={}){
     const gareth=document.getElementById('party-gareth');
     if(original&&gareth) spawnFinaleShadowStrike(scene,original,gareth,{speed});
     scene?.classList.add('gareth-sacrificed');
+  });
+  at(garethFallAt,()=>{
     setFinaleHeroDefeat('gareth');
   });
-  at(auraAt+4100,()=>{
+  at(teleportAt,()=>{
     const cedric=finaleActor(scene,'cedric','fallen');
     placeFinaleTeleportAt(scene,'adriel-jovem');
     if(cedric) spawnHumanConjurationAura(KINGDOMS.find(k=>k.id==='cedric'),cedric);
     spawnFinaleTeleportVfx(scene,'adriel-jovem',{speed});
     scene?.classList.add('adriel-teleporting');
     document.getElementById('party-adriel-jovem')?.classList.add('human-final-adriel-vanished');
-    playFinaleLines([{h:'cedric',t:'Viva Jovem!!! Seja nossa esperança!',ms:2550}],null,{speed});
   });
-  at(auraAt+7000,()=>{
+  const runFinalNarration=()=>{
+    scene?.setAttribute('data-final-narration','active');
     if(original) original.innerHTML=finalSceneSprite('julius','victory');
     original?.classList.remove('casting'); original?.classList.add('victorious');
     scene?.classList.add('julius-victorious');
@@ -2998,7 +3022,15 @@ function triggerHumanFinaleCinematic(outcome='defeat',options={}){
     playFinaleLines([
       {name:'Narrador',t:'E assim termina a primeira parte de nossa aventura! O que acontecerá com Adriel? Qual o paradeiro de Berenice? Quem é Julius?',ms:3600},
       {name:'Narrador',t:'Não percam o próximo capítulo dessa aventura!',ms:2600}
-    ],()=>completeHumanFinaleCinematic(options),{speed});
+    ],()=>completeHumanFinaleCinematic({...options,scene}),{speed});
+  };
+  at(cedricLineAt,()=>{
+    /* A narração só pode começar quando o balão de Cedric foi fechado. Isso
+       impede que o temporizador da fala anterior esconda o epílogo. */
+    scene?.setAttribute('data-final-cedric-line','shown');
+    playFinaleLines([{h:'cedric',t:'Viva Jovem!!! Seja nossa esperança!',ms:2550}],()=>{
+      scheduleCombat(runFinalNarration,Math.max(220,Math.round(350*speed)));
+    },{speed});
   });
 }
 /* Ataques físicos viajam como golpes materiais e não usam a trajetória mágica.
@@ -5322,7 +5354,7 @@ function storySpeakerAnchor(step){
   /* A cena final mantém Cedric, Bernyce e Kalander no próprio piso da arena;
      a fala canônica continua presa a quem a está dizendo, mesmo depois da
      queda e antes do teleporte de Adriel. */
-  const finaleActor=document.getElementById('finale-'+wanted);
+  const finaleActor=arenaEl?.querySelector(`.human-final-scene .finale-${wanted},.human-final-prelude .finale-${wanted}`);
   if(finaleActor) return finaleActor;
   if(Number.isInteger(step?.enemyIndex)) return document.getElementById('enemy-'+step.enemyIndex);
   const namedHero=[...partyArenaEl.querySelectorAll('.hero-unit')].find(unit=>{
@@ -7795,13 +7827,17 @@ function onStageCleared(){
       const finaleFase=worldRun.fase;
       worldRun.active=false;
       const finishFinale=()=>{
+        if(humanFinaleOutcomeResolved){
+          if(gt) gt.textContent=T('Capítulo Concluído!','Chapter Complete!','¡Capítulo Concluido!');
+          if(gx) gx.textContent=T('O destino de Adriel foi lançado além do Reino dos Humanos.','Adriel\'s fate has been cast beyond the Human Realm.','El destino de Adriel fue lanzado más allá del Reino de los Humanos.');
+        }
         victoryExitToMap=true;
         victoryExitMode='world';
         renderBattleReport('victoryReport');
         launchVictoryConfetti();
         showOverlay('dungeonClearOverlay');
       };
-      if(showFinalStory) showStorySequence(canonicalAfterSequence(finaleFase),finishFinale);
+      if(showFinalStory&&!humanFinaleOutcomeResolved) showStorySequence(canonicalAfterSequence(finaleFase),finishFinale);
       else finishFinale();
       return;
     }
