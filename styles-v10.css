@@ -4014,6 +4014,49 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
 .human-final-teleport{position:absolute;width:0;height:0;border-radius:50%;opacity:0;pointer-events:none;background:radial-gradient(circle,rgba(255,255,255,.98) 0 12%,rgba(255,174,227,.95) 29%,rgba(224,100,186,.45) 52%,transparent 72%);box-shadow:0 0 20px 9px rgba(255,122,207,.58),0 0 54px 18px rgba(187,82,210,.34)}
 .human-final-scene.adriel-teleporting .human-final-teleport{animation:humanFinalTeleport 1.35s ease-out both}
 @keyframes humanFinalTeleport{0%{opacity:0;transform:translate(-50%,-50%) scale(.25)}18%{opacity:1}64%{opacity:.92;transform:translate(-50%,-50%) scale(1.08)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.7)}}
+/* Missão 10/5 · o breu não corta para preto: ele fecha o castelo em cerca de
+   três segundos enquanto a corte ainda pode ser vista. */
+.arena.human-finale-darkening[data-mission-atmosphere="total-darkness"] .arena-atmosphere{animation:humanFinalDarkness 3.1s cubic-bezier(.25,.72,.22,1) both}
+.arena.human-finale-darkening[data-mission-atmosphere="total-darkness"] .arena-atmosphere::before{animation:humanFinalDarknessVeil 3.1s ease both}
+.arena.human-finale-darkening[data-mission-atmosphere="total-darkness"] .arena-atmosphere::after{animation:humanFinalDarknessVeil 3.1s ease both}
+@keyframes humanFinalDarkness{from{background:radial-gradient(ellipse at 50% 60%,rgba(19,12,32,.06),rgba(2,1,7,.24) 88%)}to{background:rgba(0,0,0,.94)}}
+@keyframes humanFinalDarknessVeil{from{opacity:0}to{opacity:1}}
+/* Atores do prólogo ficam no mesmo plano físico da arte do trono. Jules se
+   afasta pelo degrau, Cedric retorna para a Rainha e nenhum dos dois flutua. */
+.human-final-prelude{position:absolute;inset:0;z-index:5;pointer-events:none;overflow:hidden}
+.finale-prelude{width:clamp(52px,16%,88px);left:24%;bottom:30%;transition:left 1.55s cubic-bezier(.16,.78,.2,1),bottom 1.55s cubic-bezier(.16,.78,.2,1),opacity .55s ease}
+.finale-prelude-fallen{width:clamp(52px,16%,88px);opacity:0;transition:opacity .3s ease}
+.finale-bernyce.finale-prelude-fallen{left:48%;bottom:17%}
+.finale-kalander.finale-prelude-fallen{left:30%;bottom:21%}
+.human-final-prelude.court-struck .finale-prelude-fallen{opacity:1}
+.human-final-prelude.cedric-returning .finale-prelude{left:56%;bottom:34%}
+.royal-court-cast.court-jules-leaving .royal-court-jules{animation:royalCourtLeave 1.7s cubic-bezier(.18,.76,.22,1) both}
+.royal-court-cast.court-struck .royal-court-bernyce,.royal-court-cast.court-struck .royal-court-kalander{animation:royalCourtFall 1s cubic-bezier(.24,.76,.22,1) both}
+.human-final-prelude.court-struck .finale-prelude{bottom:18%;filter:brightness(.78) drop-shadow(0 5px 5px rgba(10,2,12,.78))}
+.human-final-prelude-slash{position:absolute;right:17%;bottom:34%;width:0;height:0;opacity:0;border-radius:50%;background:radial-gradient(circle,rgba(210,169,255,.95),rgba(73,20,101,.76) 38%,transparent 72%);box-shadow:0 0 28px 13px rgba(61,16,93,.72)}
+.human-final-prelude.court-struck .human-final-prelude-slash{animation:humanPreludeSlash 1.35s ease-out both}
+@keyframes royalCourtLeave{0%{opacity:1;transform:translateX(0) scale(1)}100%{opacity:0;transform:translateX(-65px) translateY(9px) scale(.82)}}
+@keyframes royalCourtFall{0%{opacity:1;transform:translateX(-50%) scale(1)}100%{opacity:.15;transform:translateX(-50%) translateY(36px) scale(.75)}}
+@keyframes humanPreludeSlash{0%{opacity:0;transform:scale(.2)}22%{opacity:1;transform:scale(1)}100%{opacity:0;transform:translateX(-190px) scale(2.5)}}
+/* Julius é apresentado pela entrada real na arena; o inimigo só fica visível
+   depois da fala. A troca é de opacidade, nunca de escala. */
+.arena.human-finale-prelude-active .enemy-unit{opacity:0;transition:opacity .52s ease}
+.arena.human-finale-prelude-active .enemy-unit.julius-entered{opacity:1;animation:humanFinalJuliusEnter .72s cubic-bezier(.15,.78,.25,1) both}
+@keyframes humanFinalJuliusEnter{from{opacity:0;filter:brightness(.45) blur(3px);transform:translate3d(16px,-4px,0)}to{opacity:1;filter:none;transform:translate3d(0,0,0)}}
+/* O epílogo reúne os corpos no chão da arena. A sombra vencida e Julius real
+   são personagens distintos para que a revelação não pareça teleporte. */
+.finale-shadow{opacity:0;right:16%;bottom:28%;width:clamp(54px,18%,102px)}
+.human-final-scene.shadow-defeated .finale-shadow{opacity:1}
+.finale-original{opacity:0;right:16%;bottom:28%;width:clamp(54px,18%,102px);transition:opacity .55s ease}
+.human-final-scene.original-revealed .finale-original{opacity:1}
+.human-final-scene.original-revealed .finale-shadow{opacity:0}
+.human-final-scene .finale-original.casting{filter:brightness(1.06) drop-shadow(0 0 11px rgba(31,8,46,.92))}
+.human-final-scene .finale-original.victorious{filter:drop-shadow(0 0 13px rgba(95,39,128,.76))}
+.human-final-scene.julius-conjuring::before{content:'';position:absolute;right:10%;bottom:22%;width:26%;height:34%;opacity:0;pointer-events:none;background:radial-gradient(ellipse,rgba(91,38,126,.38),rgba(6,2,14,.76) 48%,transparent 72%);filter:blur(3px);animation:humanFinalConjurePulse 1.9s ease-in-out infinite}
+@keyframes humanFinalConjurePulse{0%,100%{opacity:.2;transform:scale(.74)}50%{opacity:.88;transform:scale(1.16)}}
+.human-final-scene.heroes-struck .human-final-shadow-wave{animation:humanFinalShadowWave 2.35s cubic-bezier(.2,.74,.25,1) both}
+.human-final-scene.julius-victorious .finale-original{animation:humanFinalVictoryBreath 1.45s steps(1,end) infinite}
+@keyframes humanFinalVictoryBreath{0%,100%{filter:drop-shadow(0 0 10px rgba(87,28,123,.54))}50%{filter:brightness(1.16) drop-shadow(0 0 15px rgba(122,54,167,.88))}}
 @media (max-width:600px){
   .royal-court-bernyce{width:16%;top:36.5%}
   .royal-court-guard{width:16%;top:43.5%}
@@ -4024,6 +4067,12 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
   .finale-kalander{left:29%;bottom:16%}
   .finale-cedric{left:63%;bottom:18%}
   .finale-julius{width:20%;right:12%;bottom:27%}
+  .finale-prelude{width:18%;left:22%;bottom:29%}
+  .finale-prelude-fallen{width:18%}
+  .finale-bernyce.finale-prelude-fallen{left:47%;bottom:16%}
+  .finale-kalander.finale-prelude-fallen{left:28%;bottom:20%}
+  .human-final-prelude.cedric-returning .finale-prelude{left:55%;bottom:33%}
+  .finale-shadow,.finale-original{width:20%;right:12%;bottom:27%}
 }
 body.game-active .game-frame:not(.victory-celebration) .combat-console{
   flex:0 0 30dvh!important;

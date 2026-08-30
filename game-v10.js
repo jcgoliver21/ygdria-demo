@@ -2718,6 +2718,10 @@ function combatAttackStyle(attacker){
    derrota descrita no roteiro, preservando os sprites oficiais de cada pessoa
    e a física de queda (pés, corpo e equipamento assentados no chão). */
 let humanFinaleCinematicRunning=false;
+let humanFinalePreludeRunning=false;
+let humanFinalePreludeFinished=false;
+let humanFinaleOutcomeResolved=false;
+let humanFinalePreviewSetup=false;
 function isHumanFinaleBattle(){
   return Boolean(worldRun.active&&worldRun.fase===9&&worldRun.nivel===5&&activeStageData?.bgUrl?.endsWith('fase-10.jpg'));
 }
@@ -2734,21 +2738,24 @@ function finalSceneSprite(id,action='defeat'){
 }
 function finalSceneActor(id,kind='fallen'){
   const character=KINGDOMS.find(k=>k.id===id);
-  const action=kind==='julius'?'idle':'defeat';
-  return `<span id="finale-${id}" class="human-final-scene-actor finale-${id} finale-${kind}" style="--realm:${character?.color||'#d78be8'}">${finalSceneSprite(id,action)}</span>`;
+  const action=kind==='victor'||kind==='original'||kind==='prelude'?'idle':'defeat';
+  return `<span class="human-final-scene-actor finale-${id} finale-${kind}" data-finale-actor="${id}-${kind}" style="--realm:${character?.color||'#d78be8'}">${finalSceneSprite(id,action)}</span>`;
 }
-function mountHumanFinaleScene(){
+function finaleActor(scene,id,kind){ return scene?.querySelector(`[data-finale-actor="${id}-${kind}"]`); }
+function mountHumanFinaleScene(outcome='defeat'){
   let scene=arenaEl?.querySelector('.human-final-scene');
   if(scene) return scene;
+  arenaEl?.querySelector('.human-final-prelude')?.remove();
   arenaEl?.querySelector('.royal-court-cast')?.remove();
   scene=document.createElement('div');
-  scene.className='human-final-scene';
+  scene.className=`human-final-scene finale-outcome-${outcome}`;
   scene.setAttribute('aria-hidden','true');
   scene.innerHTML=`
     ${finalSceneActor('bernyce')}
     ${finalSceneActor('kalander')}
     ${finalSceneActor('cedric')}
-    ${finalSceneActor('julius','julius')}
+    ${finalSceneActor('julius','shadow')}
+    ${finalSceneActor('julius','original')}
     <span class="human-final-shadow-wave"></span>
     <span class="human-final-teleport" aria-hidden="true"></span>`;
   arenaEl?.appendChild(scene);
@@ -2771,8 +2778,8 @@ function placeGarethBeforeAdriel(){
   gareth.style.setProperty('--slot-z',String((Number(adriel.style.getPropertyValue('--slot-z'))||20)+8));
   gareth.classList.add('human-final-gareth-shield');
 }
-function placeFinaleTeleportAtAdriel(scene){
-  const adriel=document.getElementById('party-adriel-jovem');
+function placeFinaleTeleportAt(scene,targetId='adriel-jovem'){
+  const adriel=document.getElementById('party-'+targetId);
   const halo=scene?.querySelector('.human-final-teleport');
   if(!adriel||!halo||!arenaEl) return;
   const target=adriel.getBoundingClientRect();
@@ -2782,42 +2789,158 @@ function placeFinaleTeleportAtAdriel(scene){
   halo.style.width=Math.max(46,target.width*.88)+'px';
   halo.style.height=Math.max(46,target.height*.72)+'px';
 }
-function triggerHumanFinaleCinematic(){
+function playFinaleLines(lines,onDone,options={}){
+  const speed=Math.max(.02,Number(options.speed||1));
+  let cursor=0;
+  const next=()=>{
+    if(cursor>=lines.length){ if(typeof onDone==='function') onDone(); return; }
+    const item=lines[cursor++];
+    showStorySequence([item]);
+    scheduleCombat(()=>{ skipStory(false); next(); },Math.max(520,Math.round((item.ms||2200)*speed)));
+  };
+  next();
+}
+function unleashFinaleShadow(scene,source,targets,options={}){
+  const julius=KINGDOMS.find(k=>k.id==='julius');
+  scene?.classList.add('shadow-unleashed');
+  if(julius&&source) spawnHumanConjurationAura(julius,source);
+  targets.forEach(target=>{
+    if(source&&target) spawnCombatAttackFx('julius',source,target,'#24112e','blade',julius);
+  });
+}
+function mountHumanFinalePrelude(){
+  let scene=arenaEl?.querySelector('.human-final-prelude');
+  if(scene) return scene;
+  scene=document.createElement('div');
+  scene.className='human-final-prelude';
+  scene.setAttribute('aria-hidden','true');
+  scene.innerHTML=`
+    ${finalSceneActor('bernyce','prelude-fallen')}
+    ${finalSceneActor('kalander','prelude-fallen')}
+    ${finalSceneActor('cedric','prelude')}
+    <span class="human-final-prelude-slash"></span>`;
+  arenaEl?.appendChild(scene);
+  return scene;
+}
+function triggerHumanFinalePrelude(options={}){
+  if(!isHumanFinaleBattle()||humanFinalePreludeFinished||humanFinalePreludeRunning) return false;
+  humanFinalePreludeRunning=true;
+  busy=true; stageTransitioning=true; setBattlePhase('transition');
+  const speed=Math.max(.02,Number(options.speed||1));
+  const at=(ms,fn)=>scheduleCombat(fn,Math.max(40,Math.round(ms*speed)));
+  const scene=mountHumanFinalePrelude();
+  const court=arenaEl?.querySelector('.royal-court-cast');
+  const juliusIndex=enemies.findIndex(enemy=>enemy?.cardId==='julius');
+  const liveJulius=juliusIndex>=0?document.getElementById('enemy-'+juliusIndex):null;
+  const juliusAvatar=liveJulius?.querySelector('.enemy-avatar')||liveJulius;
+  arenaEl?.classList.add('human-finale-darkening','human-finale-prelude-active');
+  setBattleStatus(T('Uma sombra toma o Castelo da Coroa Humana...','A shadow takes the Human Crown Castle...','Una sombra toma el Castillo de la Corona Humana...'),'system');
+  at(760,()=>{
+    court?.classList.add('court-jules-leaving','court-cedric-returning');
+    scene?.classList.add('cedric-returning');
+  });
+  at(2850,()=>{
+    liveJulius?.classList.add('julius-entered');
+    scene?.classList.add('julius-entered');
+    if(juliusIndex>=0) playEnemyAction(juliusIndex,'idle');
+    playFinaleLines([{name:'Julius',sprite:KINGDOMS.find(k=>k.id==='julius')?.sprite,t:'Morram todos! Corte Sombrio!',enemyIndex:juliusIndex,ms:2200}],null,{speed});
+  });
+  at(5450,()=>{
+    const targets=['bernyce','kalander','cedric'].map(id=>id==='cedric'?finaleActor(scene,id,'prelude'):(court?.querySelector(`.royal-court-${id}`))).filter(Boolean);
+    unleashFinaleShadow(scene,juliusAvatar,targets,{speed});
+    const cedric=finaleActor(scene,'cedric','prelude');
+    if(cedric){ cedric.innerHTML=finalSceneSprite('cedric','defeat'); cedric.classList.add('fallen'); }
+    scene?.classList.add('court-struck');
+    court?.classList.add('court-struck');
+  });
+  at(7500,()=>{
+    playFinaleLines([{h:'adriel-jovem',t:'Rainha!!! Kalander!!!',ms:1850}],null,{speed});
+  });
+  at(9650,()=>{
+    humanFinalePreludeFinished=true;
+    humanFinalePreludeRunning=false;
+    stageTransitioning=false; busy=false;
+    scene?.classList.add('prelude-complete');
+    beginMissionField();
+  });
+  return true;
+}
+function completeHumanFinaleCinematic(options={}){
+  humanFinaleCinematicRunning=false;
+  humanFinaleOutcomeResolved=true;
+  if(options.preview){ busy=false; stageTransitioning=false; setBattlePhase('idle'); return; }
+  stageTransitioning=false; busy=false;
+  onStageCleared();
+}
+function triggerHumanFinaleCinematic(outcome='defeat',options={}){
   if(!isHumanFinaleBattle()){ onStageCleared(); return; }
   if(humanFinaleCinematicRunning) return;
   humanFinaleCinematicRunning=true;
-  busy=true;
+  busy=true; stageTransitioning=true;
   setBattlePhase('transition');
   cancelTempoSombrio();
-  const scene=mountHumanFinaleScene();
-  setBattleStatus(T('A sombra de Julius envolve o castelo...','Julius\' shadow engulfs the castle...','La sombra de Julius envuelve el castillo...'),'system');
-  scheduleCombat(()=>{
-    scene?.classList.add('shadow-unleashed');
-    document.getElementById('finale-julius')?.classList.add('dissolving');
-    const juliusIndex=enemies.findIndex(enemy=>enemy?.cardId==='julius');
-    const liveJulius=juliusIndex>=0?document.getElementById('enemy-'+juliusIndex):null;
-    liveJulius?.classList.add('human-final-julius-dissolving');
-    liveJulius?.querySelector('.enemy-avatar')?.classList.add('human-final-julius-dissolving');
-  },480);
-  scheduleCombat(()=>{
-    scene?.classList.add('shadow-struck');
-    const juliusIndex=enemies.findIndex(enemy=>enemy?.cardId==='julius');
-    if(juliusIndex>=0) document.getElementById('enemy-'+juliusIndex)?.classList.add('human-final-julius-hidden');
-    setFinaleHeroDefeat('roland');
-    setFinaleHeroDefeat('elizier');
+  const speed=Math.max(.02,Number(options.speed||1));
+  const at=(ms,fn)=>scheduleCombat(fn,Math.max(40,Math.round(ms*speed)));
+  const scene=mountHumanFinaleScene(outcome);
+  const juliusIndex=enemies.findIndex(enemy=>enemy?.cardId==='julius');
+  const liveJulius=juliusIndex>=0?document.getElementById('enemy-'+juliusIndex):null;
+  const liveAvatar=liveJulius?.querySelector('.enemy-avatar')||liveJulius;
+  const original=finaleActor(scene,'julius','original');
+  const shadow=finaleActor(scene,'julius','shadow');
+  arenaEl?.classList.add('human-finale-darkening');
+  arenaEl?.querySelector('.royal-court-cast')?.remove();
+  liveJulius?.classList.add('human-final-julius-hidden');
+  setBattleStatus(outcome==='victory'
+    ?T('A sombra vencida se desfaz — o verdadeiro Julius se revela.','The defeated shadow dissolves — the real Julius reveals himself.','La sombra derrotada se disuelve — el verdadero Julius se revela.')
+    :T('Julius reúne a escuridão que resta no castelo.','Julius gathers the darkness left in the castle.','Julius reúne la oscuridad que queda en el castillo.'),'system');
+  if(outcome==='victory'){
+    scene?.classList.add('shadow-defeated');
+    at(900,()=>{ shadow?.classList.add('dissolving'); });
+    at(2050,()=>{ scene?.classList.add('original-revealed'); original?.classList.add('casting'); });
+  }else{
+    scene?.classList.add('original-revealed');
+    original?.classList.add('casting');
+  }
+  const auraAt=outcome==='victory'?2600:650;
+  at(auraAt,()=>{
+    const julius=KINGDOMS.find(k=>k.id==='julius');
+    if(original) original.innerHTML=finalSceneSprite('julius','cast');
+    if(julius&&original) spawnHumanConjurationAura(julius,original);
+    scene?.classList.add('julius-conjuring');
+  });
+  at(auraAt+1500,()=>{
+    const protectedId='adriel-jovem';
+    const victims=ACTIVE.map(i=>KINGDOMS[i]?.id).filter(id=>id&&id!==protectedId&&id!=='gareth');
+    const targets=victims.map(id=>document.getElementById('party-'+id)).filter(Boolean);
+    unleashFinaleShadow(scene,original,targets,{speed});
+    victims.forEach(setFinaleHeroDefeat);
+    scene?.classList.add('heroes-struck');
     placeGarethBeforeAdriel();
-  },1500);
-  scheduleCombat(()=>{
+  });
+  at(auraAt+3050,()=>{
+    const gareth=document.getElementById('party-gareth');
+    if(original&&gareth) spawnCombatAttackFx('julius',original,gareth,'#24112e','blade',KINGDOMS.find(k=>k.id==='julius'));
     scene?.classList.add('gareth-sacrificed');
     setFinaleHeroDefeat('gareth');
-  },2580);
-  scheduleCombat(()=>{
-    placeFinaleTeleportAtAdriel(scene);
+  });
+  at(auraAt+4100,()=>{
+    const cedric=finaleActor(scene,'cedric','fallen');
+    placeFinaleTeleportAt(scene,'adriel-jovem');
+    if(cedric) spawnHumanConjurationAura(KINGDOMS.find(k=>k.id==='cedric'),cedric);
     scene?.classList.add('adriel-teleporting');
     document.getElementById('party-adriel-jovem')?.classList.add('human-final-adriel-vanished');
-    setBattleStatus(T('Cedric reúne suas forças para proteger Adriel.','Cedric gathers his strength to protect Adriel.','Cedric reúne sus fuerzas para proteger a Adriel.'),'support');
-  },3600);
-  scheduleCombat(()=>onStageCleared(),5000);
+    playFinaleLines([{h:'cedric',t:'Viva Jovem!!! Seja nossa esperança!',ms:2550}],null,{speed});
+  });
+  at(auraAt+7000,()=>{
+    if(original) original.innerHTML=finalSceneSprite('julius','victory');
+    original?.classList.remove('casting'); original?.classList.add('victorious');
+    scene?.classList.add('julius-victorious');
+    setBattleStatus(T('Adriel desaparece na luz rosa de Cedric.','Adriel vanishes into Cedric\'s pink light.','Adriel desaparece en la luz rosa de Cedric.'),'support');
+    playFinaleLines([
+      {name:'Narrador',t:'E assim termina a primeira parte de nossa aventura! O que acontecerá com Adriel? Qual o paradeiro de Berenice? Quem é Julius?',ms:3600},
+      {name:'Narrador',t:'Não percam o próximo capítulo dessa aventura!',ms:2600}
+    ],()=>completeHumanFinaleCinematic(options),{speed});
+  });
 }
 /* Ataques físicos viajam como golpes materiais e não usam a trajetória mágica.
    A camada de VFX continua completamente separada do sprite: nada altera
@@ -4532,7 +4655,12 @@ function togglePhotoMode(on){
 function loadStage(idx){
   resetCombatSchedule();
   humanFinaleCinematicRunning=false;
+  humanFinalePreludeRunning=false;
+  humanFinalePreludeFinished=false;
+  humanFinaleOutcomeResolved=false;
   arenaEl?.querySelector('.human-final-scene')?.remove();
+  arenaEl?.querySelector('.human-final-prelude')?.remove();
+  arenaEl?.classList.remove('human-finale-darkening','human-finale-prelude-active');
   resetPartyAnimationState();
   stageTransitioning = false;
   defeatFinalized = false;
@@ -4674,6 +4802,13 @@ function loadStage(idx){
    começam aqui — nunca durante o intervalo entre uma sala e outra. */
 function beginMissionField(){
   if(missionFieldStarted||!activeStageData||stageTransitioning||defeatFinalized) return false;
+  /* A última missão do Reino dos Humanos ganha a arena somente depois do
+     prólogo: a escuridão chega, Jules recua, Cedric retorna à Rainha e Julius
+     fere os três antes de Adriel iniciar a luta. */
+  if(isHumanFinaleBattle()&&!humanFinalePreludeFinished){
+    if(humanFinalePreviewSetup) return true;
+    return triggerHumanFinalePrelude();
+  }
   missionFieldStarted=true;
   setBattlePhase('idle');
   if(pendingRoomPassives.length) scheduleCombat(()=>launchPendingRoomPassives(),260);
@@ -5191,6 +5326,9 @@ function positionStorySpeechBubble(){
 }
 function maybeShowStory(idx,onDone=null){
   const seq=[];
+  /* As duas falas da missão 10/5 pertencem à encenação temporizada do prólogo,
+     não à fila comum de diálogos clicáveis. */
+  if(isHumanFinaleBattle()) return false;
   /* v9.3.7 · roteiro oficial do Reino dos Humanos. A primeira entrada usa
      as falas escritas para a missão; repetições mantêm apenas a apresentação
      dos inimigos e uma fala do herói que não pertence ao roteiro. */
@@ -7209,7 +7347,7 @@ function handlePlayerDefeat(){
     cancelTempoSombrio();
     setBattleStatus(T('A sombra de Julius ainda não terminou seu golpe.','Julius\' shadow has not finished its strike.','La sombra de Julius aún no terminó su golpe.'),'system');
     playerHP=1; updatePlayerHP();
-    scheduleCombat(()=>triggerHumanFinaleCinematic(),700);
+    scheduleCombat(()=>triggerHumanFinaleCinematic('defeat'),700);
     return;
   }
   /* 🗼 Torre: registra o resultado no ranking mensal antes de encerrar a escalada */
@@ -7471,6 +7609,12 @@ function launchVictoryConfetti(){
 
 function onStageCleared(){
   if(stageTransitioning) return;
+  /* A vitória contra a sombra não abre um painel: primeiro encenamos a
+     revelação do Julius verdadeiro e o epílogo dentro da arena. */
+  if(isHumanFinaleBattle()&&!humanFinaleOutcomeResolved){
+    triggerHumanFinaleCinematic('victory');
+    return;
+  }
   victoryNextStage=false;
   stopMissionTimer();
   stageTransitioning = true;
@@ -8425,6 +8569,35 @@ function applySettings(){
   document.getElementById('muteBtn').textContent=musicMuted?'🔇':'🔊';
   syncArenaFireworks();
 }
+
+/* Galeria local da Missão 10/5. Reabre o campo real do jogo e chama uma única
+   linha do tempo, sem precisar falsear HP, sprites ou VFX. */
+function runHumanFinalePreview(mode='prelude',options={}){
+  const valid=['prelude','defeat','victory'];
+  const scene=valid.includes(mode)?mode:'prelude';
+  resetCombatSchedule();
+  localStorage.setItem('12r_tutorial_seen','true');
+  localStorage.setItem('12r_tutorial','true');
+  humanFinalePreviewSetup=true;
+  worldRun={active:true,fase:9,nivel:5,storyMode:false};
+  chosenIds=['adriel-jovem','gareth','roland','elizier'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+  beginGame(0);
+  skipStory();
+  hideOverlay('helpScreen');
+  humanFinalePreviewSetup=false;
+  missionFieldStarted=false; stageTransitioning=false; busy=false;
+  if(scene==='prelude') triggerHumanFinalePrelude(options);
+  else{
+    humanFinalePreludeFinished=true;
+    missionFieldStarted=true;
+    triggerHumanFinaleCinematic(scene,{...options,preview:true});
+  }
+  return scene;
+}
+window.YGDRIA_HUMAN_FINALE=Object.freeze({
+  run:(mode,options={})=>runHumanFinalePreview(mode,options),
+  status:()=>({prelude:humanFinalePreludeRunning,cinematic:humanFinaleCinematicRunning,resolved:humanFinaleOutcomeResolved})
+});
 
 startBtnEl.addEventListener('click',()=>beginGame(pendingStage));
 document.getElementById('playBtn').addEventListener('click',()=>{ towerMode=false; bossRushMode=false; worldRun.active=false; pendingStage=0; openMapScreen(); });
