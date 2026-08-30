@@ -3488,6 +3488,12 @@ body.quality-economy .unit-ground-shadow,body.quality-economy .arena-floor{filte
 .arena[data-mission-atmosphere="total-darkness"] .arena-atmosphere{opacity:1;background:rgba(0,0,0,.94)}
 .arena[data-mission-atmosphere="total-darkness"] .arena-atmosphere::before{inset:0;opacity:1;background:radial-gradient(ellipse at 50% 74%,rgba(15,10,24,.72) 0 10%,rgba(2,1,5,.94) 46%,#000 82%)}
 .arena[data-mission-atmosphere="total-darkness"] .arena-atmosphere::after{inset:0;opacity:.9;background:linear-gradient(180deg,#000 0 16%,rgba(0,0,0,.8) 48%,#000 100%)}
+/* Fase 10/5: antes do Corte Sombrio o castelo fica plenamente visível. O
+   prólogo remove este estado e inicia a animação de escurecimento abaixo. */
+.arena.human-finale-before-darkness[data-mission-atmosphere="total-darkness"] .arena-atmosphere{opacity:1;background:radial-gradient(ellipse at 50% 60%,rgba(19,12,32,.05),rgba(2,1,7,.16) 88%);animation:none}
+.arena.human-finale-before-darkness[data-mission-atmosphere="total-darkness"] .arena-atmosphere::before,.arena.human-finale-before-darkness[data-mission-atmosphere="total-darkness"] .arena-atmosphere::after{opacity:0;animation:none}
+/* A vitrine isola a cena; avisos de login não podem tapar o trono nem o elenco. */
+body.human-finale-preview .ach-toast{display:none!important}
 .arena.boss-presence .arena-atmosphere{opacity:1;filter:saturate(1.2) contrast(1.04)}
 @keyframes cherryPetalDrift{0%{transform:translate3d(-2%,-5%,0) rotate(-2deg)}45%{transform:translate3d(4%,28%,0) rotate(9deg)}100%{transform:translate3d(-5%,72%,0) rotate(-12deg)}}
 @keyframes coldFogCrawl{0%{transform:translate3d(-5%,2%,0)}100%{transform:translate3d(5%,-4%,0)}}
@@ -4014,8 +4020,8 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
 .human-final-teleport{position:absolute;width:0;height:0;border-radius:50%;opacity:0;pointer-events:none;background:radial-gradient(circle,rgba(255,255,255,.98) 0 12%,rgba(255,174,227,.95) 29%,rgba(224,100,186,.45) 52%,transparent 72%);box-shadow:0 0 20px 9px rgba(255,122,207,.58),0 0 54px 18px rgba(187,82,210,.34)}
 .human-final-scene.adriel-teleporting .human-final-teleport{animation:humanFinalTeleport 1.35s ease-out both}
 @keyframes humanFinalTeleport{0%{opacity:0;transform:translate(-50%,-50%) scale(.25)}18%{opacity:1}64%{opacity:.92;transform:translate(-50%,-50%) scale(1.08)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.7)}}
-/* Missão 10/5 · o breu não corta para preto: ele fecha o castelo em cerca de
-   três segundos enquanto a corte ainda pode ser vista. */
+/* Missão 10/5 · o breu não corta para preto: depois do plano inicial, ele
+   fecha o castelo em cerca de três segundos enquanto a corte ainda é vista. */
 .arena.human-finale-darkening[data-mission-atmosphere="total-darkness"] .arena-atmosphere{animation:humanFinalDarkness 3.1s cubic-bezier(.25,.72,.22,1) both}
 .arena.human-finale-darkening[data-mission-atmosphere="total-darkness"] .arena-atmosphere::before{animation:humanFinalDarknessVeil 3.1s ease both}
 .arena.human-finale-darkening[data-mission-atmosphere="total-darkness"] .arena-atmosphere::after{animation:humanFinalDarknessVeil 3.1s ease both}

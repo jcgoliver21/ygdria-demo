@@ -2833,19 +2833,25 @@ function triggerHumanFinalePrelude(options={}){
   const juliusIndex=enemies.findIndex(enemy=>enemy?.cardId==='julius');
   const liveJulius=juliusIndex>=0?document.getElementById('enemy-'+juliusIndex):null;
   const juliusAvatar=liveJulius?.querySelector('.enemy-avatar')||liveJulius;
-  arenaEl?.classList.add('human-finale-darkening','human-finale-prelude-active');
-  setBattleStatus(T('Uma sombra toma o Castelo da Coroa Humana...','A shadow takes the Human Crown Castle...','Una sombra toma el Castillo de la Corona Humana...'),'system');
-  at(760,()=>{
+  /* Primeiro mostramos a corte no castelo iluminado. O breu só começa depois
+     de Jules recuar e Cedric voltar à Rainha; assim não há corte para preto. */
+  arenaEl?.classList.add('human-finale-prelude-active');
+  setBattleStatus(T('A corte recebe os heróis no Castelo da Coroa Humana.','The court receives the heroes in the Human Crown Castle.','La corte recibe a los héroes en el Castillo de la Corona Humana.'),'system');
+  at(3800,()=>{
     court?.classList.add('court-jules-leaving','court-cedric-returning');
     scene?.classList.add('cedric-returning');
+    arenaEl?.classList.remove('human-finale-before-darkness');
+    arenaEl?.classList.add('human-finale-darkening');
+    setBattleStatus(T('Uma sombra toma o Castelo da Coroa Humana...','A shadow takes the Human Crown Castle...','Una sombra toma el Castillo de la Corona Humana...'),'system');
   });
-  at(2850,()=>{
+  /* Julius entra depois dos 3,1 segundos de escurecimento progressivo. */
+  at(7300,()=>{
     liveJulius?.classList.add('julius-entered');
     scene?.classList.add('julius-entered');
     if(juliusIndex>=0) playEnemyAction(juliusIndex,'idle');
     playFinaleLines([{name:'Julius',sprite:KINGDOMS.find(k=>k.id==='julius')?.sprite,t:'Morram todos! Corte Sombrio!',enemyIndex:juliusIndex,ms:2200}],null,{speed});
   });
-  at(5450,()=>{
+  at(10050,()=>{
     const targets=['bernyce','kalander','cedric'].map(id=>id==='cedric'?finaleActor(scene,id,'prelude'):(court?.querySelector(`.royal-court-${id}`))).filter(Boolean);
     unleashFinaleShadow(scene,juliusAvatar,targets,{speed});
     const cedric=finaleActor(scene,'cedric','prelude');
@@ -2853,10 +2859,10 @@ function triggerHumanFinalePrelude(options={}){
     scene?.classList.add('court-struck');
     court?.classList.add('court-struck');
   });
-  at(7500,()=>{
+  at(12200,()=>{
     playFinaleLines([{h:'adriel-jovem',t:'Rainha!!! Kalander!!!',ms:1850}],null,{speed});
   });
-  at(9650,()=>{
+  at(14500,()=>{
     humanFinalePreludeFinished=true;
     humanFinalePreludeRunning=false;
     stageTransitioning=false; busy=false;
@@ -3582,6 +3588,9 @@ function renderStageProgress(){
     arenaEl.style.removeProperty('background-position');
   }
   applyArenaVisualProfile();
+  /* A fase 10/5 começa com o castelo plenamente visível. A escuridão total
+     só é acionada pelo prólogo, depois da saída discreta de Jules. */
+  arenaEl.classList.toggle('human-finale-before-darkness',isHumanFinaleBattle());
   syncRoyalCourtSceneCast();
 }
 
@@ -4660,7 +4669,7 @@ function loadStage(idx){
   humanFinaleOutcomeResolved=false;
   arenaEl?.querySelector('.human-final-scene')?.remove();
   arenaEl?.querySelector('.human-final-prelude')?.remove();
-  arenaEl?.classList.remove('human-finale-darkening','human-finale-prelude-active');
+  arenaEl?.classList.remove('human-finale-before-darkness','human-finale-darkening','human-finale-prelude-active');
   resetPartyAnimationState();
   stageTransitioning = false;
   defeatFinalized = false;
@@ -8578,12 +8587,21 @@ function runHumanFinalePreview(mode='prelude',options={}){
   resetCombatSchedule();
   localStorage.setItem('12r_tutorial_seen','true');
   localStorage.setItem('12r_tutorial','true');
+  document.body.classList.add('human-finale-preview');
   humanFinalePreviewSetup=true;
   worldRun={active:true,fase:9,nivel:5,storyMode:false};
   chosenIds=['adriel-jovem','gareth','roland','elizier'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
   beginGame(0);
   skipStory();
   hideOverlay('helpScreen');
+  /* A galeria é uma réplica da arena, não o fluxo de abertura do jogo. A
+     tela inicial e o brinde diário não podem encobrir a cena no celular. */
+  const clearPreviewChrome=()=>{
+    document.getElementById('introScreen')?.classList.remove('show');
+    document.querySelectorAll('.ach-toast').forEach(toast=>toast.remove());
+  };
+  clearPreviewChrome();
+  setTimeout(clearPreviewChrome,700);
   humanFinalePreviewSetup=false;
   missionFieldStarted=false; stageTransitioning=false; busy=false;
   if(scene==='prelude') triggerHumanFinalePrelude(options);
