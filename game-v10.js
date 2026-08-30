@@ -2789,6 +2789,54 @@ function placeFinaleTeleportAt(scene,targetId='adriel-jovem'){
   halo.style.width=Math.max(46,target.width*.88)+'px';
   halo.style.height=Math.max(46,target.height*.72)+'px';
 }
+/* VFXs exclusivos do desfecho: não dependem da camada comum de combate,
+   que pode estar sob a cena cinematográfica. Cada corte nasce no braço de
+   Julius, percorre o espaço até o corpo atingido e termina em impacto. */
+function spawnFinaleShadowStrike(scene,source,target,options={}){
+  if(!scene||!source||!target) return false;
+  const frame=scene.getBoundingClientRect(), sr=source.getBoundingClientRect(), tr=target.getBoundingClientRect();
+  if(frame.width<1||frame.height<1||sr.width<1||tr.width<1) return false;
+  const sourceCenterX=sr.left+sr.width*.5, targetCenterX=tr.left+tr.width*.5;
+  const sx=sr.left-frame.left+sr.width*(targetCenterX>=sourceCenterX?.76:.24);
+  const sy=sr.top-frame.top+sr.height*.38;
+  const tx=tr.left-frame.left+tr.width*.5;
+  const ty=tr.top-frame.top+tr.height*.43;
+  const dx=tx-sx, dy=ty-sy;
+  const distance=Math.hypot(dx,dy);
+  if(distance<8) return false;
+  const fx=document.createElement('span');
+  const duration=Math.max(880,Math.round(1180*Math.max(.35,Number(options.speed||1))));
+  fx.className='human-final-shadow-strike';
+  fx.setAttribute('aria-hidden','true');
+  fx.style.setProperty('--finale-sx',sx+'px');
+  fx.style.setProperty('--finale-sy',sy+'px');
+  fx.style.setProperty('--finale-dx',dx+'px');
+  fx.style.setProperty('--finale-dy',dy+'px');
+  fx.style.setProperty('--finale-angle',Math.atan2(dy,dx)*180/Math.PI+'deg');
+  fx.style.setProperty('--finale-vfx-duration',duration+'ms');
+  fx.innerHTML='<i class="human-final-shadow-blade"></i><i class="human-final-shadow-trail"></i><i class="human-final-shadow-impact"></i><i class="human-final-shadow-shards"></i>';
+  scene.appendChild(fx);
+  scheduleCombat(()=>fx.remove(),duration+140);
+  return true;
+}
+function spawnFinaleTeleportVfx(scene,targetId='adriel-jovem',options={}){
+  const target=document.getElementById('party-'+targetId);
+  if(!scene||!target) return false;
+  const frame=scene.getBoundingClientRect(), tr=target.getBoundingClientRect();
+  if(frame.width<1||frame.height<1||tr.width<1) return false;
+  const fx=document.createElement('span');
+  const duration=Math.max(1180,Math.round(1550*Math.max(.35,Number(options.speed||1))));
+  fx.className='human-final-teleport-vfx';
+  fx.setAttribute('aria-hidden','true');
+  fx.style.setProperty('--teleport-x',(tr.left-frame.left+tr.width*.5)+'px');
+  fx.style.setProperty('--teleport-y',(tr.top-frame.top+tr.height*.46)+'px');
+  fx.style.setProperty('--teleport-size',Math.max(74,tr.height*.96)+'px');
+  fx.style.setProperty('--teleport-duration',duration+'ms');
+  fx.innerHTML='<i class="human-final-teleport-core"></i><i class="human-final-teleport-ring ring-a"></i><i class="human-final-teleport-ring ring-b"></i><i class="human-final-teleport-runes"></i><i class="human-final-teleport-sparks"></i>';
+  scene.appendChild(fx);
+  scheduleCombat(()=>fx.remove(),duration+150);
+  return true;
+}
 function playFinaleLines(lines,onDone,options={}){
   const speed=Math.max(.02,Number(options.speed||1));
   let cursor=0;
@@ -2805,7 +2853,7 @@ function unleashFinaleShadow(scene,source,targets,options={}){
   scene?.classList.add('shadow-unleashed');
   if(julius&&source) spawnHumanConjurationAura(julius,source);
   targets.forEach(target=>{
-    if(source&&target) spawnCombatAttackFx('julius',source,target,'#24112e','blade',julius);
+    if(source&&target) spawnFinaleShadowStrike(scene,source,target,options);
   });
 }
 function mountHumanFinalePrelude(){
@@ -2929,7 +2977,7 @@ function triggerHumanFinaleCinematic(outcome='defeat',options={}){
   });
   at(auraAt+3050,()=>{
     const gareth=document.getElementById('party-gareth');
-    if(original&&gareth) spawnCombatAttackFx('julius',original,gareth,'#24112e','blade',KINGDOMS.find(k=>k.id==='julius'));
+    if(original&&gareth) spawnFinaleShadowStrike(scene,original,gareth,{speed});
     scene?.classList.add('gareth-sacrificed');
     setFinaleHeroDefeat('gareth');
   });
@@ -2937,6 +2985,7 @@ function triggerHumanFinaleCinematic(outcome='defeat',options={}){
     const cedric=finaleActor(scene,'cedric','fallen');
     placeFinaleTeleportAt(scene,'adriel-jovem');
     if(cedric) spawnHumanConjurationAura(KINGDOMS.find(k=>k.id==='cedric'),cedric);
+    spawnFinaleTeleportVfx(scene,'adriel-jovem',{speed});
     scene?.classList.add('adriel-teleporting');
     document.getElementById('party-adriel-jovem')?.classList.add('human-final-adriel-vanished');
     playFinaleLines([{h:'cedric',t:'Viva Jovem!!! Seja nossa esperança!',ms:2550}],null,{speed});
