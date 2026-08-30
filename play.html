@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<script data-gate>(function(){const local=['127.0.0.1','localhost'].includes(location.hostname);const qa=new URLSearchParams(location.search).has('qa');if(!(local&&qa)&&sessionStorage.getItem('ygdria_gate')!=='ok')location.replace('./index.html');})();</script>
+<script data-gate>(function(){const local=['127.0.0.1','localhost'].includes(location.hostname);const params=new URLSearchParams(location.search);const qa=params.has('qa');const embeddedFinalPreview=params.get('preview')==='human-final'&&window.top!==window.self;if(!(local&&qa)&&!embeddedFinalPreview&&sessionStorage.getItem('ygdria_gate')!=='ok')location.replace('./index.html');})();</script>
 <script data-early-options>(function(){
   function optionsPanel(){ return document.getElementById('optionsScreen'); }
   function closest(target,selector){ return target instanceof Element?target.closest(selector):null; }

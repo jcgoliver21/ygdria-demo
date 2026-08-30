@@ -41,7 +41,7 @@
       selected=scene;
       buttons.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.scene===scene)));
       loading.classList.remove('hidden');
-      frame.src=`../play.html?qa=final-gallery&scene=${encodeURIComponent(scene)}&r=${Date.now()}`;
+      frame.src=`../play.html?preview=human-final&scene=${encodeURIComponent(scene)}&r=${Date.now()}`;
       await new Promise(resolve=>frame.addEventListener('load',resolve,{once:true}));
       for(let attempt=0;attempt<80;attempt++){
         const api=frame.contentWindow?.YGDRIA_HUMAN_FINALE;
