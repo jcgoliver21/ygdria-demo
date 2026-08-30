@@ -2738,7 +2738,7 @@ function finalSceneSprite(id,action='defeat'){
 }
 function finalSceneActor(id,kind='fallen'){
   const character=KINGDOMS.find(k=>k.id===id);
-  const action=kind==='victor'||kind==='original'||kind==='prelude'?'idle':'defeat';
+  const action=['victor','original','prelude','prelude-arena'].includes(kind)?'idle':'defeat';
   return `<span class="human-final-scene-actor finale-${id} finale-${kind}" data-finale-actor="${id}-${kind}" style="--realm:${character?.color||'#d78be8'}">${finalSceneSprite(id,action)}</span>`;
 }
 function finaleActor(scene,id,kind){ return scene?.querySelector(`[data-finale-actor="${id}-${kind}"]`); }
@@ -2815,8 +2815,8 @@ function mountHumanFinalePrelude(){
   scene.className='human-final-prelude';
   scene.setAttribute('aria-hidden','true');
   scene.innerHTML=`
-    ${finalSceneActor('bernyce','prelude-fallen')}
-    ${finalSceneActor('kalander','prelude-fallen')}
+    ${finalSceneActor('bernyce','prelude-arena')}
+    ${finalSceneActor('kalander','prelude-arena')}
     ${finalSceneActor('cedric','prelude')}
     <span class="human-final-prelude-slash"></span>`;
   arenaEl?.appendChild(scene);
@@ -2833,16 +2833,19 @@ function triggerHumanFinalePrelude(options={}){
   const juliusIndex=enemies.findIndex(enemy=>enemy?.cardId==='julius');
   const liveJulius=juliusIndex>=0?document.getElementById('enemy-'+juliusIndex):null;
   const juliusAvatar=liveJulius?.querySelector('.enemy-avatar')||liveJulius;
-  /* Primeiro mostramos a corte no castelo iluminado. O breu só começa depois
-     de Jules recuar e Cedric voltar à Rainha; assim não há corte para preto. */
+  /* Bernyce e Kalander continuam onde a luta anterior os deixou: na arena.
+     Apenas Jules e Cedric observam do trono antes da chegada de Julius. */
   arenaEl?.classList.add('human-finale-prelude-active');
-  setBattleStatus(T('A corte recebe os heróis no Castelo da Coroa Humana.','The court receives the heroes in the Human Crown Castle.','La corte recibe a los héroes en el Castillo de la Corona Humana.'),'system');
+  setBattleStatus(T('Jules e Cedric observam a arena em silêncio.','Jules and Cedric watch the arena in silence.','Jules y Cedric observan la arena en silencio.'),'system');
   at(3800,()=>{
-    court?.classList.add('court-jules-leaving','court-cedric-returning');
-    scene?.classList.add('cedric-returning');
+    court?.classList.add('court-jules-leaving','court-cedric-joining');
     arenaEl?.classList.remove('human-finale-before-darkness');
     arenaEl?.classList.add('human-finale-darkening');
     setBattleStatus(T('Uma sombra toma o Castelo da Coroa Humana...','A shadow takes the Human Crown Castle...','Una sombra toma el Castillo de la Corona Humana...'),'system');
+  });
+  at(5700,()=>{
+    court?.classList.add('court-cedric-joined');
+    scene?.classList.add('cedric-joined');
   });
   /* Julius entra depois dos 3,1 segundos de escurecimento progressivo. */
   at(7300,()=>{
@@ -2852,12 +2855,13 @@ function triggerHumanFinalePrelude(options={}){
     playFinaleLines([{name:'Julius',sprite:KINGDOMS.find(k=>k.id==='julius')?.sprite,t:'Morram todos! Corte Sombrio!',enemyIndex:juliusIndex,ms:2200}],null,{speed});
   });
   at(10050,()=>{
-    const targets=['bernyce','kalander','cedric'].map(id=>id==='cedric'?finaleActor(scene,id,'prelude'):(court?.querySelector(`.royal-court-${id}`))).filter(Boolean);
+    const targets=['bernyce','kalander','cedric'].map(id=>finaleActor(scene,id,id==='cedric'?'prelude':'prelude-arena')).filter(Boolean);
     unleashFinaleShadow(scene,juliusAvatar,targets,{speed});
-    const cedric=finaleActor(scene,'cedric','prelude');
-    if(cedric){ cedric.innerHTML=finalSceneSprite('cedric','defeat'); cedric.classList.add('fallen'); }
+    ['bernyce','kalander','cedric'].forEach(id=>{
+      const actor=finaleActor(scene,id,id==='cedric'?'prelude':'prelude-arena');
+      if(actor){ actor.innerHTML=finalSceneSprite(id,'defeat'); actor.classList.add('fallen'); }
+    });
     scene?.classList.add('court-struck');
-    court?.classList.add('court-struck');
   });
   at(12200,()=>{
     playFinaleLines([{h:'adriel-jovem',t:'Rainha!!! Kalander!!!',ms:1850}],null,{speed});
@@ -3601,6 +3605,19 @@ function syncRoyalCourtSceneCast(){
   const existing=arenaEl?.querySelector('.royal-court-cast');
   const enabled=Boolean(worldRun.active&&worldRun.fase===9&&activeStageData?.bgUrl?.endsWith('fase-10.jpg'));
   if(!enabled){ existing?.remove(); return; }
+  const isFinale=isHumanFinaleBattle();
+  if(isFinale){
+    let cast=existing;
+    if(!cast){
+      cast=document.createElement('div');
+      cast.className='royal-court-cast';
+      cast.setAttribute('aria-hidden','true');
+      arenaEl.appendChild(cast);
+    }
+    cast.className='royal-court-cast';
+    cast.innerHTML='<span class="royal-court-guard royal-court-jules" aria-hidden="true"></span><span class="royal-court-guard royal-court-cedric" aria-hidden="true"></span>';
+    return;
+  }
   const opponents=new Set((activeStageData?.enemies||[]).map(enemy=>enemy?.cardId).filter(Boolean));
   const visible={bernyce:!opponents.has('bernyce'),kalander:!opponents.has('kalander'),jules:!opponents.has('jules')};
   let cast=existing;
@@ -3610,6 +3627,7 @@ function syncRoyalCourtSceneCast(){
     cast.setAttribute('aria-hidden','true');
     arenaEl.appendChild(cast);
   }
+  cast.className='royal-court-cast';
   cast.innerHTML=`${visible.bernyce?'<img class="royal-court-bernyce" src="assets/characters/runtime-v10/bernyce/scene-seated.png" alt="">':''}${visible.jules?'<span class="royal-court-guard royal-court-jules"></span>':''}${visible.kalander?'<span class="royal-court-guard royal-court-kalander"></span>':''}`;
 }
 

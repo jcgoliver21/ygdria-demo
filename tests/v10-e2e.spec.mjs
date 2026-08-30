@@ -130,9 +130,18 @@ test('final humano encena prólogo, quedas e teleporte antes do epílogo canôni
   });
   await expect(page.locator('.human-final-prelude')).toBeVisible();
   await expect(page.locator('#arena')).toHaveClass(/human-finale-before-darkness/);
-  await expect(page.locator('.royal-court-bernyce')).toBeVisible();
-  await expect(page.locator('.royal-court-kalander')).toBeVisible();
+  await expect(page.locator('.royal-court-bernyce')).toHaveCount(0);
+  await expect(page.locator('.royal-court-kalander')).toHaveCount(0);
   await expect(page.locator('.royal-court-jules')).toBeVisible();
+  await expect(page.locator('.royal-court-cedric')).toBeVisible();
+  await expect(page.locator('.finale-bernyce.finale-prelude-arena')).toBeVisible();
+  await expect(page.locator('.finale-kalander.finale-prelude-arena')).toBeVisible();
+  await expect(page.locator('.finale-cedric.finale-prelude')).toHaveCount(1);
+  await page.evaluate(()=>YGDRIA_HUMAN_FINALE.run('prelude',{speed:.02}));
+  await page.waitForTimeout(130);
+  await expect(page.locator('.royal-court-cast')).toHaveClass(/court-jules-leaving/);
+  await expect(page.locator('.royal-court-cast')).toHaveClass(/court-cedric-joining/);
+  await expect(page.locator('.human-final-prelude')).toHaveClass(/cedric-joined/);
   await expect(page.locator('.finale-cedric.finale-prelude')).toBeVisible();
   await page.evaluate(()=>YGDRIA_HUMAN_FINALE.run('victory',{speed:.02}));
   await expect(page.locator('.human-final-scene')).toBeVisible();
@@ -2099,7 +2108,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.20');
+  expect(registration.caches).toContain('12r-v11.0.21');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2259,7 +2268,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.20');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.21');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 
