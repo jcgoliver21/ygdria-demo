@@ -1114,13 +1114,21 @@ test('Torre inicia a aura só no andar, roda o elenco sem repetição e mantém 
       bernyce:heroFacingDirection(KINGDOMS.find(hero=>hero.id==='bernyce')),
       kalander:heroFacingDirection(KINGDOMS.find(hero=>hero.id==='kalander')),
       jules:heroFacingDirection(KINGDOMS.find(hero=>hero.id==='jules')),
-      elizierEnemy:enemyFacingDirection({cardId:'elizier'})
+      elizierEnemy:enemyFacingDirection({cardId:'elizier'}),
+      rolandEnemy:enemyFacingDirection(order.find(enemy=>enemy.cardId==='roland')),
+      juliusEnemy:enemyFacingDirection(order.find(enemy=>enemy.cardId==='julius')),
+      slimeCerejaEnemy:enemyFacingDirection(order.find(enemy=>enemy.etype==='slimeCereja'))
+    };
+    const spriteFlip={
+      roland:enemySpriteFlip(order.find(enemy=>enemy.cardId==='roland')),
+      julius:enemySpriteFlip(order.find(enemy=>enemy.cardId==='julius')),
+      slimeCereja:enemySpriteFlip(order.find(enemy=>enemy.etype==='slimeCereja'))
     };
     eternalReviveCharges=0; chamarizCharges=0; playerHP=0;
     handlePlayerDefeat();
     await wait(1120);
     return {
-      before,after,roster,facing,
+      before,after,roster,facing,spriteFlip,
       gameOver:{
         panel:document.getElementById('towerGameOverPanel')?.classList.contains('show'),
         boardHidden:document.getElementById('board')?.classList.contains('tower-board-hidden'),
@@ -1139,7 +1147,11 @@ test('Torre inicia a aura só no andar, roda o elenco sem repetição e mantém 
   expect(audit.roster.first).toBe('Slime de Cerejeira');
   expect(audit.roster.scale).toBeCloseTo(1.2,1);
   expect(audit.roster.label).toContain('Andar 1');
-  expect(audit.facing).toEqual({bernyce:'right',kalander:'right',jules:'right',elizierEnemy:'left'});
+  expect(audit.facing).toEqual({
+    bernyce:'right',kalander:'right',jules:'right',elizierEnemy:'left',
+    rolandEnemy:'right',juliusEnemy:'right',slimeCerejaEnemy:'left'
+  });
+  expect(audit.spriteFlip).toEqual({roland:true,julius:true,slimeCereja:false});
   expect(audit.gameOver).toMatchObject({panel:true,boardHidden:true,defeatOverlay:false,downed:true});
   expect(audit.gameOver.report).toContain('Ranking das cartas usadas');
   expect(errors).toEqual([]);
@@ -2083,7 +2095,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.16');
+  expect(registration.caches).toContain('12r-v11.0.17');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2243,7 +2255,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.16');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.17');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

@@ -1524,7 +1524,7 @@ function towerStoryOrder(){
     if(vistos.has(opponentId)) return;
     vistos.add(opponentId);
     ordem.push(card
-      ? {name:card.nome,hp:card.hp,atk:card.atk,sprite:card.sprite,cardId:key,isCard:true}
+      ? {name:card.nome,hp:card.hp,atk:card.atk,sprite:card.sprite,cardId:key,isCard:true,flip:Boolean(card.flip)}
       : {name:type.n,hp:type.hp,atk:type.atk,sprite:type.sprite,etype:key,flip:Boolean(type.flip)});
   }))));
   return ordem;
@@ -1646,7 +1646,11 @@ function enemyAnimationKey(e){
 const ENEMY_LEFT_FACING_KEYS=new Set(['slime-cereja','lobo-raivoso']);
 const ENEMY_LEFT_FACING_CARD_IDS=new Set(['elizier']);
 function enemyFacingDirection(e){return ENEMY_LEFT_FACING_KEYS.has(enemyAnimationKey(e))||ENEMY_LEFT_FACING_CARD_IDS.has(e?.cardId)?'left':'right'}
-function enemySpriteFlip(e){return enemyFacingDirection(e)==='left'}
+/* A direção tática e a orientação nativa de cada arte são coisas distintas.
+   O card do Roland/Julius precisa ser espelhado para encarar a equipe; já o
+   Slime de Cerejeira nasce olhando para a esquerda e não pode ser virado só
+   porque ocupa o lado inimigo. `flip` descreve a correção visual da arte. */
+function enemySpriteFlip(e){return Boolean(e?.flip)}
 function enemyAnimationCharacter(e){
   const key=enemyAnimationKey(e),library=key&&ENEMY_ANIMATION_LIBRARY[key];
   if(!library) return null;
