@@ -5,7 +5,7 @@
   root.YGDRIA_HUMANOS_LORE=Object.freeze({
   "schema": 1,
   "source": "docs/REINO-HUMANOS-FASES-EDITAVEL.md",
-  "sourceHash": "60de32653dfb9be2c02cf4a6c930fa46f8786bc6f2ea4ad3b5da6c24d110683f",
+  "sourceHash": "37aaeacbf432d9c6d3c2133175b15ffbf427bcc7c3c0e1879038c59a213878e5",
   "generatedAt": "deterministic",
   "phases": [
     {

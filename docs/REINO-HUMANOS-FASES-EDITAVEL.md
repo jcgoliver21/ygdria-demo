@@ -355,6 +355,14 @@ Efeito Visual: Nada / Escuridão total na missão 5
    - Julius: Morram todos! Corte Sombrio!
    - Adriel: Rainha!!! Kalander!!!
 
+### Direção cinematográfica — Missão 5
+
+**Antes da luta:** a escuridão toma o cenário gradualmente. Estão presentes todos os heróis selecionados da missão, Bernyce e Kalander junto ao trono. Jules sai de fininho pelo degrau lateral e Cedric volta para perto da Rainha. Julius aparece, fala “Morram todos! Corte Sombrio!” em seu balão e golpeia Bernyce, Kalander e Cedric com o Corte Sombrio. Adriel responde “Rainha!!! Kalander!!!” em seu balão. Só então a luta final começa.
+
+**Se a luta for perdida:** não há Game Over. Julius conjura sua aura, derrota todos os heróis, exceto Adriel que está atrás do grupo, e dispara o Corte Sombrio contra ele. Gareth entra na frente, salva Adriel e se sacrifica. Cedric, mesmo caído, conjura sua aura, envolve Adriel com energia rosa e o teletransporta. Bernyce e todos os heróis mortos permanecem caídos no chão; Julius termina em vitória antes do narrador.
+
+**Se a luta for vencida:** a tela de vitória não aparece imediatamente. Julius derrotado no chão se desfaz em sombras; o Julius original aparece, conjura sua aura e repete a derrota de todos os heróis, exceto Adriel. Gareth se sacrifica diante do Corte Sombrio e Cedric, caído, protege e teletransporta Adriel com energia rosa. Bernyce e todos os heróis mortos permanecem caídos no chão; Julius termina em vitória antes do narrador.
+
 **Final da fase (Narrador):** Adriel achou que havia vencido Julius, mas era apenas uma sombra dele. Uma sombra cobre totalmente ao castelo e todos são derrotados e mortos pela lâmina sombria de Julius. Adriel é o único sobrevivente, graças ao sacrifício de Gareth, que entra na frente do golpe final, Cedric o envolve com uma magia e o teletransporta para longe. 
 
 - Cedric: Viva Jovem!!! Seja nossa esperança!
