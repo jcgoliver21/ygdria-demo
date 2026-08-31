@@ -4004,9 +4004,9 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
 .human-final-scene-actor{position:absolute;display:block;aspect-ratio:1;transform-origin:50% 100%;filter:drop-shadow(0 5px 5px rgba(10,2,12,.72));opacity:1}
 .human-final-scene-sprite{position:absolute;inset:0;display:block;background-image:var(--sprite-url);background-repeat:no-repeat;background-size:calc(var(--sprite-cols,2) * 100%) calc(var(--sprite-rows,2) * 100%);background-position:var(--sprite-bg-x,100%) var(--sprite-bg-y,100%)}
 .finale-fallen{width:clamp(52px,17%,98px)}
-.finale-bernyce{left:49%;bottom:13%}
-.finale-kalander{left:33%;bottom:17%}
-.finale-cedric{left:64%;bottom:19%}
+.finale-bernyce{left:56%;bottom:25%}
+.finale-kalander{left:74%;bottom:21%}
+.finale-cedric{left:35%;bottom:26%}
 .finale-julius{width:clamp(54px,18%,102px);right:16%;bottom:28%;--sprite-bg-x:0%;--sprite-bg-y:0%}
 .human-final-scene-actor.dissolving{animation:humanFinalDissolve 1.3s cubic-bezier(.25,.72,.28,1) both}
 .enemy-avatar.human-final-julius-dissolving{animation:humanFinalDissolve 1.3s cubic-bezier(.25,.72,.28,1) both!important}
@@ -4048,19 +4048,19 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
    Jules e Cedric observam do trono; os dois usam ciclos de caminhada reais,
    em vez de deslizarem pela tela. */
 .human-final-prelude{position:absolute;inset:0;z-index:5;pointer-events:none;overflow:hidden}
-.finale-prelude-arena{width:clamp(52px,16%,88px);transition:filter .32s ease}
+.finale-prelude-arena{width:clamp(52px,17%,98px);transition:filter .32s ease}
 .finale-bernyce.finale-prelude-arena{left:56%;bottom:25%}
 .finale-kalander.finale-prelude-arena{left:74%;bottom:21%}
 /* Cedric começa nos degraus. Ao concluir sua caminhada, esta cópia fixa o
-   personagem no mesmo ponto físico da arena para a queda posterior. */
-.finale-prelude{width:clamp(52px,16%,88px);left:58%;bottom:29%;opacity:0;transition:opacity .12s linear}
+   personagem ao lado da Rainha, sem ocupar nem cruzar o corpo dela. */
+.finale-prelude{width:clamp(52px,17%,98px);left:35%;bottom:26%;opacity:0;transition:opacity .12s linear}
 .human-final-prelude.cedric-joined .finale-prelude{opacity:1}
 .royal-court-cast.court-jules-leaving .royal-court-jules{background-image:url('assets/characters/runtime-v10/jules/walk-2x2.png');animation:royalCourtWalkLeft 1.7s linear both}
 .royal-court-cast.court-cedric-joining .royal-court-cedric{background-image:url('assets/characters/runtime-v10/cedric/walk-2x2.png');animation:royalCourtWalkToArena 1.9s linear both}
 .royal-court-cast.court-cedric-joined .royal-court-cedric{opacity:0}
 .human-final-prelude.court-struck .finale-prelude-arena,.human-final-prelude.court-struck .finale-prelude{filter:brightness(.78) drop-shadow(0 5px 5px rgba(10,2,12,.78))}
 @keyframes royalCourtWalkLeft{0%,24.9%{opacity:1;background-position:0 0;transform:translateX(0)}25%,49.9%{background-position:100% 0;transform:translateX(-25px)}50%,74.9%{background-position:0 100%;transform:translateX(-51px)}75%,99.9%{background-position:100% 100%;transform:translateX(-77px)}100%{opacity:0;background-position:0 0;transform:translateX(-86px)}}
-@keyframes royalCourtWalkToArena{0%,24.9%{opacity:1;background-position:0 0;transform:translate3d(0,0,0)}25%,49.9%{background-position:100% 0;transform:translate3d(-23px,28px,0)}50%,74.9%{background-position:0 100%;transform:translate3d(-46px,56px,0)}75%,99.9%{background-position:100% 100%;transform:translate3d(-69px,84px,0)}100%{opacity:0;background-position:0 0;transform:translate3d(-81px,99px,0)}}
+@keyframes royalCourtWalkToArena{0%,24.9%{opacity:1;background-position:0 0;transform:translate3d(0,0,0)}25%,49.9%{background-position:100% 0;transform:translate3d(-43px,22px,0)}50%,74.9%{background-position:0 100%;transform:translate3d(-86px,44px,0)}75%,99.9%{background-position:100% 100%;transform:translate3d(-129px,66px,0)}100%{opacity:0;background-position:0 0;transform:translate3d(-154px,78px,0)}}
 /* Julius é apresentado pela entrada real na arena; o inimigo só fica visível
    depois da fala. A troca é de opacidade, nunca de escala. */
 .arena.human-finale-prelude-active .enemy-unit{opacity:0;transition:opacity .52s ease}
@@ -4086,14 +4086,14 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
   .royal-court-kalander{right:18%}
   .royal-court-cedric{right:20%}
   .finale-fallen{width:19%}
-  .finale-bernyce{left:48%;bottom:12%}
-  .finale-kalander{left:29%;bottom:16%}
-  .finale-cedric{left:63%;bottom:18%}
+  .finale-bernyce{left:55%;bottom:24%}
+  .finale-kalander{left:73%;bottom:20%}
+  .finale-cedric{left:35%;bottom:26%}
   .finale-julius{width:20%;right:12%;bottom:27%}
-  .finale-prelude-arena{width:18%}
+  .finale-prelude-arena{width:19%}
   .finale-bernyce.finale-prelude-arena{left:55%;bottom:24%}
   .finale-kalander.finale-prelude-arena{left:73%;bottom:20%}
-  .finale-prelude{width:18%;left:57%;bottom:28%}
+  .finale-prelude{width:19%;left:35%;bottom:26%}
   .finale-shadow,.finale-original{width:20%;right:12%;bottom:27%}
 }
 body.game-active .game-frame:not(.victory-celebration) .combat-console{

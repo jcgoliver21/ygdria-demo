@@ -2768,6 +2768,17 @@ function setFinaleHeroDefeat(id){
   unit.classList.add('human-final-hero-fallen');
   animateHeroAvatar(avatar,character,'defeat',{hold:true});
 }
+/* O epílogo do Reino dos Humanos não é uma comemoração da equipe: todos os
+   sobreviventes da luta ficam caídos, enquanto Adriel já não está na arena.
+   Reaplicamos a pose antes do relatório para que o fluxo normal de vitória
+   nunca possa sobrescrever a física narrativa com a animação de celebração. */
+function enforceHumanFinaleAftermath(){
+  const adrielId='adriel-jovem';
+  ACTIVE.map(index=>KINGDOMS[index]?.id).filter(Boolean).forEach(id=>{
+    if(id!==adrielId) setFinaleHeroDefeat(id);
+  });
+  document.getElementById('party-'+adrielId)?.classList.add('human-final-adriel-vanished');
+}
 function placeGarethBeforeAdriel(){
   const adriel=document.getElementById('party-adriel-jovem');
   const gareth=document.getElementById('party-gareth');
@@ -2941,6 +2952,7 @@ function triggerHumanFinalePrelude(options={}){
 function completeHumanFinaleCinematic(options={}){
   humanFinaleCinematicRunning=false;
   humanFinaleOutcomeResolved=true;
+  enforceHumanFinaleAftermath();
   if(options.preview){ busy=false; stageTransitioning=false; setBattlePhase('idle'); return; }
   stageTransitioning=false; busy=false;
   onStageCleared();
@@ -7733,8 +7745,9 @@ function onStageCleared(){
   busy = true;
   setBattlePhase('transition');
   resetCombatSchedule();
-  if(!humanFinaleCinematicRunning) ACTIVE.forEach(heroIdx=>playHeroAction(heroIdx,'victory'));
-  sfxVictory();
+  const humanFinaleAftermath=isHumanFinaleBattle()&&humanFinaleOutcomeResolved;
+  if(!humanFinaleCinematicRunning&&!humanFinaleAftermath) ACTIVE.forEach(heroIdx=>playHeroAction(heroIdx,'victory'));
+  if(!humanFinaleAftermath) sfxVictory();
   /* Modos são mutuamente exclusivos; a ordem defensiva impede um estado
      legado inconsistente de creditar vitória de desafio à campanha. */
   if(bossRushMode){
@@ -7838,7 +7851,7 @@ function onStageCleared(){
         victoryExitToMap=true;
         victoryExitMode='world';
         renderBattleReport('victoryReport');
-        launchVictoryConfetti();
+        if(!humanFinaleOutcomeResolved) launchVictoryConfetti();
         showOverlay('dungeonClearOverlay');
       };
       if(showFinalStory&&!humanFinaleOutcomeResolved) showStorySequence(canonicalAfterSequence(finaleFase),finishFinale);
