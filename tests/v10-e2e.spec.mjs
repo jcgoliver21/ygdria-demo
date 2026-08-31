@@ -151,7 +151,8 @@ test('final humano encena prólogo, quedas e teleporte antes do epílogo canôni
     const scene=document.querySelector('.human-final-prelude');
     const bernyce=document.querySelector('.human-final-prelude .finale-bernyce');
     const kalander=document.querySelector('.human-final-prelude .finale-kalander');
-    const heroLayers=[...document.querySelectorAll('.party-row .hero-unit')].map(unit=>Number(getComputedStyle(unit).zIndex)||0);
+    const heroUnits=[...document.querySelectorAll('.party-row .hero-unit')];
+    const heroLayers=heroUnits.map(unit=>Number(getComputedStyle(unit).zIndex)||0);
     const cedricRect=rect(cedric);
     return {
       opacity:Number(getComputedStyle(cedric).opacity),
@@ -159,7 +160,9 @@ test('final humano encena prólogo, quedas e teleporte antes do epílogo canôni
       sceneLayer:Number(getComputedStyle(scene).zIndex),
       highestHeroLayer:Math.max(...heroLayers),
       overlapsBernyce:Math.round(overlaps(cedricRect,rect(bernyce))),
-      overlapsKalander:Math.round(overlaps(cedricRect,rect(kalander)))
+      overlapsKalander:Math.round(overlaps(cedricRect,rect(kalander))),
+      overlapsHeroes:heroUnits.map(unit=>Math.round(overlaps(cedricRect,rect(unit)))),
+      enemySide:cedricRect.left>rect(document.querySelector('#arena')).left+rect(document.querySelector('#arena')).width*.5
     };
   });
   expect(cedricReadability.opacity).toBeGreaterThan(.95);
@@ -168,6 +171,8 @@ test('final humano encena prólogo, quedas e teleporte antes do epílogo canôni
   expect(cedricReadability.sceneLayer).toBeGreaterThan(cedricReadability.highestHeroLayer);
   expect(cedricReadability.overlapsBernyce).toBe(0);
   expect(cedricReadability.overlapsKalander).toBe(0);
+  expect(cedricReadability.overlapsHeroes).toEqual([0,0,0,0]);
+  expect(cedricReadability.enemySide).toBe(true);
   const preludePositions=await page.evaluate(()=>Object.fromEntries(['bernyce','kalander','cedric'].map(id=>{
     const style=getComputedStyle(document.querySelector(`.human-final-prelude .finale-${id}`));
     return [id,{left:style.left,bottom:style.bottom,width:style.width}];
@@ -1790,7 +1795,7 @@ test('Fase 10 usa as duas trilhas licenciadas com mixagem protegida',async({page
     const firstBaseVoice=baseTrack?.audio;
     const base={key:stageMusicSelection,src:firstBaseVoice?.getAttribute('src'),loop:firstBaseVoice?.loop,gain:stageMusicTargetGain()};
     const handoff=queueStageMusicLoop(baseTrack,baseTrack?.activeVoice,true);
-    const loop={handoff,continuous:stageMusicActive===baseTrack&&baseTrack?.audio!==firstBaseVoice,voices:baseTrack?.voices?.length||0,loop:baseTrack?.audio?.loop};
+    const loop={handoff,continuous:stageMusicActive===baseTrack&&baseTrack?.audio!==firstBaseVoice,voices:baseTrack?.voices?.length||0,loop:baseTrack?.audio?.loop,crossfade:STAGE10_LOOP_CROSSFADE,outroTrim:STAGE10_LOOP_OUTRO_TRIM};
     const voiceBeforePause=baseTrack?.audio;
     pauseLicensedStageMusic();
     const paused=Boolean(baseTrack?.paused);
@@ -1806,7 +1811,7 @@ test('Fase 10 usa as duas trilhas licenciadas com mixagem protegida',async({page
   expect(audio.final).toMatchObject({key:'final',src:'assets/audio/Ygdria_10_Sombras_Que_Devoram_Final.mp3',loop:false,filter:'lowpass'});
   expect(audio.base.gain).toBeLessThan(.12);
   expect(audio.final.gain).toBeLessThan(.12);
-  expect(audio.loop).toMatchObject({handoff:true,continuous:true,loop:false});
+  expect(audio.loop).toMatchObject({handoff:true,continuous:true,loop:false,crossfade:.55,outroTrim:.75});
   expect(audio.loop.voices).toBeGreaterThanOrEqual(2);
   expect(audio.paused).toBe(true);
   expect(audio.resume).toMatchObject({sameVoice:true,paused:false});
@@ -2243,7 +2248,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.29');
+  expect(registration.caches).toContain('12r-v11.0.30');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2403,7 +2408,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.29');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.30');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

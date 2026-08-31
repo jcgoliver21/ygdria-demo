@@ -4006,7 +4006,9 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
 .finale-fallen{width:clamp(52px,17%,98px)}
 .finale-bernyce{left:56%;bottom:25%}
 .finale-kalander{left:74%;bottom:21%}
-.finale-cedric{left:35%;bottom:26%;z-index:2}
+/* Cedric fica no plano distante dos adversários: é uma presença da corte,
+   nunca uma quinta peça dentro da formação dos heróis. */
+.finale-cedric{width:clamp(42px,13%,76px);left:61%;bottom:45%;z-index:1}
 .finale-julius{width:clamp(54px,18%,102px);right:16%;bottom:28%;--sprite-bg-x:0%;--sprite-bg-y:0%}
 .human-final-scene-actor.dissolving{animation:humanFinalDissolve 1.3s cubic-bezier(.25,.72,.28,1) both}
 .enemy-avatar.human-final-julius-dissolving{animation:humanFinalDissolve 1.3s cubic-bezier(.25,.72,.28,1) both!important}
@@ -4052,8 +4054,9 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
 .finale-bernyce.finale-prelude-arena{left:56%;bottom:25%}
 .finale-kalander.finale-prelude-arena{left:74%;bottom:21%}
 /* Cedric começa nos degraus. Ao concluir sua caminhada, esta cópia fixa o
-   personagem ao lado da Rainha, sem ocupar nem cruzar o corpo dela. */
-.finale-prelude{width:clamp(52px,17%,98px);left:35%;bottom:26%;opacity:0;transition:opacity .12s linear}
+   personagem no mesmo plano distante dos inimigos, sem cruzar a Rainha nem a
+   formação dos heróis. */
+.finale-prelude{width:clamp(42px,13%,76px);left:61%;bottom:45%;opacity:0;transition:opacity .12s linear}
 .human-final-prelude.cedric-joined .finale-prelude{opacity:1}
 .royal-court-cast.court-jules-leaving .royal-court-jules{background-image:url('assets/characters/runtime-v10/jules/walk-2x2.png');animation:royalCourtWalkLeft 1.7s linear both}
 .royal-court-cast.court-cedric-joining .royal-court-cedric{background-image:url('assets/characters/runtime-v10/cedric/walk-2x2.png');animation:royalCourtWalkToArena 1.9s linear both}
@@ -4088,12 +4091,12 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
   .finale-fallen{width:19%}
   .finale-bernyce{left:55%;bottom:24%}
   .finale-kalander{left:73%;bottom:20%}
-  .finale-cedric{left:35%;bottom:26%;z-index:2}
+  .finale-cedric{width:14%;left:61%;bottom:45%;z-index:1}
   .finale-julius{width:20%;right:12%;bottom:27%}
   .finale-prelude-arena{width:19%}
   .finale-bernyce.finale-prelude-arena{left:55%;bottom:24%}
   .finale-kalander.finale-prelude-arena{left:73%;bottom:20%}
-  .finale-prelude{width:19%;left:35%;bottom:26%}
+  .finale-prelude{width:14%;left:61%;bottom:45%}
   .finale-shadow,.finale-original{width:20%;right:12%;bottom:27%}
 }
 body.game-active .game-frame:not(.victory-celebration) .combat-console{

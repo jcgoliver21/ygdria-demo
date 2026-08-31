@@ -722,11 +722,12 @@ let musicBossLayer = false;
 let musicFinalBoss = false;
 const activeMusicNodes = new Set();
 /* Fase 10: as trilhas autorais têm barramento e volume próprios. Cada retorno
-   ao início usa duas vozes brevemente sobrepostas: a próxima começa antes de a
-   anterior terminar, eliminando o silêncio entre fim e recomeço do MP3. */
+   ao início usa duas vozes brevemente sobrepostas. A reentrada acontece antes
+   da cauda quase silenciosa do MP3, para o loop permanecer musical e contínuo. */
 const STAGE10_MUSIC_GAIN=.24;
-const STAGE10_LOOP_CROSSFADE=.72;
-const STAGE10_LOOP_LEAD=.28;
+const STAGE10_LOOP_CROSSFADE=.55;
+const STAGE10_LOOP_OUTRO_TRIM=.75;
+const STAGE10_LOOP_LEAD=.12;
 const STAGE10_MUSIC=Object.freeze({
   base:{src:'assets/audio/Ygdria_10_Sombras_Que_Devoram.mp3'},
   final:{src:'assets/audio/Ygdria_10_Sombras_Que_Devoram_Final.mp3'}
@@ -761,8 +762,8 @@ function armStageMusicLoop(track,voice){
   clearStageMusicLoop(track);
   if(stageMusicActive!==track||track.paused||track.activeVoice!==voice) return;
   const duration=voice.audio.duration;
-  if(!Number.isFinite(duration)||duration<=STAGE10_LOOP_CROSSFADE) return;
-  const wait=Math.max(80,(duration-voice.audio.currentTime-STAGE10_LOOP_CROSSFADE-STAGE10_LOOP_LEAD)*1000);
+  if(!Number.isFinite(duration)||duration<=STAGE10_LOOP_OUTRO_TRIM) return;
+  const wait=Math.max(80,(duration-voice.audio.currentTime-STAGE10_LOOP_OUTRO_TRIM-STAGE10_LOOP_LEAD)*1000);
   const token=track.loopToken;
   track.loopTimer=setTimeout(()=>{
     if(token===track.loopToken) queueStageMusicLoop(track,voice);
@@ -782,7 +783,7 @@ function createStageMusicVoice(track){
   audio.addEventListener('loadedmetadata',()=>armStageMusicLoop(track,voice));
   audio.addEventListener('timeupdate',()=>{
     const remaining=audio.duration-audio.currentTime;
-    if(Number.isFinite(remaining)&&remaining<=STAGE10_LOOP_CROSSFADE+STAGE10_LOOP_LEAD) queueStageMusicLoop(track,voice);
+    if(Number.isFinite(remaining)&&remaining<=STAGE10_LOOP_OUTRO_TRIM+STAGE10_LOOP_LEAD) queueStageMusicLoop(track,voice);
   });
   audio.addEventListener('ended',()=>{
     if(stageMusicActive!==track||track.activeVoice!==voice||track.paused) return;
@@ -808,7 +809,7 @@ function prepareStageMusic(key){
 function queueStageMusicLoop(track,voice,force=false){
   if(!track||stageMusicActive!==track||track.activeVoice!==voice||track.paused||track.loopQueued) return false;
   const remaining=voice.audio.duration-voice.audio.currentTime;
-  if(!force&&Number.isFinite(remaining)&&remaining>STAGE10_LOOP_CROSSFADE+STAGE10_LOOP_LEAD){ armStageMusicLoop(track,voice); return false; }
+  if(!force&&Number.isFinite(remaining)&&remaining>STAGE10_LOOP_OUTRO_TRIM+STAGE10_LOOP_LEAD){ armStageMusicLoop(track,voice); return false; }
   track.loopQueued=true;
   const next=createStageMusicVoice(track);
   if(!next){ track.loopQueued=false; return false; }
