@@ -1786,19 +1786,30 @@ test('Fase 10 usa as duas trilhas licenciadas com mixagem protegida',async({page
     worldRun={active:true,fase:9,nivel:1,storyMode:false};
     chosenIds=['adriel-jovem','gareth','roland','elizier'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
     beginGame(0); skipStory();
-    const base={key:stageMusicSelection,src:stageMusicActive?.audio?.getAttribute('src'),loop:stageMusicActive?.audio?.loop,gain:stageMusicTargetGain()};
+    const baseTrack=stageMusicActive;
+    const firstBaseVoice=baseTrack?.audio;
+    const base={key:stageMusicSelection,src:firstBaseVoice?.getAttribute('src'),loop:firstBaseVoice?.loop,gain:stageMusicTargetGain()};
+    const handoff=queueStageMusicLoop(baseTrack,baseTrack?.activeVoice,true);
+    const loop={handoff,continuous:stageMusicActive===baseTrack&&baseTrack?.audio!==firstBaseVoice,voices:baseTrack?.voices?.length||0,loop:baseTrack?.audio?.loop};
+    const voiceBeforePause=baseTrack?.audio;
+    pauseLicensedStageMusic();
+    const paused=Boolean(baseTrack?.paused);
+    playLicensedStageMusic('base');
+    const resume={sameVoice:baseTrack?.audio===voiceBeforePause,paused:baseTrack?.paused};
     worldRun.nivel=5;
     playStageMusic(activeStageData.scene);
     const finalTrack=stageMusicActive;
     const final={key:stageMusicSelection,src:finalTrack?.audio?.getAttribute('src'),loop:finalTrack?.audio?.loop,gain:stageMusicTargetGain(),filter:finalTrack?.filter?.type};
-    finalTrack?.audio?.dispatchEvent(new Event('ended'));
-    return {base,final,endedStopsRestart:stageMusicActive===null&&stageMusicSelection===null};
+    return {base,loop,paused,resume,final};
   });
   expect(audio.base).toMatchObject({key:'base',src:'assets/audio/Ygdria_10_Sombras_Que_Devoram.mp3',loop:false});
   expect(audio.final).toMatchObject({key:'final',src:'assets/audio/Ygdria_10_Sombras_Que_Devoram_Final.mp3',loop:false,filter:'lowpass'});
   expect(audio.base.gain).toBeLessThan(.12);
   expect(audio.final.gain).toBeLessThan(.12);
-  expect(audio.endedStopsRestart).toBe(true);
+  expect(audio.loop).toMatchObject({handoff:true,continuous:true,loop:false});
+  expect(audio.loop.voices).toBeGreaterThanOrEqual(2);
+  expect(audio.paused).toBe(true);
+  expect(audio.resume).toMatchObject({sameVoice:true,paused:false});
   const metadata=await page.evaluate(async()=>{
     const inspect=async src=>{
       const response=await fetch(src);
@@ -2232,7 +2243,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.28');
+  expect(registration.caches).toContain('12r-v11.0.29');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2392,7 +2403,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.28');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.29');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 
