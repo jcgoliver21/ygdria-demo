@@ -138,6 +138,17 @@ for(const id of enemySheets){
 }
 assert.ok(enemyBytes<=2*1024*1024,'folhas de inimigos excederam orçamento de 2 MiB');
 
+/* A Fase 10 utiliza duas faixas MP3 dedicadas. Validamos assinatura e limite
+   de entrega mobile para impedir que uma página HTML do Drive seja publicada
+   por engano no lugar da música. */
+for(const name of ['Ygdria_10_Sombras_Que_Devoram.mp3','Ygdria_10_Sombras_Que_Devoram_Final.mp3']){
+  const file=path.join(root,'assets','audio',name);
+  assert.ok(fs.existsSync(file),`${name}: trilha ausente`);
+  const bytes=fs.readFileSync(file);
+  assert.ok(bytes.length>200*1024&&bytes.length<4*1024*1024,`${name}: orçamento de música inválido`);
+  assert.ok(bytes.subarray(0,3).toString('ascii')==='ID3'||(bytes[0]===0xff&&(bytes[1]&0xe0)===0xe0),`${name}: não é MP3 válido`);
+}
+
 /* Magias humanas v12 são uma camada exclusiva: devem permanecer em PNG RGBA,
    ter as seis etapas legíveis e nunca encostar na borda do seu próprio quadro.
    Isso impede o retorno de efeitos do ataque reutilizados ou cortados. */

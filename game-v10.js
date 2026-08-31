@@ -720,6 +720,74 @@ let musicMoodMode = 0;
 let musicBossLayer = false;
 let musicFinalBoss = false;
 const activeMusicNodes = new Set();
+/* Fase 10: trilhas autorais entram no mesmo barramento da música, passam pelo
+   compressor mestre e recebem um corte leve nos agudos. O ganho conservador
+   evita que um MP3 masterizado acima dos efeitos fique estridente no celular. */
+const STAGE10_MUSIC_GAIN=.44;
+const STAGE10_MUSIC=Object.freeze({
+  base:{src:'assets/audio/Ygdria_10_Sombras_Que_Devoram.mp3'},
+  final:{src:'assets/audio/Ygdria_10_Sombras_Que_Devoram_Final.mp3'}
+});
+let stageMusicActive=null;
+let stageMusicSelection=null;
+
+function stage10MusicSelection(){
+  if(!worldRun?.active||worldRun.fase!==9) return null;
+  return worldRun.nivel===5?'final':'base';
+}
+function stageMusicTargetGain(){ return STAGE10_MUSIC_GAIN*masterVolume*musicVolume; }
+function rampStageMusic(track,value,seconds=.22){
+  if(!track?.gain||!actx) return;
+  const now=actx.currentTime,gain=track.gain.gain;
+  gain.cancelScheduledValues(now);
+  gain.setValueAtTime(gain.value,now);
+  gain.linearRampToValueAtTime(Math.max(0,value),now+seconds);
+}
+function prepareStageMusic(key){
+  const track=STAGE10_MUSIC[key];
+  const ctx=ensureAudio();
+  if(!track||!ctx||track.audio) return track||null;
+  const audio=new Audio(track.src);
+  audio.preload='auto'; audio.loop=true; audio.playsInline=true;
+  const source=ctx.createMediaElementSource(audio);
+  const filter=ctx.createBiquadFilter();
+  filter.type='lowpass'; filter.frequency.value=14500; filter.Q.value=.35;
+  const gain=ctx.createGain(); gain.gain.value=0;
+  source.connect(filter); filter.connect(gain); gain.connect(musicBus||ctx.destination);
+  Object.assign(track,{audio,source,filter,gain});
+  return track;
+}
+function stopLicensedStageMusic(){
+  const outgoing=stageMusicActive;
+  stageMusicActive=null; stageMusicSelection=null;
+  if(!outgoing) return;
+  rampStageMusic(outgoing,0,.18);
+  const audio=outgoing.audio;
+  setTimeout(()=>{ if(stageMusicActive!==outgoing){ audio.pause(); audio.currentTime=0; } },220);
+}
+function playLicensedStageMusic(key){
+  const incoming=prepareStageMusic(key);
+  if(!incoming||musicMuted) return;
+  const outgoing=stageMusicActive;
+  if(outgoing===incoming){
+    incoming.audio.play().catch(()=>{});
+    rampStageMusic(incoming,stageMusicTargetGain(),.2);
+    return;
+  }
+  if(outgoing){
+    rampStageMusic(outgoing,0,.42);
+    const oldAudio=outgoing.audio;
+    setTimeout(()=>{ if(stageMusicActive!==outgoing){ oldAudio.pause(); oldAudio.currentTime=0; } },460);
+  }
+  stageMusicActive=incoming; stageMusicSelection=key; currentTrack=-2;
+  rampStageMusic(incoming,0,.01);
+  incoming.audio.currentTime=0;
+  incoming.audio.play().catch(()=>{});
+  rampStageMusic(incoming,stageMusicTargetGain(),.56);
+}
+function refreshLicensedMusicGain(){
+  if(stageMusicActive&&!musicMuted) rampStageMusic(stageMusicActive,stageMusicTargetGain(),.08);
+}
 
 function ensureAudio(){
   if(!actx){
@@ -947,6 +1015,12 @@ function scheduleMusicBar(sceneIdx,generation){
 }
 
 function playStageMusic(sceneIdx){
+  const licensedTrack=stage10MusicSelection();
+  if(licensedTrack){
+    stopGeneratedMusic();
+    playLicensedStageMusic(licensedTrack);
+    return;
+  }
   stopMusic();
   const isBoss=Boolean(bossRushMode || (worldRun?.active && worldRun.nivel===5));
   musicBossLayer=isBoss;
@@ -963,18 +1037,22 @@ function playStageMusic(sceneIdx){
   const generation=musicGeneration;
   scheduleMusicBar(currentTrack,generation);
 }
-function stopMusic(){
+function stopGeneratedMusic(){
   musicGeneration++;
   if(musicTimer){ clearTimeout(musicTimer); musicTimer=null; }
   activeMusicNodes.forEach(node=>{ try{ node.stop(); }catch(e){} });
   activeMusicNodes.clear();
+}
+function stopMusic(){
+  stopGeneratedMusic();
+  stopLicensedStageMusic();
 }
 function toggleMusic(){
   musicMuted=!musicMuted;
   localStorage.setItem('12r_muted',musicMuted?'true':'false');
   const btn=document.getElementById('muteBtn');
   if(btn) btn.textContent=musicMuted?'🔇':'🔊';
-  if(musicMuted) stopMusic(); else if(currentTrack>=0) playStageMusic(currentTrack);
+  if(musicMuted) stopMusic(); else if(currentTrack>=0||stage10MusicSelection()) playStageMusic(activeStageData?.scene??stageIndex);
 }
 function cycleMusicMood(){
   musicMoodMode=(musicMoodMode+1)%3;
@@ -8859,8 +8937,8 @@ document.getElementById('resumeBtn').addEventListener('click',resumeBattle);
 document.getElementById('pauseOptionsBtn').addEventListener('click',()=>{ openPanel('optionsScreen'); });
 document.getElementById('restartStageBtn').addEventListener('click',()=>{ document.getElementById('pauseScreen').classList.remove('show'); restartFromControls(); });
 document.getElementById('returnMenuBtn').addEventListener('click',showMainMenu);
-document.getElementById('volumeRange').addEventListener('input',e=>{ masterVolume=Number(e.target.value)/100; localStorage.setItem('12r_volume',String(e.target.value)); });
-document.getElementById('musicVolumeRange').addEventListener('input',e=>{ musicVolume=Number(e.target.value)/100; localStorage.setItem('12r_music_volume',String(e.target.value)); });
+document.getElementById('volumeRange').addEventListener('input',e=>{ masterVolume=Number(e.target.value)/100; localStorage.setItem('12r_volume',String(e.target.value)); refreshLicensedMusicGain(); });
+document.getElementById('musicVolumeRange').addEventListener('input',e=>{ musicVolume=Number(e.target.value)/100; localStorage.setItem('12r_music_volume',String(e.target.value)); refreshLicensedMusicGain(); });
 document.getElementById('sfxVolumeRange').addEventListener('input',e=>{ sfxVolume=Number(e.target.value)/100; localStorage.setItem('12r_sfx_volume',String(e.target.value)); sfxSelect(); });
 document.getElementById('qualitySelect').addEventListener('change',e=>{ graphicsQuality=e.target.value; localStorage.setItem('12r_quality',graphicsQuality); applySettings(); });
 document.getElementById('reduceMotionToggle').addEventListener('change',e=>{

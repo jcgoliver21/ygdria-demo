@@ -1779,6 +1779,45 @@ test('volumes NaN são saneados e cliques de áudio não geram pageerror',async(
   expect(errors).toEqual([]);
 });
 
+test('Fase 10 usa as duas trilhas licenciadas com mixagem protegida',async({page})=>{
+  const errors=await boot(page,'flow');
+  const audio=await page.evaluate(()=>{
+    worldRun={active:true,fase:9,nivel:1,storyMode:false};
+    chosenIds=['adriel-jovem','gareth','roland','elizier'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    beginGame(0); skipStory();
+    const base={key:stageMusicSelection,src:stageMusicActive?.audio?.getAttribute('src'),loop:stageMusicActive?.audio?.loop,gain:stageMusicTargetGain()};
+    worldRun.nivel=5;
+    playStageMusic(activeStageData.scene);
+    const final={key:stageMusicSelection,src:stageMusicActive?.audio?.getAttribute('src'),loop:stageMusicActive?.audio?.loop,gain:stageMusicTargetGain(),filter:stageMusicActive?.filter?.type};
+    return {base,final};
+  });
+  expect(audio.base).toMatchObject({key:'base',src:'assets/audio/Ygdria_10_Sombras_Que_Devoram.mp3',loop:true});
+  expect(audio.final).toMatchObject({key:'final',src:'assets/audio/Ygdria_10_Sombras_Que_Devoram_Final.mp3',loop:true,filter:'lowpass'});
+  expect(audio.base.gain).toBeLessThan(.25);
+  expect(audio.final.gain).toBeLessThan(.25);
+  const metadata=await page.evaluate(async()=>{
+    const inspect=async src=>{
+      const response=await fetch(src);
+      const duration=await new Promise((resolve,reject)=>{
+        const audio=new Audio(src);
+        audio.addEventListener('loadedmetadata',()=>resolve(audio.duration),{once:true});
+        audio.addEventListener('error',()=>reject(new Error('metadata ausente')),{once:true});
+        audio.load();
+      });
+      return {type:response.headers.get('content-type'),duration};
+    };
+    return Promise.all([
+      inspect('assets/audio/Ygdria_10_Sombras_Que_Devoram.mp3'),
+      inspect('assets/audio/Ygdria_10_Sombras_Que_Devoram_Final.mp3')
+    ]);
+  });
+  metadata.forEach(track=>{
+    expect(track.type).toContain('audio/mpeg');
+    expect(track.duration).toBeGreaterThan(10);
+  });
+  expect(errors).toEqual([]);
+});
+
 test('pausa congela o quadro da animação quando o manifesto está disponível',async({page})=>{
   const errors=await boot(page,'flow');
   const runtimeReady=await page.evaluate(()=>Object.keys(window.YGDRIA_V10_ANIMATIONS||{}).length===24);

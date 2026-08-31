@@ -202,6 +202,18 @@ check('inimigos exclusivos usam folhas reais, impactos e arena viva',()=>{
   for(const needle of ['enemyOriginalAttack','arena-petals','arena-cold-fog','arena-world-drift','.enemy-unit.dead .unit-ground-shadow','@keyframes enemyDefeatGroundedFallback']) assert.ok(css.includes(needle),`${needle} ausente`);
 });
 
+check('Fase 10 usa trilhas autorais com troca para o confronto final',()=>{
+  for(const file of ['Ygdria_10_Sombras_Que_Devoram.mp3','Ygdria_10_Sombras_Que_Devoram_Final.mp3']){
+    assert.ok(fs.existsSync(path.join(root,'assets','audio',file)),`${file}: trilha ausente`);
+  }
+  assert.match(game,/function stage10MusicSelection\(\)/);
+  assert.match(game,/worldRun\.fase!==9/);
+  assert.match(game,/worldRun\.nivel===5\?'final':'base'/);
+  assert.match(game,/STAGE10_MUSIC_GAIN=\.44/);
+  assert.match(game,/filter\.type='lowpass'/);
+  assert.match(game,/function playLicensedStageMusic\(key\)/);
+});
+
 check('Maril usa folhas corporais aprovadas e efeitos reais de água separados',()=>{
   for(const asset of [
     'assets/characters/runtime-v10/agua/attack-maril-trident-3x2.png',
