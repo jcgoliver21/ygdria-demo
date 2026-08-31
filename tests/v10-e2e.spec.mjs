@@ -1795,7 +1795,7 @@ test('Fase 10 usa as duas trilhas licenciadas com mixagem protegida',async({page
     const firstBaseVoice=baseTrack?.audio;
     const base={key:stageMusicSelection,src:firstBaseVoice?.getAttribute('src'),loop:firstBaseVoice?.loop,gain:stageMusicTargetGain()};
     const handoff=queueStageMusicLoop(baseTrack,baseTrack?.activeVoice,true);
-    const loop={handoff,continuous:stageMusicActive===baseTrack&&baseTrack?.audio!==firstBaseVoice,voices:baseTrack?.voices?.length||0,loop:baseTrack?.audio?.loop,crossfade:STAGE10_LOOP_CROSSFADE,outroTrim:STAGE10_LOOP_OUTRO_TRIM};
+    const loop={handoff,continuous:stageMusicActive===baseTrack&&baseTrack?.audio!==firstBaseVoice,voices:baseTrack?.voices?.length||0,loop:baseTrack?.audio?.loop,crossfade:STAGE10_LOOP_CROSSFADE,loopOut:baseTrack?.loopOut};
     const voiceBeforePause=baseTrack?.audio;
     pauseLicensedStageMusic();
     const paused=Boolean(baseTrack?.paused);
@@ -1804,14 +1804,14 @@ test('Fase 10 usa as duas trilhas licenciadas com mixagem protegida',async({page
     worldRun.nivel=5;
     playStageMusic(activeStageData.scene);
     const finalTrack=stageMusicActive;
-    const final={key:stageMusicSelection,src:finalTrack?.audio?.getAttribute('src'),loop:finalTrack?.audio?.loop,gain:stageMusicTargetGain(),filter:finalTrack?.filter?.type};
+    const final={key:stageMusicSelection,src:finalTrack?.audio?.getAttribute('src'),loop:finalTrack?.audio?.loop,gain:stageMusicTargetGain(),filter:finalTrack?.filter?.type,loopOut:finalTrack?.loopOut};
     return {base,loop,paused,resume,final};
   });
   expect(audio.base).toMatchObject({key:'base',src:'assets/audio/Ygdria_10_Sombras_Que_Devoram.mp3',loop:false});
-  expect(audio.final).toMatchObject({key:'final',src:'assets/audio/Ygdria_10_Sombras_Que_Devoram_Final.mp3',loop:false,filter:'lowpass'});
+  expect(audio.final).toMatchObject({key:'final',src:'assets/audio/Ygdria_10_Sombras_Que_Devoram_Final.mp3',loop:false,filter:'lowpass',loopOut:1.35});
   expect(audio.base.gain).toBeLessThan(.12);
   expect(audio.final.gain).toBeLessThan(.12);
-  expect(audio.loop).toMatchObject({handoff:true,continuous:true,loop:false,crossfade:.55,outroTrim:.75});
+  expect(audio.loop).toMatchObject({handoff:true,continuous:true,loop:false,crossfade:.8,loopOut:2});
   expect(audio.loop.voices).toBeGreaterThanOrEqual(2);
   expect(audio.paused).toBe(true);
   expect(audio.resume).toMatchObject({sameVoice:true,paused:false});
@@ -2248,7 +2248,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.30');
+  expect(registration.caches).toContain('12r-v11.0.31');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2408,7 +2408,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.30');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.31');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 
