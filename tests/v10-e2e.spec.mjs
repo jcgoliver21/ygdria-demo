@@ -143,6 +143,31 @@ test('final humano encena prólogo, quedas e teleporte antes do epílogo canôni
   await expect(page.locator('.royal-court-cast')).toHaveClass(/court-cedric-joining/);
   await expect(page.locator('.human-final-prelude')).toHaveClass(/cedric-joined/);
   await expect(page.locator('.finale-cedric.finale-prelude')).toBeVisible();
+  await page.waitForTimeout(140);
+  const cedricReadability=await page.evaluate(()=>{
+    const rect=element=>{const r=element.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height};};
+    const overlaps=(a,b)=>Math.max(0,Math.min(a.right,b.right)-Math.max(a.left,b.left))*Math.max(0,Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top));
+    const cedric=document.querySelector('.human-final-prelude .finale-cedric');
+    const scene=document.querySelector('.human-final-prelude');
+    const bernyce=document.querySelector('.human-final-prelude .finale-bernyce');
+    const kalander=document.querySelector('.human-final-prelude .finale-kalander');
+    const heroLayers=[...document.querySelectorAll('.party-row .hero-unit')].map(unit=>Number(getComputedStyle(unit).zIndex)||0);
+    const cedricRect=rect(cedric);
+    return {
+      opacity:Number(getComputedStyle(cedric).opacity),
+      size:[Math.round(cedricRect.width),Math.round(cedricRect.height)],
+      sceneLayer:Number(getComputedStyle(scene).zIndex),
+      highestHeroLayer:Math.max(...heroLayers),
+      overlapsBernyce:Math.round(overlaps(cedricRect,rect(bernyce))),
+      overlapsKalander:Math.round(overlaps(cedricRect,rect(kalander)))
+    };
+  });
+  expect(cedricReadability.opacity).toBeGreaterThan(.95);
+  expect(cedricReadability.size[0]).toBeGreaterThan(40);
+  expect(cedricReadability.size[1]).toBeGreaterThan(40);
+  expect(cedricReadability.sceneLayer).toBeGreaterThan(cedricReadability.highestHeroLayer);
+  expect(cedricReadability.overlapsBernyce).toBe(0);
+  expect(cedricReadability.overlapsKalander).toBe(0);
   const preludePositions=await page.evaluate(()=>Object.fromEntries(['bernyce','kalander','cedric'].map(id=>{
     const style=getComputedStyle(document.querySelector(`.human-final-prelude .finale-${id}`));
     return [id,{left:style.left,bottom:style.bottom,width:style.width}];
@@ -2164,7 +2189,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.25');
+  expect(registration.caches).toContain('12r-v11.0.26');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2324,7 +2349,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.25');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.26');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

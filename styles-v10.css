@@ -4000,13 +4000,13 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
 /* Missão 10/5: encenação física do desfecho dentro do piso real do castelo.
    Nenhum corpo é girado por CSS: cada um usa o último quadro de sua própria
    folha de derrota, já construída deitado e com o equipamento no solo. */
-.human-final-scene{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden}
+.human-final-scene{position:absolute;inset:0;z-index:47;pointer-events:none;overflow:hidden}
 .human-final-scene-actor{position:absolute;display:block;aspect-ratio:1;transform-origin:50% 100%;filter:drop-shadow(0 5px 5px rgba(10,2,12,.72));opacity:1}
 .human-final-scene-sprite{position:absolute;inset:0;display:block;background-image:var(--sprite-url);background-repeat:no-repeat;background-size:calc(var(--sprite-cols,2) * 100%) calc(var(--sprite-rows,2) * 100%);background-position:var(--sprite-bg-x,100%) var(--sprite-bg-y,100%)}
 .finale-fallen{width:clamp(52px,17%,98px)}
 .finale-bernyce{left:56%;bottom:25%}
 .finale-kalander{left:74%;bottom:21%}
-.finale-cedric{left:35%;bottom:26%}
+.finale-cedric{left:35%;bottom:26%;z-index:2}
 .finale-julius{width:clamp(54px,18%,102px);right:16%;bottom:28%;--sprite-bg-x:0%;--sprite-bg-y:0%}
 .human-final-scene-actor.dissolving{animation:humanFinalDissolve 1.3s cubic-bezier(.25,.72,.28,1) both}
 .enemy-avatar.human-final-julius-dissolving{animation:humanFinalDissolve 1.3s cubic-bezier(.25,.72,.28,1) both!important}
@@ -4047,7 +4047,7 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
 /* No prólogo, Bernyce e Kalander continuam na arena após a luta anterior.
    Jules e Cedric observam do trono; os dois usam ciclos de caminhada reais,
    em vez de deslizarem pela tela. */
-.human-final-prelude{position:absolute;inset:0;z-index:5;pointer-events:none;overflow:hidden}
+.human-final-prelude{position:absolute;inset:0;z-index:47;pointer-events:none;overflow:hidden}
 .finale-prelude-arena{width:clamp(52px,17%,98px);transition:filter .32s ease}
 .finale-bernyce.finale-prelude-arena{left:56%;bottom:25%}
 .finale-kalander.finale-prelude-arena{left:74%;bottom:21%}
@@ -4088,7 +4088,7 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
   .finale-fallen{width:19%}
   .finale-bernyce{left:55%;bottom:24%}
   .finale-kalander{left:73%;bottom:20%}
-  .finale-cedric{left:35%;bottom:26%}
+  .finale-cedric{left:35%;bottom:26%;z-index:2}
   .finale-julius{width:20%;right:12%;bottom:27%}
   .finale-prelude-arena{width:19%}
   .finale-bernyce.finale-prelude-arena{left:55%;bottom:24%}
