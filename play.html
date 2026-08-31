@@ -30,7 +30,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
 <link rel="apple-touch-icon" href="assets/icon.svg">
-<link rel="stylesheet" href="styles-v10.css?v=11.0.27">
+<link rel="stylesheet" href="styles-v10.css?v=11.0.28">
 </head>
 <body>
 <div class="scene-bg" data-screen="menu"></div>
@@ -269,7 +269,8 @@
     <div class="dialog-header"><h2 class="dialog-title" id="optionsTitle">Opções</h2><button class="ghost-btn" data-close="optionsScreen">Fechar</button></div>
     <div class="option-section">🔊 Áudio</div>
     <label class="option-row"><span id="optMasterVolumeLabel">Volume geral</span><input id="volumeRange" type="range" min="0" max="100" value="70"></label>
-    <label class="option-row"><span id="optMusicVolumeLabel">Volume da música</span><input id="musicVolumeRange" type="range" min="0" max="100" value="65"></label>
+    <label class="option-row"><span id="optMusicVolumeLabel">Música dinâmica</span><input id="musicVolumeRange" type="range" min="0" max="100" value="65"></label>
+    <label class="option-row"><span id="optStageMusicVolumeLabel">Trilha da fase</span><input id="stageMusicVolumeRange" type="range" min="0" max="100" value="48"></label>
     <label class="option-row"><span id="optSfxVolumeLabel">Efeitos sonoros</span><input id="sfxVolumeRange" type="range" min="0" max="100" value="85"></label>
     <div class="option-row"><span id="optDifficultyLabel">Dificuldade</span><div class="diff-group" id="diffGroup"><button class="battle-tool" data-diff="facil" type="button">Fácil</button><button class="battle-tool" data-diff="normal" type="button">Normal</button><button class="battle-tool" data-diff="dificil" type="button">Difícil</button><button class="battle-tool" data-diff="pesadelo" type="button">Pesadelo</button></div></div>
     <div class="option-row"><span id="optLanguageLabel">Idioma / Language</span><div class="diff-group" id="langGroup"><button class="battle-tool" data-lang="pt" type="button">🇧🇷 PT</button><button class="battle-tool" data-lang="en" type="button">🇺🇸 EN</button><button class="battle-tool" data-lang="es" type="button">🇪🇸 ES</button></div></div>
@@ -464,10 +465,10 @@
   </div>
 </div>
 <script>window.addEventListener('error',function(e){(window.__bootErrors=window.__bootErrors||[]).push({m:String(e.message).slice(0,200),l:e.lineno,c:e.colno})});</script>
-<script src="v10-config.js?v=11.0.27"></script>
-<script src="v10-animations.js?v=11.0.27"></script>
-<script src="humanos-lore-v10.js?v=11.0.27"></script>
-<script src="game-v10.js?v=11.0.27" defer></script>
+<script src="v10-config.js?v=11.0.28"></script>
+<script src="v10-animations.js?v=11.0.28"></script>
+<script src="humanos-lore-v10.js?v=11.0.28"></script>
+<script src="game-v10.js?v=11.0.28" defer></script>
 
 </body>
 </html>

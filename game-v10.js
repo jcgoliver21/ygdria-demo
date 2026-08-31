@@ -702,6 +702,7 @@ function storedVolume(key,fallback){
 }
 let masterVolume = storedVolume('12r_volume',70);
 let musicVolume = storedVolume('12r_music_volume',Number(V10.audio?.music ?? 65));
+let stageMusicVolume = storedVolume('12r_stage_music_volume',48);
 let sfxVolume = storedVolume('12r_sfx_volume',Number(V10.audio?.sfx ?? 85));
 let particlesEnabled = localStorage.getItem('12r_particles') !== 'false';
 let hapticsEnabled = localStorage.getItem('12r_haptics') !== 'false';
@@ -720,10 +721,10 @@ let musicMoodMode = 0;
 let musicBossLayer = false;
 let musicFinalBoss = false;
 const activeMusicNodes = new Set();
-/* Fase 10: trilhas autorais entram no mesmo barramento da música, passam pelo
-   compressor mestre e recebem um corte leve nos agudos. O ganho conservador
-   evita que um MP3 masterizado acima dos efeitos fique estridente no celular. */
-const STAGE10_MUSIC_GAIN=.44;
+/* Fase 10: as trilhas autorais têm barramento e volume próprios. Elas não
+   reiniciam ao terminar: assim a composição encerra naturalmente, sem o corte
+   audível do início abrupto. O ganho é conservador para preservar os efeitos. */
+const STAGE10_MUSIC_GAIN=.24;
 const STAGE10_MUSIC=Object.freeze({
   base:{src:'assets/audio/Ygdria_10_Sombras_Que_Devoram.mp3'},
   final:{src:'assets/audio/Ygdria_10_Sombras_Que_Devoram_Final.mp3'}
@@ -735,7 +736,7 @@ function stage10MusicSelection(){
   if(!worldRun?.active||worldRun.fase!==9) return null;
   return worldRun.nivel===5?'final':'base';
 }
-function stageMusicTargetGain(){ return STAGE10_MUSIC_GAIN*masterVolume*musicVolume; }
+function stageMusicTargetGain(){ return STAGE10_MUSIC_GAIN*masterVolume*stageMusicVolume; }
 function rampStageMusic(track,value,seconds=.22){
   if(!track?.gain||!actx) return;
   const now=actx.currentTime,gain=track.gain.gain;
@@ -748,12 +749,19 @@ function prepareStageMusic(key){
   const ctx=ensureAudio();
   if(!track||!ctx||track.audio) return track||null;
   const audio=new Audio(track.src);
-  audio.preload='auto'; audio.loop=true; audio.playsInline=true;
+  audio.preload='auto'; audio.loop=false; audio.playsInline=true;
   const source=ctx.createMediaElementSource(audio);
   const filter=ctx.createBiquadFilter();
   filter.type='lowpass'; filter.frequency.value=14500; filter.Q.value=.35;
   const gain=ctx.createGain(); gain.gain.value=0;
   source.connect(filter); filter.connect(gain); gain.connect(musicBus||ctx.destination);
+  audio.addEventListener('ended',()=>{
+    if(stageMusicActive===track){
+      stageMusicActive=null;
+      stageMusicSelection=null;
+      currentTrack=-1;
+    }
+  });
   Object.assign(track,{audio,source,filter,gain});
   return track;
 }
@@ -5230,7 +5238,8 @@ const STATIC_I18N=[
   ["#accountLoginBtn","Entrar / Criar conta","Sign in / Create account","Entrar / Crear cuenta"],
   ["#logoutBtn","Sair da conta","Sign out","Cerrar sesión"],
   ["#optMasterVolumeLabel","Volume geral","Master volume","Volumen general"],
-  ["#optMusicVolumeLabel","Volume da música","Music volume","Volumen de la música"],
+  ["#optMusicVolumeLabel","Música dinâmica","Dynamic music","Música dinámica"],
+  ["#optStageMusicVolumeLabel","Trilha da fase","Stage soundtrack","Banda sonora de la fase"],
   ["#optSfxVolumeLabel","Efeitos sonoros","Sound effects","Efectos de sonido"],
   ["#optDifficultyLabel","Dificuldade","Difficulty","Dificultad"],
   ["#optLanguageLabel","Idioma / Language","Language / Idioma","Idioma / Language"],
@@ -5692,7 +5701,7 @@ const SAVE_EXPORT_EXACT_KEYS=new Set([
   '12r_ach','12r_autoactives','12r_bestiary','12r_bossrush_best','12r_coins','12r_daily',
   '12r_difficulty','12r_fase_best','12r_fase_time','12r_favs','12r_firstwin','12r_formation',
   '12r_haptics','12r_high_contrast','12r_inv','12r_lang','12r_lang_set','12r_large_text',
-  '12r_lastteam','12r_motion','12r_music_volume','12r_muted','12r_particles',
+  '12r_lastteam','12r_motion','12r_music_volume','12r_muted','12r_particles','12r_stage_music_volume',
   '12r_profile','12r_pxp','12r_quality','12r_quests','12r_reduce_flashes','12r_save',
   '12r_seen','12r_sfx_volume','12r_shake','12r_stars','12r_teams','12r_tower_best',
   '12r_tower_month','12r_tutorial','12r_tutorial_seen','12r_unlocked','12r_viz',
@@ -5774,7 +5783,7 @@ function validateImportedSaveEntry(key,value){
   }
   if(['12r_autoactives','12r_haptics','12r_high_contrast','12r_lang_set','12r_large_text','12r_reduce_flashes','12r_shake','12r_tutorial','12r_tutorial_seen','12r_viz_defaults'].includes(key)&&!['0','1','true','false','9.3.9','10'].includes(value)) throw new Error(`${key}: sinalizador inválido`);
   if(key==='12r_lang'&&!VALID_LANGS.includes(value)) throw new Error(`${key}: idioma inválido`);
-  if(['12r_volume','12r_music_volume','12r_sfx_volume'].includes(key)){
+  if(['12r_volume','12r_music_volume','12r_stage_music_volume','12r_sfx_volume'].includes(key)){
     const number=Number(value);
     if(!Number.isFinite(number)||number<0||number>100) throw new Error(`${key}: volume inválido`);
   }
@@ -8765,6 +8774,7 @@ function applySettings(){
   document.body.classList.add('quality-'+resolvedGraphicsQuality());
   document.getElementById('volumeRange').value=Math.round(masterVolume*100);
   document.getElementById('musicVolumeRange').value=Math.round(musicVolume*100);
+  document.getElementById('stageMusicVolumeRange').value=Math.round(stageMusicVolume*100);
   document.getElementById('sfxVolumeRange').value=Math.round(sfxVolume*100);
   document.getElementById('qualitySelect').value=graphicsQuality;
   document.getElementById('reduceMotionToggle').checked=reducedMotion;
@@ -8841,7 +8851,7 @@ document.getElementById('autoActivesToggle')?.addEventListener('click',()=>{
   sfxSelect();
 });
 document.getElementById('restoreDefaultsBtn')?.addEventListener('click',()=>{
-  ['12r_shake','12r_autoactives','12r_difficulty','12r_lang_set','12r_volume','12r_music_volume','12r_sfx_volume','12r_quality','12r_high_contrast','12r_large_text','12r_reduce_flashes','12r_motion','12r_particles','12r_haptics','12r_tactical_grid'].forEach(k=>localStorage.removeItem(k));
+  ['12r_shake','12r_autoactives','12r_difficulty','12r_lang_set','12r_volume','12r_music_volume','12r_stage_music_volume','12r_sfx_volume','12r_quality','12r_high_contrast','12r_large_text','12r_reduce_flashes','12r_motion','12r_particles','12r_haptics','12r_tactical_grid'].forEach(k=>localStorage.removeItem(k));
   setBattleStatus?.(T('Padrões restaurados. Recarregue o jogo.','Defaults restored. Reload the game.','Valores restaurados. Recarga el juego.'));
   location.reload();
 });
@@ -8938,7 +8948,8 @@ document.getElementById('pauseOptionsBtn').addEventListener('click',()=>{ openPa
 document.getElementById('restartStageBtn').addEventListener('click',()=>{ document.getElementById('pauseScreen').classList.remove('show'); restartFromControls(); });
 document.getElementById('returnMenuBtn').addEventListener('click',showMainMenu);
 document.getElementById('volumeRange').addEventListener('input',e=>{ masterVolume=Number(e.target.value)/100; localStorage.setItem('12r_volume',String(e.target.value)); refreshLicensedMusicGain(); });
-document.getElementById('musicVolumeRange').addEventListener('input',e=>{ musicVolume=Number(e.target.value)/100; localStorage.setItem('12r_music_volume',String(e.target.value)); refreshLicensedMusicGain(); });
+document.getElementById('musicVolumeRange').addEventListener('input',e=>{ musicVolume=Number(e.target.value)/100; localStorage.setItem('12r_music_volume',String(e.target.value)); });
+document.getElementById('stageMusicVolumeRange').addEventListener('input',e=>{ stageMusicVolume=Number(e.target.value)/100; localStorage.setItem('12r_stage_music_volume',String(e.target.value)); refreshLicensedMusicGain(); });
 document.getElementById('sfxVolumeRange').addEventListener('input',e=>{ sfxVolume=Number(e.target.value)/100; localStorage.setItem('12r_sfx_volume',String(e.target.value)); sfxSelect(); });
 document.getElementById('qualitySelect').addEventListener('change',e=>{ graphicsQuality=e.target.value; localStorage.setItem('12r_quality',graphicsQuality); applySettings(); });
 document.getElementById('reduceMotionToggle').addEventListener('change',e=>{

@@ -20,13 +20,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.27/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.27/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.27/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.27/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.27/);
-  assert.match(config,/version:'v11\.0\.27'/);
-  assert.match(sw,/12r-v11\.0\.27/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.28/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.28/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.28/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.28/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.28/);
+  assert.match(config,/version:'v11\.0\.28'/);
+  assert.match(sw,/12r-v11\.0\.28/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -108,7 +108,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.27/);
+  assert.match(sw,/12r-v11\.0\.28/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -141,11 +141,11 @@ check('pausa também interrompe o Tempo Sombrio',()=>{
 });
 
 check('opções profissionais estão ligadas à persistência',()=>{
-  for(const id of ['musicVolumeRange','sfxVolumeRange','qualitySelect','highContrastToggle','largeTextToggle','reduceFlashesToggle']){
+  for(const id of ['musicVolumeRange','stageMusicVolumeRange','sfxVolumeRange','qualitySelect','highContrastToggle','largeTextToggle','reduceFlashesToggle']){
     assert.ok(html.includes(`id="${id}"`),`${id} ausente no HTML`);
     assert.ok(game.includes(`getElementById('${id}')`),`${id} sem integração no jogo`);
   }
-  for(const key of ['12r_music_volume','12r_sfx_volume','12r_quality','12r_high_contrast','12r_large_text','12r_reduce_flashes']) assert.ok(game.includes(key));
+  for(const key of ['12r_music_volume','12r_stage_music_volume','12r_sfx_volume','12r_quality','12r_high_contrast','12r_large_text','12r_reduce_flashes']) assert.ok(game.includes(key));
 });
 
 check('CSS inclui acessibilidade, qualidade e HUD de fase',()=>{
@@ -209,7 +209,9 @@ check('Fase 10 usa trilhas autorais com troca para o confronto final',()=>{
   assert.match(game,/function stage10MusicSelection\(\)/);
   assert.match(game,/worldRun\.fase!==9/);
   assert.match(game,/worldRun\.nivel===5\?'final':'base'/);
-  assert.match(game,/STAGE10_MUSIC_GAIN=\.44/);
+  assert.match(game,/STAGE10_MUSIC_GAIN=\.24/);
+  assert.match(game,/audio\.loop=false/);
+  assert.match(game,/12r_stage_music_volume/);
   assert.match(game,/filter\.type='lowpass'/);
   assert.match(game,/function playLicensedStageMusic\(key\)/);
 });
@@ -466,7 +468,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.27');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.28');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);

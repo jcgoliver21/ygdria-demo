@@ -46,11 +46,11 @@ check('pausa também interrompe o Tempo Sombrio',()=>{
 });
 
 check('opções profissionais estão ligadas à persistência',()=>{
-  for(const id of ['musicVolumeRange','sfxVolumeRange','qualitySelect','highContrastToggle','largeTextToggle','reduceFlashesToggle']){
+  for(const id of ['musicVolumeRange','stageMusicVolumeRange','sfxVolumeRange','qualitySelect','highContrastToggle','largeTextToggle','reduceFlashesToggle']){
     assert.ok(html.includes(`id="${id}"`),`${id} ausente no HTML`);
     assert.ok(game.includes(`getElementById('${id}')`),`${id} sem integração no jogo`);
   }
-  for(const key of ['12r_music_volume','12r_sfx_volume','12r_quality','12r_high_contrast','12r_large_text','12r_reduce_flashes']) assert.ok(game.includes(key));
+  for(const key of ['12r_music_volume','12r_stage_music_volume','12r_sfx_volume','12r_quality','12r_high_contrast','12r_large_text','12r_reduce_flashes']) assert.ok(game.includes(key));
 });
 
 check('CSS inclui acessibilidade, qualidade e HUD de fase',()=>{
