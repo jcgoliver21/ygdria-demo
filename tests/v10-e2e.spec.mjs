@@ -149,6 +149,7 @@ test('final humano encena prólogo, quedas e teleporte antes do epílogo canôni
   await expect(page.locator('.finale-shadow')).toHaveClass(/dissolving/);
   await expect(page.locator('.human-final-shadow-strike')).toHaveCount(3);
   await expect(page.locator('.human-final-shadow-skull')).toHaveCount(3);
+  await expect(page.locator('.human-final-shadow-blade,.human-final-shadow-trail,.human-final-shadow-impact,.human-final-shadow-shards,.human-final-shadow-wave,.human-final-prelude-slash')).toHaveCount(0);
   await page.waitForTimeout(300);
   await expect(page.locator('.human-final-scene')).toHaveClass(/adriel-teleporting/);
   await expect(page.locator('.human-final-teleport-vfx')).toHaveCount(1);
@@ -160,6 +161,9 @@ test('final humano encena prólogo, quedas e teleporte antes do epílogo canôni
   /* Cedric termina a conjuração antes de a narração assumir a cena. O marco
      persiste para auditar a passagem mesmo na prévia acelerada. */
   await expect(page.locator('.human-final-scene')).toHaveAttribute('data-final-cedric-line','shown');
+  await expect(page.locator('#storyLayer')).toHaveAttribute('data-final-cinematic','1');
+  await page.locator('#storySkip').evaluate(button=>button.click());
+  await expect(page.locator('#storyLayer')).toHaveClass(/show/);
   await page.waitForTimeout(520);
   await expect(page.locator('#storyLayer')).toHaveClass(/show/);
   await expect(page.locator('#storyName')).toContainText('Narrador');
@@ -2145,7 +2149,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.23');
+  expect(registration.caches).toContain('12r-v11.0.24');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2305,7 +2309,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.23');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.24');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

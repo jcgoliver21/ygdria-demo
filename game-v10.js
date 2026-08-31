@@ -2756,7 +2756,6 @@ function mountHumanFinaleScene(outcome='defeat'){
     ${finalSceneActor('cedric')}
     ${finalSceneActor('julius','shadow')}
     ${finalSceneActor('julius','original')}
-    <span class="human-final-shadow-wave"></span>
     <span class="human-final-teleport" aria-hidden="true"></span>`;
   arenaEl?.appendChild(scene);
   return scene;
@@ -2805,7 +2804,8 @@ function spawnFinaleShadowStrike(scene,source,target,options={}){
   const distance=Math.hypot(dx,dy);
   if(distance<8) return false;
   const fx=document.createElement('span');
-  const duration=Math.max(240,Math.round(1180*(Number(options.speed||1))));
+  /* A caveira é o projétil: curta, física e independente da aura de Julius. */
+  const duration=Math.max(230,Math.round(520*(Number(options.speed||1))));
   fx.className='human-final-shadow-strike';
   fx.setAttribute('aria-hidden','true');
   fx.style.setProperty('--finale-sx',sx+'px');
@@ -2818,15 +2818,17 @@ function spawnFinaleShadowStrike(scene,source,target,options={}){
   fx.style.setProperty('--finale-dy-68',(dy*.68)+'px');
   fx.style.setProperty('--finale-angle',Math.atan2(dy,dx)*180/Math.PI+'deg');
   fx.style.setProperty('--finale-vfx-duration',duration+'ms');
-  fx.innerHTML='<i class="human-final-shadow-skull"></i><i class="human-final-shadow-blade"></i><i class="human-final-shadow-trail"></i><i class="human-final-shadow-impact"></i><i class="human-final-shadow-shards"></i>';
-  scene.appendChild(fx);
+  fx.innerHTML='<i class="human-final-shadow-skull"></i>';
+  /* A cena fica abaixo dos retratos vivos para preservar a composição; o
+     projétil, porém, precisa cruzar POR CIMA do corpo que atinge. */
+  (arenaEl||scene).appendChild(fx);
   scheduleCombat(()=>fx.remove(),duration+140);
   return true;
 }
 /* Este valor pertence à linha do tempo, não à duração visual do CSS. `at()`
    já aplica a velocidade da prévia; multiplicar aqui fazia cada cena rápida
    colapsar as batidas antes de a fala de Cedric terminar. */
-function finaleShadowImpactDelay(){ return 980; }
+function finaleShadowImpactDelay(){ return 430; }
 function spawnFinaleTeleportVfx(scene,targetId='adriel-jovem',options={}){
   const target=document.getElementById('party-'+targetId);
   if(!scene||!target) return false;
@@ -2850,10 +2852,12 @@ function spawnFinaleTeleportVfx(scene,targetId='adriel-jovem',options={}){
 function playFinaleLines(lines,onDone,options={}){
   const speed=Math.max(.02,Number(options.speed||1));
   let cursor=0;
+  const lockFinal=options.locked===true;
   const next=()=>{
     if(cursor>=lines.length){ if(typeof onDone==='function') onDone(); return; }
     const item=lines[cursor++];
     showStorySequence([item]);
+    if(lockFinal) document.getElementById('storyLayer')?.setAttribute('data-final-cinematic','1');
     scheduleCombat(()=>{ skipStory(false); next(); },Math.max(520,Math.round((item.ms||2200)*speed)));
   };
   next();
@@ -2875,8 +2879,7 @@ function mountHumanFinalePrelude(){
   scene.innerHTML=`
     ${finalSceneActor('bernyce','prelude-arena')}
     ${finalSceneActor('kalander','prelude-arena')}
-    ${finalSceneActor('cedric','prelude')}
-    <span class="human-final-prelude-slash"></span>`;
+    ${finalSceneActor('cedric','prelude')}`;
   arenaEl?.appendChild(scene);
   return scene;
 }
@@ -2976,8 +2979,8 @@ function triggerHumanFinaleCinematic(outcome='defeat',options={}){
   const garethFallAt=auraAt+3050+impactDelay;
   /* Gareth só cai depois de a caveira/corte o alcançar; deixamos uma batida
      de leitura antes de Cedric erguer o teleporte. */
-  const teleportAt=Math.max(auraAt+4100,garethFallAt+900);
-  const cedricLineAt=teleportAt+1000;
+  const teleportAt=Math.max(auraAt+3900,garethFallAt+560);
+  const cedricLineAt=teleportAt+700;
   at(auraAt,()=>{
     const julius=KINGDOMS.find(k=>k.id==='julius');
     if(original) original.innerHTML=finalSceneSprite('julius','cast');
@@ -3020,17 +3023,17 @@ function triggerHumanFinaleCinematic(outcome='defeat',options={}){
     scene?.classList.add('julius-victorious');
     setBattleStatus(T('Adriel desaparece na luz rosa de Cedric.','Adriel vanishes into Cedric\'s pink light.','Adriel desaparece en la luz rosa de Cedric.'),'support');
     playFinaleLines([
-      {name:'Narrador',t:'E assim termina a primeira parte de nossa aventura! O que acontecerá com Adriel? Qual o paradeiro de Berenice? Quem é Julius?',ms:3600},
-      {name:'Narrador',t:'Não percam o próximo capítulo dessa aventura!',ms:2600}
-    ],()=>completeHumanFinaleCinematic({...options,scene}),{speed});
+      {name:'Narrador',t:'E assim termina a primeira parte de nossa aventura! O que acontecerá com Adriel? Qual o paradeiro de Berenice? Quem é Julius?',ms:2800},
+      {name:'Narrador',t:'Não percam o próximo capítulo dessa aventura!',ms:1900}
+    ],()=>completeHumanFinaleCinematic({...options,scene}),{speed,locked:true});
   };
   at(cedricLineAt,()=>{
     /* A narração só pode começar quando o balão de Cedric foi fechado. Isso
        impede que o temporizador da fala anterior esconda o epílogo. */
     scene?.setAttribute('data-final-cedric-line','shown');
-    playFinaleLines([{h:'cedric',t:'Viva Jovem!!! Seja nossa esperança!',ms:2550}],()=>{
-      scheduleCombat(runFinalNarration,Math.max(220,Math.round(350*speed)));
-    },{speed});
+    playFinaleLines([{h:'cedric',t:'Viva Jovem!!! Seja nossa esperança!',ms:2000}],()=>{
+      scheduleCombat(runFinalNarration,Math.max(180,Math.round(260*speed)));
+    },{speed,locked:true});
   });
 }
 /* Ataques físicos viajam como golpes materiais e não usam a trajetória mágica.
@@ -4768,6 +4771,7 @@ function loadStage(idx){
   humanFinaleOutcomeResolved=false;
   arenaEl?.querySelector('.human-final-scene')?.remove();
   arenaEl?.querySelector('.human-final-prelude')?.remove();
+  arenaEl?.querySelectorAll('.human-final-shadow-strike').forEach(effect=>effect.remove());
   arenaEl?.classList.remove('human-finale-before-darkness','human-finale-darkening','human-finale-prelude-active');
   resetPartyAnimationState();
   stageTransitioning = false;
@@ -9697,7 +9701,11 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
     if(layer?.dataset.finalCinematic==='1') return;
     if(!e.target.closest?.('#storySkip')) advanceStory();
   });
-  document.getElementById('storySkip')?.addEventListener('click',(e)=>{ e.stopPropagation(); skipStory(true); });
+  document.getElementById('storySkip')?.addEventListener('click',(e)=>{
+    e.stopPropagation();
+    if(document.getElementById('storyLayer')?.dataset.finalCinematic==='1') return;
+    skipStory(true);
+  });
   document.getElementById('shareDailyBtn')?.addEventListener('click',async(e)=>{
     await copyTextToClipboard(buildDailyShareText());
     e.target.textContent=T('✓ Copiado! Cole no grupo','✓ Copied! Paste it anywhere','✓ ¡Copiado! Pégalo donde quieras');

@@ -2458,6 +2458,7 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
 .story-layer.speaker-bubble .story-copy p{margin:4px 0 1px;font-size:11.5px;line-height:1.32;color:#fff7e7;text-wrap:balance}
 .story-layer.speaker-bubble .story-hint{font-size:7px;color:#cdbfda;letter-spacing:.07em}
 .story-layer.speaker-bubble .story-skip,.story-layer.narrator-box .story-skip{position:fixed;top:auto;right:auto;bottom:auto;width:30px;height:30px;padding:0;border:0;background:transparent;color:#f4d88e;font:700 22px/30px Georgia,serif;letter-spacing:0;text-shadow:0 2px 8px rgba(0,0,0,.9),0 0 8px rgba(244,216,142,.28);opacity:.9}
+.story-layer[data-final-cinematic="1"] .story-skip{display:none!important}
 .story-layer.speaker-bubble .story-skip:hover,.story-layer.speaker-bubble .story-skip:focus-visible,.story-layer.narrator-box .story-skip:hover,.story-layer.narrator-box .story-skip:focus-visible{border:0;background:transparent;color:#fff2bd;opacity:1;transform:translateX(2px)}
 .story-layer.speaker-bubble.story-speaker-fallback{
   display:flex;
@@ -4007,9 +4008,6 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
 .finale-kalander{left:33%;bottom:17%}
 .finale-cedric{left:64%;bottom:19%}
 .finale-julius{width:clamp(54px,18%,102px);right:16%;bottom:28%;--sprite-bg-x:0%;--sprite-bg-y:0%}
-.human-final-shadow-wave{position:absolute;right:-26%;bottom:12%;width:34%;height:39%;border-radius:50%;opacity:0;background:radial-gradient(ellipse at 22% 50%,rgba(210,152,255,.68) 0 5%,rgba(59,13,79,.66) 27%,rgba(8,4,18,.92) 54%,transparent 73%);filter:blur(2px) drop-shadow(0 0 24px rgba(107,34,139,.72));transform:scale(.35)}
-.human-final-scene.shadow-unleashed .human-final-shadow-wave{animation:humanFinalShadowWave 2.35s cubic-bezier(.2,.74,.25,1) both}
-@keyframes humanFinalShadowWave{0%{opacity:0;transform:translateX(0) scale(.3)}12%{opacity:.96}70%{opacity:.82}100%{opacity:0;transform:translateX(-300%) scale(2.6)}}
 .human-final-scene-actor.dissolving{animation:humanFinalDissolve 1.3s cubic-bezier(.25,.72,.28,1) both}
 .enemy-avatar.human-final-julius-dissolving{animation:humanFinalDissolve 1.3s cubic-bezier(.25,.72,.28,1) both!important}
 .enemy-unit.human-final-julius-hidden{visibility:hidden!important}
@@ -4023,17 +4021,9 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
 @keyframes humanFinalTeleport{0%{opacity:0;transform:translate(-50%,-50%) scale(.25)}18%{opacity:1}64%{opacity:.92;transform:translate(-50%,-50%) scale(1.08)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.7)}}
 /* VFX de impacto do Corte Sombrio. A trajetória e o impacto pertencem à
    própria cena, por isso jamais se perdem atrás da camada cinematográfica. */
-.human-final-shadow-strike{position:absolute;z-index:14;left:var(--finale-sx);top:var(--finale-sy);width:0;height:0;pointer-events:none}
-.human-final-shadow-skull,.human-final-shadow-blade,.human-final-shadow-trail,.human-final-shadow-impact,.human-final-shadow-shards{position:absolute;display:block;pointer-events:none}
-.human-final-shadow-skull{width:86px;height:86px;left:0;top:0;background-image:url('assets/vfx/v15-conjuration/special/julius/processed/sheet-transparent.png');background-repeat:no-repeat;background-size:300% 200%;background-position:0 0;filter:drop-shadow(0 0 8px rgba(154,88,204,.94)) drop-shadow(0 0 18px rgba(15,3,27,.92));animation:humanFinalSkullFlight var(--finale-vfx-duration) steps(1,end) both}
-.human-final-shadow-blade{width:58px;height:24px;left:0;top:0;border-radius:70% 20% 70% 20%;background:linear-gradient(90deg,transparent,rgba(21,7,32,.2) 12%,rgba(204,124,255,.98) 42%,rgba(55,13,82,.94) 72%,transparent);box-shadow:0 0 10px 3px rgba(113,35,158,.84),0 0 22px 6px rgba(11,3,20,.8);filter:blur(.2px);animation:humanFinalShadowBlade var(--finale-vfx-duration) cubic-bezier(.2,.74,.22,1) both}
-.human-final-shadow-trail{width:94px;height:8px;left:0;top:0;border-radius:50%;background:linear-gradient(90deg,transparent,rgba(153,76,212,.12),rgba(220,142,255,.82),transparent);filter:blur(4px);animation:humanFinalShadowTrail var(--finale-vfx-duration) ease-out both}
-.human-final-shadow-impact{width:74px;height:74px;left:0;top:0;border:2px solid rgba(211,133,255,.75);box-shadow:0 0 11px rgba(177,83,237,.9),inset 0 0 12px rgba(21,5,35,.84);filter:drop-shadow(0 0 9px rgba(180,83,241,.88));animation:humanFinalShadowImpact var(--finale-vfx-duration) ease-out both}
-.human-final-shadow-shards{width:80px;height:80px;left:0;top:0;border-radius:50%;background:radial-gradient(circle at 22% 32%,#edb5ff 0 2px,transparent 3px),radial-gradient(circle at 74% 24%,#7c3ba3 0 2px,transparent 3px),radial-gradient(circle at 83% 67%,#d88bff 0 2px,transparent 3px),radial-gradient(circle at 28% 78%,#4b1c72 0 2px,transparent 3px);animation:humanFinalShadowImpact var(--finale-vfx-duration) ease-out both}
-@keyframes humanFinalSkullFlight{0%,10%{opacity:0;background-position:0 0;transform:translate(-50%,-50%) scale(.25)}16%,28%{opacity:1;background-position:50% 0;transform:translate(-50%,-50%) scale(.72)}38%,50%{background-position:100% 0;transform:translate(calc(-50% + var(--finale-dx-34)),calc(-50% + var(--finale-dy-34))) scale(.82)}60%,70%{background-position:0 100%;transform:translate(calc(-50% + var(--finale-dx-68)),calc(-50% + var(--finale-dy-68))) scale(.94)}78%,88%{opacity:1;background-position:50% 100%;transform:translate(calc(-50% + var(--finale-dx)),calc(-50% + var(--finale-dy))) scale(1.08)}100%{opacity:0;background-position:100% 100%;transform:translate(calc(-50% + var(--finale-dx)),calc(-50% + var(--finale-dy))) scale(1.2)}}
-@keyframes humanFinalShadowBlade{0%{opacity:0;transform:translate(-50%,-50%) rotate(var(--finale-angle)) scale(.22)}14%{opacity:1;transform:translate(-50%,-50%) rotate(var(--finale-angle)) scale(1)}67%{opacity:1;transform:translate(calc(-50% + var(--finale-dx)),calc(-50% + var(--finale-dy))) rotate(var(--finale-angle)) scale(1.08)}100%{opacity:0;transform:translate(calc(-50% + var(--finale-dx)),calc(-50% + var(--finale-dy))) rotate(var(--finale-angle)) scale(.7)}}
-@keyframes humanFinalShadowTrail{0%,12%{opacity:0;transform:translate(-50%,-50%) rotate(var(--finale-angle)) scaleX(.2)}22%{opacity:.84}70%{opacity:.74;transform:translate(calc(-50% + var(--finale-dx)),calc(-50% + var(--finale-dy))) rotate(var(--finale-angle)) scaleX(1.45)}100%{opacity:0;transform:translate(calc(-50% + var(--finale-dx)),calc(-50% + var(--finale-dy))) rotate(var(--finale-angle)) scaleX(1.75)}}
-@keyframes humanFinalShadowImpact{0%,58%{opacity:0;transform:translate(calc(-50% + var(--finale-dx)),calc(-50% + var(--finale-dy))) scale(.2)}70%{opacity:1;transform:translate(calc(-50% + var(--finale-dx)),calc(-50% + var(--finale-dy))) scale(1)}100%{opacity:0;transform:translate(calc(-50% + var(--finale-dx)),calc(-50% + var(--finale-dy))) scale(1.7)}}
+.human-final-shadow-strike{position:absolute;z-index:38;left:var(--finale-sx);top:var(--finale-sy);width:0;height:0;pointer-events:none}
+.human-final-shadow-skull{position:absolute;display:block;width:88px;height:88px;left:0;top:0;pointer-events:none;background-image:url('assets/vfx/v16-final-julius-skull/processed/sheet-transparent.png');background-repeat:no-repeat;background-size:200% 200%;background-position:0 0;mix-blend-mode:screen;filter:brightness(1.5) saturate(1.28) drop-shadow(0 0 6px rgba(121,56,191,.96)) drop-shadow(0 0 13px rgba(8,2,18,.94));animation:humanFinalSkullFlight var(--finale-vfx-duration) steps(1,end) both}
+@keyframes humanFinalSkullFlight{0%,10%{opacity:0;background-position:0 0;transform:translate(-50%,-50%) scale(.38)}18%,34%{opacity:1;background-position:100% 0;transform:translate(calc(-50% + var(--finale-dx-34)),calc(-50% + var(--finale-dy-34))) scale(.72)}42%,64%{opacity:1;background-position:0 100%;transform:translate(calc(-50% + var(--finale-dx-68)),calc(-50% + var(--finale-dy-68))) scale(.9)}74%,89%{opacity:1;background-position:100% 100%;transform:translate(calc(-50% + var(--finale-dx)),calc(-50% + var(--finale-dy))) scale(1.04)}100%{opacity:0;background-position:100% 100%;transform:translate(calc(-50% + var(--finale-dx)),calc(-50% + var(--finale-dy))) scale(1.18)}}
 /* Teleporte de Cedric: núcleo rosa, dois anéis de runas, órbita e faíscas
    que envolvem Adriel antes de sua remoção da arena. */
 .human-final-teleport-vfx{position:absolute;z-index:15;left:var(--teleport-x);top:var(--teleport-y);width:var(--teleport-size);height:var(--teleport-size);pointer-events:none;transform:translate(-50%,-50%)}
@@ -4069,11 +4059,8 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
 .royal-court-cast.court-cedric-joining .royal-court-cedric{background-image:url('assets/characters/runtime-v10/cedric/walk-2x2.png');animation:royalCourtWalkToArena 1.9s linear both}
 .royal-court-cast.court-cedric-joined .royal-court-cedric{opacity:0}
 .human-final-prelude.court-struck .finale-prelude-arena,.human-final-prelude.court-struck .finale-prelude{filter:brightness(.78) drop-shadow(0 5px 5px rgba(10,2,12,.78))}
-.human-final-prelude-slash{position:absolute;right:17%;bottom:34%;width:0;height:0;opacity:0;border-radius:50%;background:radial-gradient(circle,rgba(210,169,255,.95),rgba(73,20,101,.76) 38%,transparent 72%);box-shadow:0 0 28px 13px rgba(61,16,93,.72)}
-.human-final-prelude.court-struck .human-final-prelude-slash{animation:humanPreludeSlash 1.35s ease-out both}
 @keyframes royalCourtWalkLeft{0%,24.9%{opacity:1;background-position:0 0;transform:translateX(0)}25%,49.9%{background-position:100% 0;transform:translateX(-25px)}50%,74.9%{background-position:0 100%;transform:translateX(-51px)}75%,99.9%{background-position:100% 100%;transform:translateX(-77px)}100%{opacity:0;background-position:0 0;transform:translateX(-86px)}}
 @keyframes royalCourtWalkToArena{0%,24.9%{opacity:1;background-position:0 0;transform:translate3d(0,0,0)}25%,49.9%{background-position:100% 0;transform:translate3d(-23px,28px,0)}50%,74.9%{background-position:0 100%;transform:translate3d(-46px,56px,0)}75%,99.9%{background-position:100% 100%;transform:translate3d(-69px,84px,0)}100%{opacity:0;background-position:0 0;transform:translate3d(-81px,99px,0)}}
-@keyframes humanPreludeSlash{0%{opacity:0;transform:scale(.2)}22%{opacity:1;transform:scale(1)}100%{opacity:0;transform:translateX(-190px) scale(2.5)}}
 /* Julius é apresentado pela entrada real na arena; o inimigo só fica visível
    depois da fala. A troca é de opacidade, nunca de escala. */
 .arena.human-finale-prelude-active .enemy-unit{opacity:0;transition:opacity .52s ease}
@@ -4090,7 +4077,6 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
 .human-final-scene .finale-original.victorious{filter:drop-shadow(0 0 13px rgba(95,39,128,.76))}
 .human-final-scene.julius-conjuring::before{content:'';position:absolute;right:10%;bottom:22%;width:26%;height:34%;opacity:0;pointer-events:none;background:radial-gradient(ellipse,rgba(91,38,126,.38),rgba(6,2,14,.76) 48%,transparent 72%);filter:blur(3px);animation:humanFinalConjurePulse 1.9s ease-in-out infinite}
 @keyframes humanFinalConjurePulse{0%,100%{opacity:.2;transform:scale(.74)}50%{opacity:.88;transform:scale(1.16)}}
-.human-final-scene.heroes-struck .human-final-shadow-wave{animation:humanFinalShadowWave 2.35s cubic-bezier(.2,.74,.25,1) both}
 .human-final-scene.julius-victorious .finale-original{animation:humanFinalVictoryBreath 1.45s steps(1,end) infinite}
 @keyframes humanFinalVictoryBreath{0%,100%{filter:drop-shadow(0 0 10px rgba(87,28,123,.54))}50%{filter:brightness(1.16) drop-shadow(0 0 15px rgba(122,54,167,.88))}}
 @media (max-width:600px){

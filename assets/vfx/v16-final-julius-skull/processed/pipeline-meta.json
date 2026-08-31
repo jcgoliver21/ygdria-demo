@@ -1,0 +1,299 @@
+{
+  "target": "asset",
+  "mode": "projectile",
+  "prompt": "",
+  "role": "",
+  "input": "assets\\vfx\\v16-final-julius-skull\\raw-2x2.png",
+  "threshold": 100,
+  "edge_threshold": 150,
+  "duration": 95,
+  "rows": 2,
+  "cols": 2,
+  "cell_size": 256,
+  "fit_scale": 0.85,
+  "trim_border": 4,
+  "edge_clean_depth": 3,
+  "align": "center",
+  "shared_scale": false,
+  "scale_strategy": "fit",
+  "component_mode": "all",
+  "component_padding": 0,
+  "min_component_area": 1,
+  "edge_touch_margin": 0,
+  "frame_labels": [
+    "projectile-1",
+    "projectile-2",
+    "projectile-3",
+    "projectile-4"
+  ],
+  "frames": [
+    {
+      "grid": [
+        0,
+        0
+      ],
+      "source_box": [
+        0,
+        0,
+        627,
+        627
+      ],
+      "component_mode": "all",
+      "component_count": 1018,
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "crop_bbox": [
+        11,
+        11,
+        613,
+        616
+      ],
+      "source_frame_size": [
+        619,
+        619
+      ],
+      "is_empty": false,
+      "subject_area": 105715,
+      "body_core_area": 83869,
+      "body_area_fraction": 0.21888709967872513,
+      "anchor_source": [
+        312.0,
+        313.5
+      ],
+      "source_edge_touch": false,
+      "output_edge_touch": false,
+      "edge_touch": false,
+      "output_size": [
+        216,
+        217
+      ],
+      "paste_position": [
+        20,
+        19
+      ],
+      "paste_clamped": false,
+      "aligned_bbox": [
+        21,
+        27,
+        236,
+        236
+      ],
+      "source_to_output_scale": 0.3596694214876033,
+      "bbox_scale_applied": true,
+      "scale_strategy": "fit",
+      "scale_changed": true
+    },
+    {
+      "grid": [
+        0,
+        1
+      ],
+      "source_box": [
+        627,
+        0,
+        1254,
+        627
+      ],
+      "component_mode": "all",
+      "component_count": 1078,
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "crop_bbox": [
+        9,
+        47,
+        607,
+        616
+      ],
+      "source_frame_size": [
+        619,
+        619
+      ],
+      "is_empty": false,
+      "subject_area": 109978,
+      "body_core_area": 74786,
+      "body_area_fraction": 0.19518165992885497,
+      "anchor_source": [
+        308.0,
+        331.5
+      ],
+      "source_edge_touch": false,
+      "output_edge_touch": false,
+      "edge_touch": false,
+      "output_size": [
+        217,
+        207
+      ],
+      "paste_position": [
+        19,
+        24
+      ],
+      "paste_clamped": false,
+      "aligned_bbox": [
+        26,
+        29,
+        233,
+        221
+      ],
+      "source_to_output_scale": 0.3638795986622073,
+      "bbox_scale_applied": true,
+      "scale_strategy": "fit",
+      "scale_changed": true
+    },
+    {
+      "grid": [
+        1,
+        0
+      ],
+      "source_box": [
+        0,
+        627,
+        627,
+        1254
+      ],
+      "component_mode": "all",
+      "component_count": 859,
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "crop_bbox": [
+        19,
+        3,
+        619,
+        607
+      ],
+      "source_frame_size": [
+        619,
+        619
+      ],
+      "is_empty": false,
+      "subject_area": 157972,
+      "body_core_area": 110308,
+      "body_area_fraction": 0.28788942507196713,
+      "anchor_source": [
+        319.0,
+        305.0
+      ],
+      "source_edge_touch": true,
+      "output_edge_touch": false,
+      "edge_touch": true,
+      "output_size": [
+        216,
+        217
+      ],
+      "paste_position": [
+        20,
+        19
+      ],
+      "paste_clamped": false,
+      "aligned_bbox": [
+        27,
+        19,
+        236,
+        226
+      ],
+      "source_to_output_scale": 0.36026490066225164,
+      "bbox_scale_applied": true,
+      "scale_strategy": "fit",
+      "scale_changed": true
+    },
+    {
+      "grid": [
+        1,
+        1
+      ],
+      "source_box": [
+        627,
+        627,
+        1254,
+        1254
+      ],
+      "component_mode": "all",
+      "component_count": 1033,
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "crop_bbox": [
+        0,
+        3,
+        601,
+        605
+      ],
+      "source_frame_size": [
+        619,
+        619
+      ],
+      "is_empty": false,
+      "subject_area": 158626,
+      "body_core_area": 123914,
+      "body_area_fraction": 0.3233993021210405,
+      "anchor_source": [
+        300.5,
+        304.0
+      ],
+      "source_edge_touch": true,
+      "output_edge_touch": false,
+      "edge_touch": true,
+      "output_size": [
+        217,
+        217
+      ],
+      "paste_position": [
+        19,
+        19
+      ],
+      "paste_clamped": false,
+      "aligned_bbox": [
+        19,
+        22,
+        234,
+        233
+      ],
+      "source_to_output_scale": 0.36146179401993356,
+      "bbox_scale_applied": true,
+      "scale_strategy": "fit",
+      "scale_changed": true
+    }
+  ],
+  "edge_touch_frames": [
+    [
+      1,
+      0
+    ],
+    [
+      1,
+      1
+    ]
+  ],
+  "source_edge_touch_frames": [
+    [
+      1,
+      0
+    ],
+    [
+      1,
+      1
+    ]
+  ],
+  "output_edge_touch_frames": [],
+  "empty_frames": [],
+  "paste_clamped_frames": [],
+  "qc_summary": {
+    "frame_count": 4,
+    "valid_frame_count": 4,
+    "empty_count": 0,
+    "edge_touch_count": 2,
+    "paste_clamped_count": 0,
+    "body_scale_mean": 0.5037206895612543,
+    "output_subject_height_mean": 204.75,
+    "body_scale_cv": 0.10132126909898709,
+    "anchor_x_std": 0.010812676518762188,
+    "anchor_y_std": 0.01781643376422679,
+    "anchor_y_mean": 0.5064620355411954
+  },
+  "qc_config": {
+    "strict_qc": true,
+    "reject_edge_touch": false,
+    "allow_source_edge_touch": true,
+    "max_body_scale_cv": null,
+    "max_anchor_y_std": null,
+    "max_profile_scale_drift": null
+  }
+}
