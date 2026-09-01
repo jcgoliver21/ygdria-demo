@@ -4008,12 +4008,13 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
 .human-final-scene-actor{position:absolute;display:block;aspect-ratio:1;transform-origin:50% 100%;filter:drop-shadow(0 5px 5px rgba(10,2,12,.72));opacity:1}
 .human-final-scene-sprite{position:absolute;inset:0;display:block;background-image:var(--sprite-url);background-repeat:no-repeat;background-size:calc(var(--sprite-cols,2) * 100%) calc(var(--sprite-rows,2) * 100%);background-position:var(--sprite-bg-x,100%) var(--sprite-bg-y,100%)}
 .finale-fallen{width:clamp(82px,27%,112px)}
-/* Bernyce e Kalander conservam as âncoras da própria luta da missão 10/4.
-   Eles não são reposicionados para abrir caminho para Julius: a leitura da
-   cena é que seus corpos permanecem exatamente onde tombaram. Julius fica na
-   camada de primeiro plano, portanto os corpos nunca cobrem o antagonista. */
-.finale-bernyce{left:56%;bottom:25%;z-index:1}
-.finale-kalander{left:74%;bottom:21%;z-index:1}
+/* Bernyce e Kalander conservam as âncoras EXATAS da missão 10/4: Kalander
+   estava na coluna 1/linha 2 (73%, plano baixo) e Bernyce na coluna 2/linha 1
+   (84%, plano distante). A unidade de combate é centralizada no ponto da
+   célula; sem o translateX(-50%) os dois corpos eram deslocados e acabavam
+   sobre Julius. */
+.finale-bernyce{left:84%;bottom:23.4%;z-index:1;transform:translateX(-50%)}
+.finale-kalander{left:73%;bottom:12.7%;z-index:1;transform:translateX(-50%)}
 /* Cedric fica no plano distante dos adversários: é uma presença da corte,
    nunca uma quinta peça dentro da formação dos heróis. */
 .finale-cedric{width:clamp(56px,17%,84px);left:61%;bottom:45%;z-index:1}
@@ -4059,8 +4060,8 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
    em vez de deslizarem pela tela. */
 .human-final-prelude{position:absolute;inset:0;z-index:47;pointer-events:none;overflow:hidden}
 .finale-prelude-arena{width:clamp(82px,27%,112px);transition:filter .32s ease}
-.finale-bernyce.finale-prelude-arena{left:56%;bottom:25%}
-.finale-kalander.finale-prelude-arena{left:74%;bottom:21%}
+.finale-bernyce.finale-prelude-arena{left:84%;bottom:23.4%}
+.finale-kalander.finale-prelude-arena{left:73%;bottom:12.7%}
 /* Cedric já chega do combate anterior no plano distante dos inimigos. A cópia
    entra pronta, sem percurso artificial e sem cruzar a Rainha ou os heróis. */
 .finale-prelude{width:clamp(56px,17%,84px);left:61%;bottom:45%;opacity:1}
@@ -4096,13 +4097,13 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
   .royal-court-cedric{right:20%}
   .royal-court-cedric-distant{width:14%;left:61%;bottom:45%}
   .finale-fallen{width:27%}
-  .finale-bernyce{left:55%;bottom:24%}
-  .finale-kalander{left:73%;bottom:20%}
+  .finale-bernyce{left:84%;bottom:23.4%}
+  .finale-kalander{left:73%;bottom:12.7%}
   .finale-cedric{width:17%;left:61%;bottom:45%;z-index:1}
   .finale-julius{width:25%;right:12%;bottom:27%}
   .finale-prelude-arena{width:27%}
-  .finale-bernyce.finale-prelude-arena{left:55%;bottom:24%}
-  .finale-kalander.finale-prelude-arena{left:73%;bottom:20%}
+  .finale-bernyce.finale-prelude-arena{left:84%;bottom:23.4%}
+  .finale-kalander.finale-prelude-arena{left:73%;bottom:12.7%}
   .finale-prelude{width:17%;left:61%;bottom:45%}
   .finale-shadow,.finale-original{width:25%;right:12%;bottom:27%}
 }
