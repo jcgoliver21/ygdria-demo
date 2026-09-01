@@ -3996,6 +3996,10 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
 .royal-court-jules{left:20%;top:43%;background-image:url('assets/characters/runtime-v10/jules/idle-2x2.png')}
 .royal-court-kalander{right:20%;top:43%;background-image:url('assets/characters/runtime-v10/kalander/idle-2x2.png')}
 .royal-court-cedric{right:22%;top:43%;background-image:url('assets/characters/runtime-v10/cedric/idle-2x2.png')}
+/* Ao final da missão 3, Cedric passa a observar o confronto da Rainha e de
+   Kalander no plano mais distante do piso. A âncora coincide com o início da
+   missão 5 para que ele nunca "deslize" do trono até a batalha. */
+.royal-court-cedric-distant{width:clamp(42px,13%,76px);left:61%;top:auto;bottom:45%;z-index:3;background-image:url('assets/characters/runtime-v10/cedric/idle-2x2.png')}
 @keyframes royalCourtIdle{0%,24.9%{background-position:0 0}25%,49.9%{background-position:100% 0}50%,74.9%{background-position:0 100%}75%,100%{background-position:100% 100%}}
 /* Missão 10/5: encenação física do desfecho dentro do piso real do castelo.
    Nenhum corpo é girado por CSS: cada um usa o último quadro de sua própria
@@ -4053,21 +4057,19 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
 .finale-prelude-arena{width:clamp(52px,17%,98px);transition:filter .32s ease}
 .finale-bernyce.finale-prelude-arena{left:56%;bottom:25%}
 .finale-kalander.finale-prelude-arena{left:74%;bottom:21%}
-/* Cedric começa nos degraus. Ao concluir sua caminhada, esta cópia fixa o
-   personagem no mesmo plano distante dos inimigos, sem cruzar a Rainha nem a
-   formação dos heróis. */
-.finale-prelude{width:clamp(42px,13%,76px);left:61%;bottom:45%;opacity:0;transition:opacity .12s linear}
-.human-final-prelude.cedric-joined .finale-prelude{opacity:1}
+/* Cedric já chega do combate anterior no plano distante dos inimigos. A cópia
+   entra pronta, sem percurso artificial e sem cruzar a Rainha ou os heróis. */
+.finale-prelude{width:clamp(42px,13%,76px);left:61%;bottom:45%;opacity:1}
 .royal-court-cast.court-jules-leaving .royal-court-jules{background-image:url('assets/characters/runtime-v10/jules/walk-2x2.png');animation:royalCourtWalkLeft 1.7s linear both}
-.royal-court-cast.court-cedric-joining .royal-court-cedric{background-image:url('assets/characters/runtime-v10/cedric/walk-2x2.png');animation:royalCourtWalkToArena 1.9s linear both}
-.royal-court-cast.court-cedric-joined .royal-court-cedric{opacity:0}
 .human-final-prelude.court-struck .finale-prelude-arena,.human-final-prelude.court-struck .finale-prelude{filter:brightness(.78) drop-shadow(0 5px 5px rgba(10,2,12,.78))}
 @keyframes royalCourtWalkLeft{0%,24.9%{opacity:1;background-position:0 0;transform:translateX(0)}25%,49.9%{background-position:100% 0;transform:translateX(-25px)}50%,74.9%{background-position:0 100%;transform:translateX(-51px)}75%,99.9%{background-position:100% 100%;transform:translateX(-77px)}100%{opacity:0;background-position:0 0;transform:translateX(-86px)}}
-@keyframes royalCourtWalkToArena{0%,24.9%{opacity:1;background-position:0 0;transform:translate3d(0,0,0)}25%,49.9%{background-position:100% 0;transform:translate3d(-43px,22px,0)}50%,74.9%{background-position:0 100%;transform:translate3d(-86px,44px,0)}75%,99.9%{background-position:100% 100%;transform:translate3d(-129px,66px,0)}100%{opacity:0;background-position:0 0;transform:translate3d(-154px,78px,0)}}
 /* Julius é apresentado pela entrada real na arena; o inimigo só fica visível
    depois da fala. A troca é de opacidade, nunca de escala. */
 .arena.human-finale-prelude-active .enemy-unit{opacity:0;transition:opacity .52s ease}
 .arena.human-finale-prelude-active .enemy-unit.julius-entered{opacity:1;animation:humanFinalJuliusEnter .72s cubic-bezier(.15,.78,.25,1) both}
+/* Durante a luta, Julius ocupa o primeiro plano em relação aos três corpos
+   já derrotados; suas informações e hitbox seguem na própria linha inimiga. */
+.arena.human-finale-prelude-active .enemy-row.human-final-julius-foreground{z-index:49!important}
 @keyframes humanFinalJuliusEnter{from{opacity:0;filter:brightness(.45) blur(3px);transform:translate3d(16px,-4px,0)}to{opacity:1;filter:none;transform:translate3d(0,0,0)}}
 /* O epílogo reúne os corpos no chão da arena. A sombra vencida e Julius real
    são personagens distintos para que a revelação não pareça teleporte. */
@@ -4088,6 +4090,7 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
   .royal-court-jules{left:18%}
   .royal-court-kalander{right:18%}
   .royal-court-cedric{right:20%}
+  .royal-court-cedric-distant{width:14%;left:61%;bottom:45%}
   .finale-fallen{width:19%}
   .finale-bernyce{left:55%;bottom:24%}
   .finale-kalander{left:73%;bottom:20%}

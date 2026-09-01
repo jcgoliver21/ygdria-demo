@@ -123,6 +123,23 @@ test('Guarda-costas usa exatamente as células definidas e Adriel inicia para a 
 test('final humano encena prólogo, quedas e teleporte antes do epílogo canônico',async({page})=>{
   const errors=await boot(page,'flow');
   await page.setViewportSize({width:390,height:844});
+  /* Encadeamento físico: depois da missão de Cedric + Jules, Cedric permanece
+     no plano distante durante a batalha de Bernyce + Kalander. */
+  await page.evaluate(()=>{
+    worldRun={active:true,fase:9,nivel:4,storyMode:false};
+    chosenIds=['adriel-jovem','gareth','roland','elizier'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    beginGame(0); skipStory();
+  });
+  await expect(page.locator('.royal-court-cedric-distant')).toBeVisible();
+  const cedricLeadIn=await page.evaluate(()=>{
+    const cedric=document.querySelector('.royal-court-cedric-distant');
+    const arena=document.querySelector('#arena');
+    const r=cedric.getBoundingClientRect(),a=arena.getBoundingClientRect();
+    return {left:r.left-a.left,bottom:a.bottom-r.bottom,width:r.width};
+  });
+  expect(cedricLeadIn.left).toBeGreaterThan(190);
+  expect(cedricLeadIn.bottom).toBeGreaterThan(150);
+  expect(cedricLeadIn.width).toBeGreaterThan(40);
   await page.evaluate(()=>{
     worldRun={active:true,fase:9,nivel:5,storyMode:false};
     chosenIds=['adriel-jovem','gareth','roland','elizier'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
@@ -133,15 +150,13 @@ test('final humano encena prólogo, quedas e teleporte antes do epílogo canôni
   await expect(page.locator('.royal-court-bernyce')).toHaveCount(0);
   await expect(page.locator('.royal-court-kalander')).toHaveCount(0);
   await expect(page.locator('.royal-court-jules')).toBeVisible();
-  await expect(page.locator('.royal-court-cedric')).toBeVisible();
+  await expect(page.locator('.royal-court-cedric')).toHaveCount(0);
   await expect(page.locator('.finale-bernyce.finale-prelude-arena')).toBeVisible();
   await expect(page.locator('.finale-kalander.finale-prelude-arena')).toBeVisible();
   await expect(page.locator('.finale-cedric.finale-prelude')).toHaveCount(1);
   await page.evaluate(()=>YGDRIA_HUMAN_FINALE.run('prelude',{speed:.02}));
   await page.waitForTimeout(130);
   await expect(page.locator('.royal-court-cast')).toHaveClass(/court-jules-leaving/);
-  await expect(page.locator('.royal-court-cast')).toHaveClass(/court-cedric-joining/);
-  await expect(page.locator('.human-final-prelude')).toHaveClass(/cedric-joined/);
   await expect(page.locator('.finale-cedric.finale-prelude')).toBeVisible();
   await page.waitForTimeout(140);
   const cedricReadability=await page.evaluate(()=>{
@@ -173,6 +188,14 @@ test('final humano encena prólogo, quedas e teleporte antes do epílogo canôni
   expect(cedricReadability.overlapsKalander).toBe(0);
   expect(cedricReadability.overlapsHeroes).toEqual([0,0,0,0]);
   expect(cedricReadability.enemySide).toBe(true);
+  const juliusForeground=await page.evaluate(()=>{
+    const unit=document.querySelector('.enemy-unit.julius-entered');
+    const row=unit?.closest('.enemy-row');
+    const prelude=document.querySelector('.human-final-prelude');
+    return {unit:unit?.classList.contains('julius-entered'),rowLayer:Number(getComputedStyle(row).zIndex),preludeLayer:Number(getComputedStyle(prelude).zIndex)};
+  });
+  expect(juliusForeground.unit).toBe(true);
+  expect(juliusForeground.rowLayer).toBeGreaterThan(juliusForeground.preludeLayer);
   const preludePositions=await page.evaluate(()=>Object.fromEntries(['bernyce','kalander','cedric'].map(id=>{
     const style=getComputedStyle(document.querySelector(`.human-final-prelude .finale-${id}`));
     return [id,{left:style.left,bottom:style.bottom,width:style.width}];
@@ -2248,7 +2271,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.32');
+  expect(registration.caches).toContain('12r-v11.0.33');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2408,7 +2431,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.32');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.33');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

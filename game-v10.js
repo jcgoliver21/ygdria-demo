@@ -3084,23 +3084,21 @@ function triggerHumanFinalePrelude(options={}){
   const juliusIndex=enemies.findIndex(enemy=>enemy?.cardId==='julius');
   const liveJulius=juliusIndex>=0?document.getElementById('enemy-'+juliusIndex):null;
   const juliusAvatar=liveJulius?.querySelector('.enemy-avatar')||liveJulius;
-  /* Bernyce e Kalander continuam onde a luta anterior os deixou: na arena.
-     Apenas Jules e Cedric observam do trono antes da chegada de Julius. */
+  /* Cedric já ocupa, desde a luta anterior, o plano distante da arena. Não há
+     travessia nem deslize no prólogo: Jules é o único que se retira do trono. */
   arenaEl?.classList.add('human-finale-prelude-active');
-  setBattleStatus(T('Jules e Cedric observam a arena em silêncio.','Jules and Cedric watch the arena in silence.','Jules y Cedric observan la arena en silencio.'),'system');
+  scene?.classList.add('cedric-positioned');
+  setBattleStatus(T('Jules observa a arena em silêncio.','Jules watches the arena in silence.','Jules observa la arena en silencio.'),'system');
   at(3800,()=>{
-    court?.classList.add('court-jules-leaving','court-cedric-joining');
+    court?.classList.add('court-jules-leaving');
     arenaEl?.classList.remove('human-finale-before-darkness');
     arenaEl?.classList.add('human-finale-darkening');
     setBattleStatus(T('Uma sombra toma o Castelo da Coroa Humana...','A shadow takes the Human Crown Castle...','Una sombra toma el Castillo de la Corona Humana...'),'system');
   });
-  at(5700,()=>{
-    court?.classList.add('court-cedric-joined');
-    scene?.classList.add('cedric-joined');
-  });
   /* Julius entra depois dos 3,1 segundos de escurecimento progressivo. */
   at(7300,()=>{
     liveJulius?.classList.add('julius-entered');
+    liveJulius?.parentElement?.classList.add('human-final-julius-foreground');
     scene?.classList.add('julius-entered');
     if(juliusIndex>=0) playEnemyAction(juliusIndex,'idle');
     playFinaleLines([{name:'Julius',sprite:KINGDOMS.find(k=>k.id==='julius')?.sprite,t:'Morram todos! Corte Sombrio!',enemyIndex:juliusIndex,ms:2200}],null,{speed});
@@ -3890,7 +3888,7 @@ function syncRoyalCourtSceneCast(){
       arenaEl.appendChild(cast);
     }
     cast.className='royal-court-cast';
-    cast.innerHTML='<span class="royal-court-guard royal-court-jules" aria-hidden="true"></span><span class="royal-court-guard royal-court-cedric" aria-hidden="true"></span>';
+    cast.innerHTML='<span class="royal-court-guard royal-court-jules" aria-hidden="true"></span>';
     return;
   }
   const opponents=new Set((activeStageData?.enemies||[]).map(enemy=>enemy?.cardId).filter(Boolean));
@@ -3903,7 +3901,11 @@ function syncRoyalCourtSceneCast(){
     arenaEl.appendChild(cast);
   }
   cast.className='royal-court-cast';
-  cast.innerHTML=`${visible.bernyce?'<img class="royal-court-bernyce" src="assets/characters/runtime-v10/bernyce/scene-seated.png" alt="">':''}${visible.jules?'<span class="royal-court-guard royal-court-jules"></span>':''}${visible.kalander?'<span class="royal-court-guard royal-court-kalander"></span>':''}`;
+  /* Depois da última luta de Cedric, ele permanece no plano distante
+     da arena durante a luta contra Bernyce e Kalander. Essa âncora é a mesma
+     usada imediatamente no prólogo da missão 5. */
+  const cedricDistant=worldRun.nivel===4?'<span class="royal-court-guard royal-court-cedric-distant" aria-hidden="true"></span>':'';
+  cast.innerHTML=`${visible.bernyce?'<img class="royal-court-bernyce" src="assets/characters/runtime-v10/bernyce/scene-seated.png" alt="">':''}${visible.jules?'<span class="royal-court-guard royal-court-jules"></span>':''}${visible.kalander?'<span class="royal-court-guard royal-court-kalander"></span>':''}${cedricDistant}`;
 }
 
 
