@@ -192,10 +192,27 @@ test('final humano encena prólogo, quedas e teleporte antes do epílogo canôni
     const unit=document.querySelector('.enemy-unit.julius-entered');
     const row=unit?.closest('.enemy-row');
     const prelude=document.querySelector('.human-final-prelude');
-    return {unit:unit?.classList.contains('julius-entered'),rowLayer:Number(getComputedStyle(row).zIndex),preludeLayer:Number(getComputedStyle(prelude).zIndex)};
+    const rect=element=>element?.getBoundingClientRect();
+    const overlapArea=(a,b)=>a&&b?Math.max(0,Math.min(a.right,b.right)-Math.max(a.left,b.left))*Math.max(0,Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)):0;
+    const overlaps=(a,b)=>a&&b?{left:Math.max(a.left,b.left),right:Math.min(a.right,b.right),top:Math.max(a.top,b.top),bottom:Math.min(a.bottom,b.bottom)}:null;
+    const bodies=[...prelude.querySelectorAll('.finale-prelude-arena,.finale-prelude')];
+    const collision=bodies.map(body=>({body,area:overlaps(rect(unit),rect(body))})).find(item=>item.area&&item.area.right>item.area.left&&item.area.bottom>item.area.top);
+    const x=collision?(collision.area.left+collision.area.right)/2:0;
+    const y=collision?(collision.area.top+collision.area.bottom)/2:0;
+    /* O balão de fala é HUD e pode cruzar a área sem alterar a profundidade
+       dos sprites; aferimos a primeira camada física abaixo dele. */
+    const top=collision?[...document.elementsFromPoint(x,y)].find(element=>!element.closest('#storyLayer')):null;
+    return {
+      unit:unit?.classList.contains('julius-entered'),rowLayer:Number(getComputedStyle(row).zIndex),preludeLayer:Number(getComputedStyle(prelude).zIndex),
+      collision:Boolean(collision),topIsJulius:Boolean(top?.closest('.enemy-unit')===unit),topClass:top?.className||'',
+      bodyOverlaps:bodies.map(body=>({id:body.dataset.finaleActor,area:Math.round(overlapArea(rect(unit),rect(body)),),box:Object.fromEntries(['left','right','top','bottom'].map(key=>[key,Math.round(rect(body)[key])]))})),
+      juliusBox:Object.fromEntries(['left','right','top','bottom'].map(key=>[key,Math.round(rect(unit)[key])]))
+    };
   });
   expect(juliusForeground.unit).toBe(true);
   expect(juliusForeground.rowLayer).toBeGreaterThan(juliusForeground.preludeLayer);
+  if(juliusForeground.collision) expect(juliusForeground.topIsJulius,JSON.stringify(juliusForeground)).toBe(true);
+  expect(juliusForeground.bodyOverlaps.every(item=>item.area===0),JSON.stringify(juliusForeground)).toBe(true);
   const preludePositions=await page.evaluate(()=>Object.fromEntries(['bernyce','kalander','cedric'].map(id=>{
     const style=getComputedStyle(document.querySelector(`.human-final-prelude .finale-${id}`));
     return [id,{left:style.left,bottom:style.bottom,width:style.width}];
@@ -2271,7 +2288,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.33');
+  expect(registration.caches).toContain('12r-v11.0.34');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2431,7 +2448,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.33');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.34');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 
