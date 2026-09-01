@@ -120,6 +120,38 @@ test('Guarda-costas usa exatamente as células definidas e Adriel inicia para a 
   expect(errors).toEqual([]);
 });
 
+test('Bomba de Cor transforma e ativa toda a cor ao combinar com Listrado ou Embrulhado',async({page})=>{
+  const errors=await boot(page,'flow');
+  const probe=await page.evaluate(()=>({
+    striped:window.__12rQA.colorBombComboProbe('striped'),
+    wrapped:window.__12rQA.colorBombComboProbe('wrapped')
+  }));
+  for(const result of Object.values(probe)){
+    expect(result.targets).toBeGreaterThan(0);
+    expect(result.transformed).toBe(result.targets);
+    expect(result.activated).toBe(result.targets);
+    expect(result.allTargetsActivated).toBe(true);
+    expect(result.cells).toBeGreaterThan(result.targets);
+  }
+  expect(errors).toEqual([]);
+});
+
+test('Bomba de Cor resolve Listrado e Embrulhado por dois toques reais no tabuleiro',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
+  for(const kind of ['striped','wrapped']){
+    const setup=await page.evaluate(currentKind=>window.__12rQA.loadColorBombComboFixture(currentKind),kind);
+    await page.locator(`.gem[data-r="${setup.from.r}"][data-c="${setup.from.c}"]`).click();
+    await page.locator(`.gem[data-r="${setup.to.r}"][data-c="${setup.to.c}"]`).click();
+    await expect.poll(()=>page.evaluate(()=>window.__12rQA.lastColorBombComboAudit()),{timeout:5000}).toMatchObject({kind});
+    const audit=await page.evaluate(()=>window.__12rQA.lastColorBombComboAudit());
+    expect(audit.transformed).toBe(audit.targets);
+    expect(audit.activated).toBe(audit.targets);
+    expect(audit.cells).toBeGreaterThan(audit.targets);
+  }
+  expect(errors).toEqual([]);
+});
+
 test('final humano encena prólogo, quedas e teleporte antes do epílogo canônico',async({page})=>{
   const errors=await boot(page,'flow');
   await page.setViewportSize({width:390,height:844});
@@ -2328,7 +2360,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.36');
+  expect(registration.caches).toContain('12r-v11.0.37');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2488,7 +2520,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.36');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.37');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

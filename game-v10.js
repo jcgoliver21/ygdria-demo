@@ -5164,6 +5164,7 @@ function applyPowerupQAFixture(){
 
 let lastFallInfo=null;        // v9: mapa de quedas para animar o refill
 let lastActivatedPowers=[];   // v9: power-ups disparados na resolução atual
+let lastColorBombComboAudit=null; // QA da última combinação Prisma + especial
 let obstaclesMeta={};         // v9.1: obstáculos do tabuleiro {r_c:{type:'ice'|'stone',hits}}
 let stageTurns=0;             // v9.1: movimentos do jogador nesta fase
 let stageCollected=0;         // v9.1: esferas coletadas nesta fase
@@ -6426,6 +6427,20 @@ function expandPowerEffects(initialCells,targetColor){
   return uniqueCells(expanded);
 }
 
+/* Bomba de Cor + outro especial: o especial não é apenas um alcance maior.
+   Todas as joias da cor escolhida assumem a forma do parceiro e são ativadas
+   pela própria cadeia de efeitos. Isso preserva a regra visual e mecânica de
+   Prisma + Listrado/Embrulhado, inclusive quando a bomba veio do outro lado
+   da troca. */
+function primeColorBombComboPowerUps(resolution){
+  const transforms=Array.isArray(resolution?.transforms)?resolution.transforms:[];
+  transforms.forEach(({r,c,power})=>{
+    if(!board[r]||board[r][c]<0||!power) return;
+    powerUps[cellKey(r,c)]={...power};
+  });
+  return transforms.length;
+}
+
 function buildPowerComboResolution(from,to,powerFrom,powerTo){
   const hasColorBomb=powerFrom?.type==='colorBomb'||powerTo?.type==='colorBomb';
   if(hasColorBomb){
@@ -6440,12 +6455,15 @@ function buildPowerComboResolution(from,to,powerFrom,powerTo){
     for(let r=0;r<SIZE;r++) for(let c=0;c<SIZE;c++) if(board[r][c]===targetColor) targets.push({r,c});
     const cells=[from,to,...targets];
     if(otherPower?.type==='striped'){
-      targets.forEach((cell,index)=>index%2?addColumnCells(cells,cell.c):addRowCells(cells,cell.r));
-      return {label:T('Bomba de Cor + Listrado: uma tempestade de linhas atravessa o tabuleiro!','Color Bomb + Striped: a storm of lines sweeps across the board!','¡Bomba de Color + Rayado: una tormenta de líneas atraviesa el tablero!'),cells:uniqueCells(cells)};
+      const transforms=targets.map((cell,index)=>({
+        ...cell,
+        power:{type:'striped',orientation:index%2?'vertical':'horizontal'}
+      }));
+      return {label:T('Bomba de Cor + Listrado: todas as joias da cor viraram listrados e dispararam!','Color Bomb + Striped: every gem of that color became striped and fired!','¡Bomba de Color + Rayado: todas las joyas del color se volvieron rayadas y dispararon!'),cells:uniqueCells(cells),transforms};
     }
     if(otherPower?.type==='wrapped'){
-      targets.forEach(cell=>addRadiusCells(cells,cell.r,cell.c,1));
-      return {label:T('Bomba de Cor + Embrulhado: todas as joias da cor explodem em área!','Color Bomb + Wrapped: every gem of that color explodes in an area!','¡Bomba de Color + Envuelto: todas las joyas de ese color explotan en área!'),cells:uniqueCells(cells)};
+      const transforms=targets.map(cell=>({...cell,power:{type:'wrapped'}}));
+      return {label:T('Bomba de Cor + Embrulhado: todas as joias da cor viraram embrulhados e explodiram!','Color Bomb + Wrapped: every gem of that color became wrapped and exploded!','¡Bomba de Color + Envuelto: todas las joyas del color se volvieron envueltas y explotaron!'),cells:uniqueCells(cells),transforms};
     }
     return {label:T('Bomba de Cor: todas as joias da cor escolhida foram removidas!','Color Bomb: every gem of the chosen color was removed!','¡Bomba de Color: todas las joyas del color elegido fueron eliminadas!'),cells:uniqueCells(cells)};
   }
@@ -6570,7 +6588,18 @@ async function resolveMatches(){
   }
   const targetColor=matches.map(cell=>board[cell.r][cell.c]).find(color=>color>=0)??ACTIVE[0];
   const createdPlans=forced?[]:planCreatedPowerUps(groups);
+  if(forced) primeColorBombComboPowerUps(forced);
   matches=expandPowerEffects(matches,targetColor);
+  if(forced?.transforms?.length){
+    const kind=forced.transforms[0]?.power?.type||'';
+    lastColorBombComboAudit={
+      kind,
+      targets:forced.transforms.length,
+      transformed:forced.transforms.length,
+      activated:lastActivatedPowers.filter(entry=>entry.power?.type===kind).length,
+      cells:matches.length
+    };
+  }else lastColorBombComboAudit=null;
   playPowerActivationFx();
   const createdByKey=new Map(createdPlans.map(plan=>[cellKey(plan.r,plan.c),plan]));
   lastSwap=null;
@@ -9383,6 +9412,49 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
     },
     runConsumables:()=>({coinDoubleRun,xpDoubleRun,bannerAtkRun,battleConsumablesDone}),
     boardSnapshot:()=>board.map(row=>[...row]),
+    colorBombComboProbe:(kind='striped')=>{
+      if(!['striped','wrapped'].includes(kind)) throw new Error('Invalid color-bomb combo kind');
+      const previousBoard=board.map(row=>[...row]);
+      const previousPowers={...powerUps};
+      const previousActivated=[...lastActivatedPowers];
+      try{
+        /* Tabuleiro determinístico: a única resolução é Prisma + especial. */
+        board=Array.from({length:SIZE},(_,r)=>Array.from({length:SIZE},(_,c)=>(r*2+c*3)%4));
+        powerUps={};
+        const from={r:2,c:2},to={r:2,c:3};
+        board[from.r][from.c]=-2;
+        board[to.r][to.c]=1;
+        powerUps[cellKey(from.r,from.c)]={type:'colorBomb'};
+        powerUps[cellKey(to.r,to.c)]=kind==='striped'?{type:'striped',orientation:'horizontal'}:{type:'wrapped'};
+        swapCells(from,to);
+        const resolution=buildPowerComboResolution(from,to,{type:'colorBomb'},powerUps[cellKey(from.r,from.c)]);
+        const transformed=primeColorBombComboPowerUps(resolution);
+        const cells=expandPowerEffects(resolution.cells,1);
+        const activated=lastActivatedPowers.filter(entry=>entry.power?.type===kind).length;
+        return {kind,targets:resolution.transforms?.length||0,transformed,activated,cells:cells.length,allTargetsActivated:transformed>0&&activated===transformed};
+      }finally{
+        board=previousBoard;
+        powerUps=previousPowers;
+        lastActivatedPowers=previousActivated;
+      }
+    },
+    /* Fixture local para validar a mesma troca feita por dois toques reais.
+       Não existe no build público: __12rQA só é exposto em localhost. */
+    loadColorBombComboFixture:(kind='striped')=>{
+      if(!['striped','wrapped'].includes(kind)) throw new Error('Invalid color-bomb combo kind');
+      resetCombatSchedule();
+      board=Array.from({length:SIZE},(_,r)=>Array.from({length:SIZE},(_,c)=>(r*2+c*3)%4));
+      powerUps={}; obstaclesMeta={}; hiddenGems={};
+      const from={r:2,c:2},to={r:2,c:3};
+      board[from.r][from.c]=-2;
+      board[to.r][to.c]=1;
+      powerUps[cellKey(from.r,from.c)]={type:'colorBomb'};
+      powerUps[cellKey(to.r,to.c)]=kind==='striped'?{type:'striped',orientation:'horizontal'}:{type:'wrapped'};
+      selected=null; busy=false; forcedResolution=null; lastColorBombComboAudit=null;
+      setBattlePhase('idle'); renderBoard();
+      return {from,to};
+    },
+    lastColorBombComboAudit:()=>lastColorBombComboAudit?{...lastColorBombComboAudit}:null,
     setSummons:(golems=0,harpies=0)=>{ golemAllies=golems; harpyAllies=harpies; renderPartyArena(); return {golemAllies,harpyAllies,golems:document.querySelectorAll('.golem-unit').length,harpies:document.querySelectorAll('.harpy-unit').length}; },
     refreshParty:()=>{ renderPartyArena(); return {golemAllies,harpyAllies,golems:document.querySelectorAll('.golem-unit').length,harpies:document.querySelectorAll('.harpy-unit').length}; },
     persistenceSnapshot:()=>({coins,profileXp,formationIndex,inventory:{...inventory}}),
