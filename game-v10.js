@@ -6445,7 +6445,7 @@ function buildPowerComboResolution(from,to,powerFrom,powerTo){
   const hasColorBomb=powerFrom?.type==='colorBomb'||powerTo?.type==='colorBomb';
   if(hasColorBomb){
     if(powerFrom?.type==='colorBomb'&&powerTo?.type==='colorBomb'){
-      return {label:T('Dupla Bomba de Cor: todo o tabuleiro foi purificado!','Double Color Bomb: the entire board was purified!','¡Doble Bomba de Color: todo el tablero fue purificado!'),cells:Array.from({length:SIZE*SIZE},(_,i)=>({r:Math.floor(i/SIZE),c:i%SIZE}))};
+      return {label:T('Dupla Bomba de Cor: todo o tabuleiro foi purificado!','Double Color Bomb: the entire board was purified!','¡Doble Bomba de Color: todo el tablero fue purificado!'),cells:Array.from({length:SIZE*SIZE},(_,i)=>({r:Math.floor(i/SIZE),c:i%SIZE})),auditKind:'double-color-bomb'};
     }
     const colorBombWasFrom=powerFrom?.type==='colorBomb';
     const otherPower=colorBombWasFrom?powerTo:powerFrom;
@@ -6590,13 +6590,13 @@ async function resolveMatches(){
   const createdPlans=forced?[]:planCreatedPowerUps(groups);
   if(forced) primeColorBombComboPowerUps(forced);
   matches=expandPowerEffects(matches,targetColor);
-  if(forced?.transforms?.length){
-    const kind=forced.transforms[0]?.power?.type||'';
+  if(forced?.transforms?.length||forced?.auditKind){
+    const kind=forced.auditKind||forced.transforms[0]?.power?.type||'';
     lastColorBombComboAudit={
       kind,
-      targets:forced.transforms.length,
-      transformed:forced.transforms.length,
-      activated:lastActivatedPowers.filter(entry=>entry.power?.type===kind).length,
+      targets:forced.transforms?.length||SIZE*SIZE,
+      transformed:forced.transforms?.length||0,
+      activated:kind==='double-color-bomb'?lastActivatedPowers.filter(entry=>entry.power?.type==='colorBomb').length:lastActivatedPowers.filter(entry=>entry.power?.type===kind).length,
       cells:matches.length
     };
   }else lastColorBombComboAudit=null;
@@ -9441,7 +9441,7 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
     /* Fixture local para validar a mesma troca feita por dois toques reais.
        Não existe no build público: __12rQA só é exposto em localhost. */
     loadColorBombComboFixture:(kind='striped')=>{
-      if(!['striped','wrapped'].includes(kind)) throw new Error('Invalid color-bomb combo kind');
+      if(!['striped','wrapped','double'].includes(kind)) throw new Error('Invalid color-bomb combo kind');
       resetCombatSchedule();
       board=Array.from({length:SIZE},(_,r)=>Array.from({length:SIZE},(_,c)=>(r*2+c*3)%4));
       powerUps={}; obstaclesMeta={}; hiddenGems={};
@@ -9449,7 +9449,7 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
       board[from.r][from.c]=-2;
       board[to.r][to.c]=1;
       powerUps[cellKey(from.r,from.c)]={type:'colorBomb'};
-      powerUps[cellKey(to.r,to.c)]=kind==='striped'?{type:'striped',orientation:'horizontal'}:{type:'wrapped'};
+      powerUps[cellKey(to.r,to.c)]=kind==='double'?{type:'colorBomb'}:kind==='striped'?{type:'striped',orientation:'horizontal'}:{type:'wrapped'};
       selected=null; busy=false; forcedResolution=null; lastColorBombComboAudit=null;
       setBattlePhase('idle'); renderBoard();
       return {from,to};

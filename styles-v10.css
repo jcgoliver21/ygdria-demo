@@ -1229,20 +1229,25 @@
     filter:drop-shadow(0 0 4px #fff);
   }
   .orb.power-colorbomb{
-    border-radius:50%; transform:none;
+    border-radius:50%; transform:none; border:1px solid rgba(255,235,171,.9);
     background:
-      radial-gradient(circle at 35% 28%,#fff 0 5%,transparent 10%),
-      radial-gradient(circle at 50% 50%,#18121f 0 34%,transparent 36%),
+      radial-gradient(circle at 33% 25%,rgba(255,255,255,.92) 0 4%,transparent 9%),
+      radial-gradient(circle at 50% 50%,#15101f 0 40%,transparent 43%),
       conic-gradient(#ff3d48,#ffcf52,#6dff8b,#5abfff,#9c66ff,#ff6bc1,#ff3d48);
-    box-shadow:inset 0 0 0 3px rgba(255,255,255,.42),inset 0 0 14px #000,0 0 12px rgba(255,255,255,.74);
-    animation:colorBombPulse 1.1s ease-in-out infinite;
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.35),inset 0 0 12px #000,0 0 11px rgba(255,225,145,.72);
+    animation:colorBombPrismBreath 1.45s ease-in-out infinite;
   }
   .orb.power-colorbomb::before{
-    inset:24%; width:auto; height:auto; border-radius:50%;
-    background:radial-gradient(circle,#fff 0 4%,#4a3d55 7% 14%,#120d18 16% 100%); filter:none;
+    inset:12%; width:auto; height:auto; border-radius:0;
+    background:#ffe9aa;
+    clip-path:polygon(50% 0,56% 35%,75% 7%,65% 40%,93% 25%,70% 47%,100% 50%,70% 54%,93% 75%,65% 60%,75% 93%,56% 65%,50% 100%,44% 65%,25% 93%,35% 60%,7% 75%,30% 54%,0 50%,30% 47%,7% 25%,35% 40%,25% 7%,44% 35%);
+    filter:drop-shadow(0 0 3px #fff7);
   }
-  .orb.power-colorbomb::after{ display:none; }
-  @keyframes colorBombPulse{ 50%{ filter:brightness(1.28) saturate(1.35); transform:scale(1.06); } }
+  .orb.power-colorbomb::after{
+    display:block; inset:36%; border-radius:50%; background:#36204d;
+    box-shadow:0 0 0 1px rgba(255,244,193,.85),inset 0 0 3px #0b0711;
+  }
+  @keyframes colorBombPrismBreath{ 50%{ filter:brightness(1.18) saturate(1.2); } }
   .power-created .orb{ animation:powerBirth .55s cubic-bezier(.2,1.7,.35,1); }
   @keyframes powerBirth{ 0%{ transform:scale(.1) rotate(-90deg); filter:brightness(3); } 100%{ transform:scale(1) rotate(45deg); } }
 
