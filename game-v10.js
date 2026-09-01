@@ -730,7 +730,7 @@ const STAGE10_MUSIC=Object.freeze({
   /* Os dois masters têm caudas diferentes. Estes pontos encerram cada voz
      enquanto ela ainda tem corpo musical; nunca deixamos o MP3 chegar ao
      trecho de fade quase silencioso antes de reabrir a próxima volta. */
-  base:{src:'assets/audio/Ygdria_10_Sombras_Que_Devoram.mp3',loopOut:2},
+  base:{src:'assets/audio/Ygdria_10_Sombras_Que_Devoram.mp3',loopOut:.95},
   final:{src:'assets/audio/Ygdria_10_Sombras_Que_Devoram_Final.mp3',loopOut:1.35}
 });
 let stageMusicActive=null;

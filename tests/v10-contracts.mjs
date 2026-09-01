@@ -20,13 +20,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.31/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.31/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.31/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.31/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.31/);
-  assert.match(config,/version:'v11\.0\.31'/);
-  assert.match(sw,/12r-v11\.0\.31/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.32/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.32/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.32/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.32/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.32/);
+  assert.match(config,/version:'v11\.0\.32'/);
+  assert.match(sw,/12r-v11\.0\.32/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -108,7 +108,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.31/);
+  assert.match(sw,/12r-v11\.0\.32/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -211,7 +211,7 @@ check('Fase 10 usa trilhas autorais com troca para o confronto final',()=>{
   assert.match(game,/worldRun\.nivel===5\?'final':'base'/);
   assert.match(game,/STAGE10_MUSIC_GAIN=\.24/);
   assert.match(game,/STAGE10_LOOP_CROSSFADE=\.8/);
-  assert.match(game,/loopOut:2/);
+  assert.match(game,/loopOut:\.95/);
   assert.match(game,/loopOut:1\.35/);
   assert.match(game,/audio\.loop=false/);
   assert.match(game,/function queueStageMusicLoop\(track,voice,force=false\)/);
@@ -473,7 +473,7 @@ check('IDs do HTML são únicos',()=>{
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.31');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.32');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
