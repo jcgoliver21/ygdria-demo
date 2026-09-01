@@ -212,18 +212,47 @@ test('final humano encena prólogo, quedas e teleporte antes do epílogo canôni
   expect(juliusForeground.unit).toBe(true);
   expect(juliusForeground.rowLayer).toBeGreaterThan(juliusForeground.preludeLayer);
   if(juliusForeground.collision) expect(juliusForeground.topIsJulius,JSON.stringify(juliusForeground)).toBe(true);
-  expect(juliusForeground.bodyOverlaps.every(item=>item.area===0),JSON.stringify(juliusForeground)).toBe(true);
-  const preludePositions=await page.evaluate(()=>Object.fromEntries(['bernyce','kalander','cedric'].map(id=>{
-    const style=getComputedStyle(document.querySelector(`.human-final-prelude .finale-${id}`));
-    return [id,{left:style.left,bottom:style.bottom,width:style.width}];
-  })));
+  /* Bernyce e Kalander permanecem nas âncoras da luta anterior; como Julius
+     entra em primeiro plano, a leitura é aferida pela camada visível, não por
+     uma falsa troca de posição dos corpos. As cópias da cena devem ter o
+     mesmo porte-base dos inimigos adultos da arena. */
+  const preludePositions=await page.evaluate(()=>{
+    const arena=document.querySelector('#arena').getBoundingClientRect();
+    const measure=id=>{
+      const el=document.querySelector(`.human-final-prelude .finale-${id}`);
+      const r=el.getBoundingClientRect();
+      return {left:Math.round((r.left-arena.left)/arena.width*1000)/10,bottom:Math.round((arena.bottom-r.bottom)/arena.height*1000)/10,width:Math.round(r.width)};
+    };
+    return {bernyce:measure('bernyce'),kalander:measure('kalander'),cedric:measure('cedric')};
+  });
+  expect(preludePositions.bernyce.left).toBeGreaterThan(50);
+  expect(preludePositions.bernyce.bottom).toBeGreaterThan(20);
+  expect(preludePositions.kalander.left).toBeGreaterThan(68);
+  expect(preludePositions.kalander.bottom).toBeGreaterThan(15);
+  expect(preludePositions.bernyce.width).toBeGreaterThanOrEqual(100);
+  expect(preludePositions.kalander.width).toBeGreaterThanOrEqual(100);
+  expect(preludePositions.cedric.width).toBeGreaterThanOrEqual(60);
   await page.evaluate(()=>YGDRIA_HUMAN_FINALE.run('victory',{speed:.02}));
   await expect(page.locator('.human-final-scene')).toBeVisible();
-  const finalPositions=await page.evaluate(()=>Object.fromEntries(['bernyce','kalander','cedric'].map(id=>{
-    const style=getComputedStyle(document.querySelector(`.human-final-scene .finale-${id}`));
-    return [id,{left:style.left,bottom:style.bottom,width:style.width}];
-  })));
+  const finalPositions=await page.evaluate(()=>{
+    const arena=document.querySelector('#arena').getBoundingClientRect();
+    const measure=id=>{
+      const el=document.querySelector(`.human-final-scene .finale-${id}`);
+      const r=el.getBoundingClientRect();
+      return {left:Math.round((r.left-arena.left)/arena.width*1000)/10,bottom:Math.round((arena.bottom-r.bottom)/arena.height*1000)/10,width:Math.round(r.width)};
+    };
+    return {bernyce:measure('bernyce'),kalander:measure('kalander'),cedric:measure('cedric')};
+  });
   expect(finalPositions).toEqual(preludePositions);
+  const finaleScaleAudit=await page.evaluate(()=>Object.fromEntries(['bernyce','kalander','cedric','julius'].map(id=>{
+    const variant=id==='julius'?'original':'fallen';
+    const el=document.querySelector(`.human-final-scene [data-finale-actor="${id}-${variant}"]`);
+    return [id,Math.round(el?.getBoundingClientRect().width||0)];
+  })));
+  expect(finaleScaleAudit.bernyce).toBeGreaterThanOrEqual(100);
+  expect(finaleScaleAudit.kalander).toBeGreaterThanOrEqual(100);
+  expect(finaleScaleAudit.cedric).toBeGreaterThanOrEqual(60);
+  expect(finaleScaleAudit.julius).toBeGreaterThanOrEqual(90);
   await page.waitForTimeout(180);
   await expect(page.locator('.finale-shadow')).toHaveClass(/dissolving/);
   await expect(page.locator('.human-final-shadow-strike')).toHaveCount(3);
@@ -2288,7 +2317,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.34');
+  expect(registration.caches).toContain('12r-v11.0.35');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2448,7 +2477,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.34');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.35');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 
