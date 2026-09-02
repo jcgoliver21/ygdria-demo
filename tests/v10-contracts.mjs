@@ -9,7 +9,6 @@ const game=read('game-v10.js');
 const css=read('styles-v10.css');
 const config=read('v10-config.js');
 const animations=read('v10-animations.js');
-const mapEffects=read('map-effects-v1.js');
 const lore=read('humanos-lore-v10.js');
 const syncLore=read('tools/sync-humanos-lore.mjs');
 const sw=read('sw.js');
@@ -21,14 +20,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.47/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.47/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.47/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.47/);
-  assert.match(html,/map-effects-v1\.js\?v=1\.0\.0/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.47/);
-  assert.match(config,/version:'v11\.0\.47'/);
-  assert.match(sw,/12r-v11\.0\.47/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.41/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.41/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.41/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.41/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.41/);
+  assert.match(config,/version:'v11\.0\.41'/);
+  assert.match(sw,/12r-v11\.0\.41/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -141,8 +139,8 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.47/);
-  for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','map-effects-v1.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
+  assert.match(sw,/12r-v11\.0\.41/);
+  for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
   assert.match(game,/navigator\.serviceWorker\.register\('\.\/sw\.js'/);
@@ -505,34 +503,22 @@ check('IDs do HTML são únicos',()=>{
 });
 
 check('mapa vertical preserva geografia e expande somente o oceano lateral',()=>{
-  assert.match(game,/\{id:'raio',\s+x:18, y:11,\s+subtitulo:'Cordilheira do Raio Eterno'\}/);
-  assert.match(game,/\{id:'humanos',\s+x:50, y:31\.5, unlocked:true,\s+subtitulo:'Terra dos Reguladores de Ygdria'\}/);
-  assert.match(game,/\{id:'agua',\s+x:50, y:56\.5,\s+subtitulo:'Lago de Ygdria'\}/);
-  assert.match(game,/\{id:'luz',\s+x:50, y:82\.5,\s+subtitulo:'Guardiões da Luz de Ygdria'\}/);
+  assert.match(game,/\{id:'raio',\s+x:18, y:11\}/);
+  assert.match(game,/\{id:'humanos',\s+x:50, y:31\.5, unlocked:true\}/);
+  assert.match(game,/\{id:'agua',\s+x:50, y:56\.5\}/);
+  assert.match(game,/\{id:'luz',\s+x:50, y:82\.5\}/);
   assert.match(game,/canvas\.innerHTML='<div class="map-art" aria-label="Mapa de Ygdria"><\/div>'/);
   assert.match(game,/art\.appendChild\(pin\)/);
-  for(const subtitle of ['Cordilheira do Raio Eterno','Terra da Vastidão Sombria','Terras Geladas de Artyka','Ilhas Flutuantes de Lafésia','Terras Longínquas da Tristeza','Terra dos Reguladores de Ygdria','O Lendário Vulcão do Rei Dragão','Floresta Primordial de Virídia','Lago de Ygdria','Montanhas de Kalegar','Guardiões da Luz de Ygdria','O Grande Deserto de Meriady']){
-    assert.match(game,new RegExp(subtitle),`subtítulo ausente: ${subtitle}`);
-  }
-  assert.match(game,/class=\"realm-subtitle\"/);
-  assert.match(css,/ygdria-mobile-hd-v5\.webp/);
+  assert.match(css,/ygdria-mobile-v4\.png/);
   assert.match(css,/ygdria-ocean-extension-v3\.png/);
   assert.match(css,/\.map-art::after\{[\s\S]*?content:'YGDRIA'/);
-  assert.match(css,/\.ygdria-map-fx\{[\s\S]*?pointer-events:none/);
-  for(const realm of ['raio','sombras','gelo','vento','humanos','chuvas','fogo','agua','natureza','terra','luz','areia']){
-    assert.match(mapEffects,new RegExp(`['\"]${realm}['\"]`),`efeito do reino ${realm} ausente`);
-  }
-  assert.match(mapEffects,/prefers-reduced-motion: reduce/);
-  assert.match(mapEffects,/new ResizeObserver\(resize\)/);
-  assert.match(mapEffects,/window\.__YGDRIA_MAP_FX/);
-  assert.ok(fs.existsSync(path.join(root,'assets','map','ygdria-mobile-hd-v5.png')),'master 4K do mapa ausente');
-  assert.ok(fs.existsSync(path.join(root,'assets','map','ygdria-mobile-hd-v5.webp')),'arte 4K de produção ausente');
+  assert.ok(fs.existsSync(path.join(root,'assets','map','ygdria-mobile-v4.png')),'arte vertical do mapa ausente');
   assert.ok(fs.existsSync(path.join(root,'assets','map','ygdria-ocean-extension-v3.png')),'oceano lateral ausente');
 });
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.47');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.41');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
@@ -560,18 +546,6 @@ check('motor v10 cobre e conecta seis movimentos',()=>{
   assert.match(game,/ACTIVE\.forEach\(heroIdx=>playHeroAction\(heroIdx,'victory'\)\)/);
   assert.match(game,/playHeroDefeatPoses\(\)/);
   assert.match(animations,/YGDRIA_V10_ANIMATIONS/);
-});
-
-check('esferas joia são padrão e há retorno persistente ao modelo simples',()=>{
-  assert.match(html,/id="boardOrbStyleGroup"/);
-  assert.match(html,/data-board-orb-style="jewel"/);
-  assert.match(html,/data-board-orb-style="simple"/);
-  assert.match(game,/const BOARD_ORB_STYLE_STORAGE='12r_board_orb_style_v3'/);
-  assert.match(game,/function setBoardOrbStyle\(style,/);
-  assert.match(game,/button\[data-board-orb-style\]/);
-  assert.match(game,/12r_board_orb_style/);
-  assert.match(css,/\.board \.orb:not\(\.power-colorbomb\)\{/);
-  assert.match(css,/body\[data-board-orb-style="simple"\] \.board \.orb/);
 });
 
 check('magias humanas usam VFX próprios em três etapas',()=>{

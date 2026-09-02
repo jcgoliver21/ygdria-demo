@@ -2777,25 +2777,15 @@ input, textarea, .save-code{ user-select:text; -webkit-user-select:text; }
   overflow:hidden;
   border:2px solid rgba(231,191,83,.94);
   border-radius:22px;
-  background:url('assets/map/ygdria-mobile-hd-v5.webp') center/100% 100% no-repeat;
+  background:url('assets/map/ygdria-mobile-v4.png') center/100% 100% no-repeat;
   box-shadow:0 0 38px rgba(0,0,0,.72),0 0 20px rgba(232,189,74,.24);
-}
-.ygdria-map-fx{
-  position:absolute;
-  inset:0;
-  z-index:2;
-  display:block;
-  width:100%;
-  height:100%;
-  border-radius:inherit;
-  pointer-events:none;
 }
 .map-art::after{
   content:'YGDRIA';
   position:absolute;
   left:50%;
   bottom:7px;
-  z-index:4;
+  z-index:2;
   transform:translateX(-50%);
   padding:2px 14px 3px;
   border-top:1px solid rgba(255,224,138,.72);
@@ -2815,20 +2805,7 @@ input, textarea, .save-code{ user-select:text; -webkit-user-select:text; }
   text-align:center;
   text-shadow:0 1px 3px #000,0 0 6px #000;
 }
-.realm-subtitle{
-  display:block;
-  max-width:clamp(86px,20cqw,190px);
-  color:#f1ddb2;
-  font:500 clamp(6px,1.05cqw,11px)/1.1 Georgia,serif;
-  letter-spacing:.01em;
-  text-align:center;
-  white-space:nowrap;
-  text-shadow:0 1px 3px #000,0 0 6px #000;
-}
-.map-art .realm-pin{ z-index:5; }
-@media (prefers-reduced-motion:reduce){
-  .ygdria-map-fx{ opacity:.78; }
-}
+.map-art .realm-pin{ z-index:3; }
 @media (max-width:600px){
   .map-art{ border-radius:18px; }
   .map-art::after{ bottom:5px; }
@@ -4341,36 +4318,3 @@ body.game-active .battle-row::before{
 @keyframes consumableRing{0%{opacity:0;transform:translate(-50%,-50%) scale(.12)}16%{opacity:.9}100%{opacity:0;transform:translate(-50%,-50%) scale(7)}}@keyframes consumableParticle{0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}25%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + (var(--i) - 10)*2px),calc(-50% - 74px)) scale(1.15)}}@keyframes sakuraConsumable{0%{opacity:0;transform:translate(-50%,20px) rotate(0)}20%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + (var(--i) - 12)*5px),85px) rotate(210deg)}}@keyframes swordConsumable{0%{opacity:0;transform:translate(-50%,30px) rotate(42deg) scaleY(.2)}22%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + (var(--i) - 5)*16px),-70px) rotate(42deg) scaleY(1.2)}}@keyframes eternityConsumable{0%{opacity:0;transform:translate(-50%,-50%) scale(.1)}22%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(7)}}
 @media (max-width:520px){.battle-inventory-dock{top:max(66px,calc(env(safe-area-inset-top) + 56px));width:min(270px,calc(100vw - 14px))}.nightmare-turn-timer{font-size:7px;padding:3px 5px}.human-hud-icon svg{width:14px;height:14px}}
 @media (prefers-reduced-motion:reduce){.human-hud-icon::after,.nightmare-turn-timer.urgent,.consumable-vfx *{animation:none!important}.consumable-vfx{opacity:.45}}
-
-/* v11.0.46 · Esferas originais do tabuleiro, anteriores ao desenvolvimento
-   dos estilos Joia e Cristal. */
-.board .orb:not(.power-colorbomb){
-  border-radius:46% 54% 50% 50% / 44% 46% 54% 56%;transform:rotate(45deg)!important;overflow:hidden;
-  background:
-    radial-gradient(circle at 31% 24%,rgba(255,255,255,.96) 0 5%,transparent 12%),
-    conic-gradient(from 18deg at 50% 52%,var(--orb-light),var(--orb),var(--orb-dark),var(--orb-light),var(--orb),var(--orb-dark),var(--orb-light))!important;
-  border:1px solid color-mix(in srgb,var(--orb-light,#fff) 42%,transparent)!important;
-  box-shadow:inset 0 0 0 2px rgba(255,255,255,.34),inset -7px -9px 12px rgba(0,0,0,.48),0 3px 7px rgba(0,0,0,.72),0 0 8px color-mix(in srgb,var(--orb) 62%,transparent)!important;
-}
-.board .orb:not(.power-colorbomb)::before{
-  top:10%;left:16%;width:54%;height:17%;border-radius:50%;
-  background:linear-gradient(90deg,rgba(255,255,255,.94),rgba(255,255,255,.18));filter:blur(.6px);opacity:1;
-}
-.board .orb:not(.power-striped):not(.power-wrapped):not(.power-colorbomb)::after{
-  inset:14%;width:auto;height:auto;border-radius:38%;border:1px solid rgba(255,255,255,.24);
-  background:linear-gradient(135deg,transparent 47%,rgba(255,255,255,.2) 49% 51%,transparent 53%);filter:none;box-shadow:none;
-}
-.board .orb-icon{transform:rotate(-45deg)!important;width:44%!important;height:44%!important;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.7));}
-.board .orb.power-striped,.board .orb.power-wrapped{box-shadow:inset 0 0 0 2px rgba(255,255,255,.34),inset -7px -9px 12px rgba(0,0,0,.48),0 3px 7px rgba(0,0,0,.72),0 0 8px color-mix(in srgb,var(--orb) 62%,transparent)!important;}
-.board .gem.selected .orb:not(.power-colorbomb){transform:rotate(45deg) scale(1.12)!important;filter:none;}
-
-body[data-board-orb-style="simple"] .board .orb:not(.power-colorbomb){
-  border-radius:50%!important;transform:none!important;
-  background:radial-gradient(circle at 31% 25%,var(--orb-light,#fff) 0%,var(--orb,#888) 45%,var(--orb-dark,#222) 100%)!important;
-  border:1px solid color-mix(in srgb,var(--orb-light,#fff) 42%,transparent)!important;
-  box-shadow:inset -5px -7px 10px rgba(0,0,0,.5),inset 4px 5px 8px rgba(255,255,255,.4),0 3px 5px rgba(0,0,0,.55)!important;
-}
-body[data-board-orb-style="simple"] .board .orb:not(.power-colorbomb)::before{top:14%;left:20%;width:38%;height:26%;background:rgba(255,255,255,.85);border-radius:50%;filter:blur(1.5px);}
-body[data-board-orb-style="simple"] .board .orb:not(.power-striped):not(.power-wrapped):not(.power-colorbomb)::after{inset:auto;bottom:10%;right:14%;width:26%;height:18%;border:0;background:rgba(255,255,255,.18);border-radius:50%;filter:blur(2px);box-shadow:none;}
-body[data-board-orb-style="simple"] .board .orb-icon{width:43%!important;height:43%!important;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.7));}
-body[data-board-orb-style="simple"] .board .gem.selected .orb:not(.power-colorbomb){transform:scale(1.14)!important;}

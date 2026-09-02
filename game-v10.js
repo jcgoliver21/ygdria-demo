@@ -712,24 +712,6 @@ let graphicsQuality = V10.quality?.values?.includes(localStorage.getItem('12r_qu
 let highContrast = localStorage.getItem('12r_high_contrast') === '1';
 let largeText = localStorage.getItem('12r_large_text') === '1';
 let reduceFlashes = localStorage.getItem('12r_reduce_flashes') === '1';
-const BOARD_ORB_STYLE_STORAGE='12r_board_orb_style_v3';
-let boardOrbStyle=localStorage.getItem(BOARD_ORB_STYLE_STORAGE)==='jewel'?'jewel':'simple';
-function normalizeBoardOrbStyle(style){ return style==='simple'?'simple':'jewel'; }
-function syncBoardOrbStyleControls(){
-  document.body.dataset.boardOrbStyle=boardOrbStyle;
-  document.querySelectorAll('button[data-board-orb-style]').forEach(button=>{
-    const selected=button.dataset.boardOrbStyle===boardOrbStyle;
-    button.classList.toggle('active',selected);
-    button.setAttribute('aria-pressed',String(selected));
-  });
-}
-function setBoardOrbStyle(style,{persist=true}={}){
-  boardOrbStyle=normalizeBoardOrbStyle(style);
-  if(persist) localStorage.setItem(BOARD_ORB_STYLE_STORAGE,boardOrbStyle);
-  syncBoardOrbStyleControls();
-  return boardOrbStyle;
-}
-syncBoardOrbStyleControls();
 let masterBus = null;
 let musicBus = null;
 let sfxBus = null;
@@ -5430,7 +5412,6 @@ const STATIC_I18N=[
   ["#optLanguageLabel","Idioma / Language","Language / Idioma","Idioma / Language"],
   ["#optProgressLabel","Progresso","Progress","Progreso"],
   ["#optQualityLabel","Qualidade gráfica","Graphics quality","Calidad gráfica"],
-  ["#optBoardSphereLabel","Esferas do tabuleiro","Board spheres","Esferas del tablero"],
   ["#optContrastLabel","Alto contraste","High contrast","Alto contraste"],
   ["#optLargeTextLabel","Texto maior","Larger text","Texto más grande"],
   ["#optFlashesLabel","Reduzir flashes","Reduce flashes","Reducir destellos"],
@@ -5438,8 +5419,6 @@ const STATIC_I18N=[
   ["#qualitySelect option[value=\"high\"]","Alta","High","Alta"],
   ["#qualitySelect option[value=\"medium\"]","Média","Medium","Media"],
   ["#qualitySelect option[value=\"economy\"]","Econômica","Economy","Económica"],
-  ["#boardOrbStyleGroup [data-board-orb-style=\"jewel\"]","Joia","Jewel","Joya"],
-  ["#boardOrbStyleGroup [data-board-orb-style=\"simple\"]","Simples","Simple","Simple"],
   ["#diffGroup [data-diff=\"facil\"]","Fácil","Easy","Fácil"],
   ["#diffGroup [data-diff=\"normal\"]","Normal","Normal","Normal"],
   ["#diffGroup [data-diff=\"dificil\"]","Difícil","Hard","Difícil"],
@@ -5890,7 +5869,7 @@ const SAVE_EXPORT_EXACT_KEYS=new Set([
   '12r_difficulty','12r_fase_best','12r_fase_time','12r_favs','12r_firstwin','12r_formation',
   '12r_haptics','12r_high_contrast','12r_inv','12r_lang','12r_lang_set','12r_large_text',
   '12r_lastteam','12r_motion','12r_music_volume','12r_muted','12r_particles','12r_stage_music_volume',
-  '12r_profile','12r_pxp','12r_quality','12r_quests','12r_reduce_flashes','12r_save','12r_board_orb_style',
+  '12r_profile','12r_pxp','12r_quality','12r_quests','12r_reduce_flashes','12r_save',
   '12r_seen','12r_sfx_volume','12r_shake','12r_stars','12r_teams','12r_tower_best',
   '12r_tower_month','12r_tutorial','12r_tutorial_seen','12r_unlocked','12r_viz',
   '12r_viz_defaults','12r_volume','12r_world_humanos','12r_xp'
@@ -5965,7 +5944,6 @@ function validateImportedSaveEntry(key,value){
   if(key==='12r_difficulty'&&!['facil','normal','dificil','pesadelo'].includes(value)) throw new Error(`${key}: dificuldade inválida`);
   if(key==='12r_motion'&&!['reduced','full'].includes(value)) throw new Error(`${key}: movimento inválido`);
   if(key==='12r_quality'&&!['auto','high','medium','economy'].includes(value)) throw new Error(`${key}: qualidade inválida`);
-  if(key===BOARD_ORB_STYLE_STORAGE&&!['jewel','simple'].includes(value)) throw new Error(`${key}: estilo de esfera inválido`);
   if(key==='12r_formation'){
     const number=Number(value);
     if(!Number.isInteger(number)||number<0||number>=HERO_FORMATIONS.length) throw new Error(`${key}: formação inválida`);
@@ -9026,7 +9004,6 @@ function applySettings(){
   document.getElementById('highContrastToggle').checked=highContrast;
   document.getElementById('largeTextToggle').checked=largeText;
   document.getElementById('reduceFlashesToggle').checked=reduceFlashes;
-  syncBoardOrbStyleControls();
   const muteButton=document.getElementById('muteBtn');
   if(muteButton) muteButton.textContent=musicMuted?'🔇':'🔊';
   syncArenaFireworks();
@@ -9096,7 +9073,7 @@ document.getElementById('autoActivesToggle')?.addEventListener('click',()=>{
   sfxSelect();
 });
 document.getElementById('restoreDefaultsBtn')?.addEventListener('click',()=>{
-  ['12r_shake','12r_autoactives','12r_difficulty','12r_lang_set','12r_volume','12r_music_volume','12r_stage_music_volume','12r_sfx_volume','12r_quality','12r_high_contrast','12r_large_text','12r_reduce_flashes','12r_motion','12r_particles','12r_haptics','12r_tactical_grid',BOARD_ORB_STYLE_STORAGE].forEach(k=>localStorage.removeItem(k));
+  ['12r_shake','12r_autoactives','12r_difficulty','12r_lang_set','12r_volume','12r_music_volume','12r_stage_music_volume','12r_sfx_volume','12r_quality','12r_high_contrast','12r_large_text','12r_reduce_flashes','12r_motion','12r_particles','12r_haptics','12r_tactical_grid'].forEach(k=>localStorage.removeItem(k));
   setBattleStatus?.(T('Padrões restaurados. Recarregue o jogo.','Defaults restored. Reload the game.','Valores restaurados. Recarga el juego.'));
   location.reload();
 });
@@ -9199,7 +9176,6 @@ document.getElementById('musicVolumeRange').addEventListener('input',e=>{ musicV
 document.getElementById('stageMusicVolumeRange').addEventListener('input',e=>{ stageMusicVolume=Number(e.target.value)/100; localStorage.setItem('12r_stage_music_volume',String(e.target.value)); refreshLicensedMusicGain(); });
 document.getElementById('sfxVolumeRange').addEventListener('input',e=>{ sfxVolume=Number(e.target.value)/100; localStorage.setItem('12r_sfx_volume',String(e.target.value)); sfxSelect(); });
 document.getElementById('qualitySelect').addEventListener('change',e=>{ graphicsQuality=e.target.value; localStorage.setItem('12r_quality',graphicsQuality); applySettings(); });
-document.querySelectorAll('button[data-board-orb-style]').forEach(button=>button.addEventListener('click',()=>{ setBoardOrbStyle(button.dataset.boardOrbStyle); sfxSelect(); }));
 document.getElementById('reduceMotionToggle').addEventListener('change',e=>{
   reducedMotion=e.target.checked;
   localStorage.setItem('12r_motion',reducedMotion?'reduced':'full');
@@ -9812,18 +9788,18 @@ function storySelectionAllowed(idx){
 /* v9.1 · Mapa de Ygdria: 12 reinos traçados; só o Reino dos Humanos liberado */
 /* Pins à ESQUERDA do nome pintado de cada reino, centrados na altura do título */
 const REALMS_MAP=[
-  {id:'raio',     x:18, y:11,   subtitulo:'Cordilheira do Raio Eterno'},
-  {id:'sombras',  x:50, y:10.5, subtitulo:'Terra da Vastidão Sombria'},
-  {id:'gelo',     x:82, y:11,   subtitulo:'Terras Geladas de Artyka'},
-  {id:'vento',    x:15, y:29,   subtitulo:'Ilhas Flutuantes de Lafésia'},
-  {id:'chuvas',   x:85, y:30,   subtitulo:'Terras Longínquas da Tristeza'},
-  {id:'humanos',  x:50, y:31.5, unlocked:true, subtitulo:'Terra dos Reguladores de Ygdria'},
-  {id:'fogo',     x:15, y:53,   subtitulo:'O Lendário Vulcão do Rei Dragão'},
-  {id:'natureza', x:85, y:54,   subtitulo:'Floresta Primordial de Virídia'},
-  {id:'agua',     x:50, y:56.5, subtitulo:'Lago de Ygdria'},
-  {id:'terra',    x:15, y:76,   subtitulo:'Montanhas de Kalegar'},
-  {id:'areia',    x:85, y:77,   subtitulo:'O Grande Deserto de Meriady'},
-  {id:'luz',      x:50, y:82.5, subtitulo:'Guardiões da Luz de Ygdria'}
+  {id:'raio',     x:18, y:11},
+  {id:'sombras',  x:50, y:10.5},
+  {id:'gelo',     x:82, y:11},
+  {id:'vento',    x:15, y:29},
+  {id:'chuvas',   x:85, y:30},
+  {id:'humanos',  x:50, y:31.5, unlocked:true},
+  {id:'fogo',     x:15, y:53},
+  {id:'natureza', x:85, y:54},
+  {id:'agua',     x:50, y:56.5},
+  {id:'terra',    x:15, y:76},
+  {id:'areia',    x:85, y:77},
+  {id:'luz',      x:50, y:82.5}
 ];
 let mapMode='world'; /* 'world' = jogar fases · 'boss' = escolher reino do Desafio dos Chefes */
 function realmComplete(id){
@@ -9861,7 +9837,6 @@ function renderMapScreen(){
     pin.innerHTML=`
       <span class="pin-gem"><svg viewBox="0 0 24 24">${KINGDOM_ICON[r.id]||''}</svg>${liberado?(mapMode==='boss'?'<i class="pin-crown">🏆</i>':''):'<i class="pin-lock">🔒</i>'}</span>
       <span class="realm-name">${escapeHtml(L(k.reino))}</span>
-      <span class="realm-subtitle">${escapeHtml(r.subtitulo||'')}</span>
       ${liberado?`<span class="pin-label">${mapMode==='boss'?T('DESAFIAR','CHALLENGE','DESAFIAR'):T('ENTRAR','ENTER','ENTRAR')}</span>`:''}`;
     pin.addEventListener('click',()=>{
       if(!liberado){

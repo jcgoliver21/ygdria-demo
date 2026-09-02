@@ -1,13 +1,13 @@
 {
   "name": "ygdria-demo",
-  "version": "11.0.47",
+  "version": "11.0.41",
   "private": true,
   "type": "module",
   "scripts": {
     "sync:lore": "node tools/sync-humanos-lore.mjs",
     "check:lore": "node tools/sync-humanos-lore.mjs --check",
     "pretest": "pnpm run sync:lore",
-    "check": "node --check humanos-lore-v10.js && node --check game-v10.js && node --check v10-config.js && node --check v10-animations.js && node --check map-effects-v1.js && node --check sw.js && pnpm run check:lore",
+    "check": "node --check humanos-lore-v10.js && node --check game-v10.js && node --check v10-config.js && node --check v10-animations.js && node --check sw.js && pnpm run check:lore",
     "test:contracts": "node tests/v10-contracts.mjs",
     "test:assets": "node tests/v10-assets.mjs",
     "test:e2e": "playwright test --config=playwright.config.mjs",
