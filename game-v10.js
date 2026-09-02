@@ -712,8 +712,8 @@ let graphicsQuality = V10.quality?.values?.includes(localStorage.getItem('12r_qu
 let highContrast = localStorage.getItem('12r_high_contrast') === '1';
 let largeText = localStorage.getItem('12r_large_text') === '1';
 let reduceFlashes = localStorage.getItem('12r_reduce_flashes') === '1';
-const BOARD_ORB_STYLE_STORAGE='12r_board_orb_style';
-let boardOrbStyle=localStorage.getItem(BOARD_ORB_STYLE_STORAGE)==='simple'?'simple':'jewel';
+const BOARD_ORB_STYLE_STORAGE='12r_board_orb_style_v2';
+let boardOrbStyle=localStorage.getItem(BOARD_ORB_STYLE_STORAGE)==='jewel'?'jewel':'simple';
 function normalizeBoardOrbStyle(style){ return style==='simple'?'simple':'jewel'; }
 function syncBoardOrbStyleControls(){
   document.body.dataset.boardOrbStyle=boardOrbStyle;
