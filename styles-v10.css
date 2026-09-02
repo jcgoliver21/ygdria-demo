@@ -4318,3 +4318,40 @@ body.game-active .battle-row::before{
 @keyframes consumableRing{0%{opacity:0;transform:translate(-50%,-50%) scale(.12)}16%{opacity:.9}100%{opacity:0;transform:translate(-50%,-50%) scale(7)}}@keyframes consumableParticle{0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}25%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + (var(--i) - 10)*2px),calc(-50% - 74px)) scale(1.15)}}@keyframes sakuraConsumable{0%{opacity:0;transform:translate(-50%,20px) rotate(0)}20%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + (var(--i) - 12)*5px),85px) rotate(210deg)}}@keyframes swordConsumable{0%{opacity:0;transform:translate(-50%,30px) rotate(42deg) scaleY(.2)}22%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + (var(--i) - 5)*16px),-70px) rotate(42deg) scaleY(1.2)}}@keyframes eternityConsumable{0%{opacity:0;transform:translate(-50%,-50%) scale(.1)}22%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(7)}}
 @media (max-width:520px){.battle-inventory-dock{top:max(66px,calc(env(safe-area-inset-top) + 56px));width:min(270px,calc(100vw - 14px))}.nightmare-turn-timer{font-size:7px;padding:3px 5px}.human-hud-icon svg{width:14px;height:14px}}
 @media (prefers-reduced-motion:reduce){.human-hud-icon::after,.nightmare-turn-timer.urgent,.consumable-vfx *{animation:none!important}.consumable-vfx{opacity:.45}}
+
+/* v11.0.42 · Esferas em joia: material lapidado, brilho interno e símbolo
+   preservado. "Simples" restaura uma esfera circular sóbria, sem trocar as
+   cores, a grade ou a leitura dos power-ups. O acabamento fica restrito ao
+   tabuleiro para não alterar ícones, cards ou HUD. */
+.board .orb:not(.power-colorbomb){
+  border-radius:50%!important; transform:none; overflow:hidden;
+  background:
+    radial-gradient(ellipse at 31% 21%,rgba(255,255,255,.98) 0 4%,rgba(255,255,255,.48) 7%,transparent 18%),
+    radial-gradient(circle at 50% 54%,transparent 0 36%,rgba(255,255,255,.10) 38% 41%,transparent 43%),
+    conic-gradient(from 25deg at 50% 53%,var(--orb-light,#fff) 0 10%,var(--orb,#888) 18% 34%,var(--orb-dark,#222) 47% 59%,var(--orb,#888) 73% 87%,var(--orb-light,#fff) 100%)!important;
+  border:1px solid color-mix(in srgb,var(--orb-light,#fff) 72%,#fff 28%)!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.31),inset -8px -10px 13px rgba(0,0,0,.52),inset 5px 5px 10px rgba(255,255,255,.24),0 3px 8px rgba(0,0,0,.76),0 0 9px color-mix(in srgb,var(--orb,#888) 62%,transparent)!important;
+}
+.board .orb:not(.power-colorbomb)::before{
+  top:10%;left:15%;width:53%;height:18%;border-radius:50%;
+  background:linear-gradient(100deg,rgba(255,255,255,.98),rgba(255,255,255,.18));filter:blur(.7px);
+}
+.board .orb:not(.power-striped):not(.power-wrapped):not(.power-colorbomb)::after{
+  inset:14%;width:auto;height:auto;border-radius:50%;border:1px solid rgba(255,255,255,.24);
+  background:linear-gradient(135deg,transparent 44%,rgba(255,255,255,.22) 48% 51%,transparent 55%);filter:none;
+  box-shadow:inset 0 0 9px rgba(255,255,255,.09);
+}
+.board .orb-icon{transform:none!important;width:45%!important;height:45%!important;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.78)) drop-shadow(0 0 3px rgba(255,255,255,.14));}
+.board .orb.power-striped,.board .orb.power-wrapped{box-shadow:inset 0 0 0 1px rgba(255,255,255,.36),inset -8px -10px 13px rgba(0,0,0,.52),0 3px 8px rgba(0,0,0,.76),0 0 12px color-mix(in srgb,var(--orb,#888) 72%,transparent)!important;}
+.board .gem.selected .orb:not(.power-colorbomb){transform:scale(1.11)!important;}
+
+body[data-board-orb-style="simple"] .board .orb:not(.power-colorbomb){
+  border-radius:50%!important;transform:none!important;
+  background:radial-gradient(circle at 31% 25%,var(--orb-light,#fff) 0%,var(--orb,#888) 45%,var(--orb-dark,#222) 100%)!important;
+  border:1px solid color-mix(in srgb,var(--orb-light,#fff) 42%,transparent)!important;
+  box-shadow:inset -5px -7px 10px rgba(0,0,0,.5),inset 4px 5px 8px rgba(255,255,255,.4),0 3px 5px rgba(0,0,0,.55)!important;
+}
+body[data-board-orb-style="simple"] .board .orb:not(.power-colorbomb)::before{top:14%;left:20%;width:38%;height:26%;background:rgba(255,255,255,.85);border-radius:50%;filter:blur(1.5px);}
+body[data-board-orb-style="simple"] .board .orb:not(.power-striped):not(.power-wrapped):not(.power-colorbomb)::after{inset:auto;bottom:10%;right:14%;width:26%;height:18%;border:0;background:rgba(255,255,255,.18);border-radius:50%;filter:blur(2px);box-shadow:none;}
+body[data-board-orb-style="simple"] .board .orb-icon{width:43%!important;height:43%!important;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.7));}
+body[data-board-orb-style="simple"] .board .gem.selected .orb:not(.power-colorbomb){transform:scale(1.14)!important;}

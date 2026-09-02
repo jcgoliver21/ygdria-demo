@@ -1934,6 +1934,23 @@ test('volumes NaN são saneados e cliques de áudio não geram pageerror',async(
   expect(errors).toEqual([]);
 });
 
+test('esferas Joia são padrão, alternam para Simples e persistem na preferência',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.locator('#optionsBtn').click();
+  await expect(page.locator('body')).toHaveAttribute('data-board-orb-style','jewel');
+  await expect(page.locator('#boardOrbStyleGroup [data-board-orb-style="jewel"]')).toHaveAttribute('aria-pressed','true');
+  await page.locator('#boardOrbStyleGroup [data-board-orb-style="simple"]').click();
+  await expect(page.locator('body')).toHaveAttribute('data-board-orb-style','simple');
+  await expect.poll(()=>page.evaluate(()=>localStorage.getItem('12r_board_orb_style'))).toBe('simple');
+  await page.locator('#boardOrbStyleGroup [data-board-orb-style="jewel"]').click();
+  await expect(page.locator('body')).toHaveAttribute('data-board-orb-style','jewel');
+  await expect.poll(()=>page.evaluate(()=>localStorage.getItem('12r_board_orb_style'))).toBe('jewel');
+  await page.reload({waitUntil:'networkidle'});
+  await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
+  await expect(page.locator('body')).toHaveAttribute('data-board-orb-style','jewel');
+  expect(errors).toEqual([]);
+});
+
 test('consumíveis Humanos têm efeitos próprios, removem corrupção e condicionam reinício',async({page})=>{
   const errors=await boot(page,'flow');
   await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
@@ -2441,7 +2458,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.41');
+  expect(registration.caches).toContain('12r-v11.0.42');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2601,7 +2618,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.41');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.42');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 
