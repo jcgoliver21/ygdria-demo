@@ -2740,6 +2740,76 @@ input, textarea, .save-code{ user-select:text; -webkit-user-select:text; }
 /* (8) mapa: altura dinâmica correta (dvh) e canvas nunca maior que o viewport */
 .map-canvas{ width:min(96vw, calc(100dvh - 140px), 900px); }
 @supports (align-items:safe center){ .map-viewport{ align-items:safe center; } }
+
+/* v11.0.38 · mapa vertical canônico: mantém a geografia, o desktop só amplia o oceano lateral. */
+.map-viewport{
+  position:relative;
+  isolation:isolate;
+  container-type:size;
+  overflow:hidden;
+  align-items:center;
+  padding:0;
+  background:#041625;
+}
+.map-canvas{
+  position:relative;
+  width:100cqw;
+  height:100cqh;
+  max-width:none;
+  max-height:none;
+  flex:none;
+  overflow:hidden;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  background:
+    linear-gradient(rgba(2,17,31,.36),rgba(2,17,31,.36)),
+    url('assets/map/ygdria-ocean-extension-v3.png') center/cover no-repeat,
+    #06233b;
+}
+.map-art{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:min(100cqw,calc(100cqh * .563));
+  height:min(100cqh,calc(100cqw / .563));
+  transform:translate(-50%,-50%);
+  overflow:hidden;
+  border:2px solid rgba(231,191,83,.94);
+  border-radius:22px;
+  background:url('assets/map/ygdria-mobile-v4.png') center/100% 100% no-repeat;
+  box-shadow:0 0 38px rgba(0,0,0,.72),0 0 20px rgba(232,189,74,.24);
+}
+.map-art::after{
+  content:'YGDRIA';
+  position:absolute;
+  left:50%;
+  bottom:7px;
+  z-index:2;
+  transform:translateX(-50%);
+  padding:2px 14px 3px;
+  border-top:1px solid rgba(255,224,138,.72);
+  color:#ffe5a2;
+  font:700 clamp(15px,2.6cqw,27px)/1 Georgia,serif;
+  letter-spacing:.2em;
+  text-shadow:0 2px 5px #000,0 0 12px rgba(0,0,0,.85);
+  background:linear-gradient(90deg,transparent,rgba(6,12,22,.72) 18%,rgba(6,12,22,.72) 82%,transparent);
+  pointer-events:none;
+}
+.realm-name{
+  display:block;
+  max-width:clamp(62px,14cqw,135px);
+  color:#fff2cf;
+  font:700 clamp(7px,1.5cqw,13px)/1.05 Georgia,serif;
+  letter-spacing:.03em;
+  text-align:center;
+  text-shadow:0 1px 3px #000,0 0 6px #000;
+}
+.map-art .realm-pin{ z-index:3; }
+@media (max-width:600px){
+  .map-art{ border-radius:18px; }
+  .map-art::after{ bottom:5px; }
+}
 /* (11) halo dos reinos bloqueados proporcional ao mapa */
 .realm-pin.locked::before{ width:min(200px,50%); height:min(150px,38%); }
 /* (13) botões de pausa/som/ferramentas com área de toque digna */
@@ -4220,3 +4290,31 @@ body.game-active .battle-row::before{
 @keyframes realmConjurationAuraFrames{0%,8%{opacity:0;transform:translate(-50%,-57%) scale(.84);-webkit-mask-position:0 0;mask-position:0 0}12%,24%{opacity:.94;-webkit-mask-position:50% 0;mask-position:50% 0}25%,39%{-webkit-mask-position:100% 0;mask-position:100% 0}40%,55%{-webkit-mask-position:0 100%;mask-position:0 100%;transform:translate(-50%,-57%) scale(1)}56%,73%{opacity:.98;-webkit-mask-position:50% 100%;mask-position:50% 100%;transform:translate(-50%,-57%) scale(1.035)}74%,100%{opacity:0;-webkit-mask-position:100% 100%;mask-position:100% 100%;transform:translate(-50%,-57%) scale(.94)}}
 @keyframes humanConjurationAuraFrames{0%,8%{opacity:0;transform:translate(-50%,-57%) scale(.84);background-position:0 0}12%,24%{opacity:.94;background-position:50% 0}25%,39%{background-position:100% 0}40%,55%{background-position:0 100%;transform:translate(-50%,-57%) scale(1)}56%,73%{opacity:.98;background-position:50% 100%;transform:translate(-50%,-57%) scale(1.035)}74%,100%{opacity:0;background-position:100% 100%;transform:translate(-50%,-57%) scale(.94)}}
 @keyframes humanConjurationAuraFramesJulius{0%,8%{opacity:0;transform:translate(-50%,-59%) scale(.82);background-position:0 0}12%,24%{opacity:.96;background-position:50% 0}25%,39%{background-position:100% 0}40%,55%{background-position:0 100%;transform:translate(-50%,-59%) scale(1.02)}56%,73%{opacity:1;background-position:50% 100%;transform:translate(-50%,-59%) scale(1.07)}74%,100%{opacity:0;background-position:100% 100%;transform:translate(-50%,-59%) scale(.96)}}
+
+/* v11.0.40 · Consumíveis Humanos: ícones vetoriais, VFXs e mochila não modal. */
+.human-hud-icon{position:relative;overflow:hidden;border-color:rgba(255,171,202,.68)!important;background:linear-gradient(145deg,rgba(69,21,48,.92),rgba(17,8,24,.96))!important}
+.human-hud-icon svg{width:15px;height:15px;fill:none;stroke:#ffe4ae;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 3px rgba(255,104,172,.7));position:relative;z-index:1}
+.human-hud-icon::after{content:"";position:absolute;inset:-45%;background:linear-gradient(115deg,transparent 42%,rgba(255,202,225,.5) 49%,transparent 57%);transform:translateX(-95%) rotate(12deg);animation:humanHudRune 4.8s ease-in-out infinite}
+@keyframes humanHudRune{0%,66%{transform:translateX(-95%) rotate(12deg);opacity:0}70%{opacity:1}88%,100%{transform:translateX(105%) rotate(12deg);opacity:0}}
+.nightmare-turn-timer{font:800 8px/1 system-ui,sans-serif;letter-spacing:.6px;color:#ffd9df;padding:4px 6px;border-radius:999px;border:1px solid rgba(255,100,130,.56);background:rgba(61,5,23,.68);box-shadow:0 0 8px rgba(245,64,120,.2)}
+.nightmare-turn-timer.urgent{animation:nightmareUrgent .58s ease-in-out infinite alternate;color:#fff4c2;box-shadow:0 0 12px rgba(255,72,118,.75)}
+@keyframes nightmareUrgent{to{transform:scale(1.08);filter:brightness(1.35)}}
+.battle-inventory-dock{position:fixed;z-index:510;right:max(8px,env(safe-area-inset-right));top:max(74px,calc(env(safe-area-inset-top) + 64px));width:min(286px,calc(100vw - 18px));max-height:min(58dvh,460px);display:none;pointer-events:none}
+.battle-inventory-dock.show{display:block;pointer-events:auto;animation:inventoryDockIn .2s ease-out both}
+.battle-inventory-surface{max-height:inherit;overflow:auto;padding:8px;border:1px solid rgba(255,183,208,.58);border-radius:15px;background:linear-gradient(145deg,rgba(37,12,31,.78),rgba(10,6,18,.72));backdrop-filter:blur(13px) saturate(1.12);box-shadow:0 12px 32px rgba(0,0,0,.42),inset 0 0 24px rgba(255,103,166,.08)}
+.battle-inventory-dock .dialog-header{background:transparent!important;padding-bottom:5px}.battle-inventory-dock .dialog-title{font-size:14px;margin:0;color:#ffe9b8}.battle-inventory-dock .ghost-btn{min-height:28px;min-width:56px;font-size:9px}.battle-inventory-dock .shop-list{display:grid;gap:5px}.battle-inventory-dock .shop-item{padding:6px;background:rgba(11,6,18,.3)}
+@keyframes inventoryDockIn{from{opacity:0;transform:translateY(-7px) scale(.98)}to{opacity:1;transform:none}}
+.human-item-icon{width:34px!important;height:34px!important;display:grid!important;place-items:center;border:1px solid rgba(255,190,212,.55);border-radius:10px;background:radial-gradient(circle at 35% 25%,rgba(255,230,197,.3),rgba(132,32,83,.14) 48%,rgba(8,4,15,.58));overflow:hidden}
+.human-item-icon svg{width:25px;height:25px;fill:none;stroke:#ffe5aa;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 4px rgba(255,87,162,.72))}.item-regulacao-bernyce svg,.item-flor-cerejeira svg{stroke:#ff9bc5}.item-espadas-lendarias svg{stroke:#ffe6a9}.item-bencao-eternidade svg{stroke:#f9d5ff}
+.rarity-comum{color:#d6d9e7!important}.rarity-incomum{color:#9de7c7!important}.rarity-raro{color:#9bcfff!important}.rarity-lendário{color:#ffd46c!important;text-shadow:0 0 7px rgba(255,193,89,.55)}
+.battle-tool.item-enabled,.menu-btn.item-enabled{border-color:rgba(255,194,105,.85)!important;box-shadow:0 0 12px rgba(255,180,85,.22),inset 0 0 12px rgba(255,181,103,.1)!important}.battle-tool:disabled,.menu-btn:disabled,.reset-btn:disabled{opacity:.42!important;filter:saturate(.4);cursor:not-allowed}
+.consumable-vfx{position:absolute;inset:0;z-index:75;pointer-events:none;overflow:hidden;mix-blend-mode:screen}.consumable-vfx::before,.consumable-vfx::after{content:"";position:absolute;left:50%;top:54%;width:18%;aspect-ratio:1;border:2px solid #ffe4a8;border-radius:50%;transform:translate(-50%,-50%) scale(.15);opacity:0;animation:consumableRing 1.02s cubic-bezier(.14,.7,.2,1) both}.consumable-vfx::after{animation-delay:.12s;border-color:#ff86bc}
+.consumable-vfx i{position:absolute;left:var(--x);top:var(--y);width:7px;height:7px;display:block;background:#ffe7ac;box-shadow:0 0 8px currentColor;transform:translate(-50%,-50%);opacity:0;animation:consumableParticle .82s ease-out calc(var(--i)*-27ms) both}
+.consumable-vfx-regulacao{background:radial-gradient(ellipse at 50% 54%,rgba(120,225,255,.13),transparent 42%)}.consumable-vfx-regulacao i{color:#9ddcff;clip-path:polygon(50% 0,100% 45%,50% 100%,0 45%)}
+.consumable-vfx-regulacao-bernyce{background:radial-gradient(ellipse at 50% 54%,rgba(255,117,183,.21),transparent 47%)}.consumable-vfx-regulacao-bernyce i{color:#ff9dca;clip-path:polygon(50% 0,100% 45%,75% 100%,25% 100%,0 45%)}.consumable-vfx-regulacao-bernyce::before{border-color:#ff9dca}
+.consumable-vfx-flor-cerejeira{background:radial-gradient(ellipse at 38% 76%,rgba(255,153,198,.26),transparent 37%)}.consumable-vfx-flor-cerejeira i{color:#ffb6d6;border-radius:60% 40% 60% 40%;width:11px;height:8px;animation-name:sakuraConsumable}
+.consumable-vfx-espadas-lendarias{background:linear-gradient(115deg,transparent 42%,rgba(255,225,146,.14) 50%,transparent 58%)}.consumable-vfx-espadas-lendarias i{color:#ffe19a;width:2px;height:50px;transform:translate(-50%,-50%) rotate(42deg);animation-name:swordConsumable}
+.consumable-vfx-bencao-eternidade{background:radial-gradient(ellipse at 50% 52%,rgba(255,211,255,.22),transparent 44%)}.consumable-vfx-bencao-eternidade i{color:#f0c8ff;border-radius:50%;animation-name:eternityConsumable}
+@keyframes consumableRing{0%{opacity:0;transform:translate(-50%,-50%) scale(.12)}16%{opacity:.9}100%{opacity:0;transform:translate(-50%,-50%) scale(7)}}@keyframes consumableParticle{0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}25%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + (var(--i) - 10)*2px),calc(-50% - 74px)) scale(1.15)}}@keyframes sakuraConsumable{0%{opacity:0;transform:translate(-50%,20px) rotate(0)}20%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + (var(--i) - 12)*5px),85px) rotate(210deg)}}@keyframes swordConsumable{0%{opacity:0;transform:translate(-50%,30px) rotate(42deg) scaleY(.2)}22%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + (var(--i) - 5)*16px),-70px) rotate(42deg) scaleY(1.2)}}@keyframes eternityConsumable{0%{opacity:0;transform:translate(-50%,-50%) scale(.1)}22%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(7)}}
+@media (max-width:520px){.battle-inventory-dock{top:max(66px,calc(env(safe-area-inset-top) + 56px));width:min(270px,calc(100vw - 14px))}.nightmare-turn-timer{font-size:7px;padding:3px 5px}.human-hud-icon svg{width:14px;height:14px}}
+@media (prefers-reduced-motion:reduce){.human-hud-icon::after,.nightmare-turn-timer.urgent,.consumable-vfx *{animation:none!important}.consumable-vfx{opacity:.45}}

@@ -20,13 +20,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.39/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.39/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.39/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.39/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.39/);
-  assert.match(config,/version:'v11\.0\.39'/);
-  assert.match(sw,/12r-v11\.0\.39/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.40/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.40/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.40/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.40/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.40/);
+  assert.match(config,/version:'v11\.0\.40'/);
+  assert.match(sw,/12r-v11\.0\.40/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -43,6 +43,20 @@ check('Bomba de Cor usa a Estrela do Prisma aprovada',()=>{
   assert.match(game,/Dupla Estrela de Ygdria/);
   assert.match(game,/Estrela de Ygdria \+ Listrado/);
   assert.match(game,/Estrela de Ygdria \+ Embrulhado/);
+});
+
+check('consumíveis humanos substituem o catálogo anterior e têm VFX próprios',()=>{
+  for(const id of ['regulacao','regulacao-bernyce','flor-cerejeira','espadas-lendarias','bencao-eternidade']) assert.ok(game.includes(`id:'${id}'`),`consumível ${id} ausente`);
+  assert.match(game,/const INVENTORY_CATALOG_VERSION='humanos-consumables-v1'/);
+  assert.match(game,/function clearCorruptedBoardPieces\(\)/);
+  assert.match(game,/function playConsumableVfx\(id\)/);
+  assert.match(game,/function hasEternityBlessing\(\)/);
+  assert.match(game,/function startNightmareTurnWindow\(\)/);
+  for(const selector of ['.consumable-vfx-regulacao','.consumable-vfx-regulacao-bernyce','.consumable-vfx-flor-cerejeira','.consumable-vfx-espadas-lendarias','.consumable-vfx-bencao-eternidade']) assert.ok(css.includes(selector),`${selector} ausente`);
+  assert.match(html,/id="mochilaBtn"/);
+  assert.match(html,/id="formationQuickBtn"/);
+  assert.match(html,/id="fullscreenQuickBtn"/);
+  assert.match(html,/id="nightmareTurnTimer"/);
 });
 
 check('janela pública de teste libera as fases sem adulterar o save e usa o trono pintado',()=>{
@@ -119,7 +133,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.39/);
+  assert.match(sw,/12r-v11\.0\.40/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -482,9 +496,23 @@ check('IDs do HTML são únicos',()=>{
   assert.deepEqual([...new Set(duplicates)],[]);
 });
 
+check('mapa vertical preserva geografia e expande somente o oceano lateral',()=>{
+  assert.match(game,/\{id:'raio',\s+x:18, y:11\}/);
+  assert.match(game,/\{id:'humanos',\s+x:50, y:31\.5, unlocked:true\}/);
+  assert.match(game,/\{id:'agua',\s+x:50, y:56\.5\}/);
+  assert.match(game,/\{id:'luz',\s+x:50, y:82\.5\}/);
+  assert.match(game,/canvas\.innerHTML='<div class="map-art" aria-label="Mapa de Ygdria"><\/div>'/);
+  assert.match(game,/art\.appendChild\(pin\)/);
+  assert.match(css,/ygdria-mobile-v4\.png/);
+  assert.match(css,/ygdria-ocean-extension-v3\.png/);
+  assert.match(css,/\.map-art::after\{[\s\S]*?content:'YGDRIA'/);
+  assert.ok(fs.existsSync(path.join(root,'assets','map','ygdria-mobile-v4.png')),'arte vertical do mapa ausente');
+  assert.ok(fs.existsSync(path.join(root,'assets','map','ygdria-ocean-extension-v3.png')),'oceano lateral ausente');
+});
+
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.39');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.40');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);

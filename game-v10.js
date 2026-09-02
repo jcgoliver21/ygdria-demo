@@ -1208,6 +1208,9 @@ function setBattlePhase(next){
   document.body.dataset.battlePhase=next;
   const chip=document.getElementById('battlePhaseChip');
   if(chip) chip.textContent=phaseLabel(next);
+  if(next==='paused') pauseNightmareTurnWindow();
+  else if(next==='idle'&&!gamePaused) startNightmareTurnWindow();
+  else if(next!=='idle') stopNightmareTurnWindow();
 }
 function canAcceptPlayerInput(){
   const blockingUi=document.getElementById('storyLayer')?.classList.contains('show')||
@@ -1262,6 +1265,7 @@ function resumeCombatTimers(){
 }
 function resetCombatSchedule(){
   combatEpoch++;
+  stopNightmareTurnWindow();
   combatTimers.forEach(record=>{
     record.cancelled=true;
     if(record.timerId) clearTimeout(record.timerId);
@@ -1272,6 +1276,7 @@ function resetCombatSchedule(){
   combatWaits.forEach(cancel=>cancel());
   combatWaits.clear();
   document.querySelectorAll('.energy-orb').forEach(orb=>orb.remove());
+  document.querySelectorAll('.consumable-vfx').forEach(effect=>effect.remove());
   document.querySelectorAll('#specialFxLayer [data-fx]').forEach(effect=>releaseCombatFx(effect));
 }
 
@@ -1502,7 +1507,7 @@ function renderAchievements(){
 
 /* v9.2 · Loja de consumíveis: 20 itens (uso 'auto' = disparam sozinhos ao entrar na
    batalha; uso 'batalha' = ficam na MOCHILA 🎒 e o jogador decide a hora de usar). */
-const SHOP_ITEMS=[
+const LEGACY_SHOP_ITEMS=[
   {id:'shuffle', uso:'auto', nome:'Embaralhamento Extra', desc:'+1 embaralhamento real na próxima batalha.', preco:60, icon:'⟳', en:{nome:'Extra Shuffle', desc:'+1 royal shuffle in your next battle.'}, es:{nome:'Barajado Extra', desc:'+1 barajado real en tu próxima batalla.'}},
   {id:'blessing', uso:'auto', nome:'Bênção dos Reinos', desc:'Comece a próxima batalha com 2 power-ups no tabuleiro.', preco:110, icon:'💠', en:{nome:'Realm Blessing', desc:'Start your next battle with 2 power-ups on the board.'}, es:{nome:'Bendición de los Reinos', desc:'Comienza tu próxima batalla con 2 potenciadores en el tablero.'}},
   {id:'banquete', uso:'auto', nome:'Banquete Real', desc:'+20% de HP máximo do grupo durante toda a próxima batalha.', preco:150, icon:'🍗', en:{nome:'Royal Feast', desc:'+20% max party HP for the whole next battle.'}, es:{nome:'Banquete Real', desc:'+20% de vida máxima del grupo durante toda la próxima batalla.'}},
@@ -1524,6 +1529,22 @@ const SHOP_ITEMS=[
   {id:'dado', uso:'batalha', nome:'Dado do Destino', desc:'Re-embaralha o tabuleiro e garante 1 power-up novo.', preco:80, icon:'🎲', en:{nome:'Die of Fate', desc:'Reshuffles the board and grants 1 new power-up.'}, es:{nome:'Dado del Destino', desc:'Rebaraja el tablero y garantiza 1 power-up nuevo.'}},
   {id:'olho', uso:'batalha', nome:'Olho de Barion', desc:'Revela as gemas ocultas e aponta a melhor jogada.', preco:70, icon:'🧿', en:{nome:'Eye of Barion', desc:'Reveals hidden gems and points out the best move.'}, es:{nome:'Ojo de Barion', desc:'Revela las gemas ocultas y señala la mejor jugada.'}}
 ];
+/* v11.0.40 · Catálogo inaugural de consumíveis do Reino dos Humanos. */
+const SHOP_ITEMS=[
+  {id:'regulacao',uso:'batalha',raridade:'Comum',nome:'Cristais de Regulação',desc:'Embaralha o tabuleiro e cria 1 power-up aleatório.',preco:90,icon:'crystal',en:{nome:'Regulation Crystals',desc:'Shuffles the board and creates 1 random power-up.'},es:{nome:'Cristales de Regulación',desc:'Baraja el tablero y crea 1 potenciador aleatorio.'}},
+  {id:'regulacao-bernyce',uso:'batalha',raridade:'Raro',nome:'Cristal de Regulação de Bernyce',desc:'Embaralha, cria 2 power-ups — incluindo 1 Estrela de Ygdria — e remove peças corrompidas.',preco:220,icon:'bernyce-crystal',en:{nome:'Bernyce Regulation Crystal',desc:'Shuffles, creates 2 power-ups — including 1 Star of Ygdria — and removes corrupted pieces.'},es:{nome:'Cristal de Regulación de Bernyce',desc:'Baraja, crea 2 potenciadores — incluida 1 Estrella de Ygdria — y elimina piezas corrompidas.'}},
+  {id:'flor-cerejeira',uso:'batalha',raridade:'Incomum',nome:'Flor de Cerejeira',desc:'Recupera 25% da vida máxima do grupo.',preco:120,icon:'sakura',en:{nome:'Cherry Blossom',desc:'Restores 25% of the party maximum HP.'},es:{nome:'Flor de Cerezo',desc:'Restaura el 25% de la vida máxima del grupo.'}},
+  {id:'espadas-lendarias',uso:'batalha',raridade:'Raro',nome:'Espadas do Guerreiro Lendário',desc:'Aumenta o ataque do grupo em 50% até o fim da missão.',preco:180,icon:'swords',en:{nome:'Legendary Warrior Swords',desc:'Raises party attack by 50% until the mission ends.'},es:{nome:'Espadas del Guerrero Legendario',desc:'Aumenta el ataque del grupo un 50% hasta el final de la misión.'}},
+  {id:'bencao-eternidade',uso:'passiva',raridade:'Lendário',nome:'Benção da Eternidade',desc:'Mantida na mochila, libera um único reinício de missão ao ser consumida.',preco:300,icon:'eternity',en:{nome:'Blessing of Eternity',desc:'While in the bag, enables one mission restart when consumed.'},es:{nome:'Bendición de la Eternidad',desc:'En la mochila, habilita un reinicio de misión al consumirse.'}}
+];
+const INVENTORY_CATALOG_VERSION='humanos-consumables-v1';
+const HUMAN_ITEM_ICONS={
+  crystal:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l5.8 6.1L12 21.2 6.2 8.9z"/><path d="M6.2 8.9H17.8M12 2.8v18.4"/></svg>',
+  'bernyce-crystal':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.4l5.5 5.7-1.1 8.3L12 21.5l-4.4-5.1-1.1-8.3z"/><path d="M12 5.2c-2.8-2.8-6.1 1.6 0 5.3 6.1-3.7 2.8-8.1 0-5.3z"/></svg>',
+  sakura:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 11.8c-4.5-7.4-10.2-3.1-5.5.6-6.2 1.8-2.1 8.2 2.4 3.9.5 6.5 7.7 5.6 6.5.3 5.2 3.9 8.1-2.1 2.7-4 4.9-4.4-1.6-8-6-0.8z"/><circle cx="12" cy="12" r="1.6"/></svg>',
+  swords:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.7l10.8 10.8M7.3 3.2l-3.6.5.5 3.6M19 3.7L8.2 14.5M16.7 3.2l3.6.5-.5 3.6M9.2 15.5l-3.4 4.8M14.8 15.5l3.4 4.8"/></svg>',
+  eternity:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.3 5.5c2.2 0 3.8 1.8 4.7 4.1.9-2.3 2.5-4.1 4.7-4.1 4.6 0 4.6 7.1 0 7.1-2.2 0-3.8-1.8-4.7-4.1-.9 2.3-2.5 4.1-4.7 4.1-4.6 0-4.6-7.1 0-7.1z"/><path d="M6 18.8h12"/></svg>'
+};
 function sanitizeInventory(value){
   const clean={};
   if(!value||typeof value!=='object'||Array.isArray(value)) return clean;
@@ -1536,6 +1557,11 @@ function sanitizeInventory(value){
 }
 let inventory={};
 try{ inventory=sanitizeInventory(JSON.parse(localStorage.getItem('12r_inv')||'{}')); }catch(e){ inventory={}; }
+if(localStorage.getItem('12r_inventory_catalog')!==INVENTORY_CATALOG_VERSION){
+  inventory={};
+  localStorage.setItem('12r_inventory_catalog',INVENTORY_CATALOG_VERSION);
+  localStorage.setItem('12r_inv','{}');
+}
 function saveInventory(){ localStorage.setItem('12r_inv',JSON.stringify(inventory)); }
 function buyItem(id){
   const item=SHOP_ITEMS.find(i=>i.id===id); if(!item) return;
@@ -1545,6 +1571,7 @@ function buyItem(id){
   saveInventory();
   renderShop();
   renderMochila();
+  updateRestartControls();
   sfxSelect();
 }
 function renderShop(){
@@ -1552,15 +1579,15 @@ function renderShop(){
   updateCoinBadge();
   list.innerHTML=SHOP_ITEMS.map(i=>`
     <div class="shop-item">
-      <span class="shop-icon">${i.icon}</span>
-      <div class="shop-copy"><b>${L(i.nome)}</b> <small class="shop-uso">${i.uso==='auto'?T('automático','automatic','automático'):T('usar na batalha','use in battle','usar en batalla')}</small><small>${L(i.desc)}</small><small class="shop-owned">${T('Na mochila','In bag','En la mochila')}: ${inventory[i.id]||0}</small></div>
+      <span class="shop-icon human-item-icon item-${i.id}">${HUMAN_ITEM_ICONS[i.icon]||''}</span>
+      <div class="shop-copy"><b>${L(i.nome)}</b> <small class="shop-uso rarity-${i.raridade.toLowerCase()}">${i.raridade}</small><small>${L(i.desc)}</small><small class="shop-owned">${T('Na mochila','In bag','En la mochila')}: ${inventory[i.id]||0}</small></div>
       <button class="overlay-btn shop-buy" data-item="${i.id}" ${coins<i.preco?'disabled':''}>🪙 ${i.preco}</button>
     </div>`).join('');
   list.querySelectorAll('.shop-buy').forEach(b=>b.addEventListener('click',()=>buyItem(b.dataset.item)));
 }
-/* Estados dos itens 'auto' da batalha atual */
+/* Estados transitórios dos consumíveis da missão atual. */
 let eternalReviveCharges=0, coinDoubleRun=false, xpDoubleRun=false, bannerAtkRun=1;
-let battleConsumablesDone=false; /* itens auto só na 1ª missão da batalha */
+let battleConsumablesDone=false;
 function resetBattleRunConsumables(){
   eternalReviveCharges=0;
   coinDoubleRun=false;
@@ -1570,17 +1597,8 @@ function resetBattleRunConsumables(){
 }
 function coinsVitoria(n){ return coinDoubleRun ? n*2 : n; }
 function consumeInventoryOnBattleStart(){
-  if(battleConsumablesDone) return;
   battleConsumablesDone=true;
-  const used=[];
-  if(inventory.shuffle>0){ inventory.shuffle--; royalShuffles++; used.push(T('Embaralhamento Extra','Extra Shuffle','Barajado Extra')); }
-  if(inventory.blessing>0){ inventory.blessing--; spawnRandomPowerUps(2); used.push(T('Bênção dos Reinos','Realm Blessing','Bendición de los Reinos')); }
-  if(inventory.banquete>0){ inventory.banquete--; const extra=Math.round(PLAYER_MAX_HP*0.2); PLAYER_MAX_HP+=extra; playerHP+=extra; updatePlayerHP(); used.push(T('Banquete Real (+20% HP)','Royal Feast (+20% HP)','Banquete Real (+20% HP)')); }
-  if(inventory.lagrima>0){ inventory.lagrima--; eternalReviveCharges=1; used.push(T('Lágrima da Eternidade','Tear of Eternity','Lágrima de la Eternidad')); }
-  if(inventory.amuleto>0){ inventory.amuleto--; coinDoubleRun=true; used.push(T('Amuleto da Fortuna','Fortune Amulet','Amuleto de la Fortuna')); }
-  if(inventory.pergaminho>0){ inventory.pergaminho--; xpDoubleRun=true; used.push(T('Pergaminho do Sábio','Sage Scroll','Pergamino del Sabio')); }
-  if(inventory.estandarte>0){ inventory.estandarte--; bannerAtkRun=1.10; used.push(T('Estandarte da Coroa','Crown Banner','Estandarte de la Corona')); }
-  if(used.length){ saveInventory(); setBattleStatus(T(`Itens usados: ${used.join(' · ')}.`,`Items used: ${used.join(' · ')}.`,`Objetos usados: ${used.join(' · ')}.`),'support'); }
+  updateRestartControls();
 }
 /* 🎒 MOCHILA: itens de batalha usáveis na hora + acesso à loja */
 function renderMochila(){
@@ -1594,57 +1612,64 @@ function renderMochila(){
   }
   list.innerHTML=itens.map(i=>`
     <div class="shop-item">
-      <span class="shop-icon">${i.icon}</span>
+      <span class="shop-icon human-item-icon item-${i.id}">${HUMAN_ITEM_ICONS[i.icon]||''}</span>
       <div class="shop-copy"><b>${L(i.nome)} ×${inventory[i.id]}</b><small>${L(i.desc)}</small></div>
       ${i.uso==='batalha'
         ? `<button class="overlay-btn shop-buy" data-usar="${i.id}" ${emBatalha?'':'disabled'}>${T('Usar','Use','Usar')}</button>`
-        : `<small class="shop-uso">${T('automático','automatic','automático')}</small>`}
+        : `<small class="shop-uso">${T('libera reinício','enables restart','habilita reinicio')}</small>`}
     </div>`).join('');
   list.querySelectorAll('[data-usar]').forEach(b=>b.addEventListener('click',()=>usarItemBatalha(b.dataset.usar)));
 }
-function usarItemBatalha(id){
+function clearCorruptedBoardPieces(){
+  let removed=0;
+  Object.entries(obstaclesMeta).forEach(([key,meta])=>{
+    if(meta.type!=='sombra') return;
+    const [r,c]=key.split('_').map(Number);
+    delete obstaclesMeta[key]; delete powerUps[key]; board[r][c]=-1; removed++;
+  });
+  if(removed){ boardRenderCache=null; collapseAndRefill(); renderBoard(); }
+  return removed;
+}
+function playConsumableVfx(id){
+  if(reducedMotion||!arenaEl) return;
+  const fx=document.createElement('div');
+  fx.className=`consumable-vfx consumable-vfx-${id}`;
+  fx.setAttribute('aria-hidden','true');
+  const particles=id==='regulacao'?18:id==='regulacao-bernyce'?28:id==='flor-cerejeira'?24:10;
+  for(let i=0;i<particles;i++){
+    const particle=document.createElement('i');
+    particle.style.setProperty('--i',String(i));
+    particle.style.setProperty('--x',`${16+(i*47)%70}%`);
+    particle.style.setProperty('--y',`${18+(i*29)%64}%`);
+    fx.appendChild(particle);
+  }
+  arenaEl.appendChild(fx);
+  scheduleCombat(()=>fx.remove(),1100);
+}
+async function usarItemBatalha(id){
   if(!document.body.classList.contains('game-active')||(inventory[id]||0)<=0){ sfxInvalid(); return; }
-  if(playerHP<=0){ sfxInvalid(); return; }
+  if(playerHP<=0||busy||battlePhase!=='idle'){ sfxInvalid(); return; }
   const nomeItem=L(SHOP_ITEMS.find(i=>i.id===id)?.nome||id);
+  const epoch=combatEpoch;
+  busy=true;
+  setBattlePhase('resolving');
+  playConsumableVfx(id);
+  await wait(420);
+  if(epoch!==combatEpoch) return;
   switch(id){
-    case 'potion': healPlayer(600); break;
-    case 'vela': healPlayer(300); break;
-    case 'oleo': addBuff(1.25,5); break;
-    case 'barreira': addShield(500); break;
-    case 'ampulheta': addStun(1); break;
-    case 'martelo': {
-      let quebrou=false;
-      Object.keys(obstaclesMeta).forEach(key=>{
-        if(obstaclesMeta[key].type==='sombra') return;
-        const [r,c]=key.split('_').map(Number);
-        delete obstaclesMeta[key]; board[r][c]=-1; quebrou=true;
-      });
-      if(quebrou){ boardRenderCache=null; collapseAndRefill(); renderBoard(); }
-      break;
-    }
-    case 'prisma': spawnRandomColorBombs(1); break;
-    case 'marca': enemyVulnerableTurns=Math.max(enemyVulnerableTurns,3); enemyVulnerableMult=Math.max(enemyVulnerableMult,1.3); renderStatusTray(); break;
-    case 'elixir': grantTeamEnergy(25); break;
-    case 'vassoura': {
-      hiddenGems={};
-      Object.keys(obstaclesMeta).forEach(key=>{
-        if(obstaclesMeta[key].type!=='copas') return;
-        const [r,c]=key.split('_').map(Number);
-        delete obstaclesMeta[key]; board[r][c]=-1;
-      });
-      boardRenderCache=null; collapseAndRefill(); renderBoard();
-      break;
-    }
-    case 'bomba': applyDamageToAllEnemies(300,null); break;
-    case 'dado': shuffleBoard(false); spawnRandomPowerUps(1); break;
-    case 'olho': hiddenGems={}; boardRenderCache=null; renderBoard(); showBestMoveHint(); break;
+    case 'regulacao': shuffleBoard(false); spawnRandomPowerUps(1); break;
+    case 'regulacao-bernyce': shuffleBoard(false); spawnRandomColorBombs(1); spawnRandomPowerUps(1); clearCorruptedBoardPieces(); break;
+    case 'flor-cerejeira': healPlayer(Math.round(PLAYER_MAX_HP*0.25)); break;
+    case 'espadas-lendarias': bannerAtkRun=1.5; renderStatusTray(); break;
     default: return;
   }
   inventory[id]--; saveInventory();
   sfxPassive();
   setBattleStatus('🎒 '+nomeItem+' '+T('usado!','used!','¡usado!'),'support');
   renderMochila();
-  if(finishRoomIfCleared(T('O item derrotou o último inimigo!','The item defeated the last enemy!','¡El objeto derrotó al último enemigo!'))) return;
+  updateRestartControls();
+  busy=false;
+  setBattlePhase('idle');
 }
 
 /* F2-1 · Desafio dos Chefes: os 8 chefes-Carta em sequência, escalando */
@@ -2094,6 +2119,7 @@ function organizeMissionHeader(){
   const metrics=document.querySelector('.mission-metrics');
   const actions=document.querySelector('.mission-actions');
   const timer=document.getElementById('missionTimer');
+  const nightmare=document.getElementById('nightmareTurnTimer');
   const phase=document.getElementById('battlePhaseChip');
   if(top&&metrics&&actions&&timer&&phase){
     metrics.appendChild(actions);
@@ -2104,6 +2130,7 @@ function organizeMissionHeader(){
       clockGroup.className='mission-clock-group';
     }
     clockGroup.append(phase,timer);
+    if(nightmare) clockGroup.append(nightmare);
     top.appendChild(clockGroup);
   }
 }
@@ -3012,7 +3039,10 @@ function spawnFinaleShadowStrike(scene,source,target,options={}){
   /* A cena fica abaixo dos retratos vivos para preservar a composição; o
      projétil, porém, precisa cruzar POR CIMA do corpo que atinge. */
   (arenaEl||scene).appendChild(fx);
-  scheduleCombat(()=>fx.remove(),duration+140);
+  /* Mantém o nó somente durante a cauda técnica da animação: ele já está
+     invisível pelo keyframe, mas isso evita que uma queda de quadros corte
+     o VFX antes de o impacto ser apresentado. */
+  scheduleCombat(()=>fx.remove(),duration+700);
   return true;
 }
 /* Este valor pertence à linha do tempo, não à duração visual do CSS. `at()`
@@ -4883,6 +4913,45 @@ function faseTime(){ try{ return sanitizeNumericRecord(JSON.parse(localStorage.g
 /* ⏱ Timer da missão: conta desde a entrada; é a base oficial para habilidades de
    tempo real e para os rankings de missão/fase. */
 let missionStartMs=0, missionTimerInt=null, missionPausedAt=0, missionPausedTotal=0;
+let nightmareTurnTimerInt=null, nightmareTurnDeadline=0, nightmareTurnRemainingMs=30000;
+function renderNightmareTurnTimer(){
+  const el=document.getElementById('nightmareTurnTimer');
+  if(!el) return;
+  const active=difficulty==='pesadelo'&&document.body.classList.contains('game-active');
+  el.hidden=!active;
+  if(!active) return;
+  const seconds=Math.max(0,Math.ceil(nightmareTurnRemainingMs/1000));
+  el.textContent=`⏳ ${String(seconds).padStart(2,'0')}`;
+  el.classList.toggle('urgent',seconds<=7);
+}
+function stopNightmareTurnWindow(preserve=false){
+  clearInterval(nightmareTurnTimerInt); nightmareTurnTimerInt=null;
+  if(!preserve){ nightmareTurnDeadline=0; nightmareTurnRemainingMs=30000; }
+  renderNightmareTurnTimer();
+}
+function pauseNightmareTurnWindow(){
+  if(!nightmareTurnDeadline) return;
+  nightmareTurnRemainingMs=Math.max(0,nightmareTurnDeadline-Date.now());
+  clearInterval(nightmareTurnTimerInt); nightmareTurnTimerInt=null;
+  renderNightmareTurnTimer();
+}
+function startNightmareTurnWindow(){
+  if(difficulty!=='pesadelo'||!document.body.classList.contains('game-active')||stageTransitioning||playerHP<=0) return;
+  clearInterval(nightmareTurnTimerInt);
+  if(!nightmareTurnRemainingMs||nightmareTurnRemainingMs>30000) nightmareTurnRemainingMs=30000;
+  nightmareTurnDeadline=Date.now()+nightmareTurnRemainingMs;
+  const tick=()=>{
+    nightmareTurnRemainingMs=Math.max(0,nightmareTurnDeadline-Date.now());
+    renderNightmareTurnTimer();
+    if(nightmareTurnRemainingMs>0||battlePhase!=='idle'||busy||gamePaused) return;
+    stopNightmareTurnWindow();
+    busy=true;
+    setBattleStatus(T('O tempo se esgotou no Pesadelo: os inimigos retomam o turno.','Nightmare time expired: enemies take their turn.','El tiempo de Pesadilla se agotó: los enemigos retoman el turno.'),'damage');
+    enemyCounterAttack();
+  };
+  tick();
+  nightmareTurnTimerInt=setInterval(tick,200);
+}
 function missionElapsed(){
   if(!missionStartMs) return 0;
   const pausedNow=missionPausedAt?Date.now()-missionPausedAt:0;
@@ -4958,6 +5027,7 @@ function togglePhotoMode(on){
 
 function loadStage(idx){
   resetCombatSchedule();
+  bannerAtkRun=1;
   humanFinaleCinematicRunning=false;
   humanFinalePreludeRunning=false;
   humanFinalePreludeFinished=false;
@@ -5386,7 +5456,7 @@ const STATIC_I18N=[
   ["#pauseTitle","Jogo pausado","Game paused","Juego en pausa"],
   ["#resumeBtn .menu-label","Continuar batalha","Resume battle","Continuar batalla"],
   ["#pauseOptionsBtn .menu-label","Opções","Options","Opciones"],
-  ["#restartStageBtn .menu-label","Reiniciar fase","Restart stage","Reiniciar fase"],
+  ["#restartStageBtn .menu-label","Reiniciar missão","Restart mission","Reiniciar misión"],
   ["#returnMenuBtn .menu-label","Menu principal","Main menu","Menú principal"],
   ["#battleHistoryScreen .screen-eyebrow","Registro tático","Tactical log","Registro táctico"],
   ["#battleHistoryTitle","Histórico da batalha","Battle history","Historial de batalla"],
@@ -8244,6 +8314,24 @@ function restartCurrentStage(){
   loadStage(stageIndex);
 }
 
+function hasEternityBlessing(){ return (inventory['bencao-eternidade']||0)>0; }
+function updateRestartControls(){
+  const enabled=hasEternityBlessing();
+  ['resetBtn','restartTool','restartStageBtn'].forEach(id=>{
+    const button=document.getElementById(id);
+    if(!button) return;
+    button.disabled=!enabled;
+    button.classList.toggle('item-enabled',enabled);
+    button.setAttribute('aria-label',enabled
+      ? T('Reiniciar missão usando Benção da Eternidade','Restart mission using Blessing of Eternity','Reiniciar misión usando Bendición de la Eternidad')
+      : T('Reiniciar missão indisponível: requer Benção da Eternidade na mochila','Mission restart unavailable: requires Blessing of Eternity in the bag','Reinicio de misión no disponible: requiere Bendición de la Eternidad en la mochila'));
+  });
+  const pauseIcon=document.getElementById('restartStageIcon');
+  if(pauseIcon) pauseIcon.textContent=enabled?'∞':'✦';
+  const tool=document.getElementById('restartTool');
+  if(tool) tool.textContent=enabled?`∞ ${T('Reiniciar missão','Restart mission','Reiniciar misión')}`:`✦ ${T('Reiniciar missão bloqueado','Restart mission locked','Reinicio de misión bloqueado')}`;
+}
+
 function retryAfterDefeat(){
   /* Torre, Diário e Boss Rush são sequências: perder encerra a tentativa.
      O botão inicia uma nova sequência, nunca continua do andar/chefe perdido. */
@@ -8260,14 +8348,22 @@ function retryAfterDefeat(){
   restartCurrentStage();
 }
 
-function restartFromControls(){
-  /* Reiniciar antes do golpe fatal deve ter a mesma regra de uma derrota;
-     caso contrário seria possível curar a Torre ou preservar um chefe do Rush. */
-  if(towerMode||bossRushMode){ retryAfterDefeat(); return; }
+async function restartFromControls(){
+  if(!hasEternityBlessing()){
+    sfxInvalid();
+    setBattleStatus(T('Reiniciar missão requer uma Benção da Eternidade na mochila.','Restarting a mission requires a Blessing of Eternity in the bag.','Reiniciar una misión requiere una Bendición de la Eternidad en la mochila.'));
+    return;
+  }
+  inventory['bencao-eternidade']--;
+  saveInventory();
+  renderMochila();
+  updateRestartControls();
+  playConsumableVfx('bencao-eternidade');
+  setBattleStatus(T('∞ A Benção da Eternidade restaurou esta missão.','∞ The Blessing of Eternity restored this mission.','∞ La Bendición de la Eternidad restauró esta misión.'),'support');
+  await wait(420);
   restartCurrentStage();
 }
 
-document.getElementById('muteBtn').addEventListener('click', toggleMusic);
 document.getElementById('resetBtn').addEventListener('click', restartFromControls);
 document.getElementById('restartTool')?.addEventListener('click',()=>{ toggleBattleTools(false); restartFromControls(); });
 document.getElementById('retryBtn').addEventListener('click', retryAfterDefeat);
@@ -8908,7 +9004,8 @@ function applySettings(){
   document.getElementById('highContrastToggle').checked=highContrast;
   document.getElementById('largeTextToggle').checked=largeText;
   document.getElementById('reduceFlashesToggle').checked=reduceFlashes;
-  document.getElementById('muteBtn').textContent=musicMuted?'🔇':'🔊';
+  const muteButton=document.getElementById('muteBtn');
+  if(muteButton) muteButton.textContent=musicMuted?'🔇':'🔊';
   syncArenaFireworks();
 }
 
@@ -9018,6 +9115,8 @@ document.getElementById('shuffleTool').addEventListener('click',useRoyalShuffle)
 document.getElementById('gridTool').addEventListener('click',toggleTacticalGrid);
 document.getElementById('formationTool').addEventListener('click',cycleHeroFormation);
 document.getElementById('fullscreenTool').addEventListener('click',toggleGameFullscreen);
+document.getElementById('formationQuickBtn')?.addEventListener('click',cycleHeroFormation);
+document.getElementById('fullscreenQuickBtn')?.addEventListener('click',toggleGameFullscreen);
 document.getElementById('historyBtn').addEventListener('click',openBattleHistory);
 document.getElementById('copyHistoryBtn').addEventListener('click',copyBattleHistory);
 document.getElementById('clearHistoryBtn').addEventListener('click',clearBattleHistory);
@@ -9412,6 +9511,27 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
       return {coinDoubleRun,xpDoubleRun,bannerAtkRun,battleConsumablesDone};
     },
     runConsumables:()=>({coinDoubleRun,xpDoubleRun,bannerAtkRun,battleConsumablesDone}),
+    humanConsumableProbe:async()=>{
+      inventory={regulacao:1,'regulacao-bernyce':1,'flor-cerejeira':1,'espadas-lendarias':1,'bencao-eternidade':1};
+      board[0][0]=-4; obstaclesMeta[cellKey(0,0)]={type:'sombra',hits:9999};
+      playerHP=Math.round(PLAYER_MAX_HP*.4); updatePlayerHP();
+      await usarItemBatalha('regulacao');
+      const regularPower=Object.keys(powerUps).length;
+      await usarItemBatalha('regulacao-bernyce');
+      const bernycePower=Object.values(powerUps).filter(power=>power.type==='colorBomb').length;
+      const corruption=Object.values(obstaclesMeta).filter(meta=>meta.type==='sombra').length;
+      await usarItemBatalha('flor-cerejeira');
+      const healed=playerHP;
+      await usarItemBatalha('espadas-lendarias');
+      updateRestartControls();
+      return {regularPower,bernycePower,corruption,healed,maxHp:PLAYER_MAX_HP,bannerAtkRun,restartEnabled:!document.getElementById('restartStageBtn')?.disabled,remaining:{...inventory}};
+    },
+    nightmareTurnProbe:(ms=120)=>{
+      difficulty='pesadelo'; applyDifficultyUI();
+      nightmareTurnRemainingMs=ms;
+      lastEnemyAttacker=null; busy=false; setBattlePhase('idle');
+      return {deadline:nightmareTurnDeadline,remaining:nightmareTurnRemainingMs};
+    },
     boardSnapshot:()=>board.map(row=>[...row]),
     colorBombComboProbe:(kind='striped')=>{
       if(!['striped','wrapped'].includes(kind)) throw new Error('Invalid color-bomb combo kind');
@@ -9668,18 +9788,18 @@ function storySelectionAllowed(idx){
 /* v9.1 · Mapa de Ygdria: 12 reinos traçados; só o Reino dos Humanos liberado */
 /* Pins à ESQUERDA do nome pintado de cada reino, centrados na altura do título */
 const REALMS_MAP=[
-  {id:'raio',     x:17.5, y:13.5},
-  {id:'sombras',  x:39,   y:13.5},
-  {id:'gelo',     x:64.5, y:14},
-  {id:'vento',    x:5.5,  y:34},
-  {id:'chuvas',   x:71.5, y:33},
-  {id:'humanos',  x:36,   y:41.5, unlocked:true},
-  {id:'fogo',     x:5,    y:57},
-  {id:'natureza', x:72,   y:57},
-  {id:'agua',     x:36.5, y:65.5},
-  {id:'terra',    x:4.8,  y:73.5},
-  {id:'areia',    x:68.5, y:81.5},
-  {id:'luz',      x:36.5, y:83.5}
+  {id:'raio',     x:18, y:11},
+  {id:'sombras',  x:50, y:10.5},
+  {id:'gelo',     x:82, y:11},
+  {id:'vento',    x:15, y:29},
+  {id:'chuvas',   x:85, y:30},
+  {id:'humanos',  x:50, y:31.5, unlocked:true},
+  {id:'fogo',     x:15, y:53},
+  {id:'natureza', x:85, y:54},
+  {id:'agua',     x:50, y:56.5},
+  {id:'terra',    x:15, y:76},
+  {id:'areia',    x:85, y:77},
+  {id:'luz',      x:50, y:82.5}
 ];
 let mapMode='world'; /* 'world' = jogar fases · 'boss' = escolher reino do Desafio dos Chefes */
 function realmComplete(id){
@@ -9701,7 +9821,8 @@ function closeMapScreen(){ document.getElementById('mapScreen')?.classList.remov
 function renderMapScreen(){
   const canvas=document.getElementById('mapCanvas');
   if(!canvas) return;
-  canvas.innerHTML='';
+  canvas.innerHTML='<div class="map-art" aria-label="Mapa de Ygdria"></div>';
+  const art=canvas.firstElementChild;
   REALMS_MAP.forEach(r=>{
     const k=KINGDOMS.find(kk=>kk.id===r.id);
     if(!k) return;
@@ -9715,6 +9836,7 @@ function renderMapScreen(){
     pin.setAttribute('aria-label',L(k.reino)+(liberado?'':' — '+(mapMode==='boss'?T('finalize o reino para liberar','finish the realm to unlock','termina el reino para desbloquear'):T('em breve','coming soon','próximamente'))));
     pin.innerHTML=`
       <span class="pin-gem"><svg viewBox="0 0 24 24">${KINGDOM_ICON[r.id]||''}</svg>${liberado?(mapMode==='boss'?'<i class="pin-crown">🏆</i>':''):'<i class="pin-lock">🔒</i>'}</span>
+      <span class="realm-name">${escapeHtml(L(k.reino))}</span>
       ${liberado?`<span class="pin-label">${mapMode==='boss'?T('DESAFIAR','CHALLENGE','DESAFIAR'):T('ENTRAR','ENTER','ENTRAR')}</span>`:''}`;
     pin.addEventListener('click',()=>{
       if(!liberado){
@@ -9736,7 +9858,7 @@ function renderMapScreen(){
       renderWorldMap();
       openPanel('worldScreen');
     });
-    canvas.appendChild(pin);
+    art.appendChild(pin);
   });
 }
 function showMapTip(text){
@@ -9934,7 +10056,19 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
   });
   document.getElementById('mapBackBtn')?.addEventListener('click',()=>{ closeMapScreen(); sfxSelect(); });
   document.getElementById('shopBtn')?.addEventListener('click',()=>openPanel('shopScreen'));
-  document.getElementById('mochilaBtn')?.addEventListener('click',()=>{ openPanel('mochilaScreen'); sfxSelect(); });
+  document.getElementById('mochilaBtn')?.addEventListener('click',()=>{
+    const bag=document.getElementById('mochilaScreen');
+    if(!bag) return;
+    renderMochila();
+    const open=!bag.classList.contains('show');
+    bag.classList.toggle('show',open);
+    bag.setAttribute('aria-hidden',String(!open));
+    sfxSelect();
+  });
+  document.getElementById('mochilaCloseBtn')?.addEventListener('click',()=>{
+    const bag=document.getElementById('mochilaScreen');
+    bag?.classList.remove('show'); bag?.setAttribute('aria-hidden','true'); sfxSelect();
+  });
   document.getElementById('mochilaShopBtn')?.addEventListener('click',()=>{ openPanel('shopScreen'); sfxSelect(); });
   /* 👁 Visualização: nomes, superfícies do HUD e indicadores persistentes */
   const vizCycle={bottom:'top',top:'off',off:'bottom'};
@@ -10370,10 +10504,10 @@ async function runSmokeTest(){
     /* v9.2 · contratos novos */
     ok('dificuldade Difícil (4 níveis)', !!DIFFICULTY_MULTS.dificil && DIFFICULTY_MULTS.dificil.hpFactor===30 && typeof allEnemiesAttackMode==='function');
     ok('3 grandes alianças nomeadas', ALLIANCES.length===3 && ALLIANCES.every(a=>a.membros.length===4) && ALLIANCES[0].nome.includes('Lago') && ALLIANCES[1].nome.includes('Dragão') && ALLIANCES[2].nome.includes('Barion'));
-    ok('loja com 20 consumíveis', SHOP_ITEMS.length===20 && SHOP_ITEMS.filter(i=>i.uso==='batalha').length>=12 && typeof usarItemBatalha==='function');
+    ok('catálogo humano com cinco consumíveis e reinício condicionado', SHOP_ITEMS.length===5 && ['regulacao','regulacao-bernyce','flor-cerejeira','espadas-lendarias','bencao-eternidade'].every(id=>SHOP_ITEMS.some(item=>item.id===id)) && typeof usarItemBatalha==='function' && typeof updateRestartControls==='function');
     ok('login diário: ciclo de 7 dias', LOGIN_REWARDS.length===7 && LOGIN_REWARDS[6].c===80);
     ok('Torre da Eternidade: 1 personagem/andar + cenário fase 9', (()=>{ const t2=buildTowerStage(1); return t2.enemies.length===1 && t2.bgUrl==='assets/bg/humanos/fase-09.jpg' && buildTowerStage(1+KINGDOMS.length).enemies[0].hp>t2.enemies[0].hp; })());
-    ok('timer de missão + mochila em batalha', !!document.getElementById('missionTimer') && !!document.getElementById('mochilaBtn') && !!document.getElementById('mochilaScreen'));
+    ok('timer de missão, janela Pesadelo e mochila discreta estão na batalha', !!document.getElementById('missionTimer') && !!document.getElementById('nightmareTurnTimer') && !!document.getElementById('mochilaBtn') && !!document.getElementById('mochilaScreen'));
     ok('letreiro da história (7 parágrafos)', !!document.getElementById('crawlScroll') && introStoryParagraphs().length===7);
     ok('falas de entrada dos inimigos', Object.keys(ENEMY_LINES).length>=23 && typeof enemyLineFor==='function');
     ok('Lobo Raivoso encara o centro da arena', HUMANOS_ETYPES.loboRaivoso.flip===true);

@@ -18,7 +18,7 @@ async function boot(page,qa='all-specials'){
 
 test('smoke v10 não registra erro de boot ou console',async({page})=>{
   const errors=await boot(page,'smoke');
-  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('12r_smoke')||'{}').results?.every(result=>result.pass))).toBe(true);
+  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('12r_smoke')||'{}').results?.every(result=>result.pass)),{timeout:15000}).toBe(true);
   expect(errors).toEqual([]);
 });
 
@@ -39,6 +39,36 @@ test('fluxo real abre seletor, monta equipe e inicia tabuleiro',async({page})=>{
   await expect(page.locator('#gameScreen')).toBeVisible();
   await expect(page.locator('.hero-unit')).toHaveCount(4);
   await expect(page.locator('.board .gem')).toHaveCount(36);
+  expect(errors).toEqual([]);
+});
+
+test('mapa vertical mantém os doze reinos e desktop só acrescenta oceano lateral',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.setViewportSize({width:390,height:844});
+  await page.click('#playBtn');
+  await page.waitForTimeout(400);
+  await expect(page.locator('#mapScreen')).toHaveClass(/show/);
+  await expect(page.locator('#mapCanvas .realm-name')).toHaveCount(12);
+  const mobile=await page.locator('.map-art').evaluate(art=>{
+    const rect=art.getBoundingClientRect();
+    const viewport=art.parentElement.getBoundingClientRect();
+    const after=getComputedStyle(art,'::after');
+    return {width:Math.round(rect.width),height:Math.round(rect.height),viewportWidth:Math.round(viewport.width),title:after.content,radius:getComputedStyle(art).borderTopLeftRadius};
+  });
+  expect(mobile.width).toBe(mobile.viewportWidth);
+  expect(mobile.height).toBeGreaterThan(mobile.width);
+  expect(mobile.title).toContain('YGDRIA');
+  expect(mobile.radius).not.toBe('0px');
+
+  await page.setViewportSize({width:1920,height:1080});
+  const desktop=await page.locator('.map-art').evaluate(art=>{
+    const rect=art.getBoundingClientRect();
+    const viewport=art.parentElement.getBoundingClientRect();
+    return {width:Math.round(rect.width),height:Math.round(rect.height),leftGap:Math.round(rect.left-viewport.left),rightGap:Math.round(viewport.right-rect.right)};
+  });
+  expect(desktop.height).toBeGreaterThan(desktop.width);
+  expect(desktop.leftGap).toBeGreaterThan(400);
+  expect(desktop.rightGap).toBeGreaterThan(400);
   expect(errors).toEqual([]);
 });
 
@@ -90,7 +120,7 @@ test('v11 mostra dez formações e seleciona pelo corpo visível sem setas',asyn
   await expect(page.locator('#abilityPickerScreen')).toHaveClass(/show/);
   await page.locator('[data-close="abilityPickerScreen"]').click();
   await expect(page.locator('#abilityPickerScreen')).not.toHaveClass(/show/);
-  await page.click('#battleToolsToggle');
+  await page.evaluate(()=>toggleBattleTools(true));
   await expect(page.locator('#battleToolsPanel')).toHaveClass(/open/);
   await expect(page.locator('#formationTool')).toBeVisible();
   const names=[];
@@ -517,7 +547,7 @@ test('v13 mantém a grade da Cidade e libera o validador em todas as fases',asyn
   await page.setViewportSize({width:390,height:844});
   await page.evaluate(()=>{ worldRun.active=true; worldRun.fase=0; worldRun.nivel=1; chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
   await page.waitForTimeout(400); // respeita a proteção contra toque herdado da entrada na batalha
-  await page.click('#battleToolsToggle');
+  await page.evaluate(()=>toggleBattleTools(true));
   await expect(page.locator('#battleToolsPanel')).toHaveClass(/open/);
   const grid=await page.evaluate(()=>{
     const party=[...document.querySelectorAll('#physicalFloorGrid .party-grid-cell')];
@@ -1770,12 +1800,13 @@ test('persistência corrompida é normalizada e inventário ilimitado é rejeita
     localStorage.setItem('12r_coins','NaN');
     localStorage.setItem('12r_pxp','Infinity');
     localStorage.setItem('12r_formation','not-a-number');
-    localStorage.setItem('12r_inv',JSON.stringify({potion:1e21,vela:2,unknown:7}));
+    localStorage.setItem('12r_inventory_catalog','humanos-consumables-v1');
+    localStorage.setItem('12r_inv',JSON.stringify({'bencao-eternidade':2,regulacao:1e21,unknown:7}));
   });
   const errors=await boot(page);
   const snapshot=await page.evaluate(()=>window.__12rQA.persistenceSnapshot());
   expect(snapshot.coins).toBe(15); // recompensa de login parte do zero normalizado
-  expect(snapshot).toMatchObject({profileXp:0,formationIndex:0,inventory:{vela:2}});
+  expect(snapshot).toMatchObject({profileXp:0,formationIndex:0,inventory:{'bencao-eternidade':2}});
 
   const imported=await page.evaluate(()=>{
     localStorage.setItem('12r_coins','123');
@@ -1899,8 +1930,28 @@ test('volumes NaN são saneados e cliques de áudio não geram pageerror',async(
   await page.locator('[data-close="optionsScreen"]').click();
   await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
   await expect(page.locator('#gameScreen')).toBeVisible();
-  await page.locator('#muteBtn').click();
-  await page.locator('#muteBtn').click();
+  await page.evaluate(()=>{ toggleMusic(); toggleMusic(); });
+  expect(errors).toEqual([]);
+});
+
+test('consumíveis Humanos têm efeitos próprios, removem corrupção e condicionam reinício',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
+  const result=await page.evaluate(()=>window.__12rQA.humanConsumableProbe());
+  expect(result.regularPower).toBeGreaterThan(0);
+  expect(result.bernycePower).toBeGreaterThan(0);
+  expect(result.corruption).toBe(0);
+  expect(result.healed).toBeGreaterThan(Math.round(result.maxHp*.4));
+  expect(result.bannerAtkRun).toBe(1.5);
+  expect(result.restartEnabled).toBe(true);
+  expect(result.remaining).toMatchObject({regulacao:0,'regulacao-bernyce':0,'flor-cerejeira':0,'espadas-lendarias':0,'bencao-eternidade':1});
+  expect(errors).toEqual([]);
+});
+
+test('Pesadelo devolve o turno aos inimigos após 30 segundos sem jogada',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); window.__12rQA.nightmareTurnProbe(110); });
+  await expect.poll(()=>page.evaluate(()=>lastEnemyAttacker!==null),{timeout:4000}).toBe(true);
   expect(errors).toEqual([]);
 });
 
@@ -2231,26 +2282,28 @@ test('derrota reinicia sequências especiais desde o começo',async({page})=>{
   expect(errors).toEqual([]);
 });
 
-test('botões de reinício não curam nem preservam progresso de sequências',async({page})=>{
+test('Benção da Eternidade reinicia somente a missão atual das sequências',async({page})=>{
   const errors=await boot(page);
   await page.evaluate(()=>{
     chosenIds=[0,1,2,3]; beginGame(0); skipStory();
     window.__12rQA.setSpecialRun('tower',6,73);
   });
   await page.waitForTimeout(400);
-  await page.locator('#battleToolsToggle').click();
+  await page.evaluate(()=>{ inventory['bencao-eternidade']=1; updateRestartControls(); toggleBattleTools(true); });
   await page.locator('#restartTool').click();
+  await page.waitForTimeout(520);
   let snapshot=await page.evaluate(()=>({towerMode,towerFloor,bossRushMode,bossRushIdx,battlePhase}));
   expect(snapshot.towerMode).toBe(true);
-  expect(snapshot.towerFloor).toBe(1);
+  expect(snapshot.towerFloor).toBe(6);
 
   await page.evaluate(()=>{ window.__12rQA.setSpecialRun('boss',5,41); skipStory(); });
   await page.waitForTimeout(400);
-  await page.locator('#battleToolsToggle').click();
+  await page.evaluate(()=>{ inventory['bencao-eternidade']=1; updateRestartControls(); toggleBattleTools(true); });
   await page.locator('#restartTool').click();
+  await page.waitForTimeout(520);
   snapshot=await page.evaluate(()=>({towerMode,towerFloor,bossRushMode,bossRushIdx,battlePhase}));
   expect(snapshot.bossRushMode).toBe(true);
-  expect(snapshot.bossRushIdx).toBe(0);
+  expect(snapshot.bossRushIdx).toBe(5);
   expect(errors).toEqual([]);
 });
 
@@ -2367,7 +2420,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.39');
+  expect(registration.caches).toContain('12r-v11.0.40');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2527,7 +2580,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.39');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.40');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

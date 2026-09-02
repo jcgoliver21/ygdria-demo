@@ -30,7 +30,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
 <link rel="apple-touch-icon" href="assets/icon.svg">
-<link rel="stylesheet" href="styles-v10.css?v=11.0.39">
+<link rel="stylesheet" href="styles-v10.css?v=11.0.40">
 </head>
 <body>
 <div class="scene-bg" data-screen="menu"></div>
@@ -101,11 +101,12 @@
         <div class="combo-record" id="comboRecord">RECORDE ×0</div>
       </div>
       <div class="mission-actions">
-        <button class="icon-btn" id="mochilaBtn" type="button" aria-label="Abrir a mochila de consumíveis">🎒</button>
-        <button class="icon-btn" id="pauseBtn" aria-label="Pausar jogo">Ⅱ</button>
-        <button class="icon-btn" id="muteBtn" aria-label="Ativar ou desativar som">🔊</button>
-        <button class="icon-btn battle-tools-toggle" id="battleToolsToggle" type="button" aria-label="Abrir ferramentas táticas" aria-expanded="false">⚙</button>
+        <button class="icon-btn human-hud-icon" id="mochilaBtn" type="button" aria-label="Abrir a mochila de consumíveis"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.2 8.2h9.6l1.7 3.1v8.1H5.5v-8.1z"/><path d="M9.3 8.2V6.6A2.7 2.7 0 0112 3.9a2.7 2.7 0 012.7 2.7v1.6M8.8 13.2h6.4M12 11.1v4.2"/></svg></button>
+        <button class="icon-btn human-hud-icon" id="formationQuickBtn" type="button" aria-label="Alterar formação"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5.2" r="2"/><circle cx="6" cy="16.8" r="2"/><circle cx="18" cy="16.8" r="2"/><path d="M12 7.4v5.1M8 15.4l2.7-2.2M16 15.4l-2.7-2.2"/></svg></button>
+        <button class="icon-btn human-hud-icon" id="fullscreenQuickBtn" type="button" aria-label="Ativar tela cheia"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.4 4.4H4.5v3.9M15.6 4.4h3.9v3.9M8.4 19.6H4.5v-3.9M15.6 19.6h3.9v-3.9"/></svg></button>
+        <button class="icon-btn human-hud-icon" id="pauseBtn" type="button" aria-label="Abrir menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h14"/></svg></button>
         <div class="mission-timer" id="missionTimer" aria-label="Tempo de missão">⏱ 00:00</div>
+        <div class="nightmare-turn-timer" id="nightmareTurnTimer" aria-live="polite" hidden>⏳ 30</div>
       </div>
       <div class="battle-phase-chip" id="battlePhaseChip" aria-live="polite">Sua jogada</div>
     </header>
@@ -256,14 +257,14 @@
     <button class="overlay-btn" id="towerStartBtn" type="button" style="width:100%;margin-top:12px;">🗼 Escalar a Torre (Pesadelo)</button>
   </div>
 </div>
-<div class="pro-overlay" id="mochilaScreen" role="dialog" aria-modal="true" aria-labelledby="mochilaTitle">
-  <div class="pro-dialog">
-    <div class="dialog-header"><h2 class="dialog-title" id="mochilaTitle">🎒 Mochila</h2><button class="ghost-btn" data-close="mochilaScreen">Fechar</button></div>
+<aside class="battle-inventory-dock" id="mochilaScreen" aria-labelledby="mochilaTitle" aria-hidden="true">
+  <div class="battle-inventory-surface">
+    <div class="dialog-header"><h2 class="dialog-title" id="mochilaTitle">Mochila</h2><button class="ghost-btn" id="mochilaCloseBtn" type="button">Fechar</button></div>
     <div class="shop-coins" id="mochilaCoins">🪙 0</div>
     <div class="shop-list" id="mochilaList"></div>
     <button class="overlay-btn" id="mochilaShopBtn" type="button" style="width:100%;margin-top:12px;">🪙 Abrir Loja de Consumíveis</button>
   </div>
-</div>
+</aside>
 <div class="pro-overlay" id="optionsScreen" role="dialog" aria-modal="true" aria-labelledby="optionsTitle">
   <div class="pro-dialog small">
     <div class="dialog-header"><h2 class="dialog-title" id="optionsTitle">Opções</h2><button class="ghost-btn" data-close="optionsScreen">Fechar</button></div>
@@ -320,7 +321,8 @@
     <div class="menu-actions">
       <button class="menu-btn primary" id="resumeBtn"><span class="menu-icon">▶</span><span class="menu-label">Continuar batalha</span></button>
       <button class="menu-btn" id="pauseOptionsBtn" type="button" data-tap-guard-bypass><span class="menu-icon">⚙</span><span class="menu-label">Opções</span></button>
-      <button class="menu-btn" id="restartStageBtn"><span class="menu-icon">↻</span><span class="menu-label">Reiniciar fase</span></button>
+      <button class="menu-btn" id="battleToolsToggle" type="button" aria-expanded="false"><span class="menu-icon">✦</span><span class="menu-label">Ferramentas táticas</span></button>
+      <button class="menu-btn" id="restartStageBtn" disabled><span class="menu-icon" id="restartStageIcon">✦</span><span class="menu-label">Reiniciar missão</span></button>
       <button class="menu-btn" id="photoModeBtn"><span class="menu-icon">📷</span><span class="menu-label">Modo foto</span></button>
       <button class="menu-btn" id="returnMenuBtn"><span class="menu-icon">⌂</span><span class="menu-label">Menu principal</span></button>
     </div>
@@ -465,10 +467,10 @@
   </div>
 </div>
 <script>window.addEventListener('error',function(e){(window.__bootErrors=window.__bootErrors||[]).push({m:String(e.message).slice(0,200),l:e.lineno,c:e.colno})});</script>
-<script src="v10-config.js?v=11.0.39"></script>
-<script src="v10-animations.js?v=11.0.39"></script>
-<script src="humanos-lore-v10.js?v=11.0.39"></script>
-<script src="game-v10.js?v=11.0.39" defer></script>
+<script src="v10-config.js?v=11.0.40"></script>
+<script src="v10-animations.js?v=11.0.40"></script>
+<script src="humanos-lore-v10.js?v=11.0.40"></script>
+<script src="game-v10.js?v=11.0.40" defer></script>
 
 </body>
 </html>
