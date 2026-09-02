@@ -2796,15 +2796,25 @@ input, textarea, .save-code{ user-select:text; -webkit-user-select:text; }
   background:linear-gradient(90deg,transparent,rgba(6,12,22,.72) 18%,rgba(6,12,22,.72) 82%,transparent);
   pointer-events:none;
 }
-.realm-name{
+  .realm-name{
   display:block;
   max-width:clamp(62px,14cqw,135px);
   color:#fff2cf;
   font:700 clamp(7px,1.5cqw,13px)/1.05 Georgia,serif;
   letter-spacing:.03em;
   text-align:center;
-  text-shadow:0 1px 3px #000,0 0 6px #000;
-}
+    text-shadow:0 1px 3px #000,0 0 6px #000;
+  }
+  .realm-subtitle{
+    display:block;
+    max-width:clamp(86px,20cqw,190px);
+    color:#f1ddb2;
+    font:500 clamp(6px,1.05cqw,11px)/1.1 Georgia,serif;
+    letter-spacing:.01em;
+    text-align:center;
+    white-space:nowrap;
+    text-shadow:0 1px 3px #000,0 0 6px #000;
+  }
 .map-art .realm-pin{ z-index:3; }
 @media (max-width:600px){
   .map-art{ border-radius:18px; }
