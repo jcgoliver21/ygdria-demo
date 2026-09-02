@@ -1529,7 +1529,7 @@ const LEGACY_SHOP_ITEMS=[
   {id:'dado', uso:'batalha', nome:'Dado do Destino', desc:'Re-embaralha o tabuleiro e garante 1 power-up novo.', preco:80, icon:'🎲', en:{nome:'Die of Fate', desc:'Reshuffles the board and grants 1 new power-up.'}, es:{nome:'Dado del Destino', desc:'Rebaraja el tablero y garantiza 1 power-up nuevo.'}},
   {id:'olho', uso:'batalha', nome:'Olho de Barion', desc:'Revela as gemas ocultas e aponta a melhor jogada.', preco:70, icon:'🧿', en:{nome:'Eye of Barion', desc:'Reveals hidden gems and points out the best move.'}, es:{nome:'Ojo de Barion', desc:'Revela las gemas ocultas y señala la mejor jugada.'}}
 ];
-/* v11.0.40 · Catálogo inaugural de consumíveis do Reino dos Humanos. */
+/* v11.0.41 · Ícones ilustrados dos consumíveis do Reino dos Humanos. */
 const SHOP_ITEMS=[
   {id:'regulacao',uso:'batalha',raridade:'Comum',nome:'Cristais de Regulação',desc:'Embaralha o tabuleiro e cria 1 power-up aleatório.',preco:90,icon:'crystal',en:{nome:'Regulation Crystals',desc:'Shuffles the board and creates 1 random power-up.'},es:{nome:'Cristales de Regulación',desc:'Baraja el tablero y crea 1 potenciador aleatorio.'}},
   {id:'regulacao-bernyce',uso:'batalha',raridade:'Raro',nome:'Cristal de Regulação de Bernyce',desc:'Embaralha, cria 2 power-ups — incluindo 1 Estrela de Ygdria — e remove peças corrompidas.',preco:220,icon:'bernyce-crystal',en:{nome:'Bernyce Regulation Crystal',desc:'Shuffles, creates 2 power-ups — including 1 Star of Ygdria — and removes corrupted pieces.'},es:{nome:'Cristal de Regulación de Bernyce',desc:'Baraja, crea 2 potenciadores — incluida 1 Estrella de Ygdria — y elimina piezas corrompidas.'}},
@@ -1539,11 +1539,11 @@ const SHOP_ITEMS=[
 ];
 const INVENTORY_CATALOG_VERSION='humanos-consumables-v1';
 const HUMAN_ITEM_ICONS={
-  crystal:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l5.8 6.1L12 21.2 6.2 8.9z"/><path d="M6.2 8.9H17.8M12 2.8v18.4"/></svg>',
-  'bernyce-crystal':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.4l5.5 5.7-1.1 8.3L12 21.5l-4.4-5.1-1.1-8.3z"/><path d="M12 5.2c-2.8-2.8-6.1 1.6 0 5.3 6.1-3.7 2.8-8.1 0-5.3z"/></svg>',
-  sakura:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 11.8c-4.5-7.4-10.2-3.1-5.5.6-6.2 1.8-2.1 8.2 2.4 3.9.5 6.5 7.7 5.6 6.5.3 5.2 3.9 8.1-2.1 2.7-4 4.9-4.4-1.6-8-6-0.8z"/><circle cx="12" cy="12" r="1.6"/></svg>',
-  swords:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.7l10.8 10.8M7.3 3.2l-3.6.5.5 3.6M19 3.7L8.2 14.5M16.7 3.2l3.6.5-.5 3.6M9.2 15.5l-3.4 4.8M14.8 15.5l3.4 4.8"/></svg>',
-  eternity:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.3 5.5c2.2 0 3.8 1.8 4.7 4.1.9-2.3 2.5-4.1 4.7-4.1 4.6 0 4.6 7.1 0 7.1-2.2 0-3.8-1.8-4.7-4.1-.9 2.3-2.5 4.1-4.7 4.1-4.6 0-4.6-7.1 0-7.1z"/><path d="M6 18.8h12"/></svg>'
+  crystal:'<img src="assets/items/humanos/regulacao.png" alt="" draggable="false">',
+  'bernyce-crystal':'<img src="assets/items/humanos/regulacao-bernyce.png" alt="" draggable="false">',
+  sakura:'<img src="assets/items/humanos/flor-cerejeira.png" alt="" draggable="false">',
+  swords:'<img src="assets/items/humanos/espadas-lendarias.png" alt="" draggable="false">',
+  eternity:'<img src="assets/items/humanos/bencao-eternidade.png" alt="" draggable="false">'
 };
 function sanitizeInventory(value){
   const clean={};
@@ -4768,11 +4768,11 @@ function registerBestiary(nomePt){
 const LOGIN_REWARDS=[
   {c:15},
   {c:20},
-  {c:25, item:'vela'},
+  {c:25, item:'regulacao'},
   {c:30},
-  {c:40, item:'potion'},
+  {c:40, item:'flor-cerejeira'},
   {c:50},
-  {c:80, item:'blessing'}
+  {c:80, item:'bencao-eternidade'}
 ];
 function sanitizeLoginState(value){
   if(!value||typeof value!=='object'||Array.isArray(value)) return {date:'',streak:0};
@@ -4802,7 +4802,7 @@ function checkLoginReward(){
     inventory[rec.item]=(inventory[rec.item]||0)+1;
     saveInventory();
     const it=SHOP_ITEMS.find(i=>i.id===rec.item);
-    extra=' + '+(it?it.icon+' '+L(it.nome):rec.item);
+    extra=' + '+(it?L(it.nome):rec.item);
   }
   setTimeout(()=>{
     const t=document.createElement('div');
@@ -4819,7 +4819,7 @@ function renderLoginCalendar(){
   return '<div class="quests-box login-cal"><b>📅 '+T('Login diário — ciclo de 7 dias','Daily login — 7-day cycle','Inicio diario — ciclo de 7 días')+'</b><div class="login-days">'+
     LOGIN_REWARDS.map((r,i)=>{
       const it=r.item?SHOP_ITEMS.find(x=>x.id===r.item):null;
-      return '<span class="login-day'+(i<diaAtual?' done':i===diaAtual?' today':'')+'"><i>'+(i+1)+'</i>🪙'+r.c+(it?'<em>'+it.icon+'</em>':'')+'</span>';
+      return '<span class="login-day'+(i<diaAtual?' done':i===diaAtual?' today':'')+'"><i>'+(i+1)+'</i>🪙'+r.c+(it?'<em class="login-item-art">'+(HUMAN_ITEM_ICONS[it.icon]||'')+'</em>':'')+'</span>';
     }).join('')+
     '</div><small>'+T('Sequência atual','Current streak','Racha actual')+': '+(st.streak||0)+' '+T('dia(s)','day(s)','día(s)')+'</small></div>';
 }

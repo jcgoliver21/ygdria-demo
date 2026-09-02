@@ -1948,6 +1948,27 @@ test('consumíveis Humanos têm efeitos próprios, removem corrupção e condici
   expect(errors).toEqual([]);
 });
 
+test('ícones ilustrados dos consumíveis carregam na loja sem regressão visual',async({page})=>{
+  const errors=await boot(page,'flow');
+  const icons=await page.evaluate(async()=>{
+    renderShop();
+    const images=[...document.querySelectorAll('#shopList .human-item-icon img')];
+    await Promise.all(images.map(image=>image.complete?Promise.resolve():new Promise(resolve=>{
+      image.addEventListener('load',resolve,{once:true});
+      image.addEventListener('error',resolve,{once:true});
+    })));
+    return images.map(image=>({src:new URL(image.src).pathname,loaded:image.complete&&image.naturalWidth>0}));
+  });
+  expect(icons).toEqual([
+    {src:'/assets/items/humanos/regulacao.png',loaded:true},
+    {src:'/assets/items/humanos/regulacao-bernyce.png',loaded:true},
+    {src:'/assets/items/humanos/flor-cerejeira.png',loaded:true},
+    {src:'/assets/items/humanos/espadas-lendarias.png',loaded:true},
+    {src:'/assets/items/humanos/bencao-eternidade.png',loaded:true}
+  ]);
+  expect(errors).toEqual([]);
+});
+
 test('Pesadelo devolve o turno aos inimigos após 30 segundos sem jogada',async({page})=>{
   const errors=await boot(page,'flow');
   await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); window.__12rQA.nightmareTurnProbe(110); });
@@ -2420,7 +2441,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.40');
+  expect(registration.caches).toContain('12r-v11.0.41');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2580,7 +2601,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.40');
+    await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.41');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 
