@@ -4342,30 +4342,27 @@ body.game-active .battle-row::before{
 @media (max-width:520px){.battle-inventory-dock{top:max(66px,calc(env(safe-area-inset-top) + 56px));width:min(270px,calc(100vw - 14px))}.nightmare-turn-timer{font-size:7px;padding:3px 5px}.human-hud-icon svg{width:14px;height:14px}}
 @media (prefers-reduced-motion:reduce){.human-hud-icon::after,.nightmare-turn-timer.urgent,.consumable-vfx *{animation:none!important}.consumable-vfx{opacity:.45}}
 
-/* Prévia de gema cristalina: toda a leitura fica dentro da esfera. Sem halo,
-   sombra projetada ou aparência perolada que esconda uma jogada adjacente. */
+/* v11.0.46 · Esferas originais do tabuleiro, anteriores ao desenvolvimento
+   dos estilos Joia e Cristal. */
 .board .orb:not(.power-colorbomb){
-  border-radius:50%!important;transform:none!important;overflow:hidden;
+  border-radius:46% 54% 50% 50% / 44% 46% 54% 56%;transform:rotate(45deg)!important;overflow:hidden;
   background:
-    radial-gradient(circle at 29% 20%,rgba(255,255,255,.98) 0 2%,rgba(255,255,255,.44) 2.8% 4.7%,transparent 5.7%),
-    radial-gradient(circle at 50% 54%,transparent 0 35%,rgba(0,0,0,.14) 63%,rgba(0,0,0,.52) 100%),
-    conic-gradient(from 214deg at 50% 50%,var(--orb-dark,#222) 0 11%,var(--orb,#888) 12% 25%,color-mix(in srgb,var(--orb,#888) 76%,white) 26% 37%,var(--orb,#888) 38% 51%,color-mix(in srgb,var(--orb,#888) 48%,black) 52% 65%,var(--orb,#888) 66% 79%,var(--orb-dark,#222) 80% 91%,var(--orb,#888) 92% 100%)!important;
-  border:1px solid color-mix(in srgb,var(--orb-light,#fff) 72%,white)!important;
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.24),inset -11px -15px 20px rgba(0,0,0,.68),inset 7px 7px 11px rgba(255,255,255,.13)!important;
+    radial-gradient(circle at 31% 24%,rgba(255,255,255,.96) 0 5%,transparent 12%),
+    conic-gradient(from 18deg at 50% 52%,var(--orb-light),var(--orb),var(--orb-dark),var(--orb-light),var(--orb),var(--orb-dark),var(--orb-light))!important;
+  border:1px solid color-mix(in srgb,var(--orb-light,#fff) 42%,transparent)!important;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.34),inset -7px -9px 12px rgba(0,0,0,.48),0 3px 7px rgba(0,0,0,.72),0 0 8px color-mix(in srgb,var(--orb) 62%,transparent)!important;
 }
 .board .orb:not(.power-colorbomb)::before{
-  content:'';position:absolute;inset:8%;width:auto;height:auto;border-radius:inherit;
-  clip-path:polygon(50% 0,84% 15%,100% 50%,83% 85%,50% 100%,17% 85%,0 50%,16% 15%);
-  background:conic-gradient(from 18deg,transparent 0 9%,rgba(255,255,255,.32) 10% 12%,transparent 13% 25%,rgba(0,0,0,.30) 26% 39%,transparent 40% 54%,rgba(255,255,255,.16) 55% 66%,transparent 67% 78%,rgba(0,0,0,.20) 79% 90%,transparent 91%);border:1px solid rgba(255,255,255,.28);filter:none;opacity:.86;
+  top:10%;left:16%;width:54%;height:17%;border-radius:50%;
+  background:linear-gradient(90deg,rgba(255,255,255,.94),rgba(255,255,255,.18));filter:blur(.6px);opacity:1;
 }
 .board .orb:not(.power-striped):not(.power-wrapped):not(.power-colorbomb)::after{
-  content:'';position:absolute;inset:15%;width:auto;height:auto;border:0;border-radius:50%;
-  clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);
-  background:linear-gradient(135deg,rgba(255,255,255,.20),transparent 32%,rgba(0,0,0,.25) 70%,transparent);box-shadow:none;filter:none;opacity:.75;
+  inset:14%;width:auto;height:auto;border-radius:38%;border:1px solid rgba(255,255,255,.24);
+  background:linear-gradient(135deg,transparent 47%,rgba(255,255,255,.2) 49% 51%,transparent 53%);filter:none;box-shadow:none;
 }
-.board .orb-icon{transform:none!important;width:45%!important;height:45%!important;filter:drop-shadow(0 1px 1px rgba(0,0,0,.86));}
-.board .orb.power-striped,.board .orb.power-wrapped{box-shadow:inset 0 0 0 1px rgba(255,255,255,.30),inset -11px -15px 20px rgba(0,0,0,.68),inset 7px 7px 11px rgba(255,255,255,.13)!important;}
-.board .gem.selected .orb:not(.power-colorbomb){transform:scale(1.11)!important;filter:brightness(1.08) saturate(1.15);}
+.board .orb-icon{transform:rotate(-45deg)!important;width:44%!important;height:44%!important;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.7));}
+.board .orb.power-striped,.board .orb.power-wrapped{box-shadow:inset 0 0 0 2px rgba(255,255,255,.34),inset -7px -9px 12px rgba(0,0,0,.48),0 3px 7px rgba(0,0,0,.72),0 0 8px color-mix(in srgb,var(--orb) 62%,transparent)!important;}
+.board .gem.selected .orb:not(.power-colorbomb){transform:rotate(45deg) scale(1.12)!important;filter:none;}
 
 body[data-board-orb-style="simple"] .board .orb:not(.power-colorbomb){
   border-radius:50%!important;transform:none!important;
