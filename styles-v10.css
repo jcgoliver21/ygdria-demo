@@ -4332,31 +4332,29 @@ body.game-active .battle-row::before{
 @media (max-width:520px){.battle-inventory-dock{top:max(66px,calc(env(safe-area-inset-top) + 56px));width:min(270px,calc(100vw - 14px))}.nightmare-turn-timer{font-size:7px;padding:3px 5px}.human-hud-icon svg{width:14px;height:14px}}
 @media (prefers-reduced-motion:reduce){.human-hud-icon::after,.nightmare-turn-timer.urgent,.consumable-vfx *{animation:none!important}.consumable-vfx{opacity:.45}}
 
-/* v11.0.42 · Esferas em joia: material lapidado, brilho interno e símbolo
-   preservado. "Simples" restaura uma esfera circular sóbria, sem trocar as
-   cores, a grade ou a leitura dos power-ups. O acabamento fica restrito ao
-   tabuleiro para não alterar ícones, cards ou HUD. */
+/* v11.0.43 · Tradução literal da vitrine aprovada: gema arredondada,
+   faceta interna hexagonal e halo externo. Sem prisma opaco nem losango. */
 .board .orb:not(.power-colorbomb){
-  border-radius:50%!important; transform:none; overflow:hidden;
+  border-radius:50%!important;transform:none!important;overflow:visible;
   background:
-    radial-gradient(ellipse at 31% 21%,rgba(255,255,255,.98) 0 4%,rgba(255,255,255,.48) 7%,transparent 18%),
-    radial-gradient(circle at 50% 54%,transparent 0 36%,rgba(255,255,255,.10) 38% 41%,transparent 43%),
-    conic-gradient(from 25deg at 50% 53%,var(--orb-light,#fff) 0 10%,var(--orb,#888) 18% 34%,var(--orb-dark,#222) 47% 59%,var(--orb,#888) 73% 87%,var(--orb-light,#fff) 100%)!important;
-  border:1px solid color-mix(in srgb,var(--orb-light,#fff) 72%,#fff 28%)!important;
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.31),inset -8px -10px 13px rgba(0,0,0,.52),inset 5px 5px 10px rgba(255,255,255,.24),0 3px 8px rgba(0,0,0,.76),0 0 9px color-mix(in srgb,var(--orb,#888) 62%,transparent)!important;
+    radial-gradient(circle at 30% 22%,#fff 0 3%,rgba(255,255,255,.6) 4% 6%,transparent 7%),
+    radial-gradient(circle at 37% 30%,var(--orb-light,#fff) 0 9%,transparent 20%),
+    conic-gradient(from 225deg at 50% 50%,var(--orb-dark,#222),var(--orb,#888),color-mix(in srgb,var(--orb,#888) 72%,white),var(--orb,#888),var(--orb-dark,#222),#06040c,var(--orb-dark,#222))!important;
+  border:1px solid color-mix(in srgb,var(--orb-light,#fff) 72%,white)!important;
+  box-shadow:inset -13px -18px 21px rgba(0,0,0,.60),inset 7px 6px 14px rgba(255,255,255,.20),0 0 10px var(--orb,#888),0 0 27px color-mix(in srgb,var(--orb,#888) 68%,transparent)!important;
 }
 .board .orb:not(.power-colorbomb)::before{
-  top:10%;left:15%;width:53%;height:18%;border-radius:50%;
-  background:linear-gradient(100deg,rgba(255,255,255,.98),rgba(255,255,255,.18));filter:blur(.7px);
+  content:'';position:absolute;inset:7%;width:auto;height:auto;border-radius:inherit;
+  clip-path:polygon(50% 0,86% 16%,100% 50%,85% 84%,50% 100%,15% 84%,0 50%,15% 16%);
+  background:conic-gradient(from 15deg,transparent,rgba(255,255,255,.33) 9%,transparent 20% 42%,rgba(0,0,0,.27) 52%,rgba(255,255,255,.13) 64%,transparent 77%);border:1px solid rgba(255,255,255,.33);filter:none;opacity:.75;
 }
 .board .orb:not(.power-striped):not(.power-wrapped):not(.power-colorbomb)::after{
-  inset:14%;width:auto;height:auto;border-radius:50%;border:1px solid rgba(255,255,255,.24);
-  background:linear-gradient(135deg,transparent 44%,rgba(255,255,255,.22) 48% 51%,transparent 55%);filter:none;
-  box-shadow:inset 0 0 9px rgba(255,255,255,.09);
+  content:'';position:absolute;inset:-15%;width:auto;height:auto;border-radius:50%;border:1px solid color-mix(in srgb,var(--orb,#888) 75%,transparent);
+  background:none;box-shadow:0 0 12px var(--orb,#888);filter:none;
 }
-.board .orb-icon{transform:none!important;width:45%!important;height:45%!important;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.78)) drop-shadow(0 0 3px rgba(255,255,255,.14));}
-.board .orb.power-striped,.board .orb.power-wrapped{box-shadow:inset 0 0 0 1px rgba(255,255,255,.36),inset -8px -10px 13px rgba(0,0,0,.52),0 3px 8px rgba(0,0,0,.76),0 0 12px color-mix(in srgb,var(--orb,#888) 72%,transparent)!important;}
-.board .gem.selected .orb:not(.power-colorbomb){transform:scale(1.11)!important;}
+.board .orb-icon{transform:none!important;width:45%!important;height:45%!important;filter:drop-shadow(0 1px 2px rgba(0,0,0,.9)) drop-shadow(0 0 7px var(--orb-light,#fff));}
+.board .orb.power-striped,.board .orb.power-wrapped{box-shadow:inset -13px -18px 21px rgba(0,0,0,.60),inset 7px 6px 14px rgba(255,255,255,.20),0 0 12px var(--orb,#888),0 0 29px color-mix(in srgb,var(--orb,#888) 68%,transparent)!important;}
+.board .gem.selected .orb:not(.power-colorbomb){transform:scale(1.11)!important;filter:brightness(1.12) saturate(1.08);}
 
 body[data-board-orb-style="simple"] .board .orb:not(.power-colorbomb){
   border-radius:50%!important;transform:none!important;
