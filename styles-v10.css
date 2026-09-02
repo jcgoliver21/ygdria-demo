@@ -2815,6 +2815,16 @@ input, textarea, .save-code{ user-select:text; -webkit-user-select:text; }
   text-align:center;
   text-shadow:0 1px 3px #000,0 0 6px #000;
 }
+.realm-subtitle{
+  display:block;
+  max-width:clamp(86px,20cqw,190px);
+  color:#f1ddb2;
+  font:500 clamp(6px,1.05cqw,11px)/1.1 Georgia,serif;
+  letter-spacing:.01em;
+  text-align:center;
+  white-space:nowrap;
+  text-shadow:0 1px 3px #000,0 0 6px #000;
+}
 .map-art .realm-pin{ z-index:5; }
 @media (prefers-reduced-motion:reduce){
   .ygdria-map-fx{ opacity:.78; }

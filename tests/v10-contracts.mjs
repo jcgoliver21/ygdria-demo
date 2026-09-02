@@ -505,12 +505,16 @@ check('IDs do HTML são únicos',()=>{
 });
 
 check('mapa vertical preserva geografia e expande somente o oceano lateral',()=>{
-  assert.match(game,/\{id:'raio',\s+x:18, y:11\}/);
-  assert.match(game,/\{id:'humanos',\s+x:50, y:31\.5, unlocked:true\}/);
-  assert.match(game,/\{id:'agua',\s+x:50, y:56\.5\}/);
-  assert.match(game,/\{id:'luz',\s+x:50, y:82\.5\}/);
+  assert.match(game,/\{id:'raio',\s+x:18, y:11,\s+subtitulo:'Cordilheira do Raio Eterno'\}/);
+  assert.match(game,/\{id:'humanos',\s+x:50, y:31\.5, unlocked:true,\s+subtitulo:'Terra dos Reguladores de Ygdria'\}/);
+  assert.match(game,/\{id:'agua',\s+x:50, y:56\.5,\s+subtitulo:'Lago de Ygdria'\}/);
+  assert.match(game,/\{id:'luz',\s+x:50, y:82\.5,\s+subtitulo:'Guardiões da Luz de Ygdria'\}/);
   assert.match(game,/canvas\.innerHTML='<div class="map-art" aria-label="Mapa de Ygdria"><\/div>'/);
   assert.match(game,/art\.appendChild\(pin\)/);
+  for(const subtitle of ['Cordilheira do Raio Eterno','Terra da Vastidão Sombria','Terras Geladas de Artyka','Ilhas Flutuantes de Lafésia','Terras Longínquas da Tristeza','Terra dos Reguladores de Ygdria','O Lendário Vulcão do Rei Dragão','Floresta Primordial de Virídia','Lago de Ygdria','Montanhas de Kalegar','Guardiões da Luz de Ygdria','O Grande Deserto de Meriady']){
+    assert.match(game,new RegExp(subtitle),`subtítulo ausente: ${subtitle}`);
+  }
+  assert.match(game,/class=\"realm-subtitle\"/);
   assert.match(css,/ygdria-mobile-hd-v5\.webp/);
   assert.match(css,/ygdria-ocean-extension-v3\.png/);
   assert.match(css,/\.map-art::after\{[\s\S]*?content:'YGDRIA'/);

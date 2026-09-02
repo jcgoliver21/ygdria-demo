@@ -9812,18 +9812,18 @@ function storySelectionAllowed(idx){
 /* v9.1 · Mapa de Ygdria: 12 reinos traçados; só o Reino dos Humanos liberado */
 /* Pins à ESQUERDA do nome pintado de cada reino, centrados na altura do título */
 const REALMS_MAP=[
-  {id:'raio',     x:18, y:11},
-  {id:'sombras',  x:50, y:10.5},
-  {id:'gelo',     x:82, y:11},
-  {id:'vento',    x:15, y:29},
-  {id:'chuvas',   x:85, y:30},
-  {id:'humanos',  x:50, y:31.5, unlocked:true},
-  {id:'fogo',     x:15, y:53},
-  {id:'natureza', x:85, y:54},
-  {id:'agua',     x:50, y:56.5},
-  {id:'terra',    x:15, y:76},
-  {id:'areia',    x:85, y:77},
-  {id:'luz',      x:50, y:82.5}
+  {id:'raio',     x:18, y:11,   subtitulo:'Cordilheira do Raio Eterno'},
+  {id:'sombras',  x:50, y:10.5, subtitulo:'Terra da Vastidão Sombria'},
+  {id:'gelo',     x:82, y:11,   subtitulo:'Terras Geladas de Artyka'},
+  {id:'vento',    x:15, y:29,   subtitulo:'Ilhas Flutuantes de Lafésia'},
+  {id:'chuvas',   x:85, y:30,   subtitulo:'Terras Longínquas da Tristeza'},
+  {id:'humanos',  x:50, y:31.5, unlocked:true, subtitulo:'Terra dos Reguladores de Ygdria'},
+  {id:'fogo',     x:15, y:53,   subtitulo:'O Lendário Vulcão do Rei Dragão'},
+  {id:'natureza', x:85, y:54,   subtitulo:'Floresta Primordial de Virídia'},
+  {id:'agua',     x:50, y:56.5, subtitulo:'Lago de Ygdria'},
+  {id:'terra',    x:15, y:76,   subtitulo:'Montanhas de Kalegar'},
+  {id:'areia',    x:85, y:77,   subtitulo:'O Grande Deserto de Meriady'},
+  {id:'luz',      x:50, y:82.5, subtitulo:'Guardiões da Luz de Ygdria'}
 ];
 let mapMode='world'; /* 'world' = jogar fases · 'boss' = escolher reino do Desafio dos Chefes */
 function realmComplete(id){
@@ -9861,6 +9861,7 @@ function renderMapScreen(){
     pin.innerHTML=`
       <span class="pin-gem"><svg viewBox="0 0 24 24">${KINGDOM_ICON[r.id]||''}</svg>${liberado?(mapMode==='boss'?'<i class="pin-crown">🏆</i>':''):'<i class="pin-lock">🔒</i>'}</span>
       <span class="realm-name">${escapeHtml(L(k.reino))}</span>
+      <span class="realm-subtitle">${escapeHtml(r.subtitulo||'')}</span>
       ${liberado?`<span class="pin-label">${mapMode==='boss'?T('DESAFIAR','CHALLENGE','DESAFIAR'):T('ENTRAR','ENTER','ENTRAR')}</span>`:''}`;
     pin.addEventListener('click',()=>{
       if(!liberado){
