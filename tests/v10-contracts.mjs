@@ -9,6 +9,7 @@ const game=read('game-v10.js');
 const css=read('styles-v10.css');
 const config=read('v10-config.js');
 const animations=read('v10-animations.js');
+const mapEffects=read('map-effects-v1.js');
 const lore=read('humanos-lore-v10.js');
 const syncLore=read('tools/sync-humanos-lore.mjs');
 const sw=read('sw.js');
@@ -20,13 +21,14 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.42/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.42/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.42/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.42/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.42/);
-  assert.match(config,/version:'v11\.0\.42'/);
-  assert.match(sw,/12r-v11\.0\.42/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.43/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.43/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.43/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.43/);
+  assert.match(html,/map-effects-v1\.js\?v=1\.0\.0/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.43/);
+  assert.match(config,/version:'v11\.0\.43'/);
+  assert.match(sw,/12r-v11\.0\.43/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -139,8 +141,8 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.42/);
-  for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
+  assert.match(sw,/12r-v11\.0\.43/);
+  for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','map-effects-v1.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
   assert.match(game,/navigator\.serviceWorker\.register\('\.\/sw\.js'/);
@@ -509,16 +511,24 @@ check('mapa vertical preserva geografia e expande somente o oceano lateral',()=>
   assert.match(game,/\{id:'luz',\s+x:50, y:82\.5\}/);
   assert.match(game,/canvas\.innerHTML='<div class="map-art" aria-label="Mapa de Ygdria"><\/div>'/);
   assert.match(game,/art\.appendChild\(pin\)/);
-  assert.match(css,/ygdria-mobile-v4\.png/);
+  assert.match(css,/ygdria-mobile-hd-v5\.webp/);
   assert.match(css,/ygdria-ocean-extension-v3\.png/);
   assert.match(css,/\.map-art::after\{[\s\S]*?content:'YGDRIA'/);
-  assert.ok(fs.existsSync(path.join(root,'assets','map','ygdria-mobile-v4.png')),'arte vertical do mapa ausente');
+  assert.match(css,/\.ygdria-map-fx\{[\s\S]*?pointer-events:none/);
+  for(const realm of ['raio','sombras','gelo','vento','humanos','chuvas','fogo','agua','natureza','terra','luz','areia']){
+    assert.match(mapEffects,new RegExp(`['\"]${realm}['\"]`),`efeito do reino ${realm} ausente`);
+  }
+  assert.match(mapEffects,/prefers-reduced-motion: reduce/);
+  assert.match(mapEffects,/new ResizeObserver\(resize\)/);
+  assert.match(mapEffects,/window\.__YGDRIA_MAP_FX/);
+  assert.ok(fs.existsSync(path.join(root,'assets','map','ygdria-mobile-hd-v5.png')),'master 4K do mapa ausente');
+  assert.ok(fs.existsSync(path.join(root,'assets','map','ygdria-mobile-hd-v5.webp')),'arte 4K de produção ausente');
   assert.ok(fs.existsSync(path.join(root,'assets','map','ygdria-ocean-extension-v3.png')),'oceano lateral ausente');
 });
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.42');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.43');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
