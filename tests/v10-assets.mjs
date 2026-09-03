@@ -146,8 +146,9 @@ for(const name of ['Ygdria_10_Sombras_Que_Devoram.mp3','Ygdria_10_Sombras_Que_De
   assert.ok(fs.existsSync(file),`${name}: trilha ausente`);
   const bytes=fs.readFileSync(file);
   /* A faixa-base estendida cobre as quatro primeiras missões sem repetir o
-     encerramento; a faixa do confronto final permanece no orçamento leve. */
-  const maxBytes=name==='Ygdria_10_Sombras_Que_Devoram.mp3'?10*1024*1024:4*1024*1024;
+     encerramento; a nova faixa do confronto final permanece no limite móvel
+     de 5 MiB, sem substituir o MP3 por uma página HTML. */
+  const maxBytes=name==='Ygdria_10_Sombras_Que_Devoram.mp3'?10*1024*1024:5*1024*1024;
   assert.ok(bytes.length>200*1024&&bytes.length<maxBytes,`${name}: orçamento de música inválido`);
   assert.ok(bytes.subarray(0,3).toString('ascii')==='ID3'||(bytes[0]===0xff&&(bytes[1]&0xe0)===0xe0),`${name}: não é MP3 válido`);
 }

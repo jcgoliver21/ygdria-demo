@@ -4389,7 +4389,7 @@ body.game-active .battle-row::before{
 
 /* v11.0.44 · Tipografia do mapa e seletor de fases encaixado no quadro dourado. */
 .map-art .realm-name{
-  font-size:clamp(13px,1.24cqw,16px);
+  font-size:clamp(11.7px,1.116cqw,14.4px);
   line-height:1.02;
 }
 .map-art .realm-subtitle{

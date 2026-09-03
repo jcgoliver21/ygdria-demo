@@ -515,7 +515,7 @@ check('mapa vertical preserva geografia e expande somente o oceano lateral',()=>
   assert.match(css,/ygdria-designer-v2\.png/);
   assert.match(css,/#worldScreen\{[\s\S]*background:rgba\(3,7,15,.34\)/);
   assert.match(css,/\.map-art \.realm-name\{[\s\S]*white-space:nowrap/);
-  assert.match(css,/\.map-art \.realm-name\{[\s\S]*font-size:clamp\(13px,1\.24cqw,16px\)/);
+  assert.match(css,/\.map-art \.realm-name\{[\s\S]*font-size:clamp\(11\.7px,1\.116cqw,14\.4px\)/);
   assert.match(css,/\.map-art \.realm-subtitle\{[\s\S]*font-size:clamp\(6\.5px,\.62cqw,8px\)/);
   assert.match(css,/\.map-art \.realm-pin\{[\s\S]*flex-direction:column/);
   assert.match(css,/\.map-art \.realm-copy\{[\s\S]*align-items:center[\s\S]*text-align:center/);
