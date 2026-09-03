@@ -4618,3 +4618,43 @@ body.game-active .battle-row::before{
 .command-grid .command-tile.is-coming{opacity:.8!important;background-image:linear-gradient(145deg,rgba(53,30,45,.86),rgba(16,10,23,.9)),url('assets/bg/bg-01.png')!important}
 @media (max-width:620px){#mainMenu.screen-panel{height:100dvh;min-height:0!important;padding:7px 10px!important;overflow:hidden!important}#mainMenu .menu-command-center{height:100%;display:flex;flex-direction:column}.command-masthead{padding:2px 0 7px!important}.command-masthead .game-logo{width:36px!important}.command-masthead .menu-title{font-size:27px!important}.command-masthead .menu-subtitle{font-size:8px!important}.command-hero{margin:5px 0 7px!important}.command-kicker{font-size:7px!important}.command-hero h2{font-size:23px!important;margin:3px 0 6px!important}.command-hero-actions .menu-btn{min-height:63px!important;padding:8px 9px!important}.command-hero-actions .menu-label{font-size:12px!important}.command-hero-actions .menu-hint{font-size:7.5px!important}.command-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important;flex:1}.command-grid .command-tile{min-height:0!important;padding:9px!important}.command-grid .command-tile .menu-label{font-size:12px!important}.command-grid .menu-hint{min-height:0!important;font-size:7.7px!important;line-height:1.16!important}.vfx-icon{width:30px!important;height:30px!important;margin-bottom:5px!important;border-radius:10px!important}.vfx-icon::before{font-size:15px}.command-footer{padding-top:5px!important}.command-footer .menu-footer{font-size:6.5px!important}.command-footer .coin-badge{font-size:10px!important}}
 @media (prefers-reduced-motion:reduce){.menu-btn:hover .vfx-icon::after,.menu-btn:focus-visible .vfx-icon::after{animation:none!important}}
+
+/* v11.0.51 · Destinos compactos: a arte ocupa o cartão inteiro e o texto
+   repousa sobre uma sombra curta de leitura, não sobre um degradê opaco. */
+#mainMenu .command-grid{align-content:start!important;grid-auto-rows:112px!important;flex:0 0 auto!important}
+#mainMenu .command-grid .command-tile,
+#mainMenu .command-hero-actions .menu-btn{justify-content:flex-end!important;text-align:left}
+#mainMenu .command-grid .command-tile::before{z-index:0!important;background:linear-gradient(180deg,rgba(5,4,12,.04) 8%,rgba(7,4,16,.38) 54%,rgba(5,3,12,.9) 100%)!important}
+#mainMenu .command-grid .command-tile::after{content:"";position:absolute;inset:4px;z-index:0;border:1px solid rgba(255,229,162,.3);border-radius:12px;pointer-events:none;box-shadow:inset 0 0 16px rgba(0,0,0,.34)}
+#mainMenu .command-grid .command-tile .menu-icon,
+#mainMenu .command-grid .command-tile .menu-label{z-index:1!important}
+#mainMenu .command-grid .command-tile .menu-label{align-self:flex-start!important;margin-top:auto!important}
+#mainMenu .command-grid .menu-hint{min-height:0!important;color:#f4e8ce!important;text-shadow:0 2px 5px #000!important}
+#mainMenu .command-grid .command-tile:nth-child(1){background-image:url('assets/bg/bg-04.png')!important;background-position:center!important}
+#mainMenu .command-grid .command-tile:nth-child(2){background-image:url('assets/bg/bg-10.png')!important;background-position:center!important}
+#mainMenu .command-grid .command-tile:nth-child(3){background-image:url('assets/bg/bg-01.png')!important;background-position:center!important}
+#mainMenu .command-grid .command-tile:nth-child(4){background-image:url('assets/bg/bg-06.png')!important;background-position:center!important}
+#mainMenu .command-grid .command-tile:nth-child(5){background-image:url('assets/bg/bg-08.png')!important;background-position:center!important}
+#mainMenu .command-grid .command-tile:nth-child(6){background-image:url('assets/bg/bg-02.png')!important;background-position:center!important}
+#mainMenu .command-grid .command-library{background-image:url('assets/bg/bg-07.png')!important;background-position:center!important}
+#mainMenu .command-hero-actions .menu-btn{position:relative;isolation:isolate;background-size:cover!important;background-position:center!important;border-color:rgba(252,225,154,.68)!important;box-shadow:0 10px 24px rgba(0,0,0,.27)!important}
+#mainMenu .command-hero-actions .menu-btn::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(100deg,rgba(7,4,16,.5),rgba(8,4,18,.12) 68%,rgba(7,4,16,.42));pointer-events:none}
+#mainMenu .command-hero-actions .menu-btn::after{content:"";position:absolute;inset:4px;z-index:-1;border:1px solid rgba(255,231,165,.3);border-radius:12px;pointer-events:none}
+#mainMenu .command-hero-actions .menu-label,#mainMenu .command-hero-actions .menu-btn>span:last-child{color:#fff2c9!important;text-shadow:0 2px 8px #000!important}
+#mainMenu .command-history{background-image:url('assets/bg/bg-09.png')!important}
+#mainMenu .command-continue{background-image:url('assets/bg/bg-05.png')!important}
+#mainMenu .command-footer{width:100%;margin-top:8px;padding:8px 0 max(6px,env(safe-area-inset-bottom))!important;border-top:1px solid rgba(246,218,149,.24);display:grid!important;grid-template-columns:auto 1fr auto!important;align-items:center!important}
+#mainMenu .account-chip{order:0;margin:0!important;min-height:31px!important;padding:0 11px!important;font-size:9px!important;white-space:nowrap;background:rgba(9,6,18,.75)!important}
+#mainMenu .coin-badge{justify-self:center!important}
+#mainMenu .menu-footer{justify-self:end!important}
+#mainMenu .vfx-icon{background:radial-gradient(circle at 34% 25%,#fffbdc 0 6%,color-mix(in srgb,var(--vfx) 42%,#21163e) 34%,rgba(8,5,17,.86) 75%)!important}
+@media (max-width:620px){
+  #mainMenu .command-grid{grid-auto-rows:104px!important;gap:7px!important}
+  #mainMenu .command-grid .command-tile{padding:9px!important}
+  #mainMenu .command-grid .command-tile .menu-label{font-size:11.5px!important}
+  #mainMenu .command-grid .menu-hint{font-size:7.8px!important;line-height:1.12!important}
+  #mainMenu .command-footer{margin-top:6px!important;padding-top:6px!important}
+  #mainMenu .account-chip{min-height:27px!important;padding:0 7px!important;font-size:7px!important}
+  #mainMenu .command-footer .coin-badge{font-size:9px!important}
+  #mainMenu .command-footer .menu-footer{font-size:5.8px!important;letter-spacing:.07em!important}
+}

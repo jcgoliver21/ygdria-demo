@@ -5354,7 +5354,7 @@ const STATIC_I18N=[
   ['#playBtn .menu-label','História <small class="menu-hint">Explore o mapa oficial de Ygdria</small>','Story <small class="menu-hint">Explore Ygdria’s official map</small>','Historia <small class="menu-hint">Explora el mapa oficial de Ygdria</small>'],
   ['#galleryBtn .menu-label','Biblioteca da Eternidade <small class="menu-hint">Tutoriais, criaturas, NPCs e cartas</small>','Library of Eternity <small class="menu-hint">Tutorials, creatures, NPCs and cards</small>','Biblioteca de la Eternidad <small class="menu-hint">Tutoriales, criaturas, NPCs y cartas</small>'],
   ['#shopBtn .menu-label','Mercado Central dos Reinos <small class="menu-hint">Consumíveis e preparos</small>','Central Market of the Realms <small class="menu-hint">Consumables and preparations</small>','Mercado Central de los Reinos <small class="menu-hint">Consumibles y preparativos</small>'],
-  ['#achBtn .menu-label','Perfil <small class="menu-hint" id="profileHint">Entrar, conquistas e jornada</small>','Profile <small class="menu-hint" id="profileHint">Sign in, achievements and journey</small>','Perfil <small class="menu-hint" id="profileHint">Entrar, logros y jornada</small>'],
+  ['#achBtn .menu-label','Perfil <small class="menu-hint" id="profileHint">Conquistas e jornada</small>','Profile <small class="menu-hint" id="profileHint">Achievements and journey</small>','Perfil <small class="menu-hint" id="profileHint">Logros y jornada</small>'],
   ['#optionsBtn .menu-label','Opções <small class="menu-hint">Áudio, visual e acessibilidade</small>','Options <small class="menu-hint">Audio, visuals and accessibility</small>','Opciones <small class="menu-hint">Audio, visuales y accesibilidad</small>'],
   ['#optionsTitle','Opções','Options','Opciones'],
   ['#achTitle','Perfil & Conquistas','Profile & Achievements','Perfil y Logros'],
@@ -10428,7 +10428,7 @@ function renderAccountChip(){
   const hint=document.getElementById('profileHint');
   if(hint) hint.textContent=account?.username
     ? T('Conta, conquistas e jornada','Account, achievements and journey','Cuenta, logros y jornada')
-    : T('Entrar, conquistas e jornada','Sign in, achievements and journey','Entrar, logros y jornada');
+    : T('Conquistas e jornada','Achievements and journey','Logros y jornada');
 }
 
 /* Onboarding pós-login: nascimento -> título -> nome -> username */

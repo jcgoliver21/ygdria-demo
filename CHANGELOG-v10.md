@@ -2,6 +2,13 @@
 
 Data: 2026-08-14
 
+## v11.0.51 — Destinos ilustrados e compactos
+
+- home reorganizada sem moldura dominante: cada destino ganhou cenário próprio, borda artística e ícone VFX de ativação;
+- cards compactos em celular, sem rolagem ou texto cortado;
+- acesso de conta movido para o rodapé e Perfil concentrado em conquistas e jornada;
+- cache renovado para impedir que a Biblioteca e a home anteriores sejam reutilizadas.
+
 ## v11.0.49 — Trilha final atualizada
 
 - nomes dos reinos reduzidos em 10%, preservando posições e leitura em uma linha;
