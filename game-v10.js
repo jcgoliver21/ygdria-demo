@@ -8751,6 +8751,7 @@ function refreshContinueButton(){
 
 function closeAllPanels(){
   document.querySelectorAll('.pro-overlay.show').forEach(el=>el.classList.remove('show'));
+  document.getElementById('mapScreen')?.classList.remove('world-picker-open');
   if(document.getElementById('cardModal').classList.contains('show')) closeCardModalFn();
 }
 function showMainMenu(options={}){
@@ -8981,7 +8982,10 @@ function openPanel(id){
   if(id==='achScreen') renderAchievements();
   if(id==='shopScreen') renderShop();
   if(id==='mochilaScreen') renderMochila();
-  if(id==='worldScreen') renderWorldMap();
+  if(id==='worldScreen'){
+    renderWorldMap();
+    document.getElementById('mapScreen')?.classList.add('world-picker-open');
+  }
   document.getElementById(id).classList.add('show');
 }
 function applySettings(){
@@ -9148,10 +9152,20 @@ document.getElementById('swapTool')?.addEventListener('click',()=>{
 });
 
 document.querySelectorAll('[data-close]').forEach(btn=>{
-  btn.addEventListener('click',()=>{ btn.closest('.pro-overlay').classList.remove('show'); if(btn.closest('#helpScreen'))localStorage.setItem('12r_tutorial_seen','true'); });
+  btn.addEventListener('click',()=>{
+    const panel=btn.closest('.pro-overlay');
+    panel?.classList.remove('show');
+    if(panel?.id==='worldScreen') document.getElementById('mapScreen')?.classList.remove('world-picker-open');
+    if(btn.closest('#helpScreen'))localStorage.setItem('12r_tutorial_seen','true');
+  });
 });
 document.querySelectorAll('.pro-overlay').forEach(panel=>{
-  panel.addEventListener('click',e=>{ if(e.target===panel && panel.id!=='pauseScreen')panel.classList.remove('show'); });
+  panel.addEventListener('click',e=>{
+    if(e.target===panel && panel.id!=='pauseScreen'){
+      panel.classList.remove('show');
+      if(panel.id==='worldScreen') document.getElementById('mapScreen')?.classList.remove('world-picker-open');
+    }
+  });
 });
 let phaseBeforePause='idle';
 function pauseBattle(){

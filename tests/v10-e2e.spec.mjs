@@ -83,9 +83,19 @@ test('seletor de fases abre translúcido sobre o mapa ao tocar no reino',async({
   await expect(page.locator('#mapScreen')).toHaveClass(/show/);
   await expect(page.locator('#worldScreen')).toHaveClass(/show/);
   await expect(page.locator('#worldMap .fase-node')).toHaveCount(10);
-  const overlay=await page.locator('#worldScreen').evaluate(el=>({background:getComputedStyle(el).backgroundColor,backdrop:getComputedStyle(el).backdropFilter}));
-  expect(overlay.background).toBe('rgba(3, 7, 15, 0.34)');
-  expect(overlay.backdrop).toContain('blur(3px)');
+  const overlay=await page.locator('#worldScreen').evaluate(el=>{
+    const rect=el.getBoundingClientRect();
+    const map=document.querySelector('.map-art').getBoundingClientRect();
+    const dialog=getComputedStyle(el.querySelector('.pro-dialog'));
+    const surface=getComputedStyle(el);
+    return {width:rect.width,height:rect.height,mapWidth:map.width,mapHeight:map.height,
+      background:surface.backgroundColor,dialogBackground:dialog.backgroundImage,dialogBackdrop:dialog.backdropFilter};
+  });
+  expect(Math.abs(overlay.width-overlay.mapWidth)).toBeLessThanOrEqual(2);
+  expect(Math.abs(overlay.height-overlay.mapHeight)).toBeLessThanOrEqual(2);
+  expect(overlay.background).toBe('rgba(3, 7, 15, 0.16)');
+  expect(overlay.dialogBackground).toContain('rgba(20, 18, 34, 0.22)');
+  expect(overlay.dialogBackdrop).toContain('blur(1px)');
   expect(await page.locator('#worldMap .fase-node').first().locator('.fase-num').innerText()).toBe('1');
   expect(errors).toEqual([]);
 });

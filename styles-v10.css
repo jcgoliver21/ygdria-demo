@@ -4386,3 +4386,108 @@ body.game-active .battle-row::before{
 @keyframes consumableRing{0%{opacity:0;transform:translate(-50%,-50%) scale(.12)}16%{opacity:.9}100%{opacity:0;transform:translate(-50%,-50%) scale(7)}}@keyframes consumableParticle{0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}25%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + (var(--i) - 10)*2px),calc(-50% - 74px)) scale(1.15)}}@keyframes sakuraConsumable{0%{opacity:0;transform:translate(-50%,20px) rotate(0)}20%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + (var(--i) - 12)*5px),85px) rotate(210deg)}}@keyframes swordConsumable{0%{opacity:0;transform:translate(-50%,30px) rotate(42deg) scaleY(.2)}22%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + (var(--i) - 5)*16px),-70px) rotate(42deg) scaleY(1.2)}}@keyframes eternityConsumable{0%{opacity:0;transform:translate(-50%,-50%) scale(.1)}22%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(7)}}
 @media (max-width:520px){.battle-inventory-dock{top:max(66px,calc(env(safe-area-inset-top) + 56px));width:min(270px,calc(100vw - 14px))}.nightmare-turn-timer{font-size:7px;padding:3px 5px}.human-hud-icon svg{width:14px;height:14px}}
 @media (prefers-reduced-motion:reduce){.human-hud-icon::after,.nightmare-turn-timer.urgent,.consumable-vfx *{animation:none!important}.consumable-vfx{opacity:.45}}
+
+/* v11.0.44 · Tipografia do mapa e seletor de fases encaixado no quadro dourado. */
+.map-art .realm-name{
+  font-size:clamp(13px,1.24cqw,16px);
+  line-height:1.02;
+}
+.map-art .realm-subtitle{
+  font-size:clamp(6.5px,.62cqw,8px);
+  line-height:1.08;
+}
+.map-viewport > #worldScreen{
+  position:absolute;
+  inset:auto;
+  left:50%;
+  top:50%;
+  width:min(100cqw,calc(100cqh * .563));
+  height:min(100cqh,calc(100cqw / .563));
+  transform:translate(-50%,-50%);
+  box-sizing:border-box;
+  padding:0;
+  align-items:stretch;
+  justify-content:stretch;
+  overflow:hidden;
+  border:2px solid rgba(231,191,83,.94);
+  border-radius:22px;
+  background:rgba(3,7,15,.16);
+  backdrop-filter:none;
+  z-index:20;
+  container-type:size;
+}
+.map-viewport > #worldScreen.show{ display:flex; }
+.map-viewport > #worldScreen .pro-dialog{
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  min-width:0;
+  min-height:0;
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  overflow:hidden;
+  margin:0;
+  padding:clamp(10px,2.2cqw,18px);
+  border:0!important;
+  border-radius:inherit;
+  background:linear-gradient(155deg,rgba(20,18,34,.22),rgba(5,10,18,.12) 78%)!important;
+  backdrop-filter:blur(1px) saturate(1.06);
+  box-shadow:inset 0 0 34px rgba(2,9,18,.14)!important;
+}
+.map-viewport > #worldScreen .dialog-header{
+  flex:none;
+  margin-bottom:clamp(6px,1.3cqw,12px);
+  padding-bottom:clamp(6px,1.2cqw,10px);
+  background:linear-gradient(180deg,rgba(7,10,19,.28),rgba(7,10,19,.08))!important;
+  border-bottom:1px solid rgba(255,225,154,.35);
+  backdrop-filter:blur(5px);
+}
+.map-viewport > #worldScreen .dialog-title{ font-size:clamp(15px,2.8cqw,22px); letter-spacing:clamp(1px,.3cqw,2px); }
+.map-viewport > #worldScreen .dialog-header .ghost-btn{ min-width:clamp(52px,10cqw,76px); min-height:clamp(30px,5.6cqw,40px); padding:clamp(4px,1cqw,8px); font-size:clamp(8px,1.2cqw,11px); }
+.map-viewport > #worldScreen .world-head{ flex:none; margin-bottom:clamp(6px,1.3cqw,12px); }
+.map-viewport > #worldScreen .world-head b{ font-size:clamp(13px,2.7cqw,20px); letter-spacing:clamp(1px,.3cqw,2px); }
+.map-viewport > #worldScreen .world-head small{ font-size:clamp(7px,1.45cqw,11px); letter-spacing:clamp(.3px,.12cqw,1px); }
+.map-viewport > #worldScreen .world-map{
+  flex:1 1 auto;
+  min-height:0;
+  overflow:auto;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:clamp(6px,1.5cqw,12px);
+  margin-bottom:clamp(6px,1.2cqw,14px);
+  padding:1px 2px 3px 1px;
+}
+.map-viewport > #worldScreen .fase-node{
+  min-height:clamp(82px,14cqh,132px);
+  padding:clamp(7px,1.7cqw,12px);
+  padding-top:clamp(30px,5.5cqw,46px);
+  border-radius:clamp(10px,1.8cqw,14px);
+  background-color:rgba(8,5,14,.20)!important;
+  border-color:rgba(232,202,129,.58);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 5px 16px rgba(0,0,0,.22);
+}
+.map-viewport > #worldScreen .fase-copy b{ font-size:clamp(10px,1.7cqw,13px); }
+.map-viewport > #worldScreen .fase-copy small{ font-size:clamp(7px,1.1cqw,9px); }
+.map-viewport > #worldScreen .fase-copy em{ font-size:clamp(8px,1.25cqw,10px); }
+.map-viewport > #worldScreen .account-note{
+  flex:none;
+  max-height:clamp(52px,10cqh,76px);
+  overflow:auto;
+  margin:0;
+  padding:clamp(7px,1.4cqw,10px) clamp(8px,1.7cqw,12px);
+  background:rgba(5,9,17,.16)!important;
+  border-color:rgba(232,202,129,.30);
+  font-size:clamp(7px,1.15cqw,11px);
+}
+@media (max-width:600px){
+  .map-viewport > #worldScreen{ border-radius:18px; }
+  .map-viewport > #worldScreen .pro-dialog{ padding:clamp(8px,2.8cqw,12px); }
+  .map-viewport > #worldScreen .world-map{ gap:clamp(5px,1.5cqw,8px); }
+  .map-viewport > #worldScreen .fase-node{ min-height:76px; padding-top:28px; }
+  /* Mantém os nomes grandes sem deixar os três blocos superiores se encostarem. */
+  .map-art .realm-copy{ transform:scaleX(.84); transform-origin:right center; }
+}
+.map-screen.world-picker-open .map-canvas .realm-pin,
+.map-screen.world-picker-open .map-tip{ visibility:hidden; pointer-events:none; }

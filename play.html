@@ -30,7 +30,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
 <link rel="apple-touch-icon" href="assets/icon.svg">
-<link rel="stylesheet" href="styles-v10.css?v=11.0.43">
+<link rel="stylesheet" href="styles-v10.css?v=11.0.44">
 </head>
 <body>
 <div class="scene-bg" data-screen="menu"></div>
@@ -203,14 +203,6 @@
     </div>
     <div class="ability-picker-summary" id="abilityPickerSummary"></div>
     <div class="ability-picker-list" id="abilityPickerList"></div>
-  </div>
-</div>
-<div class="pro-overlay" id="worldScreen" role="dialog" aria-modal="true" aria-labelledby="worldTitle">
-  <div class="pro-dialog">
-    <div class="dialog-header"><h2 class="dialog-title" id="worldTitle">Mundos</h2><button class="ghost-btn" data-close="worldScreen">Fechar</button></div>
-    <div class="world-head" id="worldHead"></div>
-    <div class="world-map" id="worldMap"></div>
-    <p class="account-note" id="worldNote">Cada fase tem 5 níveis — o 5º guarda o CHEFE. Vença o chefe para desbloquear a próxima fase. Os demais reinos serão revelados em breve.</p>
   </div>
 </div>
 <div class="pro-overlay" id="missionReplayScreen" role="dialog" aria-modal="true" aria-labelledby="missionReplayTitle">
@@ -400,7 +392,17 @@
     <div class="map-title"><b>YGDRIA</b><small id="mapSubtitle">Escolha um reino para explorar</small></div>
     <span class="map-topbar-spacer"></span>
   </div>
-  <div class="map-viewport"><div class="map-canvas" id="mapCanvas"></div></div>
+  <div class="map-viewport">
+    <div class="map-canvas" id="mapCanvas"></div>
+    <div class="pro-overlay" id="worldScreen" role="dialog" aria-modal="true" aria-labelledby="worldTitle">
+      <div class="pro-dialog">
+        <div class="dialog-header"><h2 class="dialog-title" id="worldTitle">Mundos</h2><button class="ghost-btn" data-close="worldScreen">Fechar</button></div>
+        <div class="world-head" id="worldHead"></div>
+        <div class="world-map" id="worldMap"></div>
+        <p class="account-note" id="worldNote">Cada fase tem 5 níveis — o 5º guarda o CHEFE. Vença o chefe para desbloquear a próxima fase. Os demais reinos serão revelados em breve.</p>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="boot-screen" id="loginScreen">
   <div class="boot-card">
@@ -467,11 +469,11 @@
   </div>
 </div>
 <script>window.addEventListener('error',function(e){(window.__bootErrors=window.__bootErrors||[]).push({m:String(e.message).slice(0,200),l:e.lineno,c:e.colno})});</script>
-<script src="v10-config.js?v=11.0.43"></script>
-<script src="v10-animations.js?v=11.0.43"></script>
-<script src="humanos-lore-v10.js?v=11.0.43"></script>
+<script src="v10-config.js?v=11.0.44"></script>
+<script src="v10-animations.js?v=11.0.44"></script>
+<script src="humanos-lore-v10.js?v=11.0.44"></script>
 <script src="map-effects-v1.js?v=1.0.0" defer></script>
-<script src="game-v10.js?v=11.0.43" defer></script>
+<script src="game-v10.js?v=11.0.44" defer></script>
 
 </body>
 </html>
