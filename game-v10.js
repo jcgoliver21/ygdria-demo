@@ -9838,7 +9838,7 @@ function renderMapScreen(){
     const liberado=mapMode==='boss'?realmComplete(r.id):!!r.unlocked;
     const pin=document.createElement('button');
     pin.type='button';
-    pin.className='realm-pin'+(liberado?' unlocked':' locked')+(mapMode==='boss'?' pin-boss':'')+(r.x>65?' side-right':r.x<35?' side-left':'');
+    pin.className='realm-pin'+(liberado?' unlocked':' locked')+(mapMode==='boss'?' pin-boss':'');
     pin.style.left=Math.max(4.5,Math.min(94,r.x))+'%';
     pin.style.top=Math.max(5,Math.min(95,r.y))+'%';
     pin.style.setProperty('--realm-c',k.color);

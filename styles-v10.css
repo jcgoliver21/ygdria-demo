@@ -4518,9 +4518,11 @@ body.game-active .battle-row::before{
 .map-viewport > #worldScreen .fase-diff.on{background:linear-gradient(145deg,rgba(255,184,218,.8),rgba(124,33,83,.78));border-color:#ffd9e7;color:#fff;box-shadow:0 0 8px rgba(255,126,188,.32)}
 .map-viewport > #worldScreen .fase-diff.is-locked{opacity:.34;filter:grayscale(.8);cursor:not-allowed}
 .map-viewport > #worldScreen .fase-stars{margin-left:auto;white-space:nowrap;color:#ffe27f;font:900 clamp(10px,1.5cqw,14px)/1 Georgia,serif;letter-spacing:.04em;text-shadow:0 0 5px rgba(255,194,61,.34)}
+.map-viewport > #worldScreen .fase-stars.rank-facil{color:#dca566;text-shadow:0 0 5px rgba(220,165,102,.34)}
+.map-viewport > #worldScreen .fase-stars.rank-normal{color:#e2e8f0;text-shadow:0 0 5px rgba(226,232,240,.3)}
+.map-viewport > #worldScreen .fase-stars.rank-dificil{color:#f5c768;text-shadow:0 0 5px rgba(245,199,104,.4)}
 .map-viewport > #worldScreen .fase-stars.rank-pesadelo{color:#050509;text-shadow:0 0 1px rgba(255,255,255,.92),0 0 4px rgba(0,0,0,.9)}
 .map-viewport > #worldScreen .fase-lock{font-size:clamp(8px,1.2cqw,10px);font-weight:800;color:#d7d2ce;white-space:nowrap}
-.map-art .realm-copy{transform:scaleX(.72);transform-origin:right center}
 @media (max-width:600px){
   .map-viewport > #worldScreen .fase-node{min-height:104px;gap:4px}
   .map-viewport > #worldScreen .fase-card-head{gap:5px;padding-bottom:4px}
@@ -4532,7 +4534,4 @@ body.game-active .battle-row::before{
   .map-viewport > #worldScreen .fase-footer-label{font-size:7px}
   .map-viewport > #worldScreen .fase-diff{width:18px;height:18px;font-size:8px}
   .map-viewport > #worldScreen .fase-stars{font-size:11px}
-  .map-art .realm-copy{transform:scaleX(.54);transform-origin:right center}
 }
-.map-art .realm-pin.side-right{transform:translate(-75%,-50%)}
-.map-art .realm-pin.side-left{transform:translate(-22%,-50%)}

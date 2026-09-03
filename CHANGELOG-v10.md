@@ -9,6 +9,12 @@ Data: 2026-08-14
 - dificuldade F/N/D/P passou para cada fase, com estrelas por seleção e Pesadelo bloqueado até concluir a fase;
 - removido o seletor global de dificuldade das opções e renovado o cache da publicação.
 
+## v11.0.46 — Posições aprovadas e cores de dificuldade
+
+- posições dos nomes e ícones do mapa restauradas ao layout aprovado;
+- estrelas do rodapé agora seguem as cores de Bronze, Prata, Ouro, Cristal e Pesadelo;
+- cache renovado para distribuir a correção.
+
 ## v10.0.21 — Elenco humano completo animado
 
 - inclusão do Soldado da Biblioteca 1 na matriz de animação própria;
