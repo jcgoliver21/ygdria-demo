@@ -2607,7 +2607,7 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
 .map-canvas{ position:relative; width:min(96vw, calc(100vh - 90px), 900px); aspect-ratio:1/1;
   border-radius:14px; overflow:hidden; border:2px solid rgba(212,175,90,.5);
   box-shadow:0 0 50px rgba(0,0,0,.7), 0 0 30px rgba(212,175,90,.15);
-  background-image:url('assets/map/ygdria.png');
+  background-image:url('assets/map/ygdria-designer-v2.png');
   background-size:cover; background-position:center; background-repeat:no-repeat; }
 .realm-pin.locked::before{ content:''; position:absolute; left:50%; top:calc(50% - 34px);
   transform:translate(-50%,-50%); width:200px; height:150px; border-radius:50%;
@@ -2795,8 +2795,8 @@ input, textarea, .save-code{ user-select:text; -webkit-user-select:text; }
   overflow:hidden;
   border:2px solid rgba(231,191,83,.94);
   border-radius:22px;
-  /* A arte canônica continua sendo a fonte das fronteiras e posições. */
-  background:url('assets/map/ygdria-mobile-v4.png') center/100% 100% no-repeat;
+  /* A arte oficial nova continua sendo a fonte das fronteiras e posições. */
+  background:url('assets/map/ygdria-designer-v2.png') center/100% 100% no-repeat;
   box-shadow:0 0 38px rgba(0,0,0,.72),0 0 20px rgba(232,189,74,.24);
 }
 .map-art::before{
@@ -2806,7 +2806,7 @@ input, textarea, .save-code{ user-select:text; -webkit-user-select:text; }
   z-index:1;
   border-radius:inherit;
   background:url('assets/map/ygdria-designer-v2.png') center/100% 100% no-repeat;
-  opacity:.16;
+  opacity:0;
   mix-blend-mode:soft-light;
   filter:saturate(1.12) contrast(1.08);
   pointer-events:none;
@@ -2951,7 +2951,7 @@ body.game-active #gameScreen{ padding-bottom:max(4px, env(safe-area-inset-bottom
 /* Fundo do menu = o próprio Mapa de Ygdria; sem título redundante flutuando */
 h1.maintitle{ display:none; }
 .scene-bg[data-screen="menu"]{
-  background-image:linear-gradient(180deg,rgba(5,4,12,.42) 0%,rgba(5,4,12,.6) 55%,rgba(4,3,10,.85) 100%),url('assets/map/ygdria.png');
+  background-image:linear-gradient(180deg,rgba(5,4,12,.42) 0%,rgba(5,4,12,.6) 55%,rgba(4,3,10,.85) 100%),url('assets/map/ygdria-designer-v2.png');
   filter:saturate(.95);
 }
 /* Cartão do menu: menos roxo, mais realeza — quase-preto azulado com dourado */
@@ -2994,7 +2994,7 @@ h1.maintitle{ display:none; }
 
 /* ===== v9.1 · Menu em VIDRO FOSCO: o Mapa de Ygdria atravessa o cartão ===== */
 .scene-bg[data-screen="menu"]{
-  background-image:linear-gradient(180deg,rgba(5,4,12,.22) 0%,rgba(5,4,12,.38) 55%,rgba(4,3,10,.66) 100%),url('assets/map/ygdria.png');
+  background-image:linear-gradient(180deg,rgba(5,4,12,.22) 0%,rgba(5,4,12,.38) 55%,rgba(4,3,10,.66) 100%),url('assets/map/ygdria-designer-v2.png');
 }
 .menu-card{
   background:

@@ -5345,7 +5345,7 @@ function applyI18nArtCss(){
   let st=document.getElementById('i18nArtCss');
   if(!st){ st=document.createElement('style'); st.id='i18nArtCss'; document.head.appendChild(st); }
   if(lang==='pt'){ st.textContent=''; return; }
-  const mapa='assets/map/ygdria.png', mapaL='assets/i18n/'+lang+'/'+mapa;
+  const mapa='assets/map/ygdria-designer-v2.png', mapaL='assets/i18n/'+lang+'/'+mapa;
   st.textContent=`.map-canvas{background-image:url('${mapaL}'),url('${mapa}');}
 .scene-bg[data-screen="menu"]{background-image:linear-gradient(180deg,rgba(5,4,12,.22) 0%,rgba(5,4,12,.38) 55%,rgba(4,3,10,.66) 100%),url('${mapaL}'),url('${mapa}');}`;
 }
