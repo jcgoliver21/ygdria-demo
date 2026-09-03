@@ -2,6 +2,13 @@
 
 Data: 2026-08-14
 
+## v11.0.45 — Seletor de fases revisado
+
+- subtítulos do mapa e das fases ampliados, preservando a leitura do mapa vertical;
+- fases reorganizadas em cabeçalho, conteúdo e rodapé;
+- dificuldade F/N/D/P passou para cada fase, com estrelas por seleção e Pesadelo bloqueado até concluir a fase;
+- removido o seletor global de dificuldade das opções e renovado o cache da publicação.
+
 ## v10.0.21 — Elenco humano completo animado
 
 - inclusão do Soldado da Biblioteca 1 na matriz de animação própria;

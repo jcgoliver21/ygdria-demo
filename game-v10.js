@@ -5408,7 +5408,6 @@ const STATIC_I18N=[
   ["#optMusicVolumeLabel","Música dinâmica","Dynamic music","Música dinámica"],
   ["#optStageMusicVolumeLabel","Trilha da fase","Stage soundtrack","Banda sonora de la fase"],
   ["#optSfxVolumeLabel","Efeitos sonoros","Sound effects","Efectos de sonido"],
-  ["#optDifficultyLabel","Dificuldade","Difficulty","Dificultad"],
   ["#optLanguageLabel","Idioma / Language","Language / Idioma","Idioma / Language"],
   ["#optProgressLabel","Progresso","Progress","Progreso"],
   ["#optQualityLabel","Qualidade gráfica","Graphics quality","Calidad gráfica"],
@@ -5419,10 +5418,6 @@ const STATIC_I18N=[
   ["#qualitySelect option[value=\"high\"]","Alta","High","Alta"],
   ["#qualitySelect option[value=\"medium\"]","Média","Medium","Media"],
   ["#qualitySelect option[value=\"economy\"]","Econômica","Economy","Económica"],
-  ["#diffGroup [data-diff=\"facil\"]","Fácil","Easy","Fácil"],
-  ["#diffGroup [data-diff=\"normal\"]","Normal","Normal","Normal"],
-  ["#diffGroup [data-diff=\"dificil\"]","Difícil","Hard","Difícil"],
-  ["#diffGroup [data-diff=\"pesadelo\"]","Pesadelo","Nightmare","Pesadilla"],
   ["#exportSaveBtn","Exportar","Export","Exportar"],
   ["#importSaveBtn","Importar","Import","Importar"],
   ["#optReduceLabel","Reduzir animações","Reduce animations","Reducir animaciones"],
@@ -9843,7 +9838,7 @@ function renderMapScreen(){
     const liberado=mapMode==='boss'?realmComplete(r.id):!!r.unlocked;
     const pin=document.createElement('button');
     pin.type='button';
-    pin.className='realm-pin'+(liberado?' unlocked':' locked')+(mapMode==='boss'?' pin-boss':'');
+    pin.className='realm-pin'+(liberado?' unlocked':' locked')+(mapMode==='boss'?' pin-boss':'')+(r.x>65?' side-right':r.x<35?' side-left':'');
     pin.style.left=Math.max(4.5,Math.min(94,r.x))+'%';
     pin.style.top=Math.max(5,Math.min(95,r.y))+'%';
     pin.style.setProperty('--realm-c',k.color);
@@ -9961,6 +9956,20 @@ const DIFFICULTY_ORDER=['facil','normal','dificil','pesadelo'];
 const DIFFICULTY_RANKS={facil:'Bronze',normal:'Prata',dificil:'Ouro',pesadelo:'Cristal'};
 function nextDifficulty(value){ const i=DIFFICULTY_ORDER.indexOf(value); return DIFFICULTY_ORDER[Math.min(DIFFICULTY_ORDER.length-1,Math.max(0,i+1))]||'normal'; }
 function difficultyLabel(value){ return {facil:'Fácil',normal:'Normal',dificil:'Difícil',pesadelo:'Pesadelo'}[value]||'Normal'; }
+function nightmareUnlockedForPhase(prog,phaseIdx){
+  /* Pesadelo só aparece depois que a fase inteira (os cinco níveis) foi vencida. */
+  return storyPhaseDone(phaseIdx)
+    || Number(prog?.stars?.[phaseIdx]||0)>0
+    || DIFFICULTY_ORDER.some(d=>Number(prog?.starsByDifficulty?.[d]?.[phaseIdx]||0)>0);
+}
+function phaseStarsForDifficulty(prog,phaseIdx,diff){
+  const raw=Number(prog?.starsByDifficulty?.[diff]?.[phaseIdx]||0);
+  return Math.max(0,Math.min(3,Number.isFinite(raw)?raw:0));
+}
+function difficultyInitial(diff){ return {facil:'F',normal:'N',dificil:'D',pesadelo:'P'}[diff]||'N'; }
+function phaseDifficultyMarkup(selected,nightmareUnlocked){
+  return DIFFICULTY_ORDER.map(d=>`<span class="fase-diff${selected===d?' on':''}${d==='pesadelo'&&!nightmareUnlocked?' is-locked':''}" data-d="${d}" role="button" tabindex="0" aria-pressed="${selected===d?'true':'false'}" aria-disabled="${d==='pesadelo'&&!nightmareUnlocked?'true':'false'}" title="${d==='pesadelo'&&!nightmareUnlocked?T('Conclua todos os níveis para liberar Pesadelo','Complete all levels to unlock Nightmare','Completa todos los niveles para desbloquear Pesadilla'):difficultyLabel(d)}">${difficultyInitial(d)}</span>`).join('');
+}
 function startWorldFase(faseIdx,options={}){
   armTapGuard();
   const prog=worldProg('humanos');
@@ -9994,27 +10003,39 @@ function renderWorldMap(){
   const ft=faseTime();
   world.fases.forEach((fase,idx)=>{
     const locked=idx>worldAccessLimit('humanos',prog);
-    const stars=prog.stars[idx]||0;
-    const rankHtml=DIFFICULTY_ORDER.map(d=>`<small class="fase-rank rank-${d}">${DIFFICULTY_RANKS[d]} ${'★'.repeat(prog.starsByDifficulty?.[d]?.[idx]||0)}${'☆'.repeat(3-(prog.starsByDifficulty?.[d]?.[idx]||0))}</small>`).join('');
+    const nightmareUnlocked=nightmareUnlockedForPhase(prog,idx);
+    const selectedDifficulty=(difficulty==='pesadelo'&&!nightmareUnlocked)?'normal':(DIFFICULTY_ORDER.includes(difficulty)?difficulty:'normal');
+    const selectedStars=phaseStarsForDifficulty(prog,idx,selectedDifficulty);
     const node=document.createElement('button');
     node.className='fase-node'+(locked?' locked':'');
     node.style.setProperty('--fase-c', (KINGDOMS.find(k=>k.id===world.id)||{}).color||'#d4af5a');
     node.disabled=locked;
     node.style.backgroundImage=`linear-gradient(rgba(4,2,8,.08),rgba(4,2,8,.68)),url('${fase.bg}')`;
-    node.innerHTML=`<span class="fase-num">${idx+1}</span>
-      <span class="fase-copy"><b>${L(fase.nome)}</b><small>${L(fase.sub)}</small>
-      ${fase.rec?`<small class="fase-rec">🎴 ${T('Recomendado','Recommended','Recomendado')}: ${L(fase.rec)}</small>`:''}
-      ${fb[idx]?`<small class="fase-best">⏱ ${T('Recorde','Record','Récord')}: ${fb[idx]} ${T('turnos','turns','turnos')}${ft[idx]?` · 🕐 ${fmtTempo(ft[idx])}`:''}</small>`:''}
-      ${!locked?`<span class="fase-diffs" role="group" aria-label="${T('Dificuldade','Difficulty','Dificultad')}"><i data-d="facil" class="${difficulty==='facil'?'on':''}">F</i><i data-d="normal" class="${difficulty==='normal'?'on':''}">N</i><i data-d="dificil" class="${difficulty==='dificil'?'on':''}">D</i><i data-d="pesadelo" class="${difficulty==='pesadelo'?'on':''}">P</i></span>`:''}
-      <div class="fase-ranks">${locked?'':rankHtml}</div><em>${locked?'🔒 '+T('Bloqueada','Locked','Bloqueada'):(stars?'★'.repeat(stars)+'☆'.repeat(3-stars):T('5 missões · chefe no final','5 missions · boss at the end','5 misiones · jefe al final'))}</em></span>`;
-    node.querySelectorAll('.fase-diffs i').forEach(pill=>pill.addEventListener('click',ev=>{
-      ev.stopPropagation();
-      difficulty=pill.dataset.d;
-      localStorage.setItem('12r_difficulty',difficulty);
-      node.querySelectorAll('.fase-diffs i').forEach(x=>x.classList.toggle('on',x===pill));
-      sfxSelect();
-    }));
-    node.addEventListener('click',()=>storyPhaseDone(idx)?openMissionReplay(idx):startWorldFase(idx));
+    node.innerHTML=`<span class="fase-card-head"><span class="fase-num">${idx+1}</span><span class="fase-head-copy"><b>${L(fase.nome)}</b><small>${L(fase.sub)}</small></span></span>
+      <span class="fase-card-body">${fase.rec?`<small class="fase-rec">${T('Recomendado','Recommended','Recomendado')}: ${L(fase.rec)}</small>`:''}${fb[idx]?`<small class="fase-best">${T('Recorde','Record','Récord')}: ${fb[idx]} ${T('turnos','turns','turnos')}${ft[idx]?` · ${T('tempo','time','tiempo')}: ${fmtTempo(ft[idx])}`:''}</small>`:''}</span>
+      <span class="fase-footer">${locked?`<span class="fase-lock">🔒 ${T('Bloqueada','Locked','Bloqueada')}</span>`:`<span class="fase-footer-label">${T('Dificuldade','Difficulty','Dificultad')}:</span><span class="fase-diffs" role="group" aria-label="${T('Dificuldade','Difficulty','Dificultad')}">${phaseDifficultyMarkup(selectedDifficulty,nightmareUnlocked)}</span><span class="fase-stars rank-${selectedDifficulty}" aria-label="${difficultyLabel(selectedDifficulty)}: ${selectedStars}/3">${'★'.repeat(selectedStars)}${'☆'.repeat(3-selectedStars)}</span>`}</span>`;
+    node.querySelectorAll('.fase-diff').forEach(pill=>{
+      const chooseDifficulty=ev=>{
+        ev.preventDefault();
+        ev.stopPropagation();
+        const next=pill.dataset.d;
+        if(next==='pesadelo'&&!nightmareUnlocked){ sfxInvalid(); return; }
+        difficulty=next;
+        localStorage.setItem('12r_difficulty',difficulty);
+        node.querySelectorAll('.fase-diff').forEach(x=>{ x.classList.toggle('on',x.dataset.d===next); x.setAttribute('aria-pressed',x.dataset.d===next?'true':'false'); });
+        const starEl=node.querySelector('.fase-stars');
+        const count=phaseStarsForDifficulty(prog,idx,next);
+        if(starEl){ starEl.className=`fase-stars rank-${next}`; starEl.textContent='★'.repeat(count)+'☆'.repeat(3-count); starEl.setAttribute('aria-label',`${difficultyLabel(next)}: ${count}/3`); }
+        sfxSelect();
+      };
+      pill.addEventListener('click',chooseDifficulty);
+      pill.addEventListener('keydown',ev=>{ if(ev.key==='Enter'||ev.key===' '){ chooseDifficulty(ev); } });
+    });
+    node.addEventListener('click',ev=>{
+      if(ev.target.closest('.fase-diff')) return;
+      if(difficulty==='pesadelo'&&!nightmareUnlocked){ difficulty='normal'; localStorage.setItem('12r_difficulty',difficulty); }
+      storyPhaseDone(idx)?openMissionReplay(idx):startWorldFase(idx);
+    });
     map.appendChild(node);
   });
 }
@@ -10022,13 +10043,6 @@ function renderWorldMap(){
 /* v9.1 · Modos, dificuldade e economia: inicialização */
 function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 (function initV91(){
-  document.querySelectorAll('#diffGroup [data-diff]').forEach(b=>b.addEventListener('click',()=>{
-    if(towerMode){ sfxInvalid(); return; } /* a Torre trava no Pesadelo */
-    difficulty=b.dataset.diff;
-    localStorage.setItem('12r_difficulty',difficulty);
-    applyDifficultyUI();
-  }));
-  applyDifficultyUI();
   const dailyHint=document.getElementById('dailyHint');
   let rec={}; try{ rec=JSON.parse(localStorage.getItem('12r_daily')||'{}'); }catch(e){}
   if(!rec||typeof rec!=='object'||Array.isArray(rec)) rec={};

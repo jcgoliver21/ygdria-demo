@@ -4393,7 +4393,7 @@ body.game-active .battle-row::before{
   line-height:1.02;
 }
 .map-art .realm-subtitle{
-  font-size:clamp(6.5px,.62cqw,8px);
+  font-size:clamp(13px,1.24cqw,16px);
   line-height:1.08;
 }
 .map-viewport > #worldScreen{
@@ -4449,7 +4449,7 @@ body.game-active .battle-row::before{
 .map-viewport > #worldScreen .dialog-header .ghost-btn{ min-width:clamp(52px,10cqw,76px); min-height:clamp(30px,5.6cqw,40px); padding:clamp(4px,1cqw,8px); font-size:clamp(8px,1.2cqw,11px); }
 .map-viewport > #worldScreen .world-head{ flex:none; margin-bottom:clamp(6px,1.3cqw,12px); }
 .map-viewport > #worldScreen .world-head b{ font-size:clamp(13px,2.7cqw,20px); letter-spacing:clamp(1px,.3cqw,2px); }
-.map-viewport > #worldScreen .world-head small{ font-size:clamp(7px,1.45cqw,11px); letter-spacing:clamp(.3px,.12cqw,1px); }
+.map-viewport > #worldScreen .world-head small{ font-size:clamp(11px,2.4cqw,16px); letter-spacing:clamp(.3px,.12cqw,1px); }
 .map-viewport > #worldScreen .world-map{
   flex:1 1 auto;
   min-height:0;
@@ -4491,3 +4491,48 @@ body.game-active .battle-row::before{
 }
 .map-screen.world-picker-open .map-canvas .realm-pin,
 .map-screen.world-picker-open .map-tip{ visibility:hidden; pointer-events:none; }
+
+/* v11.0.45 · Cabeçalho limpo e rodapé de dificuldade por fase. */
+.map-viewport > #worldScreen .fase-node{
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  justify-content:space-between;
+  gap:clamp(4px,1cqw,8px);
+  min-height:clamp(102px,15cqh,132px);
+  padding:clamp(8px,1.7cqw,12px)!important;
+  text-align:left;
+}
+.map-viewport > #worldScreen .fase-card-head{display:flex;align-items:flex-start;gap:clamp(6px,1.2cqw,10px);min-width:0;padding-bottom:clamp(5px,1cqw,8px);border-bottom:1px solid rgba(255,225,154,.28)}
+.map-viewport > #worldScreen .fase-card-head .fase-num{position:relative;inset:auto;flex:0 0 auto;width:clamp(25px,4.6cqw,34px);height:clamp(25px,4.6cqw,34px);margin:0;display:grid;place-items:center}
+.map-viewport > #worldScreen .fase-head-copy{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.map-viewport > #worldScreen .fase-head-copy b{display:block;min-width:0;font-size:clamp(10px,1.7cqw,13px);line-height:1.1;white-space:normal}
+.map-viewport > #worldScreen .fase-head-copy small{display:block;font-size:clamp(10px,1.7cqw,13px);line-height:1.08;white-space:normal}
+.map-viewport > #worldScreen .fase-card-body{display:flex;flex-direction:column;justify-content:center;gap:2px;flex:1;min-height:0}
+.map-viewport > #worldScreen .fase-card-body small{display:block;font-size:clamp(7px,1.05cqw,9px);line-height:1.15;white-space:normal}
+.map-viewport > #worldScreen .fase-footer{display:flex;align-items:center;gap:clamp(3px,.7cqw,6px);flex-wrap:wrap;min-height:clamp(21px,3.6cqh,30px);padding-top:clamp(4px,.8cqw,7px);border-top:1px solid rgba(255,225,154,.28);color:#f9e5af}
+.map-viewport > #worldScreen .fase-footer-label{font-size:clamp(7px,1cqw,9px);font-weight:800;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;color:#ffe3a1}
+.map-viewport > #worldScreen .fase-diffs{display:inline-flex;align-items:center;gap:3px;margin:0}
+.map-viewport > #worldScreen .fase-diff{display:inline-grid;place-items:center;width:clamp(17px,2.9cqw,23px);height:clamp(17px,2.9cqw,23px);padding:0;border:1px solid rgba(255,226,164,.55);border-radius:6px;background:rgba(10,7,17,.68);color:#d6c7b0;font:800 clamp(8px,1.1cqw,10px)/1 system-ui,sans-serif;cursor:pointer;user-select:none;transition:transform .16s ease,background .16s ease,border-color .16s ease,color .16s ease}
+.map-viewport > #worldScreen .fase-diff:hover{transform:translateY(-1px);border-color:#ffe4a0;color:#fff1c4}
+.map-viewport > #worldScreen .fase-diff.on{background:linear-gradient(145deg,rgba(255,184,218,.8),rgba(124,33,83,.78));border-color:#ffd9e7;color:#fff;box-shadow:0 0 8px rgba(255,126,188,.32)}
+.map-viewport > #worldScreen .fase-diff.is-locked{opacity:.34;filter:grayscale(.8);cursor:not-allowed}
+.map-viewport > #worldScreen .fase-stars{margin-left:auto;white-space:nowrap;color:#ffe27f;font:900 clamp(10px,1.5cqw,14px)/1 Georgia,serif;letter-spacing:.04em;text-shadow:0 0 5px rgba(255,194,61,.34)}
+.map-viewport > #worldScreen .fase-stars.rank-pesadelo{color:#050509;text-shadow:0 0 1px rgba(255,255,255,.92),0 0 4px rgba(0,0,0,.9)}
+.map-viewport > #worldScreen .fase-lock{font-size:clamp(8px,1.2cqw,10px);font-weight:800;color:#d7d2ce;white-space:nowrap}
+.map-art .realm-copy{transform:scaleX(.72);transform-origin:right center}
+@media (max-width:600px){
+  .map-viewport > #worldScreen .fase-node{min-height:104px;gap:4px}
+  .map-viewport > #worldScreen .fase-card-head{gap:5px;padding-bottom:4px}
+  .map-viewport > #worldScreen .fase-card-head .fase-num{width:27px;height:27px;font-size:13px}
+  .map-viewport > #worldScreen .fase-head-copy b{font-size:clamp(9px,2.8cqw,12px)}
+  .map-viewport > #worldScreen .fase-head-copy small{font-size:clamp(9px,2.5cqw,11px)}
+  .map-viewport > #worldScreen .fase-card-body small{font-size:clamp(6.5px,1.8cqw,8px)}
+  .map-viewport > #worldScreen .fase-footer{gap:3px;min-height:23px;padding-top:4px}
+  .map-viewport > #worldScreen .fase-footer-label{font-size:7px}
+  .map-viewport > #worldScreen .fase-diff{width:18px;height:18px;font-size:8px}
+  .map-viewport > #worldScreen .fase-stars{font-size:11px}
+  .map-art .realm-copy{transform:scaleX(.54);transform-origin:right center}
+}
+.map-art .realm-pin.side-right{transform:translate(-75%,-50%)}
+.map-art .realm-pin.side-left{transform:translate(-22%,-50%)}
