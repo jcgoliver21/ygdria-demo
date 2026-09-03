@@ -37,6 +37,10 @@ test('fluxo real abre seletor, monta equipe e inicia tabuleiro',async({page})=>{
   await expect(page.locator('#startBtn')).toBeEnabled();
   await page.click('#startBtn');
   await expect(page.locator('#gameScreen')).toBeVisible();
+  await expect(page.locator('#introScreen')).not.toHaveClass(/show/);
+  await page.evaluate(()=>{ while(storyQueue.length) advanceStory(); });
+  await expect(page.locator('#gameScreen')).toBeVisible();
+  await expect(page.locator('#introScreen')).not.toHaveClass(/show/);
   await expect(page.locator('.hero-unit')).toHaveCount(4);
   await expect(page.locator('.board .gem')).toHaveCount(36);
   expect(errors).toEqual([]);
@@ -1929,9 +1933,9 @@ test('storage legado null não quebra boot, galeria, conquistas nem handlers',as
   await page.locator('[data-close="galleryScreen"]').click();
 
   await page.locator('#achBtn').click();
-  await expect(page.locator('#achScreen')).toHaveClass(/show/);
-  await expect(page.locator('#achGrid')).toBeVisible();
-  await page.locator('[data-close="achScreen"]').click();
+  await expect(page.locator('#accountScreen')).toHaveClass(/show/);
+  await expect(page.locator('#accountInfo')).toBeVisible();
+  await page.locator('[data-close="accountScreen"]').click();
 
   expect(await page.locator('#dailyHint').textContent()).toBeTruthy();
   expect(await page.locator('#dailyBtn').isEnabled()).toBe(true);
