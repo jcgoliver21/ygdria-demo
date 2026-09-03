@@ -9847,9 +9847,9 @@ function renderMapScreen(){
       <span class="realm-copy">
         <span class="realm-name">${escapeHtml(L(k.reino))}</span>
         <span class="realm-subtitle">${escapeHtml(r.subtitulo||'')}</span>
-        ${liberado?`<span class="pin-label">${mapMode==='boss'?T('DESAFIAR','CHALLENGE','DESAFIAR'):T('ENTRAR','ENTER','ENTRAR')}</span>`:''}
       </span>
-      <span class="pin-gem"><svg viewBox="0 0 24 24">${KINGDOM_ICON[r.id]||''}</svg>${liberado?(mapMode==='boss'?'<i class="pin-crown">🏆</i>':''):'<i class="pin-lock">🔒</i>'}</span>`;
+      <span class="pin-gem"><svg viewBox="0 0 24 24">${KINGDOM_ICON[r.id]||''}</svg>${liberado?(mapMode==='boss'?'<i class="pin-crown">🏆</i>':''):'<i class="pin-lock">🔒</i>'}</span>
+      ${liberado?`<span class="pin-label">${mapMode==='boss'?T('DESAFIAR','CHALLENGE','DESAFIAR'):T('ENTRAR','ENTER','ENTRAR')}</span>`:''}`;
     pin.addEventListener('click',()=>{
       if(!liberado){
         sfxInvalid();

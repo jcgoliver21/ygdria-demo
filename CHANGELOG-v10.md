@@ -2,6 +2,12 @@
 
 Data: 2026-08-14
 
+## v11.0.48 — Ícones centralizados nos reinos
+
+- ícones dos reinos posicionados abaixo dos subtítulos;
+- nomes e subtítulos centralizados sem alterar as coordenadas do mapa;
+- cache renovado para distribuir a revisão.
+
 ## v11.0.45 — Seletor de fases revisado
 
 - subtítulos do mapa e das fases ampliados, preservando a leitura do mapa vertical;
