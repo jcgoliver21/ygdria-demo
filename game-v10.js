@@ -9835,10 +9835,12 @@ function renderMapScreen(){
     pin.style.setProperty('--realm-c',k.color);
     pin.setAttribute('aria-label',L(k.reino)+(liberado?'':' — '+(mapMode==='boss'?T('finalize o reino para liberar','finish the realm to unlock','termina el reino para desbloquear'):T('em breve','coming soon','próximamente'))));
     pin.innerHTML=`
-      <span class="pin-gem"><svg viewBox="0 0 24 24">${KINGDOM_ICON[r.id]||''}</svg>${liberado?(mapMode==='boss'?'<i class="pin-crown">🏆</i>':''):'<i class="pin-lock">🔒</i>'}</span>
-      <span class="realm-name">${escapeHtml(L(k.reino))}</span>
-      <span class="realm-subtitle">${escapeHtml(r.subtitulo||'')}</span>
-      ${liberado?`<span class="pin-label">${mapMode==='boss'?T('DESAFIAR','CHALLENGE','DESAFIAR'):T('ENTRAR','ENTER','ENTRAR')}</span>`:''}`;
+      <span class="realm-copy">
+        <span class="realm-name">${escapeHtml(L(k.reino))}</span>
+        <span class="realm-subtitle">${escapeHtml(r.subtitulo||'')}</span>
+        ${liberado?`<span class="pin-label">${mapMode==='boss'?T('DESAFIAR','CHALLENGE','DESAFIAR'):T('ENTRAR','ENTER','ENTRAR')}</span>`:''}
+      </span>
+      <span class="pin-gem"><svg viewBox="0 0 24 24">${KINGDOM_ICON[r.id]||''}</svg>${liberado?(mapMode==='boss'?'<i class="pin-crown">🏆</i>':''):'<i class="pin-lock">🔒</i>'}</span>`;
     pin.addEventListener('click',()=>{
       if(!liberado){
         sfxInvalid();
@@ -9984,7 +9986,7 @@ function renderWorldMap(){
     node.className='fase-node'+(locked?' locked':'');
     node.style.setProperty('--fase-c', (KINGDOMS.find(k=>k.id===world.id)||{}).color||'#d4af5a');
     node.disabled=locked;
-    node.style.backgroundImage=`linear-gradient(rgba(4,2,8,.25),rgba(4,2,8,.9)),url('${fase.bg}')`;
+    node.style.backgroundImage=`linear-gradient(rgba(4,2,8,.08),rgba(4,2,8,.68)),url('${fase.bg}')`;
     node.innerHTML=`<span class="fase-num">${idx+1}</span>
       <span class="fase-copy"><b>${L(fase.nome)}</b><small>${L(fase.sub)}</small>
       ${fase.rec?`<small class="fase-rec">🎴 ${T('Recomendado','Recommended','Recomendado')}: ${L(fase.rec)}</small>`:''}

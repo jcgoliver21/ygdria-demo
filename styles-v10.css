@@ -2575,6 +2575,23 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
 .fase-copy b{ display:block; font-size:13px; color:#fff3d6; text-shadow:0 1px 3px #000; }
 .fase-copy small{ display:block; font-size:9px; opacity:.8; letter-spacing:.5px; }
 .fase-copy em{ display:block; font-style:normal; font-size:10px; color:#ffd75e; margin-top:4px; letter-spacing:1px; }
+/* Seletor de fases sobre o mapa: o mapa permanece visível sob o vidro. */
+#worldScreen{
+  background:rgba(3,7,15,.34);
+  backdrop-filter:blur(3px) saturate(1.08);
+}
+#worldScreen .pro-dialog{
+  background:linear-gradient(155deg,rgba(27,20,42,.82),rgba(7,9,18,.68) 78%);
+  backdrop-filter:blur(14px) saturate(1.12);
+  border-color:rgba(232,202,129,.7);
+  box-shadow:0 24px 80px rgba(0,0,0,.55),0 0 34px rgba(74,103,153,.2);
+}
+#worldScreen .fase-node{
+  background-color:rgba(8,5,14,.28);
+  border-color:rgba(232,202,129,.5);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 8px 22px rgba(0,0,0,.28);
+}
+#worldScreen .world-head small,#worldScreen .account-note{ color:#e6d7b5; }
 /* v9.1 · Mapa de Ygdria */
 .map-screen{ position:fixed; inset:0; z-index:120; display:none; flex-direction:column;
   background:radial-gradient(ellipse at 50% 0%,#152238 0%,transparent 60%),linear-gradient(180deg,#0a1020 0%,#060912 100%); }
@@ -2595,14 +2612,15 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
 .realm-pin.locked::before{ content:''; position:absolute; left:50%; top:calc(50% - 34px);
   transform:translate(-50%,-50%); width:200px; height:150px; border-radius:50%;
   background:radial-gradient(ellipse, rgba(4,6,14,.5), transparent 68%); z-index:-1; pointer-events:none; }
-.realm-pin{ position:absolute; transform:translate(-50%,-50%); display:flex; flex-direction:column; align-items:center; gap:3px;
+.realm-pin{ position:absolute; transform:translate(-50%,-50%); display:flex; flex-direction:row; align-items:center; justify-content:center; gap:clamp(3px,.6cqw,7px);
   background:transparent; border:none; cursor:pointer; padding:6px; z-index:5; }
+.realm-copy{ display:flex; flex:0 1 auto; min-width:0; flex-direction:column; align-items:flex-end; justify-content:center; text-align:right; }
 .pin-gem{ position:relative; width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center;
   background:radial-gradient(circle at 32% 28%, color-mix(in srgb,var(--realm-c,#d4af5a) 60%,#fff) 0%, var(--realm-c,#d4af5a) 50%, #0a0712 130%);
   border:2px solid rgba(255,240,200,.85); box-shadow:0 3px 10px rgba(0,0,0,.7), 0 0 14px var(--realm-c,#d4af5a); }
 .pin-gem svg{ width:22px; height:22px; filter:drop-shadow(0 1px 2px rgba(0,0,0,.8)); }
 .pin-label{ font-size:9px; font-weight:bold; letter-spacing:.5px; color:#fff3d6; text-shadow:0 1px 3px #000,0 0 8px #000;
-  background:rgba(6,4,10,.65); padding:2px 7px; border-radius:8px; border:1px solid rgba(212,175,90,.4); white-space:nowrap; }
+  background:rgba(6,4,10,.65); padding:2px 7px; border-radius:8px; border:1px solid rgba(212,175,90,.4); white-space:nowrap; align-self:flex-end; }
 .realm-pin.locked .pin-gem{ filter:grayscale(.95) brightness(.55); border-color:rgba(160,160,160,.5); box-shadow:0 3px 8px rgba(0,0,0,.7); }
 .realm-pin.locked .pin-label{ opacity:.6; }
 .pin-lock{ position:absolute; bottom:-4px; right:-6px; font-size:14px; font-style:normal; filter:none; }
@@ -2777,8 +2795,21 @@ input, textarea, .save-code{ user-select:text; -webkit-user-select:text; }
   overflow:hidden;
   border:2px solid rgba(231,191,83,.94);
   border-radius:22px;
+  /* A arte canônica continua sendo a fonte das fronteiras e posições. */
   background:url('assets/map/ygdria-mobile-v4.png') center/100% 100% no-repeat;
   box-shadow:0 0 38px rgba(0,0,0,.72),0 0 20px rgba(232,189,74,.24);
+}
+.map-art::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  z-index:1;
+  border-radius:inherit;
+  background:url('assets/map/ygdria-designer-v2.png') center/100% 100% no-repeat;
+  opacity:.16;
+  mix-blend-mode:soft-light;
+  filter:saturate(1.12) contrast(1.08);
+  pointer-events:none;
 }
 .ygdria-map-fx{
   position:absolute;
@@ -2808,30 +2839,44 @@ input, textarea, .save-code{ user-select:text; -webkit-user-select:text; }
 }
   .realm-name{
   display:block;
-  max-width:clamp(62px,14cqw,135px);
+  max-width:none;
   color:#fff2cf;
-  font:700 clamp(7px,1.5cqw,13px)/1.05 Georgia,serif;
+  font:700 clamp(7px,1.15cqw,11px)/1.05 Georgia,serif;
   letter-spacing:.03em;
-  text-align:center;
-    text-shadow:0 1px 3px #000,0 0 6px #000;
+  text-align:right;
+  white-space:nowrap;
+  text-shadow:0 1px 3px #000,0 0 6px #000;
   }
   .realm-subtitle{
     display:block;
-    max-width:clamp(86px,20cqw,190px);
+    max-width:none;
     color:#f1ddb2;
-    font:500 clamp(6px,1.05cqw,11px)/1.1 Georgia,serif;
+    font:500 clamp(5.5px,.8cqw,9px)/1.1 Georgia,serif;
     letter-spacing:.01em;
-    text-align:center;
+    text-align:right;
     white-space:nowrap;
     text-shadow:0 1px 3px #000,0 0 6px #000;
   }
 .map-art .realm-pin{ z-index:5; }
+/* Pins compactos: a identificação fica em uma linha e o ícone permanece à direita
+   mesmo nos três blocos superiores e nos reinos laterais. */
+.map-art .realm-pin{ gap:clamp(2px,.35cqw,4px); padding:3px; }
+.map-art .realm-copy{ max-width:none; }
+.map-art .pin-gem{ width:clamp(18px,3.2cqw,30px); height:clamp(18px,3.2cqw,30px); }
+.map-art .pin-gem svg{ width:46%; height:46%; }
+.map-art .realm-name{ font-size:clamp(6.5px,.62cqw,8px); letter-spacing:-.01em; }
+.map-art .realm-subtitle{ font-size:clamp(5.4px,.45cqw,6px); letter-spacing:-.01em; }
+.map-art .pin-label{ font-size:clamp(5.2px,.5cqw,6.5px); padding:1px 4px; }
 @media (prefers-reduced-motion:reduce){
   .ygdria-map-fx{ opacity:.78; }
 }
 @media (max-width:600px){
   .map-art{ border-radius:18px; }
   .map-art::after{ bottom:5px; }
+}
+@media (min-width:601px){
+  .realm-name{ font-size:clamp(7px,.82cqw,10px); }
+  .realm-subtitle{ font-size:clamp(5.5px,.58cqw,8px); }
 }
 /* (11) halo dos reinos bloqueados proporcional ao mapa */
 .realm-pin.locked::before{ width:min(200px,50%); height:min(150px,38%); }

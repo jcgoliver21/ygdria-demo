@@ -61,6 +61,8 @@ test('mapa vertical mantém os doze reinos e desktop só acrescenta oceano later
   expect(mobile.radius).not.toBe('0px');
 
   await page.setViewportSize({width:1920,height:1080});
+  await expect(page.locator('#mapScreen')).toHaveClass(/show/);
+  await expect(page.locator('#mapCanvas .map-art')).toBeVisible();
   const desktop=await page.locator('.map-art').evaluate(art=>{
     const rect=art.getBoundingClientRect();
     const viewport=art.parentElement.getBoundingClientRect();
@@ -69,6 +71,22 @@ test('mapa vertical mantém os doze reinos e desktop só acrescenta oceano later
   expect(desktop.height).toBeGreaterThan(desktop.width);
   expect(desktop.leftGap).toBeGreaterThan(400);
   expect(desktop.rightGap).toBeGreaterThan(400);
+  expect(errors).toEqual([]);
+});
+
+test('seletor de fases abre translúcido sobre o mapa ao tocar no reino',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.setViewportSize({width:390,height:844});
+  await page.click('#playBtn');
+  await page.waitForTimeout(400);
+  await page.locator('#mapCanvas .realm-pin.unlocked').click();
+  await expect(page.locator('#mapScreen')).toHaveClass(/show/);
+  await expect(page.locator('#worldScreen')).toHaveClass(/show/);
+  await expect(page.locator('#worldMap .fase-node')).toHaveCount(10);
+  const overlay=await page.locator('#worldScreen').evaluate(el=>({background:getComputedStyle(el).backgroundColor,backdrop:getComputedStyle(el).backdropFilter}));
+  expect(overlay.background).toBe('rgba(3, 7, 15, 0.34)');
+  expect(overlay.backdrop).toContain('blur(3px)');
+  expect(await page.locator('#worldMap .fase-node').first().locator('.fase-num').innerText()).toBe('1');
   expect(errors).toEqual([]);
 });
 

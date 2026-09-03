@@ -20,13 +20,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.41/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.41/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.41/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.41/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.41/);
-  assert.match(config,/version:'v11\.0\.41'/);
-  assert.match(sw,/12r-v11\.0\.41/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.43/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.43/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.43/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.43/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.43/);
+  assert.match(config,/version:'v11\.0\.43'/);
+  assert.match(sw,/12r-v11\.0\.43/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -139,7 +139,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.41/);
+  assert.match(sw,/12r-v11\.0\.43/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -332,7 +332,7 @@ check('v11 substitui formações antigas e mantém seleção direta dos heróis'
 check('v12 fixa a física de escala das ações e a leitura mobile',()=>{
   assert.match(game,/const ACTION_PHYSICS_SCALE=Object\.freeze\(/);
   assert.match(game,/fogo:\{attack:\.8082/);
-  assert.match(game,/HUMAN_CHAPTER_BODY_PHYSICS_IDS\.has\(character\?\.id\)\n    \? 1/);
+  assert.match(game,/HUMAN_CHAPTER_BODY_PHYSICS_IDS\.has\(character\?\.id\)\r?\n    \? 1/);
   assert.match(css,/body\.game-active \.party-row \.unit-stage\{height:106px!important\}/);
   assert.match(css,/body\.game-active \.enemy-row \.unit-stage\{height:102px!important\}/);
   assert.match(html,/class="game-logo" src="assets\/icon\.svg"/);
@@ -503,22 +503,29 @@ check('IDs do HTML são únicos',()=>{
 });
 
 check('mapa vertical preserva geografia e expande somente o oceano lateral',()=>{
-  assert.match(game,/\{id:'raio',\s+x:18, y:11\}/);
-  assert.match(game,/\{id:'humanos',\s+x:50, y:31\.5, unlocked:true\}/);
-  assert.match(game,/\{id:'agua',\s+x:50, y:56\.5\}/);
-  assert.match(game,/\{id:'luz',\s+x:50, y:82\.5\}/);
+  assert.match(game,/\{id:'raio',\s+x:18, y:11,\s+subtitulo:'Cordilheira do Raio Eterno'\}/);
+  assert.match(game,/\{id:'humanos',\s+x:50, y:31\.5, unlocked:true,\s+subtitulo:'Terra dos Reguladores de Ygdria'\}/);
+  assert.match(game,/\{id:'agua',\s+x:50, y:56\.5,\s+subtitulo:'Lago de Ygdria'\}/);
+  assert.match(game,/\{id:'luz',\s+x:50, y:82\.5,\s+subtitulo:'Guardiões da Luz de Ygdria'\}/);
   assert.match(game,/canvas\.innerHTML='<div class="map-art" aria-label="Mapa de Ygdria"><\/div>'/);
   assert.match(game,/art\.appendChild\(pin\)/);
-  assert.match(css,/ygdria-mobile-v4\.png/);
+  assert.match(game,/class=\"realm-subtitle\"/);
+  assert.match(game,/class=\"realm-copy\"/);
+  assert.match(game,/class=\"realm-copy\"[\s\S]*class=\"pin-gem\"/);
+  assert.match(css,/ygdria-designer-v2\.png/);
+  assert.match(css,/#worldScreen\{[\s\S]*background:rgba\(3,7,15,.34\)/);
+  assert.match(css,/\.map-art \.realm-name\{[\s\S]*white-space:nowrap/);
   assert.match(css,/ygdria-ocean-extension-v3\.png/);
+  assert.match(css,/\.ygdria-map-fx\{[\s\S]*?pointer-events:none/);
   assert.match(css,/\.map-art::after\{[\s\S]*?content:'YGDRIA'/);
   assert.ok(fs.existsSync(path.join(root,'assets','map','ygdria-mobile-v4.png')),'arte vertical do mapa ausente');
+  assert.ok(fs.existsSync(path.join(root,'assets','map','ygdria-designer-v2.png')),'arte designer do mapa ausente');
   assert.ok(fs.existsSync(path.join(root,'assets','map','ygdria-ocean-extension-v3.png')),'oceano lateral ausente');
 });
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.42');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.43');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
