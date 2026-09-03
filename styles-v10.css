@@ -4393,7 +4393,7 @@ body.game-active .battle-row::before{
   line-height:1.02;
 }
 .map-art .realm-subtitle{
-  font-size:clamp(13px,1.24cqw,16px);
+  font-size:clamp(6.5px,.62cqw,8px);
   line-height:1.08;
 }
 .map-viewport > #worldScreen{

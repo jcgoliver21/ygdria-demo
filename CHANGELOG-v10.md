@@ -15,6 +15,12 @@ Data: 2026-08-14
 - estrelas do rodapé agora seguem as cores de Bronze, Prata, Ouro, Cristal e Pesadelo;
 - cache renovado para distribuir a correção.
 
+## v11.0.47 — Subtítulos no tamanho aprovado
+
+- subtítulos do mapa restaurados ao tamanho anterior aprovado;
+- posições dos nomes e ícones preservadas;
+- cache renovado para distribuir a auditoria final do mapa.
+
 ## v10.0.21 — Elenco humano completo animado
 
 - inclusão do Soldado da Biblioteca 1 na matriz de animação própria;
