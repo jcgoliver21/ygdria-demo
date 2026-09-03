@@ -2,6 +2,12 @@
 
 Data: 2026-08-14
 
+## v11.0.49 — Trilha final atualizada
+
+- nomes dos reinos reduzidos em 10%, preservando posições e leitura em uma linha;
+- música da missão 5 da Fase 10 substituída pela nova faixa fornecida;
+- cache renovado para distribuir o áudio atualizado.
+
 ## v11.0.48 — Ícones centralizados nos reinos
 
 - ícones dos reinos posicionados abaixo dos subtítulos;
