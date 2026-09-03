@@ -10427,8 +10427,8 @@ function renderAccountChip(){
   }
   const hint=document.getElementById('profileHint');
   if(hint) hint.textContent=account?.username
-    ? T('Conta, conquistas e jornada','Account, achievements and journey','Cuenta, logros y jornada')
-    : T('Conquistas e jornada','Achievements and journey','Logros y jornada');
+    ? T('Sua conta, lendas e conquistas','Your account, legends and achievements','Tu cuenta, leyendas y logros')
+    : T('Sua jornada, lendas e conquistas','Your journey, legends and achievements','Tu jornada, leyendas y logros');
 }
 
 /* Onboarding pós-login: nascimento -> título -> nome -> username */

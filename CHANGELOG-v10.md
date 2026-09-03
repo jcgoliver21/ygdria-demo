@@ -143,3 +143,7 @@ Data: 2026-08-14
 
 - Aplicados oito emblemas desenhados e o novo tomo da Biblioteca da Eternidade.
 - Revisados títulos e subtítulos para refletir a identidade visual de cada destino.
+## v11.0.54 — Emblemas visíveis e leitura refinada
+
+- Corrigida a cascata que substituía as artes dos emblemas por orbes genéricos.
+- Reforçada a leitura mobile com acabamento, contraste e textos do menu revisados.

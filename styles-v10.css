@@ -4692,3 +4692,19 @@ body.game-active .battle-row::before{
   #mainMenu .menu-title-line{padding-bottom:4px}
   #mainMenu .command-grid .menu-hint,#mainMenu .command-hero-actions .menu-hint{margin-top:4px!important;font-size:7.5px!important;line-height:1.16!important}
 }
+
+/* v11.0.54 · Emblemas ilustrados acima de qualquer acabamento legado. */
+#mainMenu .vfx-icon{width:44px!important;height:44px!important;overflow:hidden!important;background-color:#090615!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;border:1px solid color-mix(in srgb,var(--vfx) 84%,#fff)!important;border-radius:11px!important;box-shadow:0 0 0 1px rgba(1,0,7,.72),inset 0 0 0 1px rgba(255,236,171,.18),0 5px 15px rgba(0,0,0,.42),0 0 15px color-mix(in srgb,var(--vfx) 22%,transparent)!important;filter:saturate(1.12) contrast(1.05)}
+#mainMenu .vfx-icon::before{content:""!important;display:none!important}
+#mainMenu .vfx-history{background-image:url('assets/ui/menu-icons-v2/history.png')!important}
+#mainMenu .vfx-continue{background-image:url('assets/ui/menu-icons-v2/continue.png')!important}
+#mainMenu .vfx-special{background-image:url('assets/ui/menu-icons-v2/special.png')!important}
+#mainMenu .vfx-tower{background-image:url('assets/ui/menu-icons-v2/tower.png')!important}
+#mainMenu .vfx-pvp{background-image:url('assets/ui/menu-icons-v2/pvp.png')!important}
+#mainMenu .vfx-profile{background-image:url('assets/ui/menu-icons-v2/profile.png')!important}
+#mainMenu .vfx-market{background-image:url('assets/ui/menu-icons-v2/market.png')!important}
+#mainMenu .vfx-options{background-image:url('assets/ui/menu-icons-v2/options.png')!important}
+#mainMenu .vfx-library{background-image:url('assets/ui/menu-icons-v2/library.png')!important}
+#mainMenu .menu-title-line{border-bottom-color:rgba(255,227,153,.62)!important;text-shadow:0 2px 8px #000,0 0 10px rgba(249,209,114,.14)!important}
+#mainMenu .menu-hint{color:#f3e4c7!important;letter-spacing:.015em!important;text-shadow:0 2px 6px #000!important}
+@media (max-width:620px){#mainMenu .vfx-icon{width:36px!important;height:36px!important;border-radius:10px!important}#mainMenu .command-grid .command-tile,#mainMenu .command-hero-actions .menu-btn{column-gap:9px!important}#mainMenu .command-grid .command-tile .menu-label{font-size:11.2px!important;line-height:1.12!important}#mainMenu .command-hero-actions .menu-label{font-size:11.4px!important}#mainMenu .command-grid .menu-hint,#mainMenu .command-hero-actions .menu-hint{font-size:8.15px!important;line-height:1.2!important}}
