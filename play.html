@@ -37,27 +37,19 @@
 <h1 class="maintitle">12 Reinos</h1>
 
 <div id="mainMenu" class="screen-panel">
-  <div class="menu-card">
-    <div class="menu-ornament" aria-hidden="true">✦</div>
-    <img class="game-logo" src="assets/icon.svg" alt="Estrela dos 12 Reinos">
-    <div class="menu-title">12 Reinos</div>
-    <div class="menu-subtitle">Crônicas de Ygdria</div>
-    <div class="menu-ornament menu-ornament-b" aria-hidden="true">❖</div>
-    <div class="menu-actions">
-      <button class="menu-btn primary" id="playBtn"><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.6l2.6 3.6v8.6h-5.2V5.2z"/><rect x="7" y="14.6" width="10" height="1.9" rx=".95"/><rect x="10.9" y="16.9" width="2.2" height="3.6" rx="1.1"/><circle cx="12" cy="21.6" r="1.15"/></svg></span><span class="menu-label">Jogar</span><span>›</span></button>
-      <button class="menu-btn" id="continueBtn" disabled><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2.5h12a1 1 0 011 1V21l-7-4-7 4V3.5a1 1 0 011-1zm6 4.3l1.1 2.3 2.5.4-1.8 1.8.4 2.5-2.2-1.2-2.2 1.2.4-2.5-1.8-1.8 2.5-.4z"/></svg></span><span class="menu-label">Continuar <small class="menu-hint" id="continueHint">Sem progresso salvo</small></span><span>›</span></button>
-      <button class="menu-btn" id="galleryBtn"><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.2" y="6" width="7.6" height="11.5" rx="1.1" transform="rotate(-14 7 11.7)" opacity=".55"/><rect x="13.2" y="6" width="7.6" height="11.5" rx="1.1" transform="rotate(14 17 11.7)" opacity=".55"/><rect x="8.2" y="4.6" width="7.6" height="12.5" rx="1.1"/></svg></span><span class="menu-label">Galeria <small class="menu-hint">Cartas e habilidades</small></span><span>›</span></button>
-      <button class="menu-btn" id="dailyBtn"><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.6h14a1.6 1.6 0 011.6 1.6V19a1.6 1.6 0 01-1.6 1.6H5A1.6 1.6 0 013.4 19V6.2A1.6 1.6 0 015 4.6zm-.2 4.6h14.4V6.6H4.8zM8 2.4h1.8v3H8zm6.2 0H16v3h-1.8zM12 11.4l1 2.1 2.3.3-1.7 1.6.4 2.3-2-1.1-2 1.1.4-2.3-1.7-1.6 2.3-.3z"/></svg></span><span class="menu-label">Desafio Diário <small class="menu-hint" id="dailyHint">Seed do dia</small></span><span>›</span></button>
-      <button class="menu-btn" id="bossRushBtn"><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10v1.4h3.4v2.2a4 4 0 01-3.6 4A5.2 5.2 0 0113 13.7v2h2.6l.6 2.4H7.8l.6-2.4H11v-2a5.2 5.2 0 01-3.8-3.1 4 4 0 01-3.6-4V4.4H7zm-1.4 2.8H3.9v.8a2.6 2.6 0 001.9 2.5 9 9 0 01-.2-2zm12.8 0c.1 1.2 0 2.3-.2 3.3a2.6 2.6 0 001.9-2.5v-.8zM5.6 19.4h12.8V21H5.6z"/></svg></span><span class="menu-label">Desafio dos Chefes <small class="menu-hint" id="bossRushHint">Conquiste um reino para liberar</small></span><span>›</span></button>
-      <button class="menu-btn" id="towerBtn"><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 21v-8.2L7 11.6V6.4h2.2v1.8h1.6V6.4h2.4v1.8h1.6V6.4H17v5.2l-1.6 1.2V21h-2.6v-3.4a.8.8 0 10-1.6 0V21zM11 2.2h2l1 2.4h-4z"/></svg></span><span class="menu-label">Torre de Acesso à Eternidade <small class="menu-hint" id="towerHint">(Torre Infinita) · Survivor no Pesadelo</small></span><span>›</span></button>
-      <button class="menu-btn" id="shopBtn"><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="6.1" fill="#1a1226" opacity=".35"/><path d="M12 7.4l1.2 2.5 2.7.4-2 1.9.5 2.7-2.4-1.3-2.4 1.3.5-2.7-2-1.9 2.7-.4z" fill="#1a1226" opacity=".6"/></svg></span><span class="menu-label">Loja <small class="menu-hint">Consumíveis de batalha</small></span><span>›</span></button>
-      <button class="menu-btn" id="achBtn"><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.4 2.4h7.2L13.4 9h-2.8zM7 2.4h1.2L10 8.2a6 6 0 00-2.5 1.4zm10 0h-1.2L14 8.2a6 6 0 012.5 1.4zM12 9.6a5.5 5.5 0 105.5 5.5A5.5 5.5 0 0012 9.6zm0 2.3l1 2 2.2.3-1.6 1.5.4 2.2-2-1.1-2 1.1.4-2.2-1.6-1.5 2.2-.3z"/></svg></span><span class="menu-label">Conquistas</span><span>›</span></button>
-      <button class="menu-btn" id="optionsBtn" type="button" data-tap-guard-bypass><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><g><rect x="10.9" y="2" width="2.2" height="3.6" rx=".9"/><rect x="10.9" y="2" width="2.2" height="3.6" rx=".9" transform="rotate(45 12 12)"/><rect x="10.9" y="2" width="2.2" height="3.6" rx=".9" transform="rotate(90 12 12)"/><rect x="10.9" y="2" width="2.2" height="3.6" rx=".9" transform="rotate(135 12 12)"/><rect x="10.9" y="2" width="2.2" height="3.6" rx=".9" transform="rotate(180 12 12)"/><rect x="10.9" y="2" width="2.2" height="3.6" rx=".9" transform="rotate(225 12 12)"/><rect x="10.9" y="2" width="2.2" height="3.6" rx=".9" transform="rotate(270 12 12)"/><rect x="10.9" y="2" width="2.2" height="3.6" rx=".9" transform="rotate(315 12 12)"/><circle cx="12" cy="12" r="5.4"/><circle cx="12" cy="12" r="2.3" fill="#1a1226" opacity=".55"/></g></svg></span><span class="menu-label">Opções</span><span>›</span></button>
-      <button class="menu-btn" id="helpBtn"><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5.4C10.2 4 7.8 3.4 4 3.4v14.4c3.8 0 6.2.6 8 2 1.8-1.4 4.2-2 8-2V3.4c-3.8 0-6.2.6-8 2zm-1 12.2c-1.5-.7-3.3-1-5.6-1.1V5.1c2.3.1 4.1.5 5.6 1.2zm7.6-1.1c-2.3.1-4.1.4-5.6 1.1V6.3c1.5-.7 3.3-1.1 5.6-1.2z"/></svg></span><span class="menu-label">Como jogar</span><span>›</span></button>
-    </div>
-    <button class="account-chip" id="accountChip" type="button">🎭 Convidado</button>
-    <div class="coin-badge" id="coinBadge">🪙 0</div>
-    <div class="menu-footer" id="menuVersion">VERSÃO 11 · DEMO OFICIAL MOBILE</div>
+  <div class="menu-card menu-command-center">
+    <header class="command-masthead"><img class="game-logo" src="assets/icon.svg" alt="Estrela dos 12 Reinos"><div><div class="menu-title">YGDRIA</div><div class="menu-subtitle">Crônicas de Ygdria</div></div><button class="account-chip" id="accountChip" type="button">🎭 Convidado</button></header>
+    <section class="command-hero"><div class="command-kicker">O DESTINO DOS 12 REINOS</div><h2>Escolha o próximo capítulo.</h2><p>Explore a história, forme sua equipe e conquiste Ygdria no seu ritmo.</p><div class="command-hero-actions"><button class="menu-btn primary command-history" id="playBtn"><span class="menu-icon">✦</span><span class="menu-label">História <small class="menu-hint">Explore o mapa oficial de Ygdria</small></span><span>›</span></button><button class="menu-btn command-continue" id="continueBtn" disabled><span class="menu-icon">↻</span><span class="menu-label">Continuar <small class="menu-hint" id="continueHint">Sem progresso salvo</small></span></button></div></section>
+    <nav class="command-grid" aria-label="Destinos de Ygdria">
+      <button class="menu-btn command-tile" id="dailyBtn"><span class="menu-icon">✧</span><span class="menu-label">Missões Especiais <small class="menu-hint" id="dailyHint">Desafio diário e chefes</small></span></button>
+      <button class="menu-btn command-tile" id="towerBtn"><span class="menu-icon">♜</span><span class="menu-label">Torre de Acesso à Eternidade <small class="menu-hint" id="towerHint">Sobreviva ao Pesadelo</small></span></button>
+      <button class="menu-btn command-tile is-coming" id="pvpBtn" type="button" disabled><span class="menu-icon">⚔</span><span class="menu-label">PVP <small class="menu-hint">Em breve</small></span></button>
+      <button class="menu-btn command-tile" id="achBtn"><span class="menu-icon">✦</span><span class="menu-label">Perfil <small class="menu-hint">Conquistas e jornada</small></span></button>
+      <button class="menu-btn command-tile" id="shopBtn"><span class="menu-icon">◈</span><span class="menu-label">Mercado Central dos Reinos <small class="menu-hint">Consumíveis e preparos</small></span></button>
+      <button class="menu-btn command-tile command-library" id="galleryBtn"><span class="menu-icon">☷</span><span class="menu-label">Biblioteca da Eternidade <small class="menu-hint">Tutoriais, criaturas, NPCs e cartas</small></span></button>
+      <button class="menu-btn command-tile" id="optionsBtn" type="button" data-tap-guard-bypass><span class="menu-icon">⚙</span><span class="menu-label">Opções <small class="menu-hint">Áudio, visual e acessibilidade</small></span></button>
+    </nav>
+    <footer class="command-footer"><div class="coin-badge" id="coinBadge">🪙 0</div><div class="menu-footer" id="menuVersion">VERSÃO 11 · DEMO OFICIAL MOBILE</div></footer>
   </div>
 </div>
 
@@ -68,7 +60,7 @@
       <div class="screen-eyebrow">Formação do grupo</div>
       <div class="screen-title">Formação da Equipe</div>
     </div>
-    <button class="ghost-btn" id="selectGalleryBtn">Galeria</button>
+    <button class="ghost-btn" id="selectGalleryBtn">Biblioteca</button>
   </div>
   <div class="select-sub">Escolha 4 entre 12 personagens oficiais. Toque na carta para escalar e use apenas a lupa para abrir a arte e ler todas as habilidades.</div>
   <div class="select-counter">Escolhidos: <b id="selectCount">0</b>/4</div>
@@ -190,9 +182,25 @@
 </div>
 
 <div class="pro-overlay" id="galleryScreen" role="dialog" aria-modal="true" aria-labelledby="galleryTitle">
-  <div class="pro-dialog">
-    <div class="dialog-header"><h2 class="dialog-title" id="galleryTitle">Galeria dos Reinos</h2><button class="ghost-btn" data-close="galleryScreen">Fechar</button></div>
+  <div class="pro-dialog library-dialog">
+    <div class="dialog-header"><div><span class="dialog-kicker">CONHECIMENTO DE YGDRIA</span><h2 class="dialog-title" id="galleryTitle">Biblioteca da Eternidade</h2></div><button class="ghost-btn" data-close="galleryScreen">Fechar</button></div>
+    <div class="library-tabs" id="libraryTabs" role="tablist" aria-label="Seções da Biblioteca da Eternidade">
+      <button class="library-tab" type="button" data-library="play" role="tab">Aprenda Jogando</button>
+      <button class="library-tab" type="button" data-library="study" role="tab">Aprenda Estudando</button>
+      <button class="library-tab" type="button" data-library="bestiary" role="tab">Bestiário</button>
+      <button class="library-tab" type="button" data-library="npcs" role="tab">NPC's</button>
+      <button class="library-tab" type="button" data-library="cards" role="tab">Cartas</button>
+    </div>
     <div class="gallery-grid" id="galleryGrid"></div>
+  </div>
+</div>
+<div class="pro-overlay" id="specialScreen" role="dialog" aria-modal="true" aria-labelledby="specialTitle">
+  <div class="pro-dialog special-dialog">
+    <div class="dialog-header"><div><span class="dialog-kicker">DESAFIOS ALÉM DA CAMPANHA</span><h2 class="dialog-title" id="specialTitle">Missões Especiais</h2></div><button class="ghost-btn" data-close="specialScreen">Fechar</button></div>
+    <div class="special-destinations">
+      <button class="special-destination daily-destination" id="dailySpecialBtn" type="button"><span class="special-emblem">✧</span><span><b>Desafio Diário</b><small id="dailySpecialHint">Um tabuleiro novo para conquistar hoje.</small></span><i>›</i></button>
+      <button class="special-destination" id="bossRushBtn" type="button"><span class="special-emblem">♛</span><span><b>Provação dos Chefes</b><small>Enfrente os soberanos de Ygdria em sequência.</small></span><i>›</i></button>
+    </div>
   </div>
 </div>
 <div class="pro-overlay" id="abilityPickerScreen" role="dialog" aria-modal="true" aria-labelledby="abilityPickerTitle">

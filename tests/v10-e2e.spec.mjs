@@ -1887,6 +1887,7 @@ test('galeria mobile mantém blocos e cartas legíveis sem transbordamento',asyn
   const errors=await boot(page,'flow');
   await page.locator('#galleryBtn').click();
   await expect(page.locator('#galleryScreen')).toHaveClass(/show/);
+  await page.locator('[data-library="cards"]').click();
   const mobileLayout=await page.evaluate(()=>{
     const gallery=document.getElementById('galleryGrid');
     const firstSection=gallery.querySelector('.deck-section');
@@ -1915,6 +1916,7 @@ test('storage legado null não quebra boot, galeria, conquistas nem handlers',as
 
   await page.locator('#galleryBtn').click();
   await expect(page.locator('#galleryScreen')).toHaveClass(/show/);
+  await page.locator('[data-library="cards"]').click();
   const firstDeck=page.locator('#galleryGrid .deck-section').first();
   await firstDeck.locator('.deck-header').click();
   await expect(firstDeck.locator('.gallery-card').first()).toBeVisible();

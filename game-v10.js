@@ -5351,16 +5351,15 @@ function applyI18nArtCss(){
 }
 
 const STATIC_I18N=[
-  ['#playBtn .menu-label','Jogar','Play','Jugar'],
-  ['#galleryBtn .menu-label','Galeria <small class="menu-hint">Cartas e habilidades</small>','Gallery <small class="menu-hint">Cards & abilities</small>','Galería <small class="menu-hint">Cartas y habilidades</small>'],
-  ['#shopBtn .menu-label','Loja <small class="menu-hint">Consumíveis de batalha</small>','Shop <small class="menu-hint">Battle consumables</small>','Tienda <small class="menu-hint">Consumibles de batalla</small>'],
-  ['#achBtn .menu-label','Conquistas','Achievements','Logros'],
-  ['#optionsBtn .menu-label','Opções','Options','Opciones'],
-  ['#helpBtn .menu-label','Como jogar','How to play','Cómo jugar'],
+  ['#playBtn .menu-label','História <small class="menu-hint">Explore o mapa oficial de Ygdria</small>','Story <small class="menu-hint">Explore Ygdria’s official map</small>','Historia <small class="menu-hint">Explora el mapa oficial de Ygdria</small>'],
+  ['#galleryBtn .menu-label','Biblioteca da Eternidade <small class="menu-hint">Tutoriais, criaturas, NPCs e cartas</small>','Library of Eternity <small class="menu-hint">Tutorials, creatures, NPCs and cards</small>','Biblioteca de la Eternidad <small class="menu-hint">Tutoriales, criaturas, NPCs y cartas</small>'],
+  ['#shopBtn .menu-label','Mercado Central dos Reinos <small class="menu-hint">Consumíveis e preparos</small>','Central Market of the Realms <small class="menu-hint">Consumables and preparations</small>','Mercado Central de los Reinos <small class="menu-hint">Consumibles y preparativos</small>'],
+  ['#achBtn .menu-label','Perfil <small class="menu-hint">Conquistas e jornada</small>','Profile <small class="menu-hint">Achievements and journey</small>','Perfil <small class="menu-hint">Logros y jornada</small>'],
+  ['#optionsBtn .menu-label','Opções <small class="menu-hint">Áudio, visual e acessibilidade</small>','Options <small class="menu-hint">Audio, visuals and accessibility</small>','Opciones <small class="menu-hint">Audio, visuales y accesibilidad</small>'],
   ['#optionsTitle','Opções','Options','Opciones'],
   ['#achTitle','Perfil & Conquistas','Profile & Achievements','Perfil y Logros'],
-  ['#shopTitle','Loja Real','Royal Shop','Tienda Real'],
-  ['#galleryTitle','Galeria dos Reinos','Gallery of the Realms','Galería de los Reinos'],
+  ['#shopTitle','Mercado Central dos Reinos','Central Market of the Realms','Mercado Central de los Reinos'],
+  ['#galleryTitle','Biblioteca da Eternidade','Library of Eternity','Biblioteca de la Eternidad'],
   ['#playAgainBtn','Jogar novamente','Play again','Jugar de nuevo'],
   ['#retryBtn','Tentar novamente','Try again','Intentar de nuevo'],
   ['#startBtn','Iniciar a Aventura!','Begin the Adventure!','¡Iniciar la Aventura!'],
@@ -5370,7 +5369,7 @@ const STATIC_I18N=[
   ["#selectBackBtn","← Voltar","← Back","← Volver"],
   ["#selectScreen .screen-eyebrow","Formação do grupo","Party setup","Formación del grupo"],
   ["#selectScreen .screen-title","Formação da Equipe","Team Formation","Formación del Equipo"],
-  ["#selectGalleryBtn","Galeria","Gallery","Galería"],
+  ["#selectGalleryBtn","Biblioteca","Library","Biblioteca"],
   [".select-counter","Escolhidos: <b id=\"selectCount\">0</b>/4","Chosen: <b id=\"selectCount\">0</b>/4","Elegidos: <b id=\"selectCount\">0</b>/4"],
   ["#battleStatus","Combine três esferas do mesmo Reino para atacar.","Match three orbs of the same Realm to attack.","Combina tres esferas del mismo Reino para atacar."],
   ["#stageObjective","Objetivo: derrote todos os inimigos","Objective: defeat all enemies","Objetivo: derrota a todos los enemigos"],
@@ -5489,11 +5488,8 @@ function applyLanguage(){
     const el=document.querySelector(entry[0]);
     if(el) el.innerHTML=entry[li]||entry[1];
   });
-  const dailyLabel=document.querySelector('#dailyBtn .menu-label');
-  if(dailyLabel){
-    const hint=document.getElementById('dailyHint')?.outerHTML||'';
-    dailyLabel.innerHTML=T('Desafio Diário ','Daily Challenge ','Desafío Diario ')+hint;
-  }
+  /* O título do destino permanece “Missões Especiais”; apenas sua explicação
+     dinâmica é atualizada pelo initV91. */
   const towerLabel=document.querySelector('#towerBtn .menu-label');
   if(towerLabel){
     const hint=document.getElementById('towerHint')?.outerHTML||'';
@@ -8386,48 +8382,32 @@ const selectCountEl = document.getElementById('selectCount');
 const startBtnEl = document.getElementById('startBtn');
 const swapBtnEl = document.getElementById('swapBtn2');
 
-var selectDeckOpen={}; /* decks abertos na tela de seleção (persistem entre re-renders) */
 function renderSelectGrid(){
   selectGridEl.innerHTML = '';
-  if(chosenIds.length&&!Object.values(selectDeckOpen).some(Boolean)){
-    chosenIds.forEach(ci=>{ const kk=KINGDOMS[ci]; if(kk) selectDeckOpen[kk.deck||kk.id]=true; });
-  }
-  /* v9.1 · Roster agrupado em DECKS por reino (Reino Rosa primeiro) */
+  /* v11.1 · Cada herói é um destino. O elenco deixa de ser uma pilha de
+     fileiras e passa a ser uma constelação única, sem alterar as regras de
+     desbloqueio, a equipe salva ou as cartas que chegam ao tabuleiro. */
   const ordem=['humanos','luz','agua','fogo','natureza','terra','areia','sombras','raio','vento','chuvas','gelo'];
-  const nomesDeck={humanos:T('Reino Rosa · Humanos','Rose Realm · Humans','Reino Rosa · Humanos')};
-  ordem.forEach(deckId=>{
-    const membros=KINGDOMS.filter(k=>(k.deck||k.id)===deckId);
-    if(!membros.length) return;
-    membros.sort((a,b)=>(b.stars||0)-(a.stars||0)); /* maior raridade primeiro */
-    const lider=KINGDOMS.find(k=>k.id===deckId);
-    const section=document.createElement('div');
-    section.className='select-deck-section deck-'+deckId+(selectDeckOpen[deckId]?' open':'');
-    const escolhidasNoDeck=membros.filter(k=>chosenIds.includes(KINGDOMS.indexOf(k))).length;
-    const header=document.createElement('div');
-    header.className='select-deck-header';
-    header.setAttribute('role','button');
-    header.setAttribute('tabindex','0');
-    header.setAttribute('aria-expanded', selectDeckOpen[deckId]?'true':'false');
-    header.style.setProperty('--realm',lider?.color||'#d4af5a');
-    header.innerHTML=`<span class="deck-icon"><svg viewBox="0 0 24 24">${KINGDOM_ICON[deckId]||''}</svg></span><b>${nomesDeck[deckId]||L(lider?.reino||deckId)}</b>${escolhidasNoDeck?`<span class="deck-picked">${escolhidasNoDeck} ${T('na equipe','in team','en el equipo')}</span>`:''}<small>${membros.length} ${membros.length>1?T('cartas','cards','cartas'):T('carta','card','carta')}</small><span class="deck-caret" aria-hidden="true">▸</span>`;
-    const alternar=()=>{ selectDeckOpen[deckId]=!selectDeckOpen[deckId]; section.classList.toggle('open',!!selectDeckOpen[deckId]); header.setAttribute('aria-expanded', selectDeckOpen[deckId]?'true':'false'); };
-    header.addEventListener('click',alternar);
-    header.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); alternar(); } });
-    section.appendChild(header);
-    const dgrid=document.createElement('div');
-    dgrid.className='select-deck-grid';
-    membros.forEach(k=>{
+  const roster=document.createElement('section');
+  roster.className='select-constellation-roster';
+  const rosterCards=KINGDOMS.slice().sort((a,b)=>{
+    const realmDelta=ordem.indexOf(a.deck||a.id)-ordem.indexOf(b.deck||b.id);
+    return realmDelta||((b.stars||0)-(a.stars||0))||L(a.nome).localeCompare(L(b.nome));
+  });
+  rosterCards.forEach(k=>{
       const idx=KINGDOMS.indexOf(k);
       const card = document.createElement('div');
       const permitido=storySelectionAllowed(idx);
-      card.className = 'select-card' + (chosenIds.includes(idx) ? ' chosen' : '') + (!permitido?' story-disabled':'');
+      card.className = 'select-card constellation-card' + (chosenIds.includes(idx) ? ' chosen' : '') + (!permitido?' story-disabled':'');
       card.setAttribute('aria-disabled',permitido?'false':'true');
       card.style.setProperty('--realm',k.color);
       card.style.setProperty('--realm-light',k.colorLight);
       card.style.setProperty('--realm-dark',k.colorDark);
       const pickOrder = chosenIds.indexOf(idx);
       card.innerHTML = `
-        <div class="thumb-wrap"><img src="${THUMB(k.cardThumb||k.img)}"${THUMBF(k.cardThumb||k.img)} alt="${k.nome}" loading="lazy" decoding="async">${pickOrder>=0?`<div class="pick-badge" aria-hidden="true">${pickOrder+1}</div>`:''}<button class="zoom-btn" type="button" data-idx="${idx}" aria-label="${T(`Abrir carta de ${L(k.nome)} em alta resolução`,`Open ${L(k.nome)}'s card in high resolution`,`Abrir la carta de ${L(k.nome)} en alta resolución`)}">🔍</button></div>
+        <div class="constellation-card-glow" aria-hidden="true"></div>
+        <div class="thumb-wrap"><img src="${THUMB(k.cardThumb||k.img)}"${THUMBF(k.cardThumb||k.img)} alt="${k.nome}" loading="lazy" decoding="async">${pickOrder>=0?`<div class="pick-badge" aria-label="${T('Posição na equipe','Team position','Posición en el equipo')}">${pickOrder+1}</div>`:''}<button class="zoom-btn" type="button" data-idx="${idx}" aria-label="${T(`Abrir carta de ${L(k.nome)} em alta resolução`,`Open ${L(k.nome)}'s card in high resolution`,`Abrir la carta de ${L(k.nome)} en alta resolución`)}">↗</button></div>
+        <div class="constellation-card-copy"><small>${L(k.reino||k.deck||'YGDRIA')}</small><b>${L(k.nome)}</b><span>${permitido?T('Toque para convocar','Tap to summon','Toca para invocar'):T('Complete a história para convocar','Complete the story to summon','Completa la historia para invocar')}</span></div>
       `;
       card.setAttribute('role','button');
       card.setAttribute('tabindex','0');
@@ -8435,11 +8415,9 @@ function renderSelectGrid(){
       card.addEventListener('click',()=>toggleHero(idx));
       card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleHero(idx);}});
       card.querySelector('.zoom-btn').addEventListener('click', e=>{ e.stopPropagation(); openCardModal(idx); });
-      dgrid.appendChild(card);
-    });
-    section.appendChild(dgrid);
-    selectGridEl.appendChild(section);
+      roster.appendChild(card);
   });
+  selectGridEl.appendChild(roster);
   /* lookup dinâmico: o i18n recria o nó #selectCount ao trocar de idioma */
   { const sc=document.getElementById('selectCount'); if(sc) sc.textContent=chosenIds.length; }
   startBtnEl.disabled = chosenIds.length!==4;
@@ -8970,10 +8948,81 @@ function renderGallery(){
   bsec.appendChild(bgrid);
   grid.appendChild(bsec);
 }
+/* Biblioteca da Eternidade: reúne o aprendizado, a enciclopédia e as cartas
+   sem criar uma segunda galeria nem mexer no conteúdo da campanha. */
+let librarySection='play';
+const LIBRARY_TITLES={
+  play:'Aprenda Jogando', study:'Aprenda Estudando', bestiary:'Bestiário', npcs:"NPC's", cards:'Cartas'
+};
+function libraryEntityCard(entity,kind){
+  const name=escapeHtml(L(entity.nome||entity.n||entity.name||'Habitante de Ygdria'));
+  const detail=escapeHtml(L(entity.detalhe||entity.desc||entity.role||kind));
+  const sprite=entity.sprite||entity.spr||entity.img||entity.cardThumb||entity.card||'';
+  const safeSprite=escapeHtml(sprite);
+  return `<article class="library-entity-card"><div class="library-entity-art">${sprite?`<img class="library-idle-sprite" src="${safeSprite}" alt="${name}" loading="lazy" decoding="async">`:'<span class="library-fallback-mark" aria-label="Ilustração indisponível">✦</span>'}</div><div><small>${escapeHtml(kind)}</small><b>${name}</b><p>${detail}</p></div></article>`;
+}
+function renderLibrary(section=librarySection){
+  librarySection=LIBRARY_TITLES[section]?section:'play';
+  const grid=document.getElementById('galleryGrid');
+  const title=document.getElementById('galleryTitle');
+  if(!grid) return;
+  if(title) title.textContent=librarySection==='cards'?'Biblioteca da Eternidade · Cartas':LIBRARY_TITLES[librarySection];
+  document.querySelectorAll('#libraryTabs .library-tab').forEach(tab=>{
+    const active=tab.dataset.library===librarySection;
+    tab.classList.toggle('active',active);
+    tab.setAttribute('aria-selected',active?'true':'false');
+  });
+  if(librarySection==='cards'){
+    renderGallery();
+    grid.classList.add('library-cards-panel');
+    grid.querySelectorAll('.gallery-thumb-wrap img').forEach(img=>img.classList.add('library-idle-sprite'));
+    return;
+  }
+  grid.className='gallery-grid library-content library-'+librarySection;
+  if(librarySection==='play'){
+    grid.innerHTML=`<section class="library-hero"><div><span class="dialog-kicker">TUTORIAL JOGÁVEL</span><h3>Aprenda no próprio tabuleiro.</h3><p>Entre em uma batalha de treino com orientações passo a passo. Ela não altera as missões, o mapa nem o seu progresso de História.</p><button class="overlay-btn library-primary-action" id="libraryStartTutorial" type="button">Iniciar treinamento <span>›</span></button></div><div class="library-hero-seal" role="presentation">✦</div></section><section class="library-path"><article><b>1</b><span>Monte um grupo</span></article><article><b>2</b><span>Combine esferas</span></article><article><b>3</b><span>Libere habilidades</span></article><article><b>4</b><span>Vença a batalha</span></article></section>`;
+    document.getElementById('libraryStartTutorial')?.addEventListener('click',startLibraryTutorial);
+    return;
+  }
+  if(librarySection==='study'){
+    const lessons=[
+      ['01','Forme seu grupo','Quatro heróis definem as esferas que entram no tabuleiro.'],
+      ['02','Combine as esferas','Alinhe três ou mais esferas do mesmo Reino para atacar.'],
+      ['03','Escolha o alvo','Quando houver mais de um inimigo, escolha quem recebe o próximo ataque.'],
+      ['04','Acumule Aura','A energia libera passivas e, em 100%, o poder supremo.'],
+      ['05','Crie power-ups','Combinações de quatro, cinco, T ou L criam efeitos especiais.'],
+      ['06','Use os especiais','Troque dois power-ups próximos para criar efeitos ainda maiores.']
+    ];
+    grid.innerHTML=`<section class="library-study-intro"><span class="dialog-kicker">GUIA DE BATALHA</span><h3>Conhecimento antes da conquista.</h3><p>Uma leitura curta para entender cada decisão do combate.</p></section><section class="library-study-grid">${lessons.map(([n,t,d])=>`<article><b>${n}</b><h4>${t}</h4><p>${d}</p></article>`).join('')}</section>`;
+    return;
+  }
+  const source=librarySection==='bestiary'?Object.values(HUMANOS_ETYPES||{}):Object.values(HUMANOS_CARDS||{}).filter(card=>!card.isCard);
+  const unique=[]; const seen=new Set();
+  source.forEach(entry=>{ const key=L(entry?.nome||entry?.n||entry?.name||''); if(key&&!seen.has(key)){ seen.add(key); unique.push(entry); } });
+  if(!unique.length) unique.push(...KINGDOMS.map(k=>({nome:k.nome,sprite:k.sprite||k.img,detalhe:k.reino})));
+  const kind=librarySection==='bestiary'?'CRIATURA':'PERSONAGEM NÃO JOGÁVEL';
+  grid.innerHTML=`<section class="library-study-intro"><span class="dialog-kicker">ARQUIVOS DE YGDRIA</span><h3>${librarySection==='bestiary'?'Criaturas conhecidas':'Habitantes e aliados'}</h3><p>Todos os registros disponíveis no jogo. As ilustrações permanecem em movimento de repouso.</p></section><section class="library-entity-grid">${unique.map(entry=>libraryEntityCard(entry,kind)).join('')}</section>`;
+}
+function openLibrary(section='play'){
+  librarySection=section;
+  openPanel('galleryScreen');
+}
+function startLibraryTutorial(){
+  hideOverlay('galleryScreen');
+  towerMode=false; bossRushMode=false; dailyRunMode=false;
+  worldRun.active=false; pendingStage=0;
+  chosenIds=[0,1,2,3];
+  localStorage.setItem('12r_tutorial_seen','true');
+  beginGame(0);
+  skipStory();
+  coachStep=0;
+  renderCoach();
+  sfxSelect();
+}
 const STAGE_ART=["assets/bg/bg-08.png","assets/bg/bg-09.png","assets/bg/bg-10.png","assets/bg/bg-11.png"];
 /* v9.1: jornada da masmorra removida (fases demo sairam do jogo) */
 function openPanel(id){
-  if(id==='galleryScreen') renderGallery();
+  if(id==='galleryScreen') renderLibrary(librarySection);
   if(id==='achScreen') renderAchievements();
   if(id==='shopScreen') renderShop();
   if(id==='mochilaScreen') renderMochila();
@@ -9055,6 +9104,7 @@ document.getElementById('replayHardBtn')?.addEventListener('click',()=>{ if(pend
 document.getElementById('bossRushBtn')?.addEventListener('click',()=>{
   /* v9.2: o Desafio dos Chefes agora passa pelo MAPA DE YGDRIA — cada reino
      conquistado libera o seu próprio desafio */
+  hideOverlay('specialScreen');
   towerMode=false; worldRun.active=false; bossRushMode=false; pendingStage=0;
   openMapScreen('boss');
   sfxSelect();
@@ -9076,11 +9126,15 @@ document.getElementById('restoreDefaultsBtn')?.addEventListener('click',()=>{
   setBattleStatus?.(T('Padrões restaurados. Recarregue o jogo.','Defaults restored. Reload the game.','Valores restaurados. Recarga el juego.'));
   location.reload();
 });
-document.getElementById('galleryBtn').addEventListener('click',()=>openPanel('galleryScreen'));
-document.getElementById('selectGalleryBtn').addEventListener('click',()=>openPanel('galleryScreen'));
+document.getElementById('galleryBtn')?.addEventListener('click',()=>openLibrary('play'));
+document.getElementById('selectGalleryBtn')?.addEventListener('click',()=>openLibrary('cards'));
+document.getElementById('libraryTabs')?.addEventListener('click',ev=>{
+  const tab=ev.target.closest('[data-library]');
+  if(tab) renderLibrary(tab.dataset.library);
+});
 // v9.1: botões Jornada/Mundos removidos — o fluxo agora é Jogar → Mapa de Ygdria
 document.getElementById('optionsBtn').addEventListener('click',()=>openPanel('optionsScreen'));
-document.getElementById('helpBtn').addEventListener('click',()=>openPanel('helpScreen'));
+document.getElementById('helpBtn')?.addEventListener('click',()=>openPanel('helpScreen'));
 document.getElementById('battleToolsToggle').addEventListener('click',()=>toggleBattleTools());
 document.getElementById('battleToolsClose').addEventListener('click',()=>toggleBattleTools(false));
 document.getElementById('cycleTargetTool').addEventListener('click',cycleBattleTarget);
@@ -10047,12 +10101,16 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
   let rec={}; try{ rec=JSON.parse(localStorage.getItem('12r_daily')||'{}'); }catch(e){}
   if(!rec||typeof rec!=='object'||Array.isArray(rec)) rec={};
   if(dailyHint) dailyHint.textContent = rec.date===todayKey() ? T(`Concluído hoje ✓ · combo ×${rec.combo||0}`,`Completed today ✓ · combo ×${rec.combo||0}`,`Completado hoy ✓ · combo ×${rec.combo||0}`) : `${T('Tabuleiro do dia','Daily board','Tablero del día')} ${todayKey().slice(8,10)}/${todayKey().slice(5,7)}`;
-  document.getElementById('dailyBtn')?.addEventListener('click',()=>{
+  const startDaily=()=>{
     const url=new URL(location.href);
     url.searchParams.set('seed','12R-'+todayKey());
     url.searchParams.set('daily','1');
     location.href=url.toString();
-  });
+  };
+  document.getElementById('dailyBtn')?.addEventListener('click',()=>{ openPanel('specialScreen'); sfxSelect(); });
+  document.getElementById('dailySpecialBtn')?.addEventListener('click',startDaily);
+  const dailySpecialHint=document.getElementById('dailySpecialHint');
+  if(dailySpecialHint) dailySpecialHint.textContent=dailyHint?.textContent||dailySpecialHint.textContent;
   { const bossHint=document.getElementById('bossRushHint');
     if(bossHint) bossHint.textContent=realmComplete('humanos')
       ? T('Reino dos Humanos liberado!','Human Realm unlocked!','¡Reino de los Humanos desbloqueado!')
