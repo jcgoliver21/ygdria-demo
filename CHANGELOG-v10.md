@@ -2,6 +2,12 @@
 
 Data: 2026-08-14
 
+## v11.0.52 — Hierarquia dos destinos
+
+- selo da abertura atualizado para o monograma de Ygdria;
+- títulos dos destinos reduzidos em 10%, com ícone alinhado no topo;
+- linha divisória sutil e subtítulos posicionados abaixo; História e Continuar agora têm larguras iguais.
+
 ## v11.0.51 — Destinos ilustrados e compactos
 
 - home reorganizada sem moldura dominante: cada destino ganhou cenário próprio, borda artística e ícone VFX de ativação;

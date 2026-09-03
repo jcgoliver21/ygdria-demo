@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
-  <title id="title">Estrela dos 12 Reinos</title>
-  <desc id="desc">Estrela de doze pontas, uma cor para cada mundo de Ygdria.</desc>
+  <title id="title">Selo de Ygdria</title>
+  <desc id="desc">Selo de Ygdria: estrela de doze pontas e monograma central.</desc>
   <defs>
     <radialGradient id="bg" cx="50%" cy="38%" r="78%">
       <stop offset="0" stop-color="#30234a"/><stop offset="1" stop-color="#08050f"/>
@@ -30,5 +30,5 @@
   </g>
   <circle cx="256" cy="256" r="76" fill="#0d0818" stroke="url(#core)" stroke-width="9"/>
   <circle cx="256" cy="256" r="59" fill="url(#core)" opacity=".92"/>
-  <text x="256" y="278" font-family="Georgia,serif" font-size="56" font-weight="bold" text-anchor="middle" fill="#160d24">12</text>
+  <text x="256" y="293" font-family="Georgia,serif" font-size="126" font-weight="bold" text-anchor="middle" fill="#160d24">Y</text>
 </svg>

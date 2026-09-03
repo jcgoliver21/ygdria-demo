@@ -4658,3 +4658,24 @@ body.game-active .battle-row::before{
   #mainMenu .command-footer .coin-badge{font-size:9px!important}
   #mainMenu .command-footer .menu-footer{font-size:5.8px!important;letter-spacing:.07em!important}
 }
+
+/* v11.0.52 · leitura interna dos destinos: ícone e título abrem juntos;
+   a linha dourada separa a orientação complementar, sem alterar os cards. */
+#mainMenu .command-hero-actions{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+#mainMenu .command-grid .command-tile,
+#mainMenu .command-hero-actions .menu-btn{display:grid!important;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:8px;align-content:start;justify-content:stretch!important}
+#mainMenu .command-grid .command-tile .vfx-icon,
+#mainMenu .command-hero-actions .vfx-icon{grid-column:1;grid-row:1;align-self:start;margin:0!important}
+#mainMenu .command-grid .command-tile .menu-label,
+#mainMenu .command-hero-actions .menu-label{display:block!important;grid-column:2;grid-row:1 / span 2;align-self:start!important;width:100%;min-width:0;margin:0!important;text-align:left!important}
+#mainMenu .menu-title-line{display:block;padding:1px 0 5px;border-bottom:1px solid rgba(255,226,151,.46);color:#fff1c8;font-weight:inherit;line-height:1.1;overflow-wrap:normal;word-break:normal}
+#mainMenu .command-grid .command-tile .menu-label{font-size:clamp(10.8px,1.305vw,14.4px)!important;line-height:1.1!important}
+#mainMenu .command-grid .menu-hint,
+#mainMenu .command-hero-actions .menu-hint{display:block!important;min-height:0!important;margin:5px 0 0!important;padding:0!important;white-space:normal!important;overflow-wrap:normal!important;word-break:normal!important}
+#mainMenu .command-history>span:last-child{position:static!important;grid-column:3;grid-row:1;align-self:center;margin-left:4px}
+@media (max-width:620px){
+  #mainMenu .command-grid .command-tile .menu-label{font-size:10.35px!important}
+  #mainMenu .command-hero-actions .menu-label{font-size:10.8px!important}
+  #mainMenu .menu-title-line{padding-bottom:4px}
+  #mainMenu .command-grid .menu-hint,#mainMenu .command-hero-actions .menu-hint{margin-top:4px!important;font-size:7.5px!important;line-height:1.16!important}
+}

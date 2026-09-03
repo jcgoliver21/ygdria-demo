@@ -5351,11 +5351,11 @@ function applyI18nArtCss(){
 }
 
 const STATIC_I18N=[
-  ['#playBtn .menu-label','História <small class="menu-hint">Explore o mapa oficial de Ygdria</small>','Story <small class="menu-hint">Explore Ygdria’s official map</small>','Historia <small class="menu-hint">Explora el mapa oficial de Ygdria</small>'],
-  ['#galleryBtn .menu-label','Biblioteca da Eternidade <small class="menu-hint">Tutoriais, criaturas, NPCs e cartas</small>','Library of Eternity <small class="menu-hint">Tutorials, creatures, NPCs and cards</small>','Biblioteca de la Eternidad <small class="menu-hint">Tutoriales, criaturas, NPCs y cartas</small>'],
-  ['#shopBtn .menu-label','Mercado Central dos Reinos <small class="menu-hint">Consumíveis e preparos</small>','Central Market of the Realms <small class="menu-hint">Consumables and preparations</small>','Mercado Central de los Reinos <small class="menu-hint">Consumibles y preparativos</small>'],
-  ['#achBtn .menu-label','Perfil <small class="menu-hint" id="profileHint">Conquistas e jornada</small>','Profile <small class="menu-hint" id="profileHint">Achievements and journey</small>','Perfil <small class="menu-hint" id="profileHint">Logros y jornada</small>'],
-  ['#optionsBtn .menu-label','Opções <small class="menu-hint">Áudio, visual e acessibilidade</small>','Options <small class="menu-hint">Audio, visuals and accessibility</small>','Opciones <small class="menu-hint">Audio, visuales y accesibilidad</small>'],
+  ['#playBtn .menu-label','<span class="menu-title-line">História</span><small class="menu-hint">Explore o mapa oficial de Ygdria</small>','<span class="menu-title-line">Story</span><small class="menu-hint">Explore Ygdria’s official map</small>','<span class="menu-title-line">Historia</span><small class="menu-hint">Explora el mapa oficial de Ygdria</small>'],
+  ['#galleryBtn .menu-label','<span class="menu-title-line">Biblioteca da Eternidade</span><small class="menu-hint">Tutoriais, criaturas, NPCs e cartas</small>','<span class="menu-title-line">Library of Eternity</span><small class="menu-hint">Tutorials, creatures, NPCs and cards</small>','<span class="menu-title-line">Biblioteca de la Eternidad</span><small class="menu-hint">Tutoriales, criaturas, NPCs y cartas</small>'],
+  ['#shopBtn .menu-label','<span class="menu-title-line">Mercado Central dos Reinos</span><small class="menu-hint">Consumíveis e preparos</small>','<span class="menu-title-line">Central Market of the Realms</span><small class="menu-hint">Consumables and preparations</small>','<span class="menu-title-line">Mercado Central de los Reinos</span><small class="menu-hint">Consumibles y preparativos</small>'],
+  ['#achBtn .menu-label','<span class="menu-title-line">Perfil</span><small class="menu-hint" id="profileHint">Conquistas e jornada</small>','<span class="menu-title-line">Profile</span><small class="menu-hint" id="profileHint">Achievements and journey</small>','<span class="menu-title-line">Perfil</span><small class="menu-hint" id="profileHint">Logros y jornada</small>'],
+  ['#optionsBtn .menu-label','<span class="menu-title-line">Opções</span><small class="menu-hint">Áudio, visual e acessibilidade</small>','<span class="menu-title-line">Options</span><small class="menu-hint">Audio, visuals and accessibility</small>','<span class="menu-title-line">Opciones</span><small class="menu-hint">Audio, visuales y accesibilidad</small>'],
   ['#optionsTitle','Opções','Options','Opciones'],
   ['#achTitle','Perfil & Conquistas','Profile & Achievements','Perfil y Logros'],
   ['#shopTitle','Mercado Central dos Reinos','Central Market of the Realms','Mercado Central de los Reinos'],
@@ -5364,7 +5364,7 @@ const STATIC_I18N=[
   ['#retryBtn','Tentar novamente','Try again','Intentar de nuevo'],
   ['#startBtn','Iniciar a Aventura!','Begin the Adventure!','¡Iniciar la Aventura!'],
   ['#autoTeamBtn','Equipe sugerida','Suggested team','Equipo sugerido'],
-  ["#continueBtn .menu-label","Continuar <small class=\"menu-hint\" id=\"continueHint\">Sem progresso salvo</small>","Continue <small class=\"menu-hint\" id=\"continueHint\">No saved progress</small>","Continuar <small class=\"menu-hint\" id=\"continueHint\">Sin progreso guardado</small>"],
+  ["#continueBtn .menu-label","<span class=\"menu-title-line\">Continuar</span><small class=\"menu-hint\" id=\"continueHint\">Sem progresso salvo</small>","<span class=\"menu-title-line\">Continue</span><small class=\"menu-hint\" id=\"continueHint\">No saved progress</small>","<span class=\"menu-title-line\">Continuar</span><small class=\"menu-hint\" id=\"continueHint\">Sin progreso guardado</small>"],
   ["#menuVersion","VERSÃO 11 · DEMO OFICIAL MOBILE","VERSION 11 · OFFICIAL MOBILE DEMO","VERSIÓN 11 · DEMO OFICIAL MÓVIL"],
   ["#selectBackBtn","← Voltar","← Back","← Volver"],
   ["#selectScreen .screen-eyebrow","Formação do grupo","Party setup","Formación del grupo"],
@@ -5493,7 +5493,7 @@ function applyLanguage(){
   const towerLabel=document.querySelector('#towerBtn .menu-label');
   if(towerLabel){
     const hint=document.getElementById('towerHint')?.outerHTML||'';
-    towerLabel.innerHTML=T('Torre de Acesso à Eternidade ','Tower of Access to Eternity ','Torre de Acceso a la Eternidad ')+hint;
+    towerLabel.innerHTML='<span class="menu-title-line">'+T('Torre de Acesso à Eternidade','Tower of Access to Eternity','Torre de Acceso a la Eternidad ')+'</span>'+hint;
   }
   const sub=document.querySelector('.select-sub');
   const totalCartas=KINGDOMS.length;
