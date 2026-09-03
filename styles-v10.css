@@ -4619,6 +4619,19 @@ body.game-active .battle-row::before{
 @media (max-width:620px){#mainMenu.screen-panel{height:100dvh;min-height:0!important;padding:7px 10px!important;overflow:hidden!important}#mainMenu .menu-command-center{height:100%;display:flex;flex-direction:column}.command-masthead{padding:2px 0 7px!important}.command-masthead .game-logo{width:36px!important}.command-masthead .menu-title{font-size:27px!important}.command-masthead .menu-subtitle{font-size:8px!important}.command-hero{margin:5px 0 7px!important}.command-kicker{font-size:7px!important}.command-hero h2{font-size:23px!important;margin:3px 0 6px!important}.command-hero-actions .menu-btn{min-height:63px!important;padding:8px 9px!important}.command-hero-actions .menu-label{font-size:12px!important}.command-hero-actions .menu-hint{font-size:7.5px!important}.command-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important;flex:1}.command-grid .command-tile{min-height:0!important;padding:9px!important}.command-grid .command-tile .menu-label{font-size:12px!important}.command-grid .menu-hint{min-height:0!important;font-size:7.7px!important;line-height:1.16!important}.vfx-icon{width:30px!important;height:30px!important;margin-bottom:5px!important;border-radius:10px!important}.vfx-icon::before{font-size:15px}.command-footer{padding-top:5px!important}.command-footer .menu-footer{font-size:6.5px!important}.command-footer .coin-badge{font-size:10px!important}}
 @media (prefers-reduced-motion:reduce){.menu-btn:hover .vfx-icon::after,.menu-btn:focus-visible .vfx-icon::after{animation:none!important}}
 
+/* Emblemas ilustrados v2: arte próprio para cada destino do menu. */
+#mainMenu .vfx-icon{background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;border-color:color-mix(in srgb,var(--vfx) 78%,#fff)!important;box-shadow:0 0 0 1px rgba(0,0,0,.42),inset 0 0 10px rgba(4,2,14,.28),0 0 16px color-mix(in srgb,var(--vfx) 26%,transparent)!important}
+#mainMenu .vfx-icon::before{content:""!important;display:none!important}
+#mainMenu .vfx-history{background-image:url('assets/ui/menu-icons-v2/history.png')!important;--vfx:#ffd66d}
+#mainMenu .vfx-continue{background-image:url('assets/ui/menu-icons-v2/continue.png')!important;--vfx:#bfa5ff}
+#mainMenu .vfx-special{background-image:url('assets/ui/menu-icons-v2/special.png')!important;--vfx:#f68ccb}
+#mainMenu .vfx-tower{background-image:url('assets/ui/menu-icons-v2/tower.png')!important;--vfx:#85b9ff}
+#mainMenu .vfx-pvp{background-image:url('assets/ui/menu-icons-v2/pvp.png')!important;--vfx:#cf7d80}
+#mainMenu .vfx-profile{background-image:url('assets/ui/menu-icons-v2/profile.png')!important;--vfx:#edc878}
+#mainMenu .vfx-market{background-image:url('assets/ui/menu-icons-v2/market.png')!important;--vfx:#e5ab63}
+#mainMenu .vfx-options{background-image:url('assets/ui/menu-icons-v2/options.png')!important;--vfx:#90c7e7}
+#mainMenu .vfx-library{background-image:url('assets/ui/menu-icons-v2/library.png')!important;--vfx:#b891f3}
+
 /* v11.0.51 · Destinos compactos: a arte ocupa o cartão inteiro e o texto
    repousa sobre uma sombra curta de leitura, não sobre um degradê opaco. */
 #mainMenu .command-grid{align-content:start!important;grid-auto-rows:112px!important;flex:0 0 auto!important}

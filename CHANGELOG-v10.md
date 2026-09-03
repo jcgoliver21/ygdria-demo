@@ -139,3 +139,7 @@ Data: 2026-08-14
 - O novo formato de backup usa esquema explícito `12r-progress`, versão 10.
 - O bloqueio da página inicial continua sendo uma barreira de conveniência no navegador, não autenticação de servidor.
 - Os arquivos v9.3 permanecem no histórico Git para rollback.
+## v11.0.53 — Emblemas ilustrados do menu
+
+- Aplicados oito emblemas desenhados e o novo tomo da Biblioteca da Eternidade.
+- Revisados títulos e subtítulos para refletir a identidade visual de cada destino.
