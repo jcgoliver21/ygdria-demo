@@ -5683,7 +5683,11 @@ function storySpeakerAnchor(step){
   /* A cena final mantém Cedric, Bernyce e Kalander no próprio piso da arena;
      a fala canônica continua presa a quem a está dizendo, mesmo depois da
      queda e antes do teleporte de Adriel. */
-  const finaleActor=arenaEl?.querySelector(`.human-final-scene .finale-${wanted},.human-final-prelude .finale-${wanted}`);
+  /* `wanted` can be a localized display name such as "soldado 1".  It must
+     never be interpolated in a CSS selector: spaces and punctuation turn it
+     into invalid selector syntax and used to abort the whole story step. */
+  const finaleActor=[...(arenaEl?.querySelectorAll('.human-final-scene [class],.human-final-prelude [class]')||[])]
+    .find(actor=>actor.classList.contains(`finale-${wanted}`));
   if(finaleActor) return finaleActor;
   if(Number.isInteger(step?.enemyIndex)) return document.getElementById('enemy-'+step.enemyIndex);
   const namedHero=[...partyArenaEl.querySelectorAll('.hero-unit')].find(unit=>{

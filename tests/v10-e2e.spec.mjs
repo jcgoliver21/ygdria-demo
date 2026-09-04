@@ -2363,6 +2363,45 @@ test('Benção da Eternidade reinicia somente a missão atual das sequências',a
   expect(errors).toEqual([]);
 });
 
+test('pares de soldados no Pesadelo concluem o contra-ataque e devolvem o turno',async({page})=>{
+  const errors=await boot(page,'flow');
+  const reports=await page.evaluate(async()=>{
+    const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+    const starters=['adriel-jovem','berenice-jovem','galateia-jovem','acqua-jovem']
+      .map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    const encounters=[
+      {fase:0,nivel:4,label:'Cidade das Cerejeiras'},
+      {fase:1,nivel:1,label:'Catedral de Ygdria'},
+      {fase:6,nivel:2,label:'Biblioteca da Eternidade'}
+    ];
+    const out=[];
+    for(const encounter of encounters){
+      difficulty='pesadelo';
+      worldRun={active:true,...encounter,storyMode:false};
+      chosenIds=[...starters];
+      beginGame(0); skipStory();
+      await wait(120);
+      enemyCounterAttack();
+      await wait(2200);
+      out.push({
+        label:encounter.label,
+        enemies:enemies.filter(enemy=>enemy.hp>0).length,
+        busy,
+        phase:battlePhase,
+        accepts:canAcceptPlayerInput(),
+        paused:gamePaused,
+        epoch:combatEpoch
+      });
+    }
+    return out;
+  });
+  reports.forEach(report=>{
+    expect(report.enemies).toBe(2);
+    expect(report).toMatchObject({busy:false,phase:'idle',accepts:true,paused:false});
+  });
+  expect(errors).toEqual([]);
+});
+
 test('seleção de história mostra só o elenco da missão; modo livre guarda o restante em Editar Grupo',async({page})=>{
   const errors=await boot(page,'flow');
   const result=await page.evaluate(()=>{
@@ -2535,7 +2574,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.55');
+  expect(registration.caches).toContain('12r-v11.0.57');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2695,7 +2734,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.56');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.57');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 
