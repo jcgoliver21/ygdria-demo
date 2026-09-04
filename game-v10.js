@@ -5088,6 +5088,13 @@ function togglePhotoMode(on){
 
 function loadStage(idx){
   resetCombatSchedule();
+  /* Um reinício vindo do menu de pausa não pode herdar a pausa visual, os
+     frames congelados ou o relógio parado da missão anterior. */
+  gamePaused=false;
+  document.getElementById('pauseScreen')?.classList.remove('show');
+  resumePartyAnimations();
+  resumeEnemyAnimations();
+  resumeMissionClock();
   bannerAtkRun=1;
   humanFinaleCinematicRunning=false;
   humanFinalePreludeRunning=false;
@@ -5107,7 +5114,6 @@ function loadStage(idx){
   selected = null;
   stageIndex = idx;
   if(towerMode && difficulty==='pesadelo' && playerHP>0) survivorStageStartHP=playerHP;
-  gamePaused = false;
   computeBattleGemColors();
   hiddenGems={};
   boardRenderCache=null; /* nova fase = render completo do tabuleiro */
@@ -8409,20 +8415,46 @@ function retryAfterDefeat(){
   restartCurrentStage();
 }
 
+let restartMissionPending=false;
 async function restartFromControls(){
+  if(restartMissionPending) return;
   if(!hasEternityBlessing()){
     sfxInvalid();
     setBattleStatus(T('Reiniciar missão requer uma Benção da Eternidade na mochila.','Restarting a mission requires a Blessing of Eternity in the bag.','Reiniciar una misión requiere una Bendición de la Eternidad en la mochila.'));
     return;
   }
-  inventory['bencao-eternidade']--;
-  saveInventory();
-  renderMochila();
-  updateRestartControls();
-  playConsumableVfx('bencao-eternidade');
-  setBattleStatus(T('∞ A Benção da Eternidade restaurou esta missão.','∞ The Blessing of Eternity restored this mission.','∞ La Bendición de la Eternidad restauró esta misión.'),'support');
-  await wait(420);
-  restartCurrentStage();
+  restartMissionPending=true;
+  const blessingCount=inventory['bencao-eternidade']||0;
+  /* wait() respeita a pausa; por isso o fluxo anterior congelava exatamente
+     ao usar Reiniciar Missão dentro do menu. Cancelamos a rodada antiga e
+     usamos uma espera visual independente antes de montar a nova missão. */
+  resetCombatSchedule();
+  gamePaused=false;
+  document.getElementById('pauseScreen')?.classList.remove('show');
+  resumePartyAnimations();
+  resumeEnemyAnimations();
+  resumeMissionClock();
+  busy=false;
+  setBattlePhase('idle');
+  try{
+    inventory['bencao-eternidade']=blessingCount-1;
+    saveInventory();
+    renderMochila();
+    updateRestartControls();
+    playConsumableVfx('bencao-eternidade');
+    setBattleStatus(T('∞ A Benção da Eternidade restaurou esta missão.','∞ The Blessing of Eternity restored this mission.','∞ La Bendición de la Eternidad restauró esta misión.'),'support');
+    await new Promise(resolve=>window.setTimeout(resolve,420));
+    restartCurrentStage();
+  }catch(error){
+    inventory['bencao-eternidade']=blessingCount;
+    saveInventory();
+    renderMochila();
+    updateRestartControls();
+    setBattleStatus(T('Não foi possível reiniciar a missão. A Benção foi preservada.','Could not restart the mission. The Blessing was preserved.','No se pudo reiniciar la misión. La Bendición fue preservada.'),'system');
+    console.error('Falha ao reiniciar a missão',error);
+  }finally{
+    restartMissionPending=false;
+  }
 }
 
 document.getElementById('resetBtn').addEventListener('click', restartFromControls);
@@ -8497,7 +8529,15 @@ function renderSelectGrid(){
   const ordem=['humanos','luz','agua','fogo','natureza','terra','areia','sombras','raio','vento','chuvas','gelo'];
   const roster=document.createElement('section');
   roster.className='select-constellation-roster';
-  const rosterCards=KINGDOMS.slice().sort((a,b)=>{
+  const storyMode=Boolean(worldRun?.active&&worldRun.storyMode!==false);
+  const rosterSource=storyMode
+    /* Missão de história: a seleção principal mostra somente o elenco
+       liberado para aquela missão. */
+    ? KINGDOMS.filter((hero,idx)=>storySelectionAllowed(idx))
+    /* Modo livre: a tela principal mostra o grupo atual; a coleção completa
+       desbloqueada fica exclusivamente no lightbox Editar Grupo. */
+    : chosenIds.map(idx=>KINGDOMS[idx]).filter(Boolean);
+  const rosterCards=rosterSource.slice().sort((a,b)=>{
     const realmDelta=ordem.indexOf(a.deck||a.id)-ordem.indexOf(b.deck||b.id);
     return realmDelta||((b.stars||0)-(a.stars||0))||L(a.nome).localeCompare(L(b.nome));
   });
@@ -8515,7 +8555,9 @@ function renderSelectGrid(){
         ?T('Ainda não conquistada','Not yet earned','Aún no obtenida')
         :!availability.allowed
           ?T('Bloqueada nesta missão','Locked for this story mission','Bloqueada en esta misión de historia')
-          :T('Disponível','Available','Disponible');
+          :(!storyMode&&chosenIds.includes(idx)
+            ?T('No grupo','In party','En el grupo')
+            :T('Disponível','Available','Disponible'));
       card.innerHTML = `
         <div class="constellation-card-glow" aria-hidden="true"></div>
         <div class="thumb-wrap"><img src="${THUMB(k.cardThumb||k.img)}"${THUMBF(k.cardThumb||k.img)} alt="${k.nome}" loading="lazy" decoding="async">${pickOrder>=0?`<div class="pick-badge" aria-label="${T('Posição na equipe','Team position','Posición en el equipo')}">${pickOrder+1}</div>`:''}${availability.owned&&!availability.allowed?'<span class="story-card-lock" aria-hidden="true">🔒</span>':''}<button class="zoom-btn" type="button" data-idx="${idx}" aria-label="${T(`Abrir carta de ${L(k.nome)} em alta resolução`,`Open ${L(k.nome)}'s card in high resolution`,`Abrir la carta de ${L(k.nome)} en alta resolución`)}">↗</button></div>
@@ -9973,7 +10015,7 @@ function storySelectionAllowed(idx){
      e do roteiro de campanha; nessa etapa todo o roster deve permanecer ativo. */
   if(typeof worldRun==='undefined'||!worldRun.active||worldRun.storyMode===false||typeof STORY_RULES==='undefined') return true;
   const rule=STORY_RULES[worldRun.fase];
-  if(!rule||storyMissionDone(worldRun.fase,worldRun.nivel)) return true;
+  if(!rule) return true;
   return rule.allowed.includes(KINGDOMS[idx]?.id);
 }
 /* v9.1 · Mapa de Ygdria: 12 reinos traçados; só o Reino dos Humanos liberado */

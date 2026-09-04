@@ -31,9 +31,10 @@ test('fluxo real abre seletor, monta equipe e inicia tabuleiro',async({page})=>{
   await expect(page.locator('#selectScreen')).toBeVisible();
   await page.waitForTimeout(400); // a fase também protege a troca de tela contra toque herdado
   await expect(page.locator('.select-card.chosen')).toHaveCount(4);
-  await page.locator('.select-card.chosen:visible').first().click();
-  await expect(page.locator('#startBtn')).toBeDisabled();
-  await page.locator('.select-card:not(.collection-locked):not(.story-disabled):not(.chosen):visible').first().click();
+  /* História: a tela principal exibe só as quatro cartas autorizadas, sem
+     transformar a coleção inteira em uma lista de bloqueadas. */
+  await expect(page.locator('.select-card')).toHaveCount(4);
+  await expect(page.locator('.select-card.collection-locked, .select-card.story-disabled')).toHaveCount(0);
   await expect(page.locator('#startBtn')).toBeEnabled();
   await page.click('#startBtn');
   await expect(page.locator('#gameScreen')).toBeVisible();
@@ -2340,7 +2341,7 @@ test('derrota reinicia sequências especiais desde o começo',async({page})=>{
 test('Benção da Eternidade reinicia somente a missão atual das sequências',async({page})=>{
   const errors=await boot(page);
   await page.evaluate(()=>{
-    chosenIds=[0,1,2,3]; beginGame(0); skipStory();
+    chosenIds=['adriel-jovem','berenice-jovem','galateia-jovem','acqua-jovem'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id)); beginGame(0); skipStory();
     window.__12rQA.setSpecialRun('tower',6,73);
   });
   await page.waitForTimeout(400);
@@ -2359,6 +2360,65 @@ test('Benção da Eternidade reinicia somente a missão atual das sequências',a
   snapshot=await page.evaluate(()=>({towerMode,towerFloor,bossRushMode,bossRushIdx,battlePhase}));
   expect(snapshot.bossRushMode).toBe(true);
   expect(snapshot.bossRushIdx).toBe(5);
+  expect(errors).toEqual([]);
+});
+
+test('seleção de história mostra só o elenco da missão; modo livre guarda o restante em Editar Grupo',async({page})=>{
+  const errors=await boot(page,'flow');
+  const result=await page.evaluate(()=>{
+    const starters=['adriel-jovem','berenice-jovem','galateia-jovem','acqua-jovem'];
+    const starterIndexes=starters.map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    saveCardUnlocks(['gareth']);
+    worldRun={active:true,fase:0,nivel:1,storyMode:true};
+    chosenIds=[...starterIndexes];
+    prepareStorySelection(); renderSelectGrid();
+    const story={
+      shown:[...document.querySelectorAll('.select-card')].map(card=>card.querySelector('b')?.textContent),
+      editHidden:document.getElementById('editGroupBtn').hidden
+    };
+    worldRun.storyMode=false;
+    renderSelectGrid();
+    const free={
+      shown:[...document.querySelectorAll('.select-card')].map(card=>card.querySelector('b')?.textContent),
+      editHidden:document.getElementById('editGroupBtn').hidden,
+      editor:[...document.querySelectorAll('.group-editor-card')].map(card=>card.textContent.trim())
+    };
+    return {story,free};
+  });
+  expect(result.story.shown).toHaveLength(4);
+  expect(result.story.shown).toEqual(expect.arrayContaining(['Adriel (Jovem)','Berenice (Jovem)','Galatéia (Jovem)','Acqua (Jovem)']));
+  expect(result.story.editHidden).toBe(true);
+  expect(result.free.shown).toEqual(expect.arrayContaining(result.story.shown));
+  expect(result.free.shown).toHaveLength(4);
+  expect(result.free.editHidden).toBe(false);
+  expect(result.free.editor).toContain('Gareth');
+  expect(errors).toEqual([]);
+});
+
+test('Reiniciar Missão a partir da pausa libera o turno e não congela a arena',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.setViewportSize({width:390,height:844});
+  await page.evaluate(()=>{
+    chosenIds=['adriel-jovem','berenice-jovem','galateia-jovem','acqua-jovem'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id)); beginGame(0); skipStory();
+    inventory['bencao-eternidade']=1; saveInventory(); updateRestartControls();
+  });
+  await page.waitForTimeout(220);
+  await page.locator('#pauseBtn').click();
+  await expect(page.locator('#pauseScreen')).toHaveClass(/show/);
+  await page.locator('#restartStageBtn').click();
+  await page.waitForTimeout(720);
+  await page.evaluate(()=>skipStory());
+  await page.waitForTimeout(80);
+  const state=await page.evaluate(()=>({
+    paused:gamePaused,
+    phase:battlePhase,
+    busy,
+    pauseVisible:document.getElementById('pauseScreen').classList.contains('show'),
+    blessing:inventory['bencao-eternidade']||0,
+    missionStarted:missionFieldStarted,
+    enemyCount:enemies.length
+  }));
+  expect(state).toEqual({paused:false,phase:'idle',busy:false,pauseVisible:false,blessing:0,missionStarted:true,enemyCount:1});
   expect(errors).toEqual([]);
 });
 
