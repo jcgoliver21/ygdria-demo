@@ -30,7 +30,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
 <link rel="apple-touch-icon" href="assets/icon.svg">
-<link rel="stylesheet" href="styles-v10.css?v=11.0.54">
+<link rel="stylesheet" href="styles-v10.css?v=11.0.55">
 </head>
 <body>
 <div class="scene-bg" data-screen="menu"></div>
@@ -49,7 +49,7 @@
       <button class="menu-btn command-tile" id="optionsBtn" type="button" data-tap-guard-bypass><span class="menu-icon vfx-icon vfx-options" aria-hidden="true"></span><span class="menu-label"><span class="menu-title-line">Opções</span><small class="menu-hint">Som, imagem e acessibilidade</small></span></button>
       <button class="menu-btn command-tile command-library" id="galleryBtn"><span class="menu-icon vfx-icon vfx-library" aria-hidden="true"></span><span class="menu-label"><span class="menu-title-line">Biblioteca da Eternidade</span><small class="menu-hint">Crônicas, criaturas, NPCs e cartas</small></span></button>
     </nav>
-    <footer class="command-footer"><button class="account-chip" id="accountChip" type="button">Entrar / Criar conta</button><div class="coin-badge" id="coinBadge">🪙 0</div><div class="menu-footer" id="menuVersion">VERSÃO 11 · DEMO OFICIAL MOBILE</div></footer>
+    <footer class="command-footer"><button class="account-chip" id="accountChip" type="button">Entrar / Criar conta</button><div class="coin-badge" id="coinBadge">✦ 0Ks</div><div class="menu-footer" id="menuVersion">VERSÃO 11 · DEMO OFICIAL MOBILE</div></footer>
   </div>
 </div>
 
@@ -65,6 +65,7 @@
   <div class="select-sub">Escolha 4 entre 12 personagens oficiais. Toque na carta para escalar e use apenas a lupa para abrir a arte e ler todas as habilidades.</div>
   <div class="select-counter">Escolhidos: <b id="selectCount">0</b>/4</div>
   <div class="alliance-hint" id="allianceHint" aria-live="polite"></div>
+  <button class="ghost-btn edit-group-btn" id="editGroupBtn" type="button" hidden>Editar Grupo</button>
   <div class="team-slots" id="teamSlots" aria-label="Equipes salvas"></div>
   <div class="select-grid" id="selectGrid"></div>
   <div class="selection-footer">
@@ -170,6 +171,7 @@
   <p id="grandClearText">A vitória ecoa por Ygdria.</p>
   <div class="stage-stars" id="victoryStars" aria-label="Classificação da fase"></div>
   <p class="victory-rank" id="victoryRank"></p>
+  <div class="phase-reward-summary" id="phaseRewardSummary" hidden></div>
   <div class="battle-report" id="victoryReport"></div>
   <button class="overlay-btn" id="shareDailyBtn" style="display:none" type="button">📋 Compartilhar resultado</button>
   <button class="overlay-btn" id="playAgainBtn">Jogar novamente</button>
@@ -235,6 +237,14 @@
     </div>
   </div>
 </div>
+<div class="pro-overlay group-editor-overlay" id="editGroupScreen" role="dialog" aria-modal="true" aria-labelledby="editGroupTitle">
+  <div class="pro-dialog group-editor-dialog">
+    <button class="pro-close" id="editGroupClose" type="button" aria-label="Fechar">×</button>
+    <h2 id="editGroupTitle">Editar Grupo</h2>
+    <p>Escolha até quatro cartas conquistadas. As cartas são separadas por reino.</p>
+    <div class="group-editor-grid" id="editGroupGrid"></div>
+  </div>
+</div>
 <div class="pro-overlay" id="achScreen" role="dialog" aria-modal="true" aria-labelledby="achTitle">
   <div class="pro-dialog">
     <div class="dialog-header"><h2 class="dialog-title" id="achTitle">Perfil & Conquistas</h2><button class="ghost-btn" data-close="achScreen">Fechar</button></div>
@@ -245,7 +255,7 @@
 <div class="pro-overlay" id="shopScreen" role="dialog" aria-modal="true" aria-labelledby="shopTitle">
   <div class="pro-dialog">
     <div class="dialog-header"><h2 class="dialog-title" id="shopTitle">Loja Real</h2><button class="ghost-btn" data-close="shopScreen">Fechar</button></div>
-    <div class="shop-coins" id="shopCoins">🪙 0</div>
+    <div class="shop-coins" id="shopCoins">✦ 0Ks</div>
     <div class="shop-list" id="shopList"></div>
   </div>
 </div>
@@ -260,7 +270,7 @@
 <aside class="battle-inventory-dock" id="mochilaScreen" aria-labelledby="mochilaTitle" aria-hidden="true">
   <div class="battle-inventory-surface">
     <div class="dialog-header"><h2 class="dialog-title" id="mochilaTitle">Mochila</h2><button class="ghost-btn" id="mochilaCloseBtn" type="button">Fechar</button></div>
-    <div class="shop-coins" id="mochilaCoins">🪙 0</div>
+    <div class="shop-coins" id="mochilaCoins">✦ 0Ks</div>
     <div class="shop-list" id="mochilaList"></div>
     <button class="overlay-btn" id="mochilaShopBtn" type="button" style="width:100%;margin-top:12px;">🪙 Abrir Loja de Consumíveis</button>
   </div>
@@ -476,11 +486,11 @@
   </div>
 </div>
 <script>window.addEventListener('error',function(e){(window.__bootErrors=window.__bootErrors||[]).push({m:String(e.message).slice(0,200),l:e.lineno,c:e.colno})});</script>
-<script src="v10-config.js?v=11.0.54"></script>
-<script src="v10-animations.js?v=11.0.54"></script>
-<script src="humanos-lore-v10.js?v=11.0.54"></script>
+<script src="v10-config.js?v=11.0.55"></script>
+<script src="v10-animations.js?v=11.0.55"></script>
+<script src="humanos-lore-v10.js?v=11.0.55"></script>
 <script src="map-effects-v1.js?v=1.0.0" defer></script>
-<script src="game-v10.js?v=11.0.54" defer></script>
+<script src="game-v10.js?v=11.0.55" defer></script>
 
 </body>
 </html>

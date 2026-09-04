@@ -20,13 +20,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.54/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.54/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.54/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.54/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.54/);
-  assert.match(config,/version:'v11\.0\.54'/);
-  assert.match(sw,/12r-v11\.0\.54/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.55/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.55/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.55/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.55/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.55/);
+  assert.match(config,/version:'v11\.0\.55'/);
+  assert.match(sw,/12r-v11\.0\.55/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -139,7 +139,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.54/);
+  assert.match(sw,/12r-v11\.0\.55/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -332,7 +332,7 @@ check('v11 substitui formações antigas e mantém seleção direta dos heróis'
 check('v12 fixa a física de escala das ações e a leitura mobile',()=>{
   assert.match(game,/const ACTION_PHYSICS_SCALE=Object\.freeze\(/);
   assert.match(game,/fogo:\{attack:\.8082/);
-  assert.match(game,/HUMAN_CHAPTER_BODY_PHYSICS_IDS\.has\(character\?\.id\)\r?\n    \? 1/);
+  assert.match(game,/HUMAN_CHAPTER_BODY_PHYSICS_IDS\.has\(character\?\.id\)\s*\? 1 : Number\(ACTION_PHYSICS_SCALE/);
   assert.match(css,/body\.game-active \.party-row \.unit-stage\{height:106px!important\}/);
   assert.match(css,/body\.game-active \.enemy-row \.unit-stage\{height:102px!important\}/);
   assert.match(html,/class="game-logo" src="assets\/icon\.svg"/);
@@ -435,7 +435,7 @@ check('vitória preserva a arena e separa cabeçalho do relatório inferior',()=
 });
 
 check('início revalida a fase narrativa e o HUD de leitura fica fora da arena',()=>{
-  assert.match(game,/if\(!orphanStart\) prepareStorySelection\(\);[\s\S]+?if\(!isValidHeroTeam\(chosenIds\)\)/);
+  assert.match(game,/if\(!orphanStart\) prepareStorySelection\(\);[\s\S]+?if\(!isValidHeroTeam\(chosenIds\)\|\|!chosenIds\.every\(idx=>selectionAvailability\(idx\)\.selectable\)\)/);
   assert.match(game,/worldRun=\{active:true,fase:0,nivel:1,storyMode:false\}/);
   assert.match(html,/battle-feed-row battle-info-dock/);
   assert.doesNotMatch(html,/<div class="arena"[\s\S]+?<div class="battle-feed-row">/);
@@ -541,7 +541,7 @@ check('mapa vertical preserva geografia e expande somente o oceano lateral',()=>
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.54');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.55');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
@@ -776,6 +776,23 @@ check('vitrine humana pré-carrega poses e trata M como conjuração local',()=>
   assert.match(animationShowcase,/if\(action==='cast'\)\{impact\.className='lab-impact'/);
   assert.match(animationShowcase,/if\(action==='cast'&&chapterMode\)return null;/);
   assert.doesNotMatch(animationShowcase,/radial-gradient\(circle at 50% 62%/,'aura não pode voltar a usar luzinhas CSS');
+});
+
+check('Kalegs, recompensas humanas e coleção persistente estão integrados',()=>{
+  assert.match(game,/const KALEGS_NAME='Kalegs'/);
+  assert.match(game,/function formatKalegs\(value\)/);
+  assert.match(game,/const HUMAN_PHASE_REWARDS=Object\.freeze\(/);
+  assert.match(game,/facil:\{k:10,card:'gareth'\}/);
+  assert.match(game,/pesadelo:\{k:40,card:'jules',items:\{'bencao-eternidade':1\}\}/);
+  assert.match(game,/function claimHumanPhaseReward\(fase,diff,\{winner=true\}=\{\}\)/);
+  assert.match(game,/12r_human_phase_rewards/);
+  assert.match(game,/function cardOwned\(id\)/);
+  assert.match(game,/function renderGroupEditor\(\)/);
+  assert.match(game,/function selectionAvailability\(idx\)/);
+  assert.match(html,/id="editGroupScreen"/);
+  assert.match(html,/id="phaseRewardSummary"/);
+  assert.match(css,/\.collection-locked/);
+  assert.match(css,/\.phase-reward-summary/);
 });
 
 

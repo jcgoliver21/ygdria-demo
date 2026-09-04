@@ -1373,11 +1373,15 @@ function grantCoins(n){
   localStorage.setItem('12r_coins',String(coins));
   updateCoinBadge();
 }
+/* Economia oficial do Reino dos Humanos. O armazenamento legado continua em
+   `12r_coins` para não apagar o saldo de ninguém; só a apresentação mudou. */
+const KALEGS_NAME='Kalegs';
+function formatKalegs(value){ return `${Math.max(0,Math.round(Number(value)||0))}Ks`; }
 function updateCoinBadge(){
   const el=document.getElementById('coinBadge');
-  if(el) el.textContent=`🪙 ${coins}`;
+  if(el) el.textContent=`✦ ${formatKalegs(coins)}`;
   const el2=document.getElementById('shopCoins');
-  if(el2) el2.textContent=`🪙 ${coins}`;
+  if(el2) el2.textContent=`✦ ${formatKalegs(coins)}`;
 }
 const DAILY_BOOT_REQUESTED=new URLSearchParams(location.search).get('daily')==='1';
 let dailyRunMode=DAILY_BOOT_REQUESTED;
@@ -1426,7 +1430,7 @@ const ACHIEVEMENTS=[
   {id:'tower5', nome:'Escalador', desc:'Supere o andar 5 da Torre Infinita.', icon:'🗼', en:{nome:'Climber', desc:'Clear floor 5 of the Infinite Tower.'}},
   {id:'tower10', nome:'Lenda da Torre', desc:'Supere o andar 10 da Torre Infinita.', icon:'🌌', en:{nome:'Tower Legend', desc:'Clear floor 10 of the Infinite Tower.'}},
   {id:'dark-court', nome:'Corte Sombria', desc:'Vença uma fase com Berenice das Sombras e Mardogear juntos.', icon:'🌑', en:{nome:'Dark Court', desc:'Win a stage with Shadow Berenice and Mardogear together.'}},
-  {id:'rich', nome:'Tesouro Real', desc:'Acumule 500 moedas.', icon:'🪙', en:{nome:'Royal Treasure', desc:'Hoard 500 coins.'}},
+  {id:'rich', nome:'Tesouro Real', desc:'Acumule 500Ks.', icon:'✦', en:{nome:'Royal Treasure', desc:'Hoard 500 Kalegs.'}},
   {id:'daily', nome:'Ritual Diário', desc:'Conclua um Desafio Diário.', icon:'📅', en:{nome:'Daily Ritual', desc:'Complete a Daily Challenge.'}},
   {id:'lv5', nome:'Veterano', desc:'Alcance o nível de perfil 5.', icon:'📈', en:{nome:'Veteran', desc:'Reach profile level 5.'}, es:{nome:'Veterano', desc:'Alcanza el nivel de perfil 5.'}}
 ];
@@ -1485,7 +1489,7 @@ function renderQuestsPanel(){
   QUESTS_DEF.forEach(d=>{
     const done=q.done.includes(d.id);
     const progAtual=Math.min(d.n,q.prog[d.id]||0);
-    html+='<div class="quest-row'+(done?' done':'')+'"><span>'+d.ico+' '+d.nome()+'</span><span>'+(done?'✅':progAtual+'/'+d.n)+' · '+d.premio+'🪙</span></div>';
+    html+='<div class="quest-row'+(done?' done':'')+'"><span>'+d.ico+' '+d.nome()+'</span><span>'+(done?'✅':progAtual+'/'+d.n)+' · ✦ '+formatKalegs(d.premio)+'</span></div>';
   });
   html+='</div>';
   html+=renderLoginCalendar();
@@ -1563,6 +1567,61 @@ if(localStorage.getItem('12r_inventory_catalog')!==INVENTORY_CATALOG_VERSION){
   localStorage.setItem('12r_inv','{}');
 }
 function saveInventory(){ localStorage.setItem('12r_inv',JSON.stringify(inventory)); }
+
+/* Progressão de cartas e recompensas da campanha humana. Cada dificuldade
+   pode render sua própria premiação apenas uma vez; a carta é uma conquista
+   única e nunca duplica. */
+const HUMAN_STARTER_CARDS=Object.freeze(['adriel-jovem','berenice-jovem','galateia-jovem','acqua-jovem']);
+const HUMAN_PHASE_REWARDS=Object.freeze([
+  {facil:{k:10,card:'gareth'},normal:{k:20,card:'gareth',items:{regulacao:1}},dificil:{k:30,card:'gareth',items:{regulacao:2}},pesadelo:{k:40,card:'gareth',items:{regulacao:3}}},
+  {facil:{k:10,card:'cedric'},normal:{k:20,card:'cedric',items:{regulacao:1}},dificil:{k:30,card:'cedric',items:{regulacao:2}},pesadelo:{k:40,card:'cedric',items:{regulacao:3}}},
+  {facil:{k:10,card:'elizier'},normal:{k:20,card:'elizier',items:{regulacao:1}},dificil:{k:30,card:'elizier',items:{regulacao:2}},pesadelo:{k:40,card:'elizier',items:{'flor-cerejeira':1}}},
+  {facil:{k:10,card:'roland'},normal:{k:20,card:'roland',items:{regulacao:1}},dificil:{k:30,card:'roland',items:{regulacao:2}},pesadelo:{k:40,card:'roland',items:{'flor-cerejeira':1}}},
+  {facil:{k:20,items:{regulacao:1}},normal:{k:30,items:{regulacao:2}},dificil:{k:40,items:{regulacao:3}},pesadelo:{k:50,items:{'flor-cerejeira':1}}},
+  {facil:{k:20,items:{regulacao:1}},normal:{k:30,items:{regulacao:2}},dificil:{k:40,items:{regulacao:3}},pesadelo:{k:50,items:{'flor-cerejeira':1}}},
+  {facil:{k:10,card:'bernyce',items:{'flor-cerejeira':1,'regulacao-bernyce':1}},normal:{k:20,card:'bernyce',items:{'flor-cerejeira':2,'regulacao-bernyce':1}},dificil:{k:30,card:'bernyce',items:{'flor-cerejeira':3,'regulacao-bernyce':1}},pesadelo:{k:40,card:'bernyce',items:{'flor-cerejeira':4,'regulacao-bernyce':1}}},
+  {facil:{k:10,card:'kalander',items:{'flor-cerejeira':1,'espadas-lendarias':1}},normal:{k:20,card:'kalander',items:{'flor-cerejeira':2,'espadas-lendarias':1}},dificil:{k:30,card:'kalander',items:{'flor-cerejeira':3,'espadas-lendarias':1}},pesadelo:{k:40,card:'kalander',items:{'flor-cerejeira':4,'espadas-lendarias':1}}},
+  {facil:{k:10,items:{'flor-cerejeira':1}},normal:{k:20,items:{'flor-cerejeira':2}},dificil:{k:30,items:{'flor-cerejeira':3}},pesadelo:{k:40,items:{'flor-cerejeira':4}}},
+  {facil:{k:10,items:{'bencao-eternidade':1}},normal:{k:20,items:{'bencao-eternidade':1}},dificil:{k:30,items:{'bencao-eternidade':1}},pesadelo:{k:40,card:'jules',items:{'bencao-eternidade':1}}}
+]);
+function cardUnlocks(){
+  try{ return new Set(sanitizeHeroIdList(JSON.parse(localStorage.getItem('12r_card_unlocks')||'[]'))); }catch(e){ return new Set(); }
+}
+function saveCardUnlocks(ids){ localStorage.setItem('12r_card_unlocks',JSON.stringify([...ids])); }
+function cardOwned(id){ return HUMAN_STARTER_CARDS.includes(id)||cardUnlocks().has(id); }
+function rewardClaims(){
+  try{ const raw=JSON.parse(localStorage.getItem('12r_human_phase_rewards')||'{}'); return raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:{}; }catch(e){ return {}; }
+}
+function rewardSummary(reward,{claimed=false}={}){
+  if(!reward) return '';
+  const parts=[];
+  if(reward.k) parts.push(`✦ ${formatKalegs(reward.k)}`);
+  if(reward.card){ const hero=KINGDOMS.find(k=>k.id===reward.card); parts.push(`🎴 ${L(hero?.nome||reward.card)}`); }
+  Object.entries(reward.items||{}).forEach(([id,count])=>{ const item=SHOP_ITEMS.find(x=>x.id===id); parts.push(`${HUMAN_ITEM_ICONS[item?.icon]||'🎒'} ${count}× ${L(item?.nome||id)}`); });
+  return `${claimed?T('Recompensa já recebida: ','Reward already claimed: ','Recompensa ya recibida: '):''}${parts.join(' · ')}`;
+}
+function claimHumanPhaseReward(fase,diff,{winner=true}={}){
+  const reward=HUMAN_PHASE_REWARDS[fase]?.[diff];
+  if(!reward||(!winner&&fase===9)) return {reward:null,claimed:false,summary:''};
+  const key=`${fase+1}:${diff}`;
+  const claims=rewardClaims();
+  if(claims[key]) return {reward,claimed:false,summary:rewardSummary(reward,{claimed:true})};
+  claims[key]=Date.now();
+  localStorage.setItem('12r_human_phase_rewards',JSON.stringify(claims));
+  if(reward.k) grantCoins(reward.k);
+  if(reward.card){ const ids=cardUnlocks(); ids.add(reward.card); saveCardUnlocks(ids); }
+  Object.entries(reward.items||{}).forEach(([id,count])=>{ inventory[id]=Math.min(9999,(inventory[id]||0)+count); });
+  saveInventory();
+  return {reward,claimed:true,summary:rewardSummary(reward)};
+}
+function renderPhaseReward(result){
+  const box=document.getElementById('phaseRewardSummary');
+  if(!box) return;
+  if(!result?.reward){ box.hidden=true; box.innerHTML=''; return; }
+  box.hidden=false;
+  box.classList.toggle('claimed',!!result.claimed);
+  box.innerHTML=`<b>${result.claimed?T('Premiação conquistada','Rewards claimed','Premio obtenido'):T('Premiação da fase','Stage reward','Premio de fase')}</b><span>${result.summary}</span>${result.reward.card&&result.claimed?`<em>“${L(KINGDOMS.find(k=>k.id===result.reward.card)?.nome||result.reward.card)}” ${T('se junta à batalha!','joins the battle!','¡se une a la batalla!')}</em>`:''}`;
+}
 function buyItem(id){
   const item=SHOP_ITEMS.find(i=>i.id===id); if(!item) return;
   if(coins<item.preco){ sfxInvalid(); return; }
@@ -1581,7 +1640,7 @@ function renderShop(){
     <div class="shop-item">
       <span class="shop-icon human-item-icon item-${i.id}">${HUMAN_ITEM_ICONS[i.icon]||''}</span>
       <div class="shop-copy"><b>${L(i.nome)}</b> <small class="shop-uso rarity-${i.raridade.toLowerCase()}">${i.raridade}</small><small>${L(i.desc)}</small><small class="shop-owned">${T('Na mochila','In bag','En la mochila')}: ${inventory[i.id]||0}</small></div>
-      <button class="overlay-btn shop-buy" data-item="${i.id}" ${coins<i.preco?'disabled':''}>🪙 ${i.preco}</button>
+      <button class="overlay-btn shop-buy" data-item="${i.id}" ${coins<i.preco?'disabled':''}>✦ ${formatKalegs(i.preco)}</button>
     </div>`).join('');
   list.querySelectorAll('.shop-buy').forEach(b=>b.addEventListener('click',()=>buyItem(b.dataset.item)));
 }
@@ -1604,7 +1663,7 @@ function consumeInventoryOnBattleStart(){
 function renderMochila(){
   const list=document.getElementById('mochilaList'); if(!list) return;
   const emBatalha=document.body.classList.contains('game-active');
-  const mc=document.getElementById('mochilaCoins'); if(mc) mc.textContent=`🪙 ${coins}`;
+  const mc=document.getElementById('mochilaCoins'); if(mc) mc.textContent=`✦ ${formatKalegs(coins)}`;
   const itens=SHOP_ITEMS.filter(i=>(inventory[i.id]||0)>0);
   if(!itens.length){
     list.innerHTML=`<p class="account-note">${T('Mochila vazia. Visite a loja e prepare-se para as batalhas!','Empty bag. Visit the shop and gear up for battle!','Mochila vacía. ¡Visita la tienda y prepárate!')}</p>`;
@@ -1709,11 +1768,11 @@ function towerRecordMonthly(andaresVencidos){
   if((tm[mk]||0)<andaresVencidos){ tm[mk]=andaresVencidos; localStorage.setItem('12r_tower_month',JSON.stringify(tm)); }
 }
 const TOWER_RANK_REWARDS=[
-  ['🥇 Top 1','2000 🪙 + '+'Lenda da Eternidade'],
-  ['🥈 Top 2','1500 🪙'],
-  ['🥉 Top 3','1200 🪙'],
-  ['🏅 Top 10','800 🪙'],
-  ['🎖 Top 100','300 🪙']
+  ['🥇 Top 1','✦ 2000Ks + '+'Lenda da Eternidade'],
+  ['🥈 Top 2','✦ 1500Ks'],
+  ['🥉 Top 3','✦ 1200Ks'],
+  ['🏅 Top 10','✦ 800Ks'],
+  ['🎖 Top 100','✦ 300Ks']
 ];
 function towerStoryOrder(){
   /* Cada adversário entra uma só vez no primeiro ciclo. O roteiro pode ter
@@ -2927,6 +2986,7 @@ let humanFinaleCinematicRunning=false;
 let humanFinalePreludeRunning=false;
 let humanFinalePreludeFinished=false;
 let humanFinaleOutcomeResolved=false;
+let humanFinaleResolvedOutcome='';
 let humanFinalePreviewSetup=false;
 function isHumanFinaleBattle(){
   return Boolean(worldRun.active&&worldRun.fase===9&&worldRun.nivel===5&&activeStageData?.bgUrl?.endsWith('fase-10.jpg'));
@@ -3159,6 +3219,7 @@ function triggerHumanFinalePrelude(options={}){
 function completeHumanFinaleCinematic(options={}){
   humanFinaleCinematicRunning=false;
   humanFinaleOutcomeResolved=true;
+  humanFinaleResolvedOutcome=options.outcome||'';
   enforceHumanFinaleAftermath();
   if(options.preview){ busy=false; stageTransitioning=false; setBattlePhase('idle'); return; }
   stageTransitioning=false; busy=false;
@@ -3244,7 +3305,7 @@ function triggerHumanFinaleCinematic(outcome='defeat',options={}){
     playFinaleLines([
       {name:'Narrador',t:'E assim termina a primeira parte de nossa aventura! O que acontecerá com Adriel? Qual o paradeiro de Berenice? Quem é Julius?',ms:2800},
       {name:'Narrador',t:'Não percam o próximo capítulo dessa aventura!',ms:1900}
-    ],()=>completeHumanFinaleCinematic({...options,scene}),{speed,locked:true});
+    ],()=>completeHumanFinaleCinematic({...options,scene,outcome}),{speed,locked:true});
   };
   at(cedricLineAt,()=>{
     /* A narração só pode começar quando o balão de Cedric foi fechado. Isso
@@ -4807,7 +4868,7 @@ function checkLoginReward(){
   setTimeout(()=>{
     const t=document.createElement('div');
     t.className='ach-toast show';
-    t.innerHTML='<span class="ach-toast-icon">📅</span><div><b>'+T('Recompensa de login — dia ','Login reward — day ','Recompensa de inicio — día ')+(dia+1)+'/7</b><br>+'+rec.c+' '+T('moedas','coins','monedas')+extra+' · '+T('sequência','streak','racha')+' '+st.streak+'</div>';
+    t.innerHTML='<span class="ach-toast-icon">📅</span><div><b>'+T('Recompensa de login — dia ','Login reward — day ','Recompensa de inicio — día ')+(dia+1)+'/7</b><br>✦ '+formatKalegs(rec.c)+extra+' · '+T('sequência','streak','racha')+' '+st.streak+'</div>';
     document.body.appendChild(t);
     setTimeout(()=>t.remove(),4200);
   },900);
@@ -4819,7 +4880,7 @@ function renderLoginCalendar(){
   return '<div class="quests-box login-cal"><b>📅 '+T('Login diário — ciclo de 7 dias','Daily login — 7-day cycle','Inicio diario — ciclo de 7 días')+'</b><div class="login-days">'+
     LOGIN_REWARDS.map((r,i)=>{
       const it=r.item?SHOP_ITEMS.find(x=>x.id===r.item):null;
-      return '<span class="login-day'+(i<diaAtual?' done':i===diaAtual?' today':'')+'"><i>'+(i+1)+'</i>🪙'+r.c+(it?'<em class="login-item-art">'+(HUMAN_ITEM_ICONS[it.icon]||'')+'</em>':'')+'</span>';
+      return '<span class="login-day'+(i<diaAtual?' done':i===diaAtual?' today':'')+'"><i>'+(i+1)+'</i>✦'+formatKalegs(r.c)+(it?'<em class="login-item-art">'+(HUMAN_ITEM_ICONS[it.icon]||'')+'</em>':'')+'</span>';
     }).join('')+
     '</div><small>'+T('Sequência atual','Current streak','Racha actual')+': '+(st.streak||0)+' '+T('dia(s)','day(s)','día(s)')+'</small></div>';
 }
@@ -4853,7 +4914,7 @@ function questEvent(tipo,valor){
     if(!q.done.includes(d.id)&&q.prog[d.id]>=d.n){
       q.done.push(d.id);
       grantCoins(d.premio);
-      setBattleStatus('🏅 '+T('Missão diária concluída','Daily quest complete','Misión diaria completa')+': '+d.nome()+' (+'+d.premio+' 🪙)','support');
+      setBattleStatus('🏅 '+T('Missão diária concluída','Daily quest complete','Misión diaria completa')+': '+d.nome()+' (+✦ '+formatKalegs(d.premio)+')','support');
     }
   });
   localStorage.setItem('12r_quests',JSON.stringify(q));
@@ -5032,6 +5093,7 @@ function loadStage(idx){
   humanFinalePreludeRunning=false;
   humanFinalePreludeFinished=false;
   humanFinaleOutcomeResolved=false;
+  humanFinaleResolvedOutcome='';
   arenaEl?.querySelector('.human-final-scene')?.remove();
   arenaEl?.querySelector('.human-final-prelude')?.remove();
   arenaEl?.querySelectorAll('.human-final-shadow-strike').forEach(effect=>effect.remove());
@@ -5845,7 +5907,7 @@ function renderProfileStats(){
     [T('Power-ups criados','Power-ups crafted','Power-ups creados'),profile.powerUps],
     [T('Herói favorito','Favorite hero','Héroe favorito'),favName],
     [T('Melhor andar da Torre','Best tower floor','Mejor piso de la Torre'),towerBest||'—'],
-    [T('Moedas','Coins','Monedas'),'🪙 '+coins],
+    [T('Kalegs','Kalegs','Kalegs'),'✦ '+formatKalegs(coins)],
     [T('Conquistas','Achievements','Logros'),`${achCount}/${ACHIEVEMENTS.length}`]
   ];
   el.innerHTML=rows.map(([l,v])=>`<div class="pstat"><small>${escapeHtml(l)}</small><b>${escapeHtml(v)}</b></div>`).join('');
@@ -8070,7 +8132,7 @@ function onStageCleared(){
       if(localStorage.getItem('12r_firstwin')!==hoje){
         localStorage.setItem('12r_firstwin',hoje);
         grantCoins(20+worldRun.fase*5); /* dobra a recompensa base da primeira vitória do dia */
-        setBattleStatus('✨ '+T('Primeira vitória do dia: moedas em DOBRO!','First win of the day: DOUBLE coins!','¡Primera victoria del día: monedas DOBLES!'),'support');
+      setBattleStatus('✨ '+T('Primeira vitória do dia: Kalegs em DOBRO!','First win of the day: DOUBLE Kalegs!','¡Primera victoria del día: Kalegs DOBLES!'),'support');
       }
     }
     questEvent('win');
@@ -8097,6 +8159,12 @@ function onStageCleared(){
     prog.stars[worldRun.fase]=Math.max(prog.stars[worldRun.fase]||0,stars);
     prog.unlocked=Math.max(prog.unlocked,Math.min(world.fases.length-1,worldRun.fase+1));
     saveWorldProg('humanos',prog);
+    /* A fase 10 só entrega a tabela de recompensas quando a luta foi vencida.
+       A derrota roteirizada ainda conclui o capítulo, mas nunca concede loot. */
+    const phaseReward=claimHumanPhaseReward(worldRun.fase,difficulty,{
+      winner:worldRun.fase!==world.fases.length-1||humanFinaleResolvedOutcome!=='defeat'
+    });
+    renderPhaseReward(phaseReward);
     grantCoins(coinsVitoria(20+worldRun.fase*5));
     const ups=grantXp((30+worldRun.fase*10)*(xpDoubleRun?2:1));
     checkAchievements('stage');
@@ -8124,6 +8192,7 @@ function onStageCleared(){
         victoryExitToMap=true;
         victoryExitMode='world';
         renderBattleReport('victoryReport');
+        renderPhaseReward(phaseReward);
         if(!humanFinaleOutcomeResolved) launchVictoryConfetti();
         showOverlay('dungeonClearOverlay');
       };
@@ -8137,6 +8206,7 @@ function onStageCleared(){
       if(gt) gt.textContent=T('Missão Concluída!','Mission Complete!','¡Misión Completada!');
       if(gx) gx.textContent=`${L(fase.chefe)} ${T('derrotado(a)!','defeated!','¡derrotado(a)!')} ${L(fase.nome)} ${T('conquistada!','conquered!','conquistada!')}${ups.length?' '+ups.join(' '):''}`;
       renderVictoryStars(3); renderBattleReport('victoryReport');
+      renderPhaseReward(phaseReward);
       launchVictoryConfetti();
       victoryExitToMap=true;
       victoryExitMode='world';
@@ -8160,7 +8230,7 @@ function onStageCleared(){
     towerFloor++;
     if((towerFloor-1)%5===0){
       grantCoins(coinsVitoria(50));
-      setBattleStatus('🎁 '+T(`Baú da Torre! Andar ${towerFloor-1} rendeu +50 moedas.`,`Tower Chest! Floor ${towerFloor-1} granted +50 coins.`,`¡Cofre de la Torre! El piso ${towerFloor-1} otorgó +50 monedas.`),'support');
+      setBattleStatus('🎁 '+T(`Baú da Torre! Andar ${towerFloor-1} rendeu +50Ks.`,`Tower Chest! Floor ${towerFloor-1} granted +50 Kalegs.`,`¡Cofre de la Torre! El piso ${towerFloor-1} otorgó +50 Kalegs.`),'support');
     }
     if(dailyRunMode && towerFloor>5){
       /* Desafio Diário concluído: 5 andares vencidos */
@@ -8382,6 +8452,43 @@ const selectCountEl = document.getElementById('selectCount');
 const startBtnEl = document.getElementById('startBtn');
 const swapBtnEl = document.getElementById('swapBtn2');
 
+var selectDeckOpen={}; /* decks abertos na tela de seleção (persistem entre re-renders) */
+function selectionAvailability(idx){
+  const hero=KINGDOMS[idx];
+  const owned=cardOwned(hero?.id);
+  const storyMode=Boolean(worldRun?.active&&worldRun.storyMode!==false);
+  const allowed=!storyMode||storySelectionAllowed(idx);
+  return {owned,allowed,selectable:owned&&allowed,storyMode};
+}
+function renderGroupEditor(){
+  const grid=document.getElementById('editGroupGrid');
+  if(!grid) return;
+  grid.innerHTML='';
+  const order=['humanos','luz','agua','fogo','natureza','terra','areia','sombras','raio','vento','chuvas','gelo'];
+  order.forEach(deckId=>{
+    const cards=KINGDOMS.filter(k=>(k.deck||k.id)===deckId&&cardOwned(k.id));
+    if(!cards.length) return;
+    const hero=KINGDOMS.find(k=>k.id===deckId)||cards[0];
+    const section=document.createElement('section');
+    section.className='group-editor-deck'; section.style.setProperty('--realm',hero.color||'#d4af5a');
+    section.innerHTML=`<h3>${L(hero.reino||deckId)}</h3><div class="group-editor-cards"></div>`;
+    const list=section.querySelector('.group-editor-cards');
+    cards.forEach(k=>{
+      const idx=KINGDOMS.indexOf(k), selected=chosenIds.includes(idx);
+      const button=document.createElement('button');
+      button.type='button'; button.className='group-editor-card'+(selected?' selected':'');
+      button.innerHTML=`<img src="${THUMB(k.cardThumb||k.img)}" alt="${escapeHtml(L(k.nome))}"><span>${escapeHtml(L(k.nome))}</span>${selected?'<i>✓</i>':''}`;
+      button.addEventListener('click',()=>{
+        if(chosenIds.includes(idx)) chosenIds=chosenIds.filter(id=>id!==idx);
+        else if(chosenIds.length<4) chosenIds.push(idx);
+        else { sfxInvalid(); return; }
+        renderSelectGrid(); renderGroupEditor(); sfxSelect();
+      });
+      list.appendChild(button);
+    });
+    grid.appendChild(section);
+  });
+}
 function renderSelectGrid(){
   selectGridEl.innerHTML = '';
   /* v11.1 · Cada herói é um destino. O elenco deixa de ser uma pilha de
@@ -8397,17 +8504,22 @@ function renderSelectGrid(){
   rosterCards.forEach(k=>{
       const idx=KINGDOMS.indexOf(k);
       const card = document.createElement('div');
-      const permitido=storySelectionAllowed(idx);
-      card.className = 'select-card constellation-card' + (chosenIds.includes(idx) ? ' chosen' : '') + (!permitido?' story-disabled':'');
-      card.setAttribute('aria-disabled',permitido?'false':'true');
+      const availability=selectionAvailability(idx);
+      card.className = 'select-card constellation-card' + (chosenIds.includes(idx) ? ' chosen' : '') + (!availability.owned?' collection-locked':'') + (availability.owned&&!availability.allowed?' story-disabled':'');
+      card.setAttribute('aria-disabled',availability.selectable?'false':'true');
       card.style.setProperty('--realm',k.color);
       card.style.setProperty('--realm-light',k.colorLight);
       card.style.setProperty('--realm-dark',k.colorDark);
       const pickOrder = chosenIds.indexOf(idx);
+      const status=!availability.owned
+        ?T('Ainda não conquistada','Not yet earned','Aún no obtenida')
+        :!availability.allowed
+          ?T('Bloqueada nesta missão','Locked for this story mission','Bloqueada en esta misión de historia')
+          :T('Disponível','Available','Disponible');
       card.innerHTML = `
         <div class="constellation-card-glow" aria-hidden="true"></div>
-        <div class="thumb-wrap"><img src="${THUMB(k.cardThumb||k.img)}"${THUMBF(k.cardThumb||k.img)} alt="${k.nome}" loading="lazy" decoding="async">${pickOrder>=0?`<div class="pick-badge" aria-label="${T('Posição na equipe','Team position','Posición en el equipo')}">${pickOrder+1}</div>`:''}<button class="zoom-btn" type="button" data-idx="${idx}" aria-label="${T(`Abrir carta de ${L(k.nome)} em alta resolução`,`Open ${L(k.nome)}'s card in high resolution`,`Abrir la carta de ${L(k.nome)} en alta resolución`)}">↗</button></div>
-        <div class="constellation-card-copy"><small>${L(k.reino||k.deck||'YGDRIA')}</small><b>${L(k.nome)}</b><span>${permitido?T('Toque para convocar','Tap to summon','Toca para invocar'):T('Complete a história para convocar','Complete the story to summon','Completa la historia para invocar')}</span></div>
+        <div class="thumb-wrap"><img src="${THUMB(k.cardThumb||k.img)}"${THUMBF(k.cardThumb||k.img)} alt="${k.nome}" loading="lazy" decoding="async">${pickOrder>=0?`<div class="pick-badge" aria-label="${T('Posição na equipe','Team position','Posición en el equipo')}">${pickOrder+1}</div>`:''}${availability.owned&&!availability.allowed?'<span class="story-card-lock" aria-hidden="true">🔒</span>':''}<button class="zoom-btn" type="button" data-idx="${idx}" aria-label="${T(`Abrir carta de ${L(k.nome)} em alta resolução`,`Open ${L(k.nome)}'s card in high resolution`,`Abrir la carta de ${L(k.nome)} en alta resolución`)}">↗</button></div>
+        <div class="constellation-card-copy"><small>${L(k.reino||k.deck||'YGDRIA')}</small><b>${L(k.nome)}</b><span class="select-card-status">${status}</span></div>
       `;
       card.setAttribute('role','button');
       card.setAttribute('tabindex','0');
@@ -8420,7 +8532,13 @@ function renderSelectGrid(){
   selectGridEl.appendChild(roster);
   /* lookup dinâmico: o i18n recria o nó #selectCount ao trocar de idioma */
   { const sc=document.getElementById('selectCount'); if(sc) sc.textContent=chosenIds.length; }
-  startBtnEl.disabled = chosenIds.length!==4;
+  startBtnEl.disabled = !isValidHeroTeam(chosenIds)||!chosenIds.every(idx=>selectionAvailability(idx).selectable);
+  const editButton=document.getElementById('editGroupBtn');
+  if(editButton){
+    const freeMode=Boolean(worldRun?.active&&worldRun.storyMode===false);
+    editButton.hidden=!freeMode;
+    if(freeMode) renderGroupEditor();
+  }
   /* ⚜ Prévia do Bônus de Aliança ao montar a equipe */
   { const hint=document.getElementById('allianceHint');
     if(hint){
@@ -8438,8 +8556,14 @@ function renderSelectGrid(){
 }
 
 function toggleHero(idx){
-  if(!storySelectionAllowed(idx)){
-    setBattleStatus(T('Este personagem entra nesta missão apenas depois da primeira conclusão.','This character unlocks for this mission after its first clear.','Este personaje se desbloquea para esta misión tras completarla.'),'system');
+  const availability=selectionAvailability(idx);
+  if(!availability.owned){
+    setBattleStatus(T('Esta carta ainda não foi conquistada. Derrote seu personagem para obtê-la.','This card has not been earned yet. Defeat its character to obtain it.','Esta carta aún no fue obtenida. Derrota a su personaje para conseguirla.'),'system');
+    sfxInvalid();
+    return;
+  }
+  if(!availability.allowed){
+    setBattleStatus(T('Esta carta está bloqueada nesta missão de história.','This card is locked in this story mission.','Esta carta está bloqueada en esta misión de historia.'),'system');
     sfxInvalid();
     return;
   }
@@ -8808,7 +8932,7 @@ function beginGame(startAt=0,restoredHP=null){
     startAt=0;
   }
   if(!orphanStart) prepareStorySelection();
-  if(!isValidHeroTeam(chosenIds)){
+  if(!isValidHeroTeam(chosenIds)||!chosenIds.every(idx=>selectionAvailability(idx).selectable)){
     chosenIds=[...new Set(chosenIds)].filter(index=>Number.isInteger(index)&&KINGDOMS[index]).slice(0,4);
     renderSelectGrid(); sfxInvalid(); return;
   }
@@ -8880,10 +9004,11 @@ function renderGallery(){
     membros.forEach(k=>{
       const idx=KINGDOMS.indexOf(k);
       const card=document.createElement('div');
-      card.className='gallery-card'+(favs.includes(k.id)?' fav':'');
+      const owned=cardOwned(k.id);
+      card.className='gallery-card'+(favs.includes(k.id)?' fav':'')+(!owned?' collection-locked':'');
       card.style.setProperty('--realm',k.color); card.style.setProperty('--realm-dark',k.colorDark);
       const vistos=(()=>{ try{ return sanitizeHeroIdList(JSON.parse(localStorage.getItem('12r_seen')||'[]')); }catch(e){ return []; } })();
-      card.innerHTML=`<div class="gallery-thumb-wrap">${vistos.includes(k.id)?'':'<span class="new-badge">'+T('NOVO!','NEW!','¡NUEVO!')+'</span>'}<img src="${THUMB(k.cardThumb||k.img)}"${THUMBF(k.cardThumb||k.img)} alt="${k.nome}" loading="lazy" decoding="async"><button class="gallery-zoom" type="button" aria-label="${T('Ampliar carta de','Enlarge card of','Ampliar la carta de')} ${k.nome}">🔍</button></div><b><span class="realm-dot" style="--realm:${k.color};--realm-light:${k.colorLight};--realm-dark:${k.colorDark};margin-right:3px;"></span>${k.nome}</b><small>${L(k.rarity||'DIVINA')} · ${'★'.repeat(k.stars||7)}</small>`;
+      card.innerHTML=`<div class="gallery-thumb-wrap">${!owned?'<span class="story-card-lock collection-lock" aria-hidden="true">🔒</span>':vistos.includes(k.id)?'':'<span class="new-badge">'+T('NOVO!','NEW!','¡NUEVO!')+'</span>'}<img src="${THUMB(k.cardThumb||k.img)}"${THUMBF(k.cardThumb||k.img)} alt="${k.nome}" loading="lazy" decoding="async"><button class="gallery-zoom" type="button" aria-label="${T('Ampliar carta de','Enlarge card of','Ampliar la carta de')} ${k.nome}">🔍</button></div><b><span class="realm-dot" style="--realm:${k.color};--realm-light:${k.colorLight};--realm-dark:${k.colorDark};margin-right:3px;"></span>${k.nome}</b><small>${owned?L(k.rarity||'DIVINA')+' · '+'★'.repeat(k.stars||7):T('Ainda não conquistada','Not yet earned','Aún no obtenida')}</small>`;
       card.querySelector('.gallery-zoom').addEventListener('click',()=>openCardModal(idx));
       const favBtn=document.createElement('button');
       favBtn.type='button'; favBtn.className='fav-btn'; favBtn.setAttribute('aria-label',T('Favoritar','Favorite','Favorito'));
@@ -8907,51 +9032,40 @@ function renderGallery(){
     section.appendChild(dgrid);
     grid.appendChild(section);
   });
-  /* Personagens do Jogo: jogáveis e inimigos registrados, com visualização ampliada. */
+  /* A biblioteca separa descobertas por função narrativa: bestas e monstros
+     no Bestiário; humanos sem carta no grupo de NPCs. Cartas ficam acima,
+     dentro de seus reinos, e nunca aparecem duplicadas nestas listas. */
   const best=bestiary();
-  const personagens=KINGDOMS.map(k=>({
-    nome:L(k.nome),
-    spr:k.sprite||k.cardThumb||k.img,
-    detalhe:L(k.reino)+' · '+T('Jogável','Playable','Jugable')
-  }));
-  const nomesJogaveis=new Set(KINGDOMS.map(k=>L(k.nome)));
-  Object.keys(best).forEach(nm=>{
-    if(nomesJogaveis.has(L(nm))) return;
-    const spr=Object.values(HUMANOS_ETYPES).find(t=>t.n===nm)?.sprite||Object.values(HUMANOS_CARDS).find(c=>c.nome===nm)?.sprite;
-    personagens.push({nome:L(nm),spr,detalhe:T('Encontrado','Encountered','Encontrado')+' ×'+best[nm]});
+  const creatures=new Set(['Slime de Cerejeira','Lobo Raivoso','Vulto Sombrio','Espectro Sombrio','Cavaleiro Morto-Vivo']);
+  const cardNames=new Set(KINGDOMS.map(k=>k.nome));
+  const discovered={bestiary:[],npcs:[]};
+  Object.entries(best).forEach(([nome,count])=>{
+    if(cardNames.has(nome)) return;
+    const entry=Object.values(HUMANOS_ETYPES).find(type=>type.n===nome);
+    const character={nome,spr:entry?.sprite||'',detalhe:T('Encontrado','Encountered','Encontrado')+' ×'+count};
+    discovered[creatures.has(nome)?'bestiary':'npcs'].push(character);
   });
-  const bsec=document.createElement('div');
-  bsec.className='deck-section characters-game-section'+(galleryDeckOpen.__characters?' open':'');
-  bsec.innerHTML=`<div class="deck-header" role="button" tabindex="0" aria-expanded="${galleryDeckOpen.__characters?'true':'false'}" style="--realm:#9a6a3a">
-    <span class="deck-icon"><svg viewBox="0 0 24 24"><path d="M12 2 2 7v10l10 5 10-5V7Z" fill="#fff" fill-opacity=".9"/></svg></span>
-    <b>${T('Personagens do Jogo','Game Characters','Personajes del Juego')}</b>
-    <small>${personagens.length} ${T('personagens','characters','personajes')}</small><span class="deck-caret" aria-hidden="true">▸</span></div>`;
-  const bh=bsec.querySelector('.deck-header');
-  const alternarPersonagens=()=>{
-    galleryDeckOpen.__characters=!galleryDeckOpen.__characters;
-    bsec.classList.toggle('open',!!galleryDeckOpen.__characters);
-    bh.setAttribute('aria-expanded',galleryDeckOpen.__characters?'true':'false');
+  const renderDiscoverySection=(key,title,icon,color)=>{
+    const entries=discovered[key];
+    const section=document.createElement('div');
+    section.className='deck-section characters-game-section'+(galleryDeckOpen['__'+key]?' open':'');
+    section.innerHTML=`<div class="deck-header" role="button" tabindex="0" aria-expanded="${galleryDeckOpen['__'+key]?'true':'false'}" style="--realm:${color}"><span class="deck-icon">${icon}</span><b>${title}</b><small>${entries.length} ${T('descobertos','discovered','descubiertos')}</small><span class="deck-caret" aria-hidden="true">▸</span></div>`;
+    const head=section.querySelector('.deck-header');
+    const toggle=()=>{ galleryDeckOpen['__'+key]=!galleryDeckOpen['__'+key]; section.classList.toggle('open',!!galleryDeckOpen['__'+key]); head.setAttribute('aria-expanded',galleryDeckOpen['__'+key]?'true':'false'); };
+    head.addEventListener('click',toggle); head.addEventListener('keydown',event=>{ if(event.key==='Enter'||event.key===' '){ event.preventDefault(); toggle(); } });
+    const list=document.createElement('div'); list.className='deck-grid characters-game-grid';
+    if(!entries.length) list.innerHTML=`<p class="library-empty">${T('Nenhum registro ainda. Encontre personagens durante as missões.','No entries yet. Meet characters during missions.','Aún no hay registros. Encuentra personajes durante las misiones.')}</p>`;
+    entries.forEach(personagem=>{
+      const card=document.createElement('div'); card.className='gallery-card beast-card character-game-card'; card.tabIndex=0;
+      const safeName=escapeHtml(personagem.nome), safeDetail=escapeHtml(personagem.detalhe), safeSprite=escapeHtml(personagem.spr||'');
+      card.innerHTML=`<div class="gallery-thumb-wrap">${personagem.spr?`<img src="${safeSprite}" alt="${safeName}" loading="lazy">`:'<span style="font-size:34px">👤</span>'}<span class="character-expand" aria-hidden="true">⛶</span></div><b>${safeName}</b><small>${safeDetail}</small>`;
+      const open=()=>{ if(personagem.spr) openCharacterModal(personagem.spr,personagem.nome,personagem.detalhe); };
+      card.addEventListener('click',open); card.addEventListener('keydown',event=>{ if(event.key==='Enter'||event.key===' '){ event.preventDefault(); open(); } }); list.appendChild(card);
+    });
+    section.appendChild(list); grid.appendChild(section);
   };
-  bh.addEventListener('click',alternarPersonagens);
-  bh.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();alternarPersonagens();} });
-  const bgrid=document.createElement('div');
-  bgrid.className='deck-grid characters-game-grid';
-  personagens.forEach(personagem=>{
-    const bc=document.createElement('div');
-    bc.className='gallery-card beast-card character-game-card';
-    bc.setAttribute('role','button');
-    bc.setAttribute('tabindex','0');
-    const safeName=escapeHtml(personagem.nome);
-    const safeDetail=escapeHtml(personagem.detalhe);
-    const safeSprite=escapeHtml(personagem.spr||'');
-    bc.innerHTML=`<div class="gallery-thumb-wrap">${personagem.spr?`<img src="${safeSprite}" alt="${safeName}" loading="lazy">`:'<span style="font-size:34px">👤</span>'}<span class="character-expand" aria-hidden="true">⛶</span></div><b>${safeName}</b><small>${safeDetail}</small>`;
-    const ampliar=()=>{ if(personagem.spr) openCharacterModal(personagem.spr,personagem.nome,personagem.detalhe); };
-    bc.addEventListener('click',ampliar);
-    bc.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();ampliar();} });
-    bgrid.appendChild(bc);
-  });
-  bsec.appendChild(bgrid);
-  grid.appendChild(bsec);
+  renderDiscoverySection('bestiary',T('Bestiário','Bestiary','Bestiario'),'✦','#b96b96');
+  renderDiscoverySection('npcs',T('NPCs','NPCs','PNJ'),'♜','#8294be');
 }
 /* Biblioteca da Eternidade: reúne o aprendizado, a enciclopédia e as cartas
    sem criar uma segunda galeria nem mexer no conteúdo da campanha. */
@@ -9191,8 +9305,17 @@ document.getElementById('selectBackBtn').addEventListener('click',()=>{
 });
 document.getElementById('autoTeamBtn').addEventListener('click',()=>{
   let ult=null; try{ ult=JSON.parse(localStorage.getItem('12r_lastteam')||'null'); }catch(e){}
-  chosenIds=isValidHeroTeam(ult)?[...ult]:[0,1,2,3];
+  const validSaved=isValidHeroTeam(ult)&&ult.every(idx=>selectionAvailability(idx).selectable);
+  const candidates=KINGDOMS.map((_,idx)=>idx).filter(idx=>selectionAvailability(idx).selectable);
+  chosenIds=validSaved?[...ult]:candidates.slice(0,4);
   renderSelectGrid(); sfxSelect();
+});
+document.getElementById('editGroupBtn')?.addEventListener('click',()=>{
+  renderGroupEditor();
+  document.getElementById('editGroupScreen')?.classList.add('show');
+});
+document.getElementById('editGroupClose')?.addEventListener('click',()=>{
+  document.getElementById('editGroupScreen')?.classList.remove('show');
 });
 
 swapBtnEl.addEventListener('click', ()=>{
