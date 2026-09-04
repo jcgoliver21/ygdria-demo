@@ -4749,3 +4749,28 @@ body.game-active .battle-row::before{
 .phase-reward-summary{margin:10px auto 9px;max-width:520px;padding:10px 13px;border:1px solid rgba(255,218,126,.7);border-radius:13px;background:linear-gradient(115deg,rgba(75,34,71,.76),rgba(20,13,38,.88));box-shadow:inset 0 0 18px rgba(255,136,184,.11),0 4px 20px rgba(0,0,0,.24);text-align:left}.phase-reward-summary b{display:block;color:#ffe6a4;font:700 13px Georgia,serif;letter-spacing:.5px}.phase-reward-summary span{display:block;margin-top:5px;color:#fff0da;font:600 11px/1.45 Georgia,serif}.phase-reward-summary em{display:block;margin-top:7px;color:#ffb9dc;font:700 11px Georgia,serif;font-style:normal}.phase-reward-summary.claimed{opacity:.8;border-color:rgba(204,189,163,.45)}
 .library-empty{grid-column:1/-1;margin:5px 2px;color:#cbbbd0;font:italic 12px Georgia,serif}
 @media(max-width:620px){.select-card-status{font-size:7px;margin:3px 3px 0}.group-editor-card{flex-basis:68px}.group-editor-card img{height:68px}.phase-reward-summary{margin:7px 8px;padding:8px 10px}.phase-reward-summary span,.phase-reward-summary em{font-size:10px}}
+
+/* Editor de grupo: no celular ele é uma folha alta, com rolagem apenas
+   vertical. Cada reino mostra suas cartas por inteiro, sem a faixa horizontal
+   que escondia a quarta carta no print. */
+#editGroupScreen{align-items:center;padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom));}
+#editGroupScreen .group-editor-dialog{position:relative;display:flex;flex-direction:column;width:min(720px,calc(100vw - 20px));max-width:none!important;max-height:calc(100dvh - 20px)!important;padding:clamp(16px,3vw,24px)!important;overflow:hidden!important;border-radius:20px;background:linear-gradient(160deg,rgba(24,14,38,.985),rgba(6,5,14,.985))!important;box-shadow:0 22px 68px rgba(0,0,0,.68),inset 0 1px rgba(255,235,184,.1)}
+#editGroupScreen .group-editor-dialog h2{margin:0 40px 5px 0;color:#ffe5ab;font:700 clamp(25px,5.7vw,38px)/1 Georgia,serif;letter-spacing:.02em}
+#editGroupScreen .group-editor-dialog>p{margin:0 0 14px;color:#ddd1de;font:600 clamp(12px,2.8vw,15px)/1.42 Georgia,serif}
+#editGroupScreen .pro-close{position:absolute;top:12px;right:12px;z-index:4;display:grid;place-items:center;width:34px;height:34px;padding:0;border:1px solid rgba(255,226,158,.55);border-radius:50%;background:rgba(15,9,25,.9);color:#ffe5ab;font:700 22px/1 system-ui,sans-serif;box-shadow:0 3px 12px rgba(0,0,0,.34)}
+#editGroupScreen .group-editor-grid{display:grid;grid-template-columns:1fr;gap:9px;min-height:0;max-height:none;flex:1;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:1px 1px 10px;scrollbar-color:rgba(255,218,132,.55) transparent}
+#editGroupScreen .group-editor-deck{min-width:0;padding:9px;border-color:color-mix(in srgb,var(--realm,#ffb5d2) 45%,rgba(255,255,255,.12));background:linear-gradient(145deg,color-mix(in srgb,var(--realm,#ffb5d2) 11%,rgba(12,8,22,.86)),rgba(8,6,15,.72))}
+#editGroupScreen .group-editor-deck h3{margin:0 0 8px;color:#fff0ce;font-size:clamp(13px,3.4vw,17px)}
+#editGroupScreen .group-editor-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:7px;overflow:visible;padding:0}
+#editGroupScreen .group-editor-card{min-width:0;min-height:0;padding:4px;border-radius:10px;background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(0,0,0,.32));font-size:9px;line-height:1.1}
+#editGroupScreen .group-editor-card img{width:100%;height:auto;aspect-ratio:2/3;object-fit:contain}
+#editGroupScreen .group-editor-card span{padding:3px 1px 1px;text-align:center;white-space:normal;overflow-wrap:anywhere;min-height:20px}
+#editGroupScreen .group-editor-card i{right:4px;top:4px;width:18px;height:18px;font-size:11px}
+@media(max-width:420px){
+  #editGroupScreen .group-editor-dialog{width:calc(100vw - 14px);max-height:calc(100dvh - 14px)!important;padding:14px!important;border-radius:17px}
+  #editGroupScreen .group-editor-dialog>p{margin-bottom:11px}
+  #editGroupScreen .group-editor-cards{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+  #editGroupScreen .group-editor-deck{padding:7px}
+  #editGroupScreen .group-editor-deck h3{margin-bottom:6px;font-size:14px}
+  #editGroupScreen .group-editor-card{padding:3px;font-size:7.5px}
+}

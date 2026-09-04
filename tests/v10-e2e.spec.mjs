@@ -13,6 +13,10 @@ async function boot(page,qa='all-specials'){
   await page.goto(`${baseURL}/play.html?qa=${qa}&seed=v10-e2e`,{waitUntil:'networkidle'});
   await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
   await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
+  /* A conta da auditoria exercita livremente as arenas, VFX e formações.
+     Progresso real continua vazio; testes de coleção removem explicitamente
+     este desbloqueio quando precisam validar cartas bloqueadas. */
+  await page.evaluate(()=>saveCardUnlocks(KINGDOMS.map(hero=>hero.id)));
   return errors;
 }
 
@@ -56,6 +60,38 @@ test('premiação humana credita uma vez Kalegs, mochila e carta, inclusive reci
   expect(persisted.inventory.regulacao).toBe(3);
   expect(persisted.cards).toContain('gareth');
   expect(persisted.ledger['1:pesadelo']).toBeTruthy();
+  expect(errors).toEqual([]);
+});
+
+test('cartas não conquistadas não exibem lupa, repetir oferece as três rotas e editor cabe no celular',async({page})=>{
+  const errors=await boot(page,'collection-replay');
+  await page.setViewportSize({width:390,height:844});
+  const result=await page.evaluate(()=>{
+    localStorage.setItem('12r_card_unlocks','[]');
+    renderGallery();
+    const galleryLocked=[...document.querySelectorAll('.gallery-card.collection-locked')];
+    const lockedZoomCount=galleryLocked.reduce((total,card)=>total+card.querySelectorAll('.gallery-zoom').length,0);
+    victoryExitToMap=true;
+    victoryCompletedPhase=3;
+    worldRun={active:true,fase:3,nivel:5,storyMode:true};
+    replayVictoryPhase();
+    const replay={open:document.getElementById('missionReplayScreen').classList.contains('show'),phase:pendingReplayPhase,choices:document.querySelectorAll('#missionReplayScreen .replay-option').length};
+    document.getElementById('missionReplayScreen').classList.remove('show');
+    localStorage.setItem('12r_card_unlocks',JSON.stringify(KINGDOMS.map(hero=>hero.id)));
+    chosenIds=[0,1,2,3];
+    renderGroupEditor();
+    document.getElementById('editGroupScreen').classList.add('show');
+    const grid=document.getElementById('editGroupGrid');
+    const dialog=document.querySelector('#editGroupScreen .group-editor-dialog');
+    const cards=[...document.querySelectorAll('#editGroupGrid .group-editor-card')];
+    return {locked:galleryLocked.length,lockedZoomCount,replay,gridOverflow:grid.scrollWidth-grid.clientWidth,dialogHeight:Math.round(dialog.getBoundingClientRect().height),viewportHeight:innerHeight,maxCardWidth:Math.max(...cards.map(card=>Math.round(card.getBoundingClientRect().width)))};
+  });
+  expect(result.locked).toBeGreaterThan(0);
+  expect(result.lockedZoomCount).toBe(0);
+  expect(result.replay).toEqual({open:true,phase:3,choices:3});
+  expect(result.gridOverflow).toBeLessThanOrEqual(1);
+  expect(result.dialogHeight).toBeLessThanOrEqual(result.viewportHeight);
+  expect(result.maxCardWidth).toBeGreaterThan(40);
   expect(errors).toEqual([]);
 });
 
@@ -142,7 +178,7 @@ test('seletor de fases abre translúcido sobre o mapa ao tocar no reino',async({
   expect(errors).toEqual([]);
 });
 
-test('janela pública libera as dez fases humanas e ancora Bernyce no trono existente',async({page})=>{
+test('janela pública libera as dez fases humanas e prepara o prólogo final sem duplicar a corte',async({page})=>{
   const errors=await boot(page,'flow');
   await page.setViewportSize({width:390,height:844});
   await page.click('#playBtn');
@@ -152,22 +188,24 @@ test('janela pública libera as dez fases humanas e ancora Bernyce no trono exis
   await expect(page.locator('#worldMap .fase-node.locked')).toHaveCount(0);
   expect(await page.locator('#worldNote').textContent()).toContain('Teste público');
   await page.evaluate(()=>{
-    worldRun={active:true,fase:9,nivel:1,storyMode:false};
+    /* A arena de auditoria usa cartas já conquistadas; o desbloqueio público
+       das fases não deve, por si só, forçar cartas não obtidas na equipe. */
+    saveCardUnlocks(['adriel-jovem','gareth','roland','elizier']);
+    /* A corte real completa pertence especificamente à missão final (10/5).
+       As missões 10/1–10/4 preservam apenas os personagens que ainda não
+       entraram como adversários naquela etapa. */
+    worldRun={active:true,fase:9,nivel:5,storyMode:false};
     chosenIds=['adriel-jovem','gareth','roland','elizier'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
     beginGame(0); skipStory();
   });
   await expect(page.locator('.royal-court-cast')).toHaveCount(1);
-  await expect(page.locator('.royal-court-bernyce')).toBeVisible();
   await expect(page.locator('.royal-court-jules')).toBeVisible();
-  await expect(page.locator('.royal-court-kalander')).toBeVisible();
-  const seated=await page.locator('.royal-court-bernyce').evaluate(image=>({loaded:image.complete&&image.naturalWidth>0,bottom:image.getBoundingClientRect().bottom}));
-  expect(seated.loaded).toBe(true);
-  await page.evaluate(()=>{
-    worldRun.nivel=2;
-    activeStageData=buildWorldLevel();
-    renderStageProgress();
-  });
-  await expect(page.locator('.royal-court-jules')).toHaveCount(0);
+  /* Bernyce, Kalander e Cedric entram no plano da arena para poderem ser
+     atingidos e permanecerem caídos; não podem ser duplicados sobre o trono. */
+  await expect(page.locator('.royal-court-bernyce,.royal-court-kalander')).toHaveCount(0);
+  await expect(page.locator('.human-final-prelude')).toHaveCount(1);
+  await expect(page.locator('.human-final-prelude .finale-prelude-arena')).toHaveCount(2);
+  await expect(page.locator('.human-final-prelude .finale-prelude')).toHaveCount(1);
   expect(errors).toEqual([]);
 });
 
@@ -2510,7 +2548,9 @@ test('conclusão do Boss Rush volta ao mapa sem cair na campanha',async({page})=
   await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
   const completed=await page.evaluate(()=>window.__12rQA.finishBossRush());
   expect(completed).toEqual({bossRushMode:false,bossRushIdx:8,victoryExitToMap:true,victoryExitMode:'boss',overlay:true});
-  await page.click('#playAgainBtn');
+  /* O painel de vitória usa a navegação compacta: a seta esquerda devolve o
+     desafio ao mapa; o botão legado fica oculto para não duplicar controles. */
+  await page.click('#victoryBackBtn');
   await expect(page.locator('#mapScreen')).toHaveClass(/show/);
   const state=await page.evaluate(()=>({worldActive:worldRun.active,bossRushMode,towerMode,mapMode,worldPanel:document.getElementById('worldScreen').classList.contains('show')}));
   expect(state).toEqual({worldActive:false,bossRushMode:false,towerMode:false,mapMode:'boss',worldPanel:false});
@@ -2618,7 +2658,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.60');
+  expect(registration.caches).toContain('12r-v11.0.61');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2733,6 +2773,7 @@ test.describe('mobile',()=>{
           const arenaStyle=getComputedStyle(arena);
           frames.push({
             actions:avatars.map(avatar=>avatar.dataset.action),
+            impacts:[...document.querySelectorAll('.party-row .hero-impact')].length,
             arenaClass:arena.className,
             arenaAnimation:arenaStyle.animationName,
             arenaOpacity:arenaStyle.opacity,
@@ -2748,7 +2789,10 @@ test.describe('mobile',()=>{
         requestAnimationFrame(sample);
       });
       return {
-        hitFrames:frames.filter(frame=>frame.actions.every(action=>action==='hit')).length,
+        /* Impacto físico usa a arte já carregada e não substitui a folha por
+           uma pose de hit: isso elimina o primeiro quadro transparente no
+           WebView móvel. */
+        hitFrames:frames.filter(frame=>frame.impacts>0).length,
         shakeFrames:frames.filter(frame=>frame.arenaClass.includes('shake')||frame.arenaAnimation!=='none').length,
         unstableFrames:frames.filter(frame=>frame.arenaOpacity!=='1'||frame.avatars.some(avatar=>avatar.filter!=='none'||avatar.opacity!=='1'||avatar.visibility!=='visible'||avatar.sheetOpacity!=='1'||avatar.sheetVisibility!=='visible')).length
       };
@@ -2778,7 +2822,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.60');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.61');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

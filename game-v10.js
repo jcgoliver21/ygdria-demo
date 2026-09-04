@@ -4226,6 +4226,9 @@ window.addEventListener('resize',()=>{
     if(partyArenaEl&&partyArenaEl.children.length) applyBattleFormation();
     if(arenaEl?.classList.contains('tactical-grid-available')) renderCerejeiraTacticalGrid();
     positionStorySpeechBubble();
+    /* Girar o aparelho não pode fechar o mapa por uma troca de viewport. */
+    const mapScreen=document.getElementById('mapScreen');
+    if(mapScreen?.dataset.keepOpenOnResize==='1') mapScreen.classList.add('show');
   },220);
 });
 
@@ -8599,14 +8602,19 @@ function returnFromVictoryToMap(){
   }
 }
 function replayVictoryPhase(){
+  /* Repetir não deve pular a escolha estratégica. As três rotas abaixo levam
+     novamente à mesma fase, mas deixam o jogador manter/trocar a equipe ou
+     escolher o próximo grau de dificuldade. */
+  const phaseToReplay=victoryExitToMap&&Number.isInteger(victoryCompletedPhase)
+    ?victoryCompletedPhase
+    :(worldRun.active&&Number.isInteger(worldRun.fase)?worldRun.fase:null);
   hideOverlay('dungeonClearOverlay');
-  /* Repetir mantém equipe e dificuldade, mas reabre a mesma fase desde a
-     primeira missão — não herda a transição concluída. */
-  if(victoryExitToMap&&Number.isInteger(victoryCompletedPhase)){
-    worldRun={active:true,fase:victoryCompletedPhase,nivel:1,storyMode:true};
+  if(Number.isInteger(phaseToReplay)){
     victoryExitToMap=false;
     victoryNextStage=false;
     victoryCompletedPhase=null;
+    openMissionReplay(phaseToReplay);
+    return;
   }
   resetGame();
 }
@@ -8709,9 +8717,10 @@ function renderSelectGrid(){
           :(!storyMode&&chosenIds.includes(idx)
             ?T('No grupo','In party','En el grupo')
             :T('Disponível','Available','Disponible'));
+      const zoomControl=availability.owned?`<button class="zoom-btn" type="button" data-idx="${idx}" aria-label="${T(`Abrir carta de ${L(k.nome)} em alta resolução`,`Open ${L(k.nome)}'s card in high resolution`,`Abrir la carta de ${L(k.nome)} en alta resolución`)}">↗</button>`:'';
       card.innerHTML = `
         <div class="constellation-card-glow" aria-hidden="true"></div>
-        <div class="thumb-wrap"><img src="${THUMB(k.cardThumb||k.img)}"${THUMBF(k.cardThumb||k.img)} alt="${k.nome}" loading="lazy" decoding="async">${pickOrder>=0?`<div class="pick-badge" aria-label="${T('Posição na equipe','Team position','Posición en el equipo')}">${pickOrder+1}</div>`:''}${availability.owned&&!availability.allowed?'<span class="story-card-lock" aria-hidden="true">🔒</span>':''}<button class="zoom-btn" type="button" data-idx="${idx}" aria-label="${T(`Abrir carta de ${L(k.nome)} em alta resolução`,`Open ${L(k.nome)}'s card in high resolution`,`Abrir la carta de ${L(k.nome)} en alta resolución`)}">↗</button></div>
+        <div class="thumb-wrap"><img src="${THUMB(k.cardThumb||k.img)}"${THUMBF(k.cardThumb||k.img)} alt="${k.nome}" loading="lazy" decoding="async">${pickOrder>=0?`<div class="pick-badge" aria-label="${T('Posição na equipe','Team position','Posición en el equipo')}">${pickOrder+1}</div>`:''}${availability.owned&&!availability.allowed?'<span class="story-card-lock" aria-hidden="true">🔒</span>':''}${zoomControl}</div>
         <div class="constellation-card-copy"><small>${L(k.reino||k.deck||'YGDRIA')}</small><b>${L(k.nome)}</b><span class="select-card-status">${status}</span></div>
       `;
       card.setAttribute('role','button');
@@ -8719,7 +8728,7 @@ function renderSelectGrid(){
       card.setAttribute('aria-label',chosenIds.includes(idx)?T(`Remover ${L(k.nome)} da equipe`,`Remove ${L(k.nome)} from the team`,`Quitar a ${L(k.nome)} del equipo`):T(`Adicionar ${L(k.nome)} à equipe`,`Add ${L(k.nome)} to the team`,`Añadir a ${L(k.nome)} al equipo`));
       card.addEventListener('click',()=>toggleHero(idx));
       card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleHero(idx);}});
-      card.querySelector('.zoom-btn').addEventListener('click', e=>{ e.stopPropagation(); openCardModal(idx); });
+      card.querySelector('.zoom-btn')?.addEventListener('click', e=>{ e.stopPropagation(); openCardModal(idx); });
       roster.appendChild(card);
   });
   selectGridEl.appendChild(roster);
@@ -9075,6 +9084,7 @@ function showMainMenu(options={}){
   victoryNextStage=false;
   victoryCompletedPhase=null;
   updateVictoryActionLabel();
+  closeMapScreen();
   document.getElementById('mainMenu').style.display='flex';
   document.getElementById('selectScreen').style.display='none';
   document.getElementById('gameScreen').style.display='none';
@@ -9202,8 +9212,9 @@ function renderGallery(){
       card.className='gallery-card'+(favs.includes(k.id)?' fav':'')+(!owned?' collection-locked':'');
       card.style.setProperty('--realm',k.color); card.style.setProperty('--realm-dark',k.colorDark);
       const vistos=(()=>{ try{ return sanitizeHeroIdList(JSON.parse(localStorage.getItem('12r_seen')||'[]')); }catch(e){ return []; } })();
-      card.innerHTML=`<div class="gallery-thumb-wrap">${!owned?'<span class="story-card-lock collection-lock" aria-hidden="true">🔒</span>':vistos.includes(k.id)?'':'<span class="new-badge">'+T('NOVO!','NEW!','¡NUEVO!')+'</span>'}<img src="${THUMB(k.cardThumb||k.img)}"${THUMBF(k.cardThumb||k.img)} alt="${k.nome}" loading="lazy" decoding="async"><button class="gallery-zoom" type="button" aria-label="${T('Ampliar carta de','Enlarge card of','Ampliar la carta de')} ${k.nome}">🔍</button></div><b><span class="realm-dot" style="--realm:${k.color};--realm-light:${k.colorLight};--realm-dark:${k.colorDark};margin-right:3px;"></span>${k.nome}</b><small>${owned?L(k.rarity||'DIVINA')+' · '+'★'.repeat(k.stars||7):T('Ainda não conquistada','Not yet earned','Aún no obtenida')}</small>`;
-      card.querySelector('.gallery-zoom').addEventListener('click',()=>openCardModal(idx));
+      const zoom=owned?`<button class="gallery-zoom" type="button" aria-label="${T('Ampliar carta de','Enlarge card of','Ampliar la carta de')} ${k.nome}">🔍</button>`:'';
+      card.innerHTML=`<div class="gallery-thumb-wrap">${!owned?'<span class="story-card-lock collection-lock" aria-hidden="true">🔒</span>':vistos.includes(k.id)?'':'<span class="new-badge">'+T('NOVO!','NEW!','¡NUEVO!')+'</span>'}<img src="${THUMB(k.cardThumb||k.img)}"${THUMBF(k.cardThumb||k.img)} alt="${k.nome}" loading="lazy" decoding="async">${zoom}</div><b><span class="realm-dot" style="--realm:${k.color};--realm-light:${k.colorLight};--realm-dark:${k.colorDark};margin-right:3px;"></span>${k.nome}</b><small>${owned?L(k.rarity||'DIVINA')+' · '+'★'.repeat(k.stars||7):T('Ainda não conquistada','Not yet earned','Aún no obtenida')}</small>`;
+      card.querySelector('.gallery-zoom')?.addEventListener('click',()=>openCardModal(idx));
       const favBtn=document.createElement('button');
       favBtn.type='button'; favBtn.className='fav-btn'; favBtn.setAttribute('aria-label',T('Favoritar','Favorite','Favorito'));
       favBtn.textContent=favs.includes(k.id)?'❤':'🤍';
@@ -10228,9 +10239,13 @@ function openMapScreen(mode){
     ? T('Desafio dos Chefes — escolha um reino CONQUISTADO','Boss Challenge — pick a CONQUERED realm','Desafío de Jefes — elige un reino CONQUISTADO')
     : T('Escolha um reino para explorar','Choose a realm to explore','Elige un reino para explorar');
   renderMapScreen();
-  document.getElementById('mapScreen')?.classList.add('show');
+  const mapScreen=document.getElementById('mapScreen');
+  if(mapScreen){ mapScreen.dataset.keepOpenOnResize='1'; mapScreen.classList.add('show'); }
 }
-function closeMapScreen(){ document.getElementById('mapScreen')?.classList.remove('show'); }
+function closeMapScreen(){
+  const mapScreen=document.getElementById('mapScreen');
+  if(mapScreen){ delete mapScreen.dataset.keepOpenOnResize; mapScreen.classList.remove('show'); }
+}
 function renderMapScreen(){
   const canvas=document.getElementById('mapCanvas');
   if(!canvas) return;
