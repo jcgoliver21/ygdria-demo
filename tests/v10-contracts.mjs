@@ -20,13 +20,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.58/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.58/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.58/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.58/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.58/);
-  assert.match(config,/version:'v11\.0\.58'/);
-  assert.match(sw,/12r-v11\.0\.58/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.59/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.59/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.59/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.59/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.59/);
+  assert.match(config,/version:'v11\.0\.59'/);
+  assert.match(sw,/12r-v11\.0\.59/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -139,7 +139,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.58/);
+  assert.match(sw,/12r-v11\.0\.59/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -541,7 +541,7 @@ check('mapa vertical preserva geografia e expande somente o oceano lateral',()=>
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.58');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.59');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
@@ -565,7 +565,8 @@ check('motor v10 cobre e conecta seis movimentos',()=>{
   }
   assert.match(game,/function animateHeroAvatar\(/);
   assert.match(game,/animateHeroAvatar\(avatarEl,k,'idle',\{loop:true\}\)/);
-  assert.match(game,/ACTIVE\.forEach\(heroIdx=>playHeroAction\(heroIdx,'hit'\)\)/);
+  assert.match(game,/function playHeroImpact\(idx\)/);
+  assert.match(game,/if\(dmg>0&&frontHero\) playHeroImpact\(frontHero\.index\)/);
   assert.match(game,/ACTIVE\.forEach\(heroIdx=>playHeroAction\(heroIdx,'victory'\)\)/);
   assert.match(game,/playHeroDefeatPoses\(\)/);
   assert.match(animations,/YGDRIA_V10_ANIMATIONS/);
@@ -796,6 +797,7 @@ check('Kalegs, recompensas humanas e coleção persistente estão integrados',()
   assert.match(game,/function selectionAvailability\(idx\)/);
   assert.match(html,/id="editGroupScreen"/);
   assert.match(html,/id="phaseRewardSummary"/);
+  for(const id of ['victoryBackBtn','victoryReplayBtn','victoryNextBtn']) assert.match(html,new RegExp(`id="${id}"`));
   assert.match(css,/\.collection-locked/);
   assert.match(css,/\.phase-reward-summary/);
 });

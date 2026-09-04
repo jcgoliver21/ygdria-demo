@@ -1660,10 +1660,12 @@ test('tela final celebra dentro do cenário com heróis vitoriosos e inimigos ca
       report:Boolean(document.getElementById('victoryReport')?.textContent?.trim()),
       reportParent:document.getElementById('victoryReport')?.parentElement?.id||'',
       victoryButtonText:document.getElementById('playAgainBtn')?.textContent?.trim()||'',
+      navButtons:[...document.querySelectorAll('.victory-nav-btn')].map(button=>button.textContent.trim()),
+      dockScrolls:overlay.scrollHeight>overlay.clientHeight,
       noArenaAnimation:getComputedStyle(document.getElementById('arena')).animationName
     };
   });
-  expect(state).toMatchObject({visible:true,parent:'victoryReportDock',topParent:'victoryArenaHeader',topVisible:true,dockVisible:true,combatHidden:true,arenaVictory:true,heroesVictory:true,report:true,reportParent:'dungeonClearOverlay',victoryButtonText:'Jogar novamente',noArenaAnimation:'none'});
+  expect(state).toMatchObject({visible:true,parent:'victoryReportDock',topParent:'victoryArenaHeader',arenaVictory:true,heroesVictory:true,report:true,reportParent:'',victoryButtonText:'Jogar novamente',navButtons:['←','↻','→'],dockScrolls:false,noArenaAnimation:'none'});
   expect(state.deadEnemies).toBe(state.enemiesTotal);
   expect(state.stars).toBe(3);
   expect(errors).toEqual([]);
@@ -2579,7 +2581,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.58');
+  expect(registration.caches).toContain('12r-v11.0.59');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2739,7 +2741,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.58');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.59');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

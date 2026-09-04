@@ -1618,9 +1618,20 @@ function renderPhaseReward(result){
   const box=document.getElementById('phaseRewardSummary');
   if(!box) return;
   if(!result?.reward){ box.hidden=true; box.innerHTML=''; return; }
+  const reward=result.reward;
+  const tokens=[];
+  if(reward.k) tokens.push(`<span class="reward-token reward-kalegs"><i aria-hidden="true">K</i><b>${formatKalegs(reward.k)}</b><small>Kalegs</small></span>`);
+  if(reward.card){
+    const hero=KINGDOMS.find(k=>k.id===reward.card);
+    tokens.push(`<span class="reward-token reward-card"><i aria-hidden="true">🎴</i><b>${L(hero?.nome||reward.card)}</b><small>${T('Carta','Card','Carta')}</small></span>`);
+  }
+  Object.entries(reward.items||{}).forEach(([id,count])=>{
+    const item=SHOP_ITEMS.find(x=>x.id===id);
+    tokens.push(`<span class="reward-token reward-item"><i class="reward-item-icon" aria-hidden="true">${HUMAN_ITEM_ICONS[item?.icon]||'🎒'}</i><b>${count}×</b><small>${L(item?.nome||id)}</small></span>`);
+  });
   box.hidden=false;
   box.classList.toggle('claimed',!!result.claimed);
-  box.innerHTML=`<b>${result.claimed?T('Premiação conquistada','Rewards claimed','Premio obtenido'):T('Premiação da fase','Stage reward','Premio de fase')}</b><span>${result.summary}</span>${result.reward.card&&result.claimed?`<em>“${L(KINGDOMS.find(k=>k.id===result.reward.card)?.nome||result.reward.card)}” ${T('se junta à batalha!','joins the battle!','¡se une a la batalla!')}</em>`:''}`;
+  box.innerHTML=`<b>${result.claimed?T('Premiação conquistada','Rewards claimed','Premio obtenido'):T('Premiação da fase','Stage reward','Premio de fase')}</b><div class="reward-token-list">${tokens.join('')}</div>${reward.card&&result.claimed?`<em>“${L(KINGDOMS.find(k=>k.id===reward.card)?.nome||reward.card)}” ${T('se junta à batalha!','joins the battle!','¡se une a la batalla!')}</em>`:''}`;
 }
 function buyItem(id){
   const item=SHOP_ITEMS.find(i=>i.id===id); if(!item) return;
@@ -2740,6 +2751,20 @@ function playHeroAction(idx, action='attack'){
     return;
   }
   commit();
+}
+
+/* Impacto não troca a folha do personagem. Em WebViews móveis, substituir o
+   bitmap justo no instante do acerto pode expor um quadro transparente. A
+   reação é uma compressão física curta do corpo já visível; o VFX e o dano
+   continuam ancorados no alvo atingido. */
+function playHeroImpact(idx){
+  const k=KINGDOMS[idx];
+  const unit=k&&document.getElementById('party-'+k.id);
+  if(!unit) return;
+  unit.classList.remove('hero-impact');
+  void unit.offsetWidth;
+  unit.classList.add('hero-impact');
+  scheduleCombat(()=>unit.classList.remove('hero-impact'),300);
 }
 
 function playHeroDefeatPoses(){
@@ -7971,9 +7996,10 @@ async function enemyCounterAttack(){
     if(dmg>0) stageTookDamage=true;
     updatePlayerHP();
     if(dmg>0) pulseHpEffect('damage',800);
-    /* O dano segue a regra da missão e todos reagem, mas o projétil e o
-       impacto visual usam apenas o herói da linha frontal calculado acima. */
-    if(dmg>0) ACTIVE.forEach(heroIdx=>playHeroAction(heroIdx,'hit'));
+    /* O grupo compartilha o HP, mas somente o corpo que recebeu a trajetória
+       reage. Assim não há quatro trocas de sprites simultâneas — causa do
+       pequeno piscar no mobile — e a leitura física permanece coerente. */
+    if(dmg>0&&frontHero) playHeroImpact(frontHero.index);
     if(dmg>0){
       const enemyColor=enemyAuraPalette(enemy)[1];
       spawnCombatAttackFx(enemyFxRealm(enemy),enemySource,playerTarget,enemyColor,enemy.isBoss?'critical':'impact',enemy);
@@ -8022,12 +8048,19 @@ let runStats={damage:{},maxCombo:0,powerUps:0};
 let victoryExitToMap=false;
 let victoryExitMode='world';
 let victoryNextStage=false;
+let victoryCompletedPhase=null;
 function updateVictoryActionLabel(){
   const btn=document.getElementById('playAgainBtn');
   if(!btn) return;
   const label=victoryNextStage?T('Próxima fase','Next stage','Próxima fase'):T('Jogar novamente','Play again','Jugar de nuevo');
   btn.textContent=label;
   btn.setAttribute('aria-label',label);
+  const next=document.getElementById('victoryNextBtn');
+  if(next){
+    const enabled=Boolean(victoryExitToMap&&victoryNextStage);
+    next.disabled=!enabled;
+    next.setAttribute('aria-disabled',String(!enabled));
+  }
 }
 function resetRunStats(){ runStats={damage:{},maxCombo:0,powerUps:0,starsEarned:0,_flushedDamage:0,_flushedPU:0}; }
 function getStars(){ try{ return JSON.parse(localStorage.getItem('12r_stars')||'{}'); }catch(e){ return {}; } }
@@ -8248,6 +8281,7 @@ function onStageCleared(){
       victoryExitToMap=true;
       victoryExitMode='world';
       victoryNextStage=completedFase<world.fases.length-1;
+      victoryCompletedPhase=completedFase;
       showOverlay('dungeonClearOverlay');
       worldRun.active=false;
       busy=false;
@@ -8491,12 +8525,13 @@ async function restartFromControls(){
 document.getElementById('resetBtn').addEventListener('click', restartFromControls);
 document.getElementById('restartTool')?.addEventListener('click',()=>{ toggleBattleTools(false); restartFromControls(); });
 document.getElementById('retryBtn').addEventListener('click', retryAfterDefeat);
-document.getElementById('playAgainBtn').addEventListener('click',()=>{
+function returnFromVictoryToMap(){
   if(!victoryExitToMap){ resetGame(); return; }
   const destination=victoryExitMode;
   victoryExitToMap=false;
   victoryExitMode='world';
   victoryNextStage=false;
+  victoryCompletedPhase=null;
   hideOverlay('dungeonClearOverlay');
   showMainMenu();
   openMapScreen(destination==='boss'?'boss':'world');
@@ -8504,7 +8539,34 @@ document.getElementById('playAgainBtn').addEventListener('click',()=>{
     renderWorldMap();
     openPanel('worldScreen');
   }
-});
+}
+function replayVictoryPhase(){
+  hideOverlay('dungeonClearOverlay');
+  /* Repetir mantém equipe e dificuldade, mas reabre a mesma fase desde a
+     primeira missão — não herda a transição concluída. */
+  if(victoryExitToMap&&Number.isInteger(victoryCompletedPhase)){
+    worldRun={active:true,fase:victoryCompletedPhase,nivel:1,storyMode:true};
+    victoryExitToMap=false;
+    victoryNextStage=false;
+    victoryCompletedPhase=null;
+  }
+  resetGame();
+}
+function advanceFromVictory(){
+  if(!victoryExitToMap||!victoryNextStage||!Number.isInteger(victoryCompletedPhase)){ sfxInvalid(); return; }
+  const nextPhase=Math.min(WORLDS[0].fases.length-1,victoryCompletedPhase+1);
+  victoryExitToMap=false;
+  victoryNextStage=false;
+  victoryCompletedPhase=null;
+  hideOverlay('dungeonClearOverlay');
+  worldRun={active:true,fase:nextPhase,nivel:1,storyMode:true};
+  pendingStage=0;
+  showSelection();
+}
+document.getElementById('playAgainBtn').addEventListener('click',replayVictoryPhase);
+document.getElementById('victoryBackBtn')?.addEventListener('click',returnFromVictoryToMap);
+document.getElementById('victoryReplayBtn')?.addEventListener('click',replayVictoryPhase);
+document.getElementById('victoryNextBtn')?.addEventListener('click',advanceFromVictory);
 
 // ---------- HERO SELECT SCREEN ----------
 const qaPreset = new URLSearchParams(location.search).get('qa');
@@ -8953,6 +9015,7 @@ function showMainMenu(options={}){
   victoryExitToMap=false;
   victoryExitMode='world';
   victoryNextStage=false;
+  victoryCompletedPhase=null;
   updateVictoryActionLabel();
   document.getElementById('mainMenu').style.display='flex';
   document.getElementById('selectScreen').style.display='none';

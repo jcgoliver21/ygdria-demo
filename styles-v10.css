@@ -2270,6 +2270,10 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
   100%{ transform:translateY(0) rotate(0); }
 }
 #partyArena.party-hurt .unit:not(.golem-unit) .avatar-circle{ animation:none!important; }
+/* O impacto conserva o bitmap corrente: sem filtro, opacidade ou troca de
+   folha, apenas um recuo curto na direção do chão. */
+.hero-unit.hero-impact .avatar-circle{animation:heroImpactSettle .28s cubic-bezier(.22,.76,.25,1) both!important;filter:none!important}
+@keyframes heroImpactSettle{0%{transform:translate3d(0,0,0) scale(1)}34%{transform:translate3d(-2px,2px,0) scale(.975,.955)}72%{transform:translate3d(1px,0,0) scale(1.006,.992)}100%{transform:translate3d(0,0,0) scale(1)}}
 @keyframes partyFlinch9{
   0%{ transform:translate(0,0); } 25%{ transform:translate(-5px,2px) rotate(-3deg); }
   55%{ transform:translate(4px,-1px) rotate(2deg); } 100%{ transform:translate(0,0); }
@@ -3979,17 +3983,17 @@ body.game-active .game-frame.victory-celebration .combat-console{
   display:none!important;
 }
 body.game-active .game-frame.victory-celebration .victory-report-dock{
-  display:flex!important;flex:0 0 30dvh;min-height:0;width:100%;overflow:hidden;
+  display:flex!important;flex:0 0 31dvh;min-height:0;width:100%;overflow:hidden;
   align-items:stretch;justify-content:center;padding:4px 6px max(4px,env(safe-area-inset-bottom));
   background:linear-gradient(180deg,#0b0713,#05030a);border-top:1px solid rgba(232,203,133,.42);
 }
 body.game-active .game-frame.victory-celebration .arena{
-  flex:0 0 calc(70dvh - env(safe-area-inset-bottom,0px))!important;
-  height:calc(70dvh - env(safe-area-inset-bottom,0px))!important;
+  flex:0 0 calc(69dvh - env(safe-area-inset-bottom,0px))!important;
+  height:calc(69dvh - env(safe-area-inset-bottom,0px))!important;
 }
 #dungeonClearOverlay.victory-arena-overlay.victory-docked{
   position:static!important;inset:auto!important;width:100%!important;height:100%!important;min-height:0;
-  display:flex!important;justify-content:flex-start!important;overflow-y:auto!important;overflow-x:hidden!important;
+  display:flex!important;justify-content:space-between!important;overflow:hidden!important;
   padding:3px 4px max(2px,env(safe-area-inset-bottom))!important;
   background:linear-gradient(145deg,rgba(16,10,26,.98),rgba(5,3,11,.98))!important;
   border:1px solid rgba(232,203,133,.48);border-radius:12px;box-shadow:0 -4px 16px rgba(0,0,0,.42),inset 0 1px rgba(255,255,255,.07);
@@ -4003,6 +4007,26 @@ body.game-active .game-frame.victory-celebration .arena{
 #dungeonClearOverlay.victory-arena-overlay.victory-docked .battle-report{width:min(100%,540px)!important;margin:2px auto 4px!important;padding:6px 8px!important;border-radius:9px}
 #dungeonClearOverlay.victory-arena-overlay.victory-docked .overlay-btn{padding:6px 15px!important;font-size:10px!important;margin-top:1px}
 #dungeonClearOverlay.victory-arena-overlay.victory-docked .confetti-layer{position:absolute!important;inset:0!important}
+/* Relatório e premiação dividem o rodapé: nenhum bloco compete por altura e
+   a vitória cabe inteira no retrato sem criar uma segunda rolagem. */
+#dungeonClearOverlay.victory-arena-overlay.victory-docked .victory-summary-grid{position:relative;z-index:4;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px;width:100%;min-height:0;flex:1;align-items:stretch}
+#dungeonClearOverlay.victory-arena-overlay.victory-docked .victory-summary-panel{min-width:0;min-height:0;overflow:hidden;border:1px solid rgba(255,221,151,.23);border-radius:8px;background:linear-gradient(145deg,rgba(31,18,43,.8),rgba(7,5,13,.84));box-shadow:inset 0 1px rgba(255,255,255,.06)}
+#dungeonClearOverlay.victory-arena-overlay.victory-docked .battle-report{box-sizing:border-box;width:100%!important;height:100%;margin:0!important;padding:5px 6px!important;border:0!important;border-radius:8px;background:transparent!important;box-shadow:none!important;overflow:hidden}
+#dungeonClearOverlay.victory-arena-overlay.victory-docked .phase-reward-summary{box-sizing:border-box;width:100%;height:100%;margin:0!important;padding:5px 6px!important;border:0!important;border-radius:8px;background:transparent!important;box-shadow:none!important;overflow:hidden}
+#dungeonClearOverlay.victory-arena-overlay.victory-docked .phase-reward-summary>b{font-size:9px!important;line-height:1.1;letter-spacing:.25px}
+#dungeonClearOverlay.victory-arena-overlay.victory-docked .reward-token-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px;margin-top:4px}
+#dungeonClearOverlay.victory-arena-overlay.victory-docked .reward-token{display:grid;grid-template-columns:17px minmax(0,1fr);grid-template-rows:auto auto;align-items:center;column-gap:3px;min-width:0;padding:3px;border-radius:6px;background:rgba(255,230,181,.055);border:1px solid rgba(255,225,152,.13);color:#fff0d8}
+#dungeonClearOverlay.victory-arena-overlay.victory-docked .reward-token i{grid-row:1 / span 2;font-style:normal;font-size:12px;text-align:center}
+#dungeonClearOverlay.victory-arena-overlay.victory-docked .reward-token .reward-item-icon{display:grid;place-items:center;width:17px;height:17px}
+#dungeonClearOverlay.victory-arena-overlay.victory-docked .reward-token .reward-item-icon img{display:block;width:17px;height:17px;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
+#dungeonClearOverlay.victory-arena-overlay.victory-docked .reward-token b{min-width:0;font:700 8px/1 Georgia,serif;color:#ffe7a4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#dungeonClearOverlay.victory-arena-overlay.victory-docked .reward-token small{min-width:0;font:600 6.6px/1.05 Georgia,serif;color:#eadfd4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#dungeonClearOverlay.victory-arena-overlay.victory-docked .phase-reward-summary em{margin-top:3px;font-size:7px!important;line-height:1.05;color:#ffbfdd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#dungeonClearOverlay.victory-arena-overlay.victory-docked .victory-navigation{position:relative;z-index:4;display:grid;grid-template-columns:repeat(3,1fr);gap:5px;width:100%;flex:0 0 28px;margin-top:4px}
+#dungeonClearOverlay.victory-arena-overlay.victory-docked .victory-nav-btn{display:grid;place-items:center;min-height:28px;padding:0;border:1px solid rgba(255,225,151,.48);border-radius:8px;background:linear-gradient(145deg,rgba(58,38,72,.96),rgba(15,9,25,.96));color:#ffe8ad;font:700 18px/1 Georgia,serif;box-shadow:inset 0 1px rgba(255,255,255,.1),0 2px 6px rgba(0,0,0,.33)}
+#dungeonClearOverlay.victory-arena-overlay.victory-docked .victory-nav-btn:active{transform:translateY(1px) scale(.97)}
+#dungeonClearOverlay.victory-arena-overlay.victory-docked .victory-nav-btn:disabled{opacity:.28;filter:grayscale(1)}
+#dungeonClearOverlay.victory-arena-overlay.victory-docked #playAgainBtn[hidden]{display:none!important}
 @media (max-width:600px){
   #dungeonClearOverlay.victory-arena-overlay.victory-docked .battle-report{padding:4px 6px!important}
   #dungeonClearOverlay.victory-arena-overlay.victory-docked .report-mvp{gap:6px;margin-bottom:3px}

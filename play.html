@@ -30,7 +30,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
 <link rel="apple-touch-icon" href="assets/icon.svg">
-<link rel="stylesheet" href="styles-v10.css?v=11.0.58">
+<link rel="stylesheet" href="styles-v10.css?v=11.0.59">
 </head>
 <body>
 <div class="scene-bg" data-screen="menu"></div>
@@ -171,10 +171,21 @@
   <p id="grandClearText">A vitória ecoa por Ygdria.</p>
   <div class="stage-stars" id="victoryStars" aria-label="Classificação da fase"></div>
   <p class="victory-rank" id="victoryRank"></p>
-  <div class="phase-reward-summary" id="phaseRewardSummary" hidden></div>
-  <div class="battle-report" id="victoryReport"></div>
+  <div class="victory-summary-grid" aria-label="Resumo da missão">
+    <section class="victory-summary-panel victory-stats-panel" aria-label="Estatísticas da batalha">
+      <div class="battle-report" id="victoryReport"></div>
+    </section>
+    <section class="victory-summary-panel victory-reward-panel" aria-label="Premiações">
+      <div class="phase-reward-summary" id="phaseRewardSummary" hidden></div>
+    </section>
+  </div>
   <button class="overlay-btn" id="shareDailyBtn" style="display:none" type="button">📋 Compartilhar resultado</button>
-  <button class="overlay-btn" id="playAgainBtn">Jogar novamente</button>
+  <div class="victory-navigation" aria-label="Ações após a missão">
+    <button class="victory-nav-btn" id="victoryBackBtn" type="button" aria-label="Voltar para Seleção de Fases" title="Voltar para Seleção de Fases">←</button>
+    <button class="victory-nav-btn" id="victoryReplayBtn" type="button" aria-label="Repetir a Fase" title="Repetir a Fase">↻</button>
+    <button class="victory-nav-btn" id="victoryNextBtn" type="button" aria-label="Ir para a próxima fase" title="Ir para a próxima fase">→</button>
+  </div>
+  <button class="overlay-btn" id="playAgainBtn" hidden>Jogar novamente</button>
 </div>
 <div class="overlay defeat" id="defeatOverlay">
   <h2>Derrota</h2>
@@ -486,11 +497,11 @@
   </div>
 </div>
 <script>window.addEventListener('error',function(e){(window.__bootErrors=window.__bootErrors||[]).push({m:String(e.message).slice(0,200),l:e.lineno,c:e.colno})});</script>
-<script src="v10-config.js?v=11.0.58"></script>
-<script src="v10-animations.js?v=11.0.58"></script>
-<script src="humanos-lore-v10.js?v=11.0.58"></script>
+<script src="v10-config.js?v=11.0.59"></script>
+<script src="v10-animations.js?v=11.0.59"></script>
+<script src="humanos-lore-v10.js?v=11.0.59"></script>
 <script src="map-effects-v1.js?v=1.0.0" defer></script>
-<script src="game-v10.js?v=11.0.58" defer></script>
+<script src="game-v10.js?v=11.0.59" defer></script>
 
 </body>
 </html>
