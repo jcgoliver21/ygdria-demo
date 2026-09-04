@@ -2432,6 +2432,25 @@ function heroUsesFlightPhysics(character){
    herói à frente não bloqueia o corpo visível de outro herói atrás dele. */
 const HERO_BODY_ALPHA_THRESHOLD=24;
 const heroHitMaskCache=new Map();
+const heroHitMaskWarmupQueue=[];
+const heroHitMaskWarmupQueued=new Set();
+let heroHitMaskWarmupRunning=false;
+/* Ler todos os pixels de quatro folhas logo na entrada da arena disputa CPU e
+   memória com a primeira pintura. A precisão do toque continua a mesma, mas
+   a preparação acontece serialmente quando o navegador está ocioso. */
+function pumpHeroHitMaskWarmup(){
+  if(heroHitMaskWarmupRunning) return;
+  const src=heroHitMaskWarmupQueue.shift();
+  if(!src) return;
+  heroHitMaskWarmupRunning=true;
+  const idle=window.requestIdleCallback||((callback)=>setTimeout(callback,420));
+  idle(()=>{
+    prepareHeroHitMask(src).finally(()=>{
+      heroHitMaskWarmupRunning=false;
+      window.setTimeout(pumpHeroHitMaskWarmup,140);
+    });
+  },{timeout:4200});
+}
 function prepareHeroHitMask(src){
   if(!src) return Promise.resolve(null);
   if(heroHitMaskCache.has(src)) return heroHitMaskCache.get(src).promise;
@@ -2460,7 +2479,10 @@ function prepareHeroHitMask(src){
 function prepareHeroBodyHitTest(avatar){
   const visual=avatar?.querySelector('.hero-sprite-sheet,.hero-sprite-image');
   const src=visual?.dataset.hitSrc;
-  if(src) prepareHeroHitMask(src);
+  if(!src||heroHitMaskCache.has(src)||heroHitMaskWarmupQueued.has(src)) return;
+  heroHitMaskWarmupQueued.add(src);
+  heroHitMaskWarmupQueue.push(src);
+  pumpHeroHitMaskWarmup();
 }
 function heroVisualOpaqueAt(visual,clientX,clientY){
   if(!visual) return false;
@@ -2500,6 +2522,11 @@ function handleHeroBodyPointer(event){
      área visual da arena no mobile) em um toque no herói. */
   if(event.target instanceof Element && event.target.closest('button, input, select, textarea, a, [role="button"], .battle-tools-panel, .battle-tools-toggle, .pro-overlay, .overlay')) return;
   const unit=resolveHeroBodyAtPoint(event.clientX,event.clientY);
+  /* Se o jogador tocar antes do lote ocioso terminar, priorizamos agora as
+     máscaras presentes. O próximo toque já usa o recorte alfa exato, sem
+     bloquear a abertura da batalha. */
+  if(!unit) [...partyArenaEl.querySelectorAll('.hero-sprite-sheet,.hero-sprite-image')]
+    .forEach(visual=>prepareHeroHitMask(visual.dataset.hitSrc||''));
   const heroIndex=Number(unit?.dataset.heroIndex);
   if(!unit||!Number.isInteger(heroIndex)) return;
   event.preventDefault(); event.stopPropagation();
@@ -9472,30 +9499,43 @@ function preloadOfficialAssets(){
 function preloadHeroActions(indices=ACTIVE){
   const economy=resolvedGraphicsQuality()==='economy'||navigator.connection?.saveData;
   const mobileViewport=matchMedia('(max-width:700px)').matches||navigator.maxTouchPoints>0;
-  /* No mobile, a folha de impacto é parte do primeiro golpe recebido. Ela
-     precisa entrar no lote crítico junto do idle; deixá-la para um
-     requestIdleCallback fazia o primeiro contra-ataque trocar a textura
-     ainda não decodificada durante a composição do palco. */
+  /* As folhas preservam a resolução original. O ganho aqui é de agenda: não
+     disputamos rede e decodificador com os quatro idles que já estão visíveis
+     no primeiro quadro da arena. */
   const allowedActions=economy?['idle','hit','attack']:Object.keys(HERO_ACTIONS);
   const sources=[...new Set([
     ...indices.flatMap(i=>allowedActions.map(action=>KINGDOMS[i]?.sprites?.[action]?.src)).filter(Boolean),
     /* A assinatura do golpe é parte da primeira ação, não um enfeite tardio. */
     ...indices.map(i=>HUMAN_CHAPTER_ATTACK_SHEETS[KINGDOMS[i]?.id]).filter(Boolean)
   ])];
-  const load=src=>preloadSpriteSource(src).then(()=>true).catch(()=>{ markSpriteFailed(src); return false; });
-  const criticalActions=mobileViewport?['idle','attack','cast','hit']:['idle','attack','cast'];
-  const criticalSources=new Set([
-    ...indices.flatMap(i=>criticalActions.map(action=>KINGDOMS[i]?.sprites?.[action]?.src)).filter(Boolean),
+  const load=(src,priority='auto')=>preloadSpriteSource(src,priority).then(()=>true).catch(()=>{ markSpriteFailed(src); return false; });
+  const idles=[...new Set(indices.map(i=>KINGDOMS[i]?.sprites?.idle?.src).filter(Boolean))];
+  const firstActions=[...new Set([
+    ...indices.flatMap(i=>['attack','cast','hit'].map(action=>KINGDOMS[i]?.sprites?.[action]?.src)).filter(Boolean),
     ...indices.map(i=>HUMAN_CHAPTER_ATTACK_SHEETS[KINGDOMS[i]?.id]).filter(Boolean)
-  ]);
-  return Promise.allSettled(sources.filter(src=>criticalSources.has(src)).map(load)).then(()=>{
+  ].filter(src=>!idles.includes(src)))];
+  const criticalConcurrency=mobileViewport?2:4;
+  return preloadSpriteBatch(idles,src=>load(src,'high'),criticalConcurrency).then(()=>
+    preloadSpriteBatch(firstActions,src=>load(src,'auto'),mobileViewport?2:3)
+  ).then(()=>{
     if(economy) return;
     const requestIdle=window.requestIdleCallback||((cb)=>setTimeout(cb,700));
-    requestIdle(()=>sources.filter(src=>!criticalSources.has(src)).forEach((src,index)=>setTimeout(()=>load(src),index*120)),{timeout:3500});
+    requestIdle(()=>preloadSpriteBatch(sources.filter(src=>!idles.includes(src)&&!firstActions.includes(src)),src=>load(src,'low'),1),{timeout:3500});
   });
 }
+function preloadSpriteBatch(sources,load,concurrency=2){
+  const queue=[...new Set(sources.filter(Boolean))];
+  let cursor=0;
+  const worker=async()=>{
+    while(cursor<queue.length){
+      const src=queue[cursor++];
+      await load(src);
+    }
+  };
+  return Promise.all(Array.from({length:Math.min(Math.max(1,concurrency),queue.length)},worker));
+}
 const spritePreloadCache=new Map();
-function preloadSpriteSource(src){
+function preloadSpriteSource(src,priority='auto'){
   if(!src) return Promise.reject(new Error('Sprite source ausente'));
   if(failedSpriteAssets.has(src)) return Promise.reject(new Error('Sprite source indisponível'));
   if(spritePreloadCache.has(src)) return spritePreloadCache.get(src);
@@ -9510,6 +9550,7 @@ function preloadSpriteSource(src){
     };
     image.onerror=()=>{ markSpriteFailed(src); spritePreloadCache.delete(src); reject(new Error('Falha ao carregar '+src)); };
     image.decoding='async';
+    if('fetchPriority' in image) image.fetchPriority=priority;
     image.src=animationAssetUrl(src);
   });
   spritePreloadCache.set(src,pending);
@@ -9663,6 +9704,10 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
       slots:formation.slots.map(slot=>({refs:[...slot.gridRefs],x:Number(slot.x.toFixed(4)),y:Number(slot.y.toFixed(4)),z:slot.z,side:slot.gridSide}))
     })),
     heroBodyHitProbe:async()=>{
+      /* A sonda de QA pede explicitamente a precisão alfa; no jogo normal o
+         mesmo trabalho fica fora da trilha crítica de entrada da arena. */
+      await Promise.all([...partyArenaEl.querySelectorAll('.hero-sprite-sheet,.hero-sprite-image')]
+        .map(visual=>prepareHeroHitMask(visual.dataset.hitSrc||'')));
       await Promise.all([...heroHitMaskCache.values()].map(entry=>entry.promise));
       return [...partyArenaEl.querySelectorAll('.hero-unit')].map(unit=>{
         const visual=unit.querySelector('.hero-sprite-sheet,.hero-sprite-image');

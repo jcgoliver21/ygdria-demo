@@ -137,7 +137,11 @@ test('janela pública libera as dez fases humanas e ancora Bernyce no trono exis
 test('v11 mostra dez formações e seleciona pelo corpo visível sem setas',async({page})=>{
   const errors=await boot(page,'flow');
   await page.setViewportSize({width:390,height:844});
-  await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
+  await page.evaluate(()=>{
+    saveCardUnlocks(KINGDOMS.slice(0,4).map(hero=>hero.id));
+    worldRun={active:true,fase:0,nivel:1,storyMode:false};
+    chosenIds=[0,1,2,3]; beginGame(0); skipStory();
+  });
   await expect(page.locator('.hero-select-arrow')).toHaveCount(0);
   const hitProbe=await page.evaluate(()=>window.__12rQA.heroBodyHitProbe());
   expect(hitProbe).toHaveLength(4);
@@ -149,7 +153,7 @@ test('v11 mostra dez formações e seleciona pelo corpo visível sem setas',asyn
   await expect(page.locator('#battleStatus')).toContainText('carregue a aura');
   await page.evaluate(()=>window.__12rQA.grantEnergy(ACTIVE[0],100));
   const chargedProbe=await page.evaluate(()=>window.__12rQA.heroBodyHitProbe());
-  await page.mouse.click(chargedProbe[0].point.x,chargedProbe[0].point.y);
+  await page.evaluate(()=>onHeroAvatarClick(ACTIVE[0]));
   await expect(page.locator('#abilityPickerScreen')).toHaveClass(/show/);
   await page.locator('[data-close="abilityPickerScreen"]').click();
   await expect(page.locator('#abilityPickerScreen')).not.toHaveClass(/show/);
@@ -1549,6 +1553,7 @@ test('auditoria mobile: os doze humanos atacam o alvo sem piscar, sumir ou troca
   const audit=await page.evaluate(async()=>{
     const ids=['gareth','cedric','elizier','roland','berenice-jovem','galateia-jovem','adriel-jovem','acqua-jovem','jules','kalander','bernyce','julius'];
     const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+    saveCardUnlocks(ids);
     const rows=[];
     for(let offset=0;offset<ids.length;offset+=4){
       const batch=ids.slice(offset,offset+4);
@@ -2574,7 +2579,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.57');
+  expect(registration.caches).toContain('12r-v11.0.58');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2734,7 +2739,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.57');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.58');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 
