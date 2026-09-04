@@ -22,6 +22,43 @@ test('smoke v10 não registra erro de boot ou console',async({page})=>{
   expect(errors).toEqual([]);
 });
 
+test('premiação humana credita uma vez Kalegs, mochila e carta, inclusive recibo legado',async({page})=>{
+  const errors=await boot(page,'reward-transaction');
+  const result=await page.evaluate(()=>{
+    localStorage.setItem('12r_coins','0');
+    localStorage.setItem('12r_inv','{}');
+    localStorage.setItem('12r_card_unlocks','[]');
+    /* Simula a falha antiga: a fase estava marcada, mas não havia recibo nem
+       nenhum crédito persistido. A nova transação precisa reparar isto. */
+    localStorage.setItem('12r_human_phase_rewards',JSON.stringify({'1:pesadelo':Date.now()}));
+    localStorage.removeItem('12r_human_reward_ledger_v2');
+    coins=0; inventory={};
+    const first=claimHumanPhaseReward(0,'pesadelo');
+    renderPhaseReward(first);
+    const afterFirst={coins,inventory:{...inventory},cards:cardUnlocks().has('gareth'),claims:rewardClaims(),ledger:rewardLedger()};
+    const second=claimHumanPhaseReward(0,'pesadelo');
+    return {first,second,afterFirst,html:document.getElementById('phaseRewardSummary').innerHTML};
+  });
+  expect(result.first.claimed).toBe(true);
+  expect(result.second.claimed).toBe(false);
+  expect(result.afterFirst).toMatchObject({coins:40,cards:true});
+  expect(result.afterFirst.inventory.regulacao).toBe(3);
+  expect(result.afterFirst.claims['1:pesadelo']).toBeTruthy();
+  expect(result.afterFirst.ledger['1:pesadelo']).toMatchObject({phase:1,difficulty:'pesadelo'});
+  expect(result.html).toContain('Cristais de Regulação');
+  await page.evaluate(()=>document.querySelector('[data-reward-card]')?.click());
+  await expect(page.locator('#cardModal')).toHaveClass(/show/);
+  await expect(page.locator('#cardModalName')).toContainText('Gareth');
+  await page.reload({waitUntil:'networkidle'});
+  await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
+  const persisted=await page.evaluate(()=>({coins:Number(localStorage.getItem('12r_coins')),inventory:JSON.parse(localStorage.getItem('12r_inv')||'{}'),cards:JSON.parse(localStorage.getItem('12r_card_unlocks')||'[]'),ledger:JSON.parse(localStorage.getItem('12r_human_reward_ledger_v2')||'{}')}));
+  expect(persisted.coins).toBe(40);
+  expect(persisted.inventory.regulacao).toBe(3);
+  expect(persisted.cards).toContain('gareth');
+  expect(persisted.ledger['1:pesadelo']).toBeTruthy();
+  expect(errors).toEqual([]);
+});
+
 test('fluxo real abre seletor, monta equipe e inicia tabuleiro',async({page})=>{
   const errors=await boot(page,'flow');
   await page.click('#playBtn');
@@ -2581,7 +2618,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.59');
+  expect(registration.caches).toContain('12r-v11.0.60');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2741,7 +2778,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.59');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.60');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

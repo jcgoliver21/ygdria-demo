@@ -20,13 +20,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.59/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.59/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.59/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.59/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.59/);
-  assert.match(config,/version:'v11\.0\.59'/);
-  assert.match(sw,/12r-v11\.0\.59/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.60/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.60/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.60/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.60/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.60/);
+  assert.match(config,/version:'v11\.0\.60'/);
+  assert.match(sw,/12r-v11\.0\.60/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -139,7 +139,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.59/);
+  assert.match(sw,/12r-v11\.0\.60/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -541,7 +541,7 @@ check('mapa vertical preserva geografia e expande somente o oceano lateral',()=>
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.59');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.60');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
@@ -800,6 +800,17 @@ check('Kalegs, recompensas humanas e coleção persistente estão integrados',()
   for(const id of ['victoryBackBtn','victoryReplayBtn','victoryNextBtn']) assert.match(html,new RegExp(`id="${id}"`));
   assert.match(css,/\.collection-locked/);
   assert.match(css,/\.phase-reward-summary/);
+});
+
+check('premiações usam recibo transacional, recuperação legada e carta navegável',()=>{
+  for(const needle of ['HUMAN_REWARD_LEDGER_KEY','function applyHumanPhaseReward(','function reconcileLegacyHumanPhaseRewards()','function restoreRewardStorage(','12r_card_unlocks','12r_human_reward_ledger_v2']) assert.ok(game.includes(needle),`${needle} ausente da transação de recompensa`);
+  assert.match(game,/if\(rewardLedger\(\)\[key\]\) return \{reward,claimed:false/);
+  assert.match(game,/tokens\.push\(`<button class="reward-token reward-card reward-card-token"/);
+  assert.match(game,/data-reward-card=/);
+  assert.match(game,/openCardModal\(heroIndex\)/);
+  assert.match(game,/Cristais de Regulação/);
+  assert.match(css,/\.reward-card-token/);
+  assert.match(css,/\.reward-card-thumb/);
 });
 
 

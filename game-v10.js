@@ -1584,6 +1584,9 @@ const HUMAN_PHASE_REWARDS=Object.freeze([
   {facil:{k:10,items:{'flor-cerejeira':1}},normal:{k:20,items:{'flor-cerejeira':2}},dificil:{k:30,items:{'flor-cerejeira':3}},pesadelo:{k:40,items:{'flor-cerejeira':4}}},
   {facil:{k:10,items:{'bencao-eternidade':1}},normal:{k:20,items:{'bencao-eternidade':1}},dificil:{k:30,items:{'bencao-eternidade':1}},pesadelo:{k:40,card:'jules',items:{'bencao-eternidade':1}}}
 ]);
+/* O recibo é gravado somente depois de Kalegs, itens e carta. Assim uma
+   vitória nunca fica marcada como recebida sem entregar sua recompensa. */
+const HUMAN_REWARD_LEDGER_KEY='12r_human_reward_ledger_v2';
 function cardUnlocks(){
   try{ return new Set(sanitizeHeroIdList(JSON.parse(localStorage.getItem('12r_card_unlocks')||'[]'))); }catch(e){ return new Set(); }
 }
@@ -1591,6 +1594,62 @@ function saveCardUnlocks(ids){ localStorage.setItem('12r_card_unlocks',JSON.stri
 function cardOwned(id){ return HUMAN_STARTER_CARDS.includes(id)||cardUnlocks().has(id); }
 function rewardClaims(){
   try{ const raw=JSON.parse(localStorage.getItem('12r_human_phase_rewards')||'{}'); return raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:{}; }catch(e){ return {}; }
+}
+function rewardLedger(){
+  try{ const raw=JSON.parse(localStorage.getItem(HUMAN_REWARD_LEDGER_KEY)||'{}'); return raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:{}; }catch(e){ return {}; }
+}
+function restoreRewardStorage(snapshot){
+  Object.entries(snapshot).forEach(([key,value])=>{
+    if(value===null) localStorage.removeItem(key);
+    else localStorage.setItem(key,value);
+  });
+}
+function applyHumanPhaseReward(fase,diff,reward,key){
+  const storageKeys=['12r_coins','12r_inv','12r_card_unlocks','12r_human_phase_rewards',HUMAN_REWARD_LEDGER_KEY];
+  const snapshot=Object.fromEntries(storageKeys.map(storageKey=>[storageKey,localStorage.getItem(storageKey)]));
+  const previousCoins=coins;
+  const previousInventory=inventory;
+  const nextCoins=Math.min(1_000_000_000,Math.max(0,coins+Math.max(0,Math.round(Number(reward.k)||0))));
+  const nextInventory=sanitizeInventory({...inventory});
+  Object.entries(reward.items||{}).forEach(([id,count])=>{
+    if(SHOP_ITEMS.some(item=>item.id===id)) nextInventory[id]=Math.min(9999,(nextInventory[id]||0)+Math.max(0,Math.round(Number(count)||0)));
+  });
+  const nextCards=cardUnlocks();
+  if(reward.card) nextCards.add(reward.card);
+  const grantedAt=Date.now();
+  const nextClaims={...rewardClaims(),[key]:grantedAt};
+  const nextLedger={...rewardLedger(),[key]:{grantedAt,phase:fase+1,difficulty:diff}};
+  try{
+    localStorage.setItem('12r_coins',String(nextCoins));
+    localStorage.setItem('12r_inv',JSON.stringify(nextInventory));
+    localStorage.setItem('12r_card_unlocks',JSON.stringify([...nextCards]));
+    localStorage.setItem('12r_human_phase_rewards',JSON.stringify(nextClaims));
+    localStorage.setItem(HUMAN_REWARD_LEDGER_KEY,JSON.stringify(nextLedger));
+    coins=nextCoins;
+    inventory=nextInventory;
+    updateCoinBadge();
+    renderMochila();
+    renderShop();
+    updateRestartControls();
+    return true;
+  }catch(error){
+    coins=previousCoins;
+    inventory=previousInventory;
+    try{ restoreRewardStorage(snapshot); }catch(restoreError){}
+    return false;
+  }
+}
+function reconcileLegacyHumanPhaseRewards(){
+  const claims=rewardClaims();
+  const ledger=rewardLedger();
+  Object.keys(claims).forEach(key=>{
+    if(ledger[key]) return;
+    const match=/^(\d+):(facil|normal|dificil|pesadelo)$/.exec(key);
+    if(!match) return;
+    const fase=Number(match[1])-1;
+    const reward=HUMAN_PHASE_REWARDS[fase]?.[match[2]];
+    if(reward) applyHumanPhaseReward(fase,match[2],reward,key);
+  });
 }
 function rewardSummary(reward,{claimed=false}={}){
   if(!reward) return '';
@@ -1604,15 +1663,9 @@ function claimHumanPhaseReward(fase,diff,{winner=true}={}){
   const reward=HUMAN_PHASE_REWARDS[fase]?.[diff];
   if(!reward||(!winner&&fase===9)) return {reward:null,claimed:false,summary:''};
   const key=`${fase+1}:${diff}`;
-  const claims=rewardClaims();
-  if(claims[key]) return {reward,claimed:false,summary:rewardSummary(reward,{claimed:true})};
-  claims[key]=Date.now();
-  localStorage.setItem('12r_human_phase_rewards',JSON.stringify(claims));
-  if(reward.k) grantCoins(reward.k);
-  if(reward.card){ const ids=cardUnlocks(); ids.add(reward.card); saveCardUnlocks(ids); }
-  Object.entries(reward.items||{}).forEach(([id,count])=>{ inventory[id]=Math.min(9999,(inventory[id]||0)+count); });
-  saveInventory();
-  return {reward,claimed:true,summary:rewardSummary(reward)};
+  if(rewardLedger()[key]) return {reward,claimed:false,summary:rewardSummary(reward,{claimed:true})};
+  const claimed=applyHumanPhaseReward(fase,diff,reward,key);
+  return {reward,claimed,summary:rewardSummary(reward,{claimed:!claimed})};
 }
 function renderPhaseReward(result){
   const box=document.getElementById('phaseRewardSummary');
@@ -1620,18 +1673,23 @@ function renderPhaseReward(result){
   if(!result?.reward){ box.hidden=true; box.innerHTML=''; return; }
   const reward=result.reward;
   const tokens=[];
-  if(reward.k) tokens.push(`<span class="reward-token reward-kalegs"><i aria-hidden="true">K</i><b>${formatKalegs(reward.k)}</b><small>Kalegs</small></span>`);
   if(reward.card){
     const hero=KINGDOMS.find(k=>k.id===reward.card);
-    tokens.push(`<span class="reward-token reward-card"><i aria-hidden="true">🎴</i><b>${L(hero?.nome||reward.card)}</b><small>${T('Carta','Card','Carta')}</small></span>`);
+    const heroIndex=KINGDOMS.indexOf(hero);
+    tokens.push(`<button class="reward-token reward-card reward-card-token" type="button" data-reward-card="${heroIndex}" aria-label="${T('Abrir galeria de ','Open gallery for ','Abrir galería de ')}${L(hero?.nome||reward.card)}"><i class="reward-card-thumb" aria-hidden="true"><img src="${IMGL(hero?.cardThumb||hero?.img||'')}" alt=""></i><b>${L(hero?.nome||reward.card)}</b><small>${T('Carta conquistada — tocar para ver','Card obtained — tap to view','Carta conseguida — tocar para ver')}</small></button>`);
   }
+  if(reward.k) tokens.push(`<span class="reward-token reward-kalegs"><i aria-hidden="true">K</i><b>${formatKalegs(reward.k)} Kalegs</b><small>${T('Moedas de Kalegar','Kalegar currency','Monedas de Kalegar')}</small></span>`);
   Object.entries(reward.items||{}).forEach(([id,count])=>{
     const item=SHOP_ITEMS.find(x=>x.id===id);
-    tokens.push(`<span class="reward-token reward-item"><i class="reward-item-icon" aria-hidden="true">${HUMAN_ITEM_ICONS[item?.icon]||'🎒'}</i><b>${count}×</b><small>${L(item?.nome||id)}</small></span>`);
+    tokens.push(`<span class="reward-token reward-item"><i class="reward-item-icon" aria-hidden="true">${HUMAN_ITEM_ICONS[item?.icon]||'🎒'}</i><b>${count}× ${L(item?.nome||id)}</b><small>${T('Adicionado à mochila','Added to backpack','Añadido a la mochila')}</small></span>`);
   });
   box.hidden=false;
   box.classList.toggle('claimed',!!result.claimed);
-  box.innerHTML=`<b>${result.claimed?T('Premiação conquistada','Rewards claimed','Premio obtenido'):T('Premiação da fase','Stage reward','Premio de fase')}</b><div class="reward-token-list">${tokens.join('')}</div>${reward.card&&result.claimed?`<em>“${L(KINGDOMS.find(k=>k.id===reward.card)?.nome||reward.card)}” ${T('se junta à batalha!','joins the battle!','¡se une a la batalla!')}</em>`:''}`;
+  box.innerHTML=`<b>${result.claimed?T('Premiação conquistada','Rewards claimed','Premio obtenido'):T('Premiação já recebida','Rewards already received','Premio ya recibido')}</b><div class="reward-token-list">${tokens.join('')}</div>${reward.card&&result.claimed?`<em>“${L(KINGDOMS.find(k=>k.id===reward.card)?.nome||reward.card)}” ${T('se junta à batalha!','joins the battle!','¡se une a la batalla!')}</em>`:''}`;
+  box.querySelector('[data-reward-card]')?.addEventListener('click',event=>{
+    const heroIndex=Number(event.currentTarget.dataset.rewardCard);
+    if(Number.isInteger(heroIndex)&&heroIndex>=0) openCardModal(heroIndex);
+  });
 }
 function buyItem(id){
   const item=SHOP_ITEMS.find(i=>i.id===id); if(!item) return;
@@ -5982,7 +6040,7 @@ const SAVE_EXPORT_VERSION=10;
 const SAVE_EXPORT_EXACT_KEYS=new Set([
   '12r_ach','12r_autoactives','12r_bestiary','12r_bossrush_best','12r_coins','12r_daily',
   '12r_difficulty','12r_fase_best','12r_fase_time','12r_favs','12r_firstwin','12r_formation',
-  '12r_haptics','12r_high_contrast','12r_inv','12r_lang','12r_lang_set','12r_large_text',
+  '12r_haptics','12r_high_contrast','12r_human_phase_rewards','12r_human_reward_ledger_v2','12r_inv','12r_inventory_catalog','12r_lang','12r_lang_set','12r_large_text',
   '12r_lastteam','12r_motion','12r_music_volume','12r_muted','12r_particles','12r_stage_music_volume',
   '12r_profile','12r_pxp','12r_quality','12r_quests','12r_reduce_flashes','12r_save',
   '12r_seen','12r_sfx_volume','12r_shake','12r_stars','12r_teams','12r_tower_best',
@@ -6004,10 +6062,10 @@ function decodeSavePayload(code){
   return JSON.parse(new TextDecoder().decode(bytes));
 }
 const SAVE_JSON_OBJECT_KEYS=new Set([
-  '12r_ach','12r_bestiary','12r_daily','12r_fase_best','12r_fase_time','12r_inv',
+  '12r_ach','12r_bestiary','12r_daily','12r_fase_best','12r_fase_time','12r_human_phase_rewards','12r_human_reward_ledger_v2','12r_inv',
   '12r_profile','12r_quests','12r_stars','12r_tower_month','12r_viz','12r_world_humanos'
 ]);
-const SAVE_JSON_ARRAY_KEYS=new Set(['12r_favs','12r_lastteam','12r_seen','12r_teams']);
+const SAVE_JSON_ARRAY_KEYS=new Set(['12r_card_unlocks','12r_favs','12r_lastteam','12r_seen','12r_teams']);
 const SAVE_NONNEGATIVE_INTEGER_KEYS=new Set(['12r_bossrush_best','12r_coins','12r_pxp','12r_tower_best','12r_unlocked']);
 function parseImportedJson(value,key){
   try{ return JSON.parse(value); }
@@ -9857,6 +9915,16 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
     },
     runConsumables:()=>({coinDoubleRun,xpDoubleRun,bannerAtkRun,battleConsumablesDone}),
     humanConsumableProbe:async()=>{
+      /* A sonda pode ser chamada pela auditoria antes de uma equipe narrativa
+         válida iniciar o tabuleiro; prepare uma malha isolada, sem depender
+         da seleção que o teste anterior deixou aberta. */
+      if(!Array.isArray(board)||board.length!==SIZE){
+        board=Array.from({length:SIZE},(_,r)=>Array.from({length:SIZE},(_,c)=>(r+c)%4));
+        powerUps={}; obstaclesMeta={};
+      }
+      document.body.classList.add('game-active');
+      busy=false;
+      setBattlePhase('idle');
       inventory={regulacao:1,'regulacao-bernyce':1,'flor-cerejeira':1,'espadas-lendarias':1,'bencao-eternidade':1};
       board[0][0]=-4; obstaclesMeta[cellKey(0,0)]={type:'sombra',hits:9999};
       playerHP=Math.round(PLAYER_MAX_HP*.4); updatePlayerHP();
@@ -10499,6 +10567,7 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
   }));
   applyLanguage();
   checkLoginReward();
+  reconcileLegacyHumanPhaseRewards();
   if(DAILY_BOOT_REQUESTED && difficulty!=='pesadelo'){ towerPrevDifficulty=difficulty; difficulty='pesadelo'; applyDifficultyUI(); }
   if(DAILY_BOOT_REQUESTED){ dailyRunMode=true; towerMode=true; towerFloor=1; worldRun.active=false; pendingStage=0; showSelection(); } /* Diário = torre seeded de 5 andares */
   updateCoinBadge();
