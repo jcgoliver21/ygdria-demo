@@ -3,42 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ygdria</title>
+<title>Ygdria · Portal de Travessia</title>
 <style>
-  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
-    background:radial-gradient(ellipse at 50% 0%,#2c2140 0%,transparent 55%),linear-gradient(180deg,#150f22 0%,#0b0714 55%,#060409 100%);
-    font-family:Georgia,serif;color:#f2e8d0;}
-  .gate{width:min(90vw,360px);text-align:center;padding:34px 26px;border-radius:20px;
-    background:linear-gradient(160deg,#1c1428,#0d0a14);border:2px solid #d4af5a;
-    box-shadow:0 0 40px rgba(0,0,0,.65),0 0 26px rgba(212,175,90,.2);}
-  h1{font-size:22px;letter-spacing:3px;margin:0 0 4px;
-    background:linear-gradient(90deg,#f6e6b4,#c9a24b,#f6e6b4);-webkit-background-clip:text;background-clip:text;color:transparent;}
-  p{font-size:12px;opacity:.75;margin:0 0 20px;}
-  input{width:100%;box-sizing:border-box;padding:12px;border-radius:10px;border:1px solid #6b5a30;
-    background:#0c0812;color:#f2e8d0;font-size:15px;text-align:center;letter-spacing:2px;outline:none;}
-  input:focus{border-color:#d4af5a;}
-  button{margin-top:14px;width:100%;padding:12px;border:none;border-radius:12px;cursor:pointer;
-    background:linear-gradient(160deg,#d4af5a,#8a6a1f);color:#1a1226;font-weight:bold;font-size:13px;letter-spacing:2px;text-transform:uppercase;}
-  .err{color:#ff8a8a;font-size:11px;min-height:16px;margin-top:10px;}
+  :root{--gold:#f5d67b;--ink:#f8edd5;--night:#07050d}*{box-sizing:border-box}
+  body{margin:0;min-height:100svh;display:grid;place-items:center;overflow:hidden;color:var(--ink);font-family:Georgia,serif;background:#06040b}
+  .sky{position:fixed;inset:0;background:radial-gradient(ellipse 72% 45% at 50% -4%,#573274 0%,#1f1234 33%,transparent 67%),linear-gradient(180deg,#10091b,#05040a 70%);overflow:hidden}
+  .sky::before{content:'';position:absolute;inset:0;background-image:radial-gradient(#fff9cf 1px,transparent 1.5px),radial-gradient(#df76ab 1px,transparent 1.5px);background-position:23px 51px,118px 96px;background-size:150px 170px,210px 250px;opacity:.4}
+  .sky::after{content:'';position:absolute;inset:-20%;background:repeating-radial-gradient(ellipse at center,transparent 0 30px,#f9d9820c 31px 32px,transparent 33px 62px);animation:drift 24s linear infinite}@keyframes drift{to{transform:rotate(360deg)}}
+  .gate{position:relative;width:min(92vw,410px);padding:22px 22px 27px;text-align:center;border:1px solid #be9652;border-radius:30px;background:linear-gradient(150deg,#20142bdc,#0c0913f0 68%);box-shadow:0 30px 100px #000c,0 0 0 7px #ed77a50b;backdrop-filter:blur(12px)}
+  .eyebrow{font:10px system-ui;letter-spacing:.24em;color:#eac671}.seal{position:relative;width:148px;height:148px;margin:5px auto 13px;display:grid;place-items:center;border-radius:50%;border:1px solid #f3cd7188;background:radial-gradient(circle,#f0bd6b22 0 28%,#5e36763b 29% 43%,transparent 44%);box-shadow:0 0 30px #ea71ad44,inset 0 0 28px #ebc06533}.seal::before,.seal::after{content:'';position:absolute;border:1px solid #e9c16d77;border-radius:50%;inset:13px;animation:spin 14s linear infinite}.seal::after{inset:31px;border-style:dashed;animation-direction:reverse;animation-duration:10s}@keyframes spin{to{transform:rotate(360deg)}}
+  .glyph{font-size:52px;color:#fff0bd;text-shadow:0 0 16px #e66eaf,0 0 32px #d7a55c}.spark{position:absolute;width:5px;height:5px;border-radius:50%;background:#ffe59a;box-shadow:0 0 14px #ff77b4;animation:blink 1.7s ease-in-out infinite}.s1{top:25px;left:26px}.s2{bottom:18px;right:32px;animation-delay:.5s}.s3{top:45px;right:8px;animation-delay:1s}@keyframes blink{50%{transform:scale(.25);opacity:.3}}
+  h1{margin:0;color:#f9df9c;font-size:39px;letter-spacing:.08em;text-shadow:0 2px 0 #2b142d}p{font:14px/1.5 system-ui;color:#c9b8c9;margin:10px auto 20px;max-width:280px}.rune-label{display:flex;justify-content:center;align-items:center;gap:8px;margin:0 0 7px;font:10px system-ui;letter-spacing:.15em;color:#cda964}.rune-label::before,.rune-label::after{content:'';height:1px;width:35px;background:linear-gradient(90deg,transparent,#bc9551)}.rune-label::after{transform:scaleX(-1)}
+  .input-wrap{position:relative}.input-wrap::before{content:'⌬';position:absolute;z-index:2;left:14px;top:12px;color:#e6c879;font-size:17px}input{width:100%;height:49px;border:1px solid #836342;border-radius:15px;padding:0 48px 0 43px;background:#0a0711c9;color:#fae9bd;font:16px Georgia;text-align:center;letter-spacing:.14em;outline:0;transition:.25s}input:focus{border-color:#f3d277;box-shadow:0 0 0 4px #e575a525,0 0 20px #e9bf6e22}.show{position:absolute;right:10px;top:9px;width:31px;height:31px;border:0;border-radius:9px;background:#33213f;color:#efd98f;cursor:pointer}.enter{width:100%;margin-top:13px;border:1px solid #ffd977;border-radius:15px;padding:14px;background:linear-gradient(135deg,#f9df84,#c28b42);color:#2a1020;font:bold 12px system-ui;letter-spacing:.16em;cursor:pointer;box-shadow:0 8px 22px #8c4f291f;transition:.22s}.enter:active{transform:translateY(2px);filter:brightness(.9)}.err{min-height:17px;margin-top:10px;color:#f4c9a2;font:11px system-ui}.gate.unlocked .seal{animation:unlock .7s ease-out}.gate.unlocked .glyph{color:#fff6cf;text-shadow:0 0 20px #ffed9b,0 0 60px #ee78b0}@keyframes unlock{50%{transform:scale(1.12);box-shadow:0 0 72px #ffdf8a99}}.hint{display:flex;align-items:center;justify-content:center;gap:7px;margin:15px 0 0;color:#97889d;font:11px system-ui}.hint i{width:6px;height:6px;border-radius:50%;background:#ef77ad;box-shadow:0 0 10px #ef77ad}
+  @media(max-width:380px){.gate{padding:16px 17px 19px}.seal{width:126px;height:126px}.glyph{font-size:45px}h1{font-size:33px}}
 </style>
 </head>
 <body>
+<div class="sky" aria-hidden="true"></div>
 <form class="gate" id="f">
-  <h1>⚔ YGDRIA</h1>
-  <p>Digite a palavra-passe para entrar nos 12 Reinos.</p>
-  <input id="p" type="password" autocomplete="off" placeholder="palavra-passe" autofocus>
-  <button type="submit">Entrar</button>
-  <div class="err" id="e"></div>
+  <div class="eyebrow">PORTÕES DOS DOZE REINOS</div>
+  <div class="seal" aria-hidden="true"><span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span><b class="glyph">⚔</b></div>
+  <h1>YGDRIA</h1>
+  <p>O próximo capítulo aguarda além do selo.</p>
+  <div class="rune-label">PALAVRA-PASSE</div>
+  <div class="input-wrap"><input id="p" type="password" autocomplete="off" placeholder="Insira a inscrição" autofocus aria-label="Palavra-passe"><button class="show" id="showPass" type="button" aria-label="Mostrar palavra-passe">◉</button></div>
+  <button class="enter" type="submit">ATRAVESSAR O PORTAL&nbsp; ›</button>
+  <div class="err" id="e" role="alert"></div>
+  <div class="hint"><i></i> Seu progresso fica protegido neste dispositivo.</div>
 </form>
 <script>
 const HASH='8ec027f9e7c12bc654ea62bf62a20bcd4a43800b2e7819c75976563ef6fe625a';
-document.getElementById('f').addEventListener('submit',async(ev)=>{
+const form=document.getElementById('f'), input=document.getElementById('p'), error=document.getElementById('e');
+document.getElementById('showPass').addEventListener('click',()=>{ input.type=input.type==='password'?'text':'password'; });
+form.addEventListener('submit',async(ev)=>{
   ev.preventDefault();
-  const v=document.getElementById('p').value;
-  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));
+  const value=input.value;
+  if(!value.trim()){ error.textContent='A inscrição ainda está vazia.'; input.focus(); return; }
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value));
   const hex=[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
-  if(hex===HASH){ sessionStorage.setItem('ygdria_gate','ok'); location.href='./play.html'; }
-  else{ document.getElementById('e').textContent='Palavra-passe incorreta.'; }
+  if(hex===HASH){ form.classList.add('unlocked'); error.textContent='O selo reconheceu sua presença.'; setTimeout(()=>{ sessionStorage.setItem('ygdria_gate','ok'); location.href='./play.html'; },420); }
+  else{ error.textContent='A inscrição não corresponde ao selo. Tente novamente.'; input.select(); }
 });
 </script>
 </body>
