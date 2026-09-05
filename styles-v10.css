@@ -4622,6 +4622,21 @@ body.game-active .battle-row::before{
 @media (max-width:620px){#mainMenu.screen-panel{padding:10px;place-items:start}.command-masthead .game-logo{width:38px;height:38px}.account-chip{padding:0 9px;font-size:9px}.command-hero{margin:11px 0;padding:18px}.command-hero h2{font-size:29px}.command-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.command-grid .command-tile{min-height:104px;padding:11px}.command-grid .command-tile .menu-label{font-size:12px}.command-grid .command-library{grid-column:span 2}.command-footer{padding-top:11px}.command-footer .menu-footer{font-size:8px}.intro-crawl .crawl-stage::before{inset:8px;border-radius:15px}.intro-crawl .crawl-scroll{width:82vw;padding:22px 17px;border-radius:18px}.intro-crawl .crawl-title{font-size:37px}.intro-crawl .crawl-text{font-size:15px}.intro-crawl::after{font-size:7px}.select-constellation-roster{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.select-card.constellation-card{min-height:211px}.constellation-card .thumb-wrap{height:128px!important;min-height:128px}.library-tabs{top:67px;padding:9px 13px}.pro-overlay .pro-dialog.library-dialog,.pro-overlay .special-dialog,#shopScreen .pro-dialog,#optionsScreen .pro-dialog{width:calc(100vw - 14px);max-height:calc(100dvh - 14px);border-radius:17px}.library-content{padding:14px!important}.library-hero{grid-template-columns:1fr;min-height:0;padding:22px}.library-hero-seal{display:none}.library-path{grid-template-columns:repeat(2,1fr)}.library-study-grid,.library-entity-grid{grid-template-columns:1fr}.library-entity-card{grid-template-columns:70px 1fr}.library-entity-art img{height:82px}#shopScreen .shop-list{grid-template-columns:1fr;padding:12px 13px 20px}#optionsScreen .option-row{grid-template-columns:1fr;gap:8px;padding:12px 16px}.special-destinations{grid-template-columns:1fr;padding:14px}.special-destination{min-height:112px}}
 @media (prefers-reduced-motion:reduce){.library-idle-sprite,.command-grid .command-tile,.special-destination{animation:none!important;transition:none!important}}
 
+/* V12 · Prólogo: a crônica continua subindo, agora diante da Torre de Acesso
+   à Eternidade. A base escura preserva a leitura dos sete parágrafos no celular. */
+.intro-crawl .crawl-stage{
+  background:linear-gradient(90deg,rgba(5,3,12,.84),rgba(5,3,12,.16) 31%,rgba(5,3,12,.14) 69%,rgba(5,3,12,.84)),linear-gradient(180deg,rgba(5,3,13,.08),rgba(5,3,13,.9) 84%),url('assets/bg/prologo-torre-eternidade-v12.png') center top/cover no-repeat;
+}
+.intro-crawl .crawl-scroll{
+  width:min(640px,80vw);
+  animation-duration:64s;
+  background:linear-gradient(180deg,rgba(12,7,25,.78),rgba(7,5,15,.38));
+  border-color:rgba(250,218,148,.34);
+}
+.intro-crawl .crawl-fade-top{background:linear-gradient(180deg,#07040d 0%,rgba(7,4,13,.86) 25%,transparent)}
+.intro-crawl::after{content:"TOQUE PARA OUVIR AS CRÔNICAS · O TEXTO SOBE";color:rgba(255,225,171,.82)}
+@media (max-width:620px){.intro-crawl .crawl-scroll{width:84vw;padding:22px 17px;animation-duration:58s}.intro-crawl .crawl-text{font-size:15px;line-height:1.7}}
+
 /* A tela-base antiga limitava o menu a 480px em toda resolução. A central
    precisa usar o espaço de desktop sem perder a leitura do celular. */
 #mainMenu.screen-panel{width:min(calc(100vw - 28px),1180px)!important;max-width:none!important;align-self:center}
