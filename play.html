@@ -30,7 +30,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
 <link rel="apple-touch-icon" href="assets/icon.svg">
-<link rel="stylesheet" href="styles-v10.css?v=11.0.67">
+<link rel="stylesheet" href="styles-v10.css?v=11.0.68">
 </head>
 <body>
 <div class="scene-bg" data-screen="menu"></div>
@@ -57,20 +57,25 @@
   <div class="screen-toolbar">
     <button class="ghost-btn" id="selectBackBtn">← Voltar</button>
     <div class="screen-title-wrap">
-      <div class="screen-eyebrow">Formação do grupo</div>
-      <div class="screen-title">Formação da Equipe</div>
+      <div class="screen-title">Escolha seus Aventureiros</div>
     </div>
     <button class="ghost-btn" id="selectGalleryBtn">Biblioteca</button>
   </div>
-  <div class="select-sub">Escolha 4 entre 12 personagens oficiais. Toque na carta para escalar e use apenas a lupa para abrir a arte e ler todas as habilidades.</div>
-  <div class="select-counter">Escolhidos: <b id="selectCount">0</b>/4</div>
+  <div class="story-selection-context" id="storySelectionContext" hidden>
+    <span class="story-selection-kicker" id="storySelectionKicker">Missão</span>
+    <strong id="storySelectionTitle"></strong>
+  </div>
+  <div class="select-sub">Escolha sua equipe com 4 cartas.</div>
+  <div class="selection-roster-stats" aria-live="polite">
+    <span id="missionCardCount"></span><i aria-hidden="true"></i><span id="totalCardCount"></span>
+  </div>
+  <div class="formation-constellation" id="formationConstellation" aria-label="Sua equipe"></div>
+  <div class="select-counter">Equipe escalada: <b id="selectCount">0</b>/4</div>
   <div class="alliance-hint" id="allianceHint" aria-live="polite"></div>
   <button class="ghost-btn edit-group-btn" id="editGroupBtn" type="button" hidden>Editar Grupo</button>
-  <div class="team-slots" id="teamSlots" aria-label="Equipes salvas"></div>
   <div class="select-grid" id="selectGrid"></div>
   <div class="selection-footer">
-    <button class="ghost-btn" id="autoTeamBtn">Equipe sugerida</button>
-    <button class="start-btn" id="startBtn" disabled>Iniciar a Aventura!</button>
+    <button class="start-btn mission-launch" id="startBtn" disabled><span class="launch-vfx" aria-hidden="true"><i></i><i></i><i></i></span>Iniciar a Aventura!</button>
   </div>
 </div>
 
@@ -504,11 +509,11 @@
   </div>
 </div>
 <script>window.addEventListener('error',function(e){(window.__bootErrors=window.__bootErrors||[]).push({m:String(e.message).slice(0,200),l:e.lineno,c:e.colno})});</script>
-<script src="v10-config.js?v=11.0.67"></script>
-<script src="v10-animations.js?v=11.0.67"></script>
-<script src="humanos-lore-v10.js?v=11.0.67"></script>
+<script src="v10-config.js?v=11.0.68"></script>
+<script src="v10-animations.js?v=11.0.68"></script>
+<script src="humanos-lore-v10.js?v=11.0.68"></script>
 <script src="map-effects-v1.js?v=1.0.0" defer></script>
-<script src="game-v10.js?v=11.0.67" defer></script>
+<script src="game-v10.js?v=11.0.68" defer></script>
 
 </body>
 </html>

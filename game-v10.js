@@ -5543,15 +5543,13 @@ const STATIC_I18N=[
   ['#galleryTitle','Biblioteca da Eternidade','Library of Eternity','Biblioteca de la Eternidad'],
   ['#playAgainBtn','Jogar novamente','Play again','Jugar de nuevo'],
   ['#retryBtn','Tentar novamente','Try again','Intentar de nuevo'],
-  ['#startBtn','Iniciar a Aventura!','Begin the Adventure!','¡Iniciar la Aventura!'],
-  ['#autoTeamBtn','Equipe sugerida','Suggested team','Equipo sugerido'],
+  ['#startBtn','<span class="launch-vfx" aria-hidden="true"><i></i><i></i><i></i></span>Iniciar a Aventura!','<span class="launch-vfx" aria-hidden="true"><i></i><i></i><i></i></span>Begin the Adventure!','<span class="launch-vfx" aria-hidden="true"><i></i><i></i><i></i></span>¡Iniciar la Aventura!'],
   ["#continueBtn .menu-label","<span class=\"menu-title-line\">Continuar</span><small class=\"menu-hint\" id=\"continueHint\">Sem progresso salvo</small>","<span class=\"menu-title-line\">Continue</span><small class=\"menu-hint\" id=\"continueHint\">No saved progress</small>","<span class=\"menu-title-line\">Continuar</span><small class=\"menu-hint\" id=\"continueHint\">Sin progreso guardado</small>"],
   ["#menuVersion","VERSÃO 11 · DEMO OFICIAL MOBILE","VERSION 11 · OFFICIAL MOBILE DEMO","VERSIÓN 11 · DEMO OFICIAL MÓVIL"],
   ["#selectBackBtn","← Voltar","← Back","← Volver"],
-  ["#selectScreen .screen-eyebrow","Formação do grupo","Party setup","Formación del grupo"],
-  ["#selectScreen .screen-title","Formação da Equipe","Team Formation","Formación del Equipo"],
+  ["#selectScreen .screen-title","Escolha seus Aventureiros","Choose Your Adventurers","Elige a tus Aventureros"],
   ["#selectGalleryBtn","Biblioteca","Library","Biblioteca"],
-  [".select-counter","Escolhidos: <b id=\"selectCount\">0</b>/4","Chosen: <b id=\"selectCount\">0</b>/4","Elegidos: <b id=\"selectCount\">0</b>/4"],
+  [".select-counter","Equipe escalada: <b id=\"selectCount\">0</b>/4","Party formed: <b id=\"selectCount\">0</b>/4","Equipo formado: <b id=\"selectCount\">0</b>/4"],
   ["#battleStatus","Combine três esferas do mesmo Reino para atacar.","Match three orbs of the same Realm to attack.","Combina tres esferas del mismo Reino para atacar."],
   ["#stageObjective","Objetivo: derrote todos os inimigos","Objective: defeat all enemies","Objetivo: derrota a todos los enemigos"],
   ["#comboRecord","RECORDE ×0","BEST ×0","RÉCORD ×0"],
@@ -8124,6 +8122,24 @@ function updateVictoryActionLabel(){
     next.setAttribute('aria-disabled',String(!enabled));
   }
 }
+function renderFormationConstellation(){
+  const altar=document.getElementById('formationConstellation');
+  if(!altar) return;
+  altar.innerHTML='';
+  for(let slot=0;slot<4;slot++){
+    const hero=KINGDOMS[chosenIds[slot]];
+    const mark=document.createElement('div');
+    mark.className='formation-mark'+(hero?' is-filled':'');
+    if(hero){
+      mark.style.setProperty('--mark-color',hero.colorLight||hero.color||'#f4d278');
+      mark.innerHTML=`<img src="${hero.sprite||THUMB(hero.cardThumb||hero.img)}"${hero.sprite?'':THUMBF(hero.cardThumb||hero.img)} alt="${L(hero.nome)}"><span>${L(hero.nome)}</span>`;
+    }else{
+      mark.setAttribute('aria-hidden','true');
+      mark.innerHTML='<span class="formation-empty"><span>✦</span></span>';
+    }
+    altar.appendChild(mark);
+  }
+}
 function resetRunStats(){ runStats={damage:{},maxCombo:0,powerUps:0,starsEarned:0,_flushedDamage:0,_flushedPU:0}; }
 function getStars(){ try{ return JSON.parse(localStorage.getItem('12r_stars')||'{}'); }catch(e){ return {}; } }
 function recordStars(stageIdx){
@@ -8718,10 +8734,10 @@ function renderSelectGrid(){
           :(!storyMode&&chosenIds.includes(idx)
             ?T('No grupo','In party','En el grupo')
             :T('Disponível','Available','Disponible'));
-      const zoomControl=availability.owned?`<button class="zoom-btn" type="button" data-idx="${idx}" aria-label="${T(`Abrir carta de ${L(k.nome)} em alta resolução`,`Open ${L(k.nome)}'s card in high resolution`,`Abrir la carta de ${L(k.nome)} en alta resolución`)}">↗</button>`:'';
+      const zoomControl=availability.owned?`<button class="zoom-btn selection-vfx-control" type="button" data-idx="${idx}" aria-label="${T(`Abrir carta de ${L(k.nome)} em alta resolução`,`Open ${L(k.nome)}'s card in high resolution`,`Abrir la carta de ${L(k.nome)} en alta resolución`)}"><span class="select-control-vfx" aria-hidden="true"></span><span aria-hidden="true">⌕</span></button>`:'';
       card.innerHTML = `
         <div class="constellation-card-glow" aria-hidden="true"></div>
-        <div class="thumb-wrap"><img src="${THUMB(k.cardThumb||k.img)}"${THUMBF(k.cardThumb||k.img)} alt="${k.nome}" loading="lazy" decoding="async">${pickOrder>=0?`<div class="pick-badge" aria-label="${T('Posição na equipe','Team position','Posición en el equipo')}">${pickOrder+1}</div>`:''}${availability.owned&&!availability.allowed?'<span class="story-card-lock" aria-hidden="true">🔒</span>':''}${zoomControl}</div>
+        <div class="thumb-wrap"><img src="${THUMB(k.cardThumb||k.img)}"${THUMBF(k.cardThumb||k.img)} alt="${k.nome}" loading="lazy" decoding="async">${pickOrder>=0?`<div class="pick-badge selection-vfx-control" aria-label="${T('Posição na equipe','Team position','Posición en el equipo')}"><span class="select-control-vfx" aria-hidden="true"></span>${pickOrder+1}</div>`:''}${availability.owned&&!availability.allowed?'<span class="story-card-lock" aria-hidden="true">🔒</span>':''}${zoomControl}</div>
         <div class="constellation-card-copy"><small>${L(k.reino||k.deck||'YGDRIA')}</small><b>${L(k.nome)}</b><span class="select-card-status">${status}</span></div>
       `;
       card.setAttribute('role','button');
@@ -8735,6 +8751,12 @@ function renderSelectGrid(){
   selectGridEl.appendChild(roster);
   /* lookup dinâmico: o i18n recria o nó #selectCount ao trocar de idioma */
   { const sc=document.getElementById('selectCount'); if(sc) sc.textContent=chosenIds.length; }
+  const missionCount=document.getElementById('missionCardCount');
+  const totalCount=document.getElementById('totalCardCount');
+  if(missionCount) missionCount.textContent=storyMode
+    ?`${rosterCards.length} ${T('cartas disponíveis nesta missão','cards available for this mission','cartas disponibles en esta misión')}`
+    :`${rosterCards.length} ${T('cartas no grupo','cards in party','cartas en el grupo')}`;
+  if(totalCount) totalCount.textContent=`${KINGDOMS.length} ${T('cartas totais','total cards','cartas totales')}`;
   startBtnEl.disabled = !isValidHeroTeam(chosenIds)||!chosenIds.every(idx=>selectionAvailability(idx).selectable);
   const editButton=document.getElementById('editGroupBtn');
   if(editButton){
@@ -8747,15 +8769,17 @@ function renderSelectGrid(){
     if(hint){
       if(chosenIds.length===4){
         const b=computeAllianceBonus(chosenIds);
-        hint.innerHTML=b.rotulos.length?('⚜ '+b.rotulos.join(' · ')):T('Sem bônus de aliança — repita reinos ou feche uma aliança completa.','No alliance bonus — repeat realms or complete a full alliance.','Sin bono de alianza — repite reinos o completa una alianza.');
+        hint.innerHTML=b.rotulos.length
+          ?`<span class="alliance-vfx" aria-hidden="true"><span>✦</span></span><span class="alliance-copy"><b>${T('Bônus da equipe','Party bonus','Bono del equipo')}</b><em>${b.rotulos.join(' · ')}</em></span>`
+          :`<span class="alliance-copy"><b>${T('Bônus da equipe','Party bonus','Bono del equipo')}</b><em>${T('Sem bônus de aliança','No alliance bonus','Sin bono de alianza')}</em></span>`;
         hint.classList.toggle('on',b.rotulos.length>0);
       } else if(chosenIds.length){
         const als=[...new Set(chosenIds.map(i=>allianceOf(KINGDOMS[i]?.iconId||KINGDOMS[i]?.id)).filter(Boolean).map(a=>a.icon+' '+a.nome))];
-        hint.innerHTML=als.join(' · ');
+        hint.innerHTML=als.length?`<span class="alliance-copy is-pending"><b>${T('Alianças da equipe','Party alliances','Alianzas del equipo')}</b><em>${als.join(' · ')}</em></span>`:'';
         hint.classList.remove('on');
       } else { hint.innerHTML=''; hint.classList.remove('on'); }
     } }
-  renderTeamSlots();
+  renderFormationConstellation();
 }
 
 function toggleHero(idx){
@@ -9108,6 +9132,24 @@ function showSelection(){
   document.getElementById('mainMenu').style.display='none';
   document.getElementById('gameScreen').style.display='none';
   document.getElementById('selectScreen').style.display='flex';
+  const storyMode=Boolean(worldRun?.active&&worldRun.storyMode!==false);
+  const selectionScreen=document.getElementById('selectScreen');
+  selectionScreen?.setAttribute('data-selection-mode',storyMode?'story':'free');
+  const realmKey=WORLDS?.[0]?.id;
+  const realmCard=KINGDOMS.find(hero=>hero.id===realmKey);
+  selectionScreen?.style.setProperty('--selection-realm',realmCard?.color||'#b55c98');
+  selectionScreen?.style.setProperty('--selection-realm-light',realmCard?.colorLight||'#ffd7e8');
+  const storyContext=document.getElementById('storySelectionContext');
+  const phase=storyMode?WORLDS?.[0]?.fases?.[worldRun.fase]:null;
+  if(storyContext) storyContext.hidden=!storyMode;
+  const storyKicker=document.getElementById('storySelectionKicker');
+  const storyTitle=document.getElementById('storySelectionTitle');
+  if(storyKicker) storyKicker.textContent=storyMode?`${T('Missão','Mission','Misión')} ${Number(worldRun?.nivel||1)}/5`:'';
+  if(storyTitle) storyTitle.textContent=storyMode?(phase?.nome||T('Jornada da História','Story Journey','Jornada de la Historia')):'';
+  const selectSub=document.querySelector('#selectScreen .select-sub');
+  if(selectSub) selectSub.textContent=storyMode
+    ?T('Escolha sua equipe com 4 cartas.','Choose your team with 4 cards.','Elige tu equipo con 4 cartas.')
+    :T('Escolha até 4 cartas para seu grupo. Use Editar Grupo para trocar entre todas as cartas conquistadas.','Choose up to 4 cards for your party. Use Edit Group to swap among all earned cards.','Elige hasta 4 cartas para tu grupo. Usa Editar grupo para cambiar entre todas las cartas obtenidas.');
   document.body.classList.remove('game-active');
   sceneBgEl.dataset.screen='selection'; renderSelectGrid();
 }
@@ -9509,7 +9551,7 @@ document.getElementById('selectBackBtn').addEventListener('click',()=>{
   }
   showMainMenu();
 });
-document.getElementById('autoTeamBtn').addEventListener('click',()=>{
+document.getElementById('autoTeamBtn')?.addEventListener('click',()=>{
   let ult=null; try{ ult=JSON.parse(localStorage.getItem('12r_lastteam')||'null'); }catch(e){}
   const validSaved=isValidHeroTeam(ult)&&ult.every(idx=>selectionAvailability(idx).selectable);
   const candidates=KINGDOMS.map((_,idx)=>idx).filter(idx=>selectionAvailability(idx).selectable);

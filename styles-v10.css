@@ -4705,6 +4705,93 @@ body.game-active .battle-row::before{
 /* A convocação é uma tela de destino, não um cartão sobre o menu anterior. */
 #selectScreen{position:fixed!important;inset:0!important;z-index:80;width:100%!important;max-width:none!important;max-height:none!important;margin:0!important;border-radius:0!important;background:radial-gradient(circle at 50% 0,rgba(110,58,130,.16),transparent 37%),linear-gradient(180deg,rgba(6,4,14,.985),rgba(7,4,14,.995))!important;backdrop-filter:blur(14px)}
 
+/* v11.0.68 · Formação da Equipe — História: a missão conduz a escalação.
+   Sem presets salvos e sem marcadores numéricos: cada carta acende um sigilo. */
+#selectScreen .team-slots,#selectScreen #autoTeamBtn{display:none!important}
+#selectScreen .select-counter{display:none!important}
+#selectScreen .selection-roster-stats{display:flex;align-items:center;justify-content:center;gap:10px;width:min(760px,100%);margin:0 auto 7px;color:#d9cfde;font:700 10px/1.2 Georgia,serif;letter-spacing:.03em;text-align:center}
+#selectScreen .selection-roster-stats i{width:4px;height:4px;border-radius:50%;background:#f5cd7a;box-shadow:0 0 8px #f5cd7a}
+#selectScreen .formation-constellation{display:flex;align-items:center;justify-content:center;gap:7px;width:min(560px,100%);min-height:51px;margin:0 auto 7px;padding:5px 8px;overflow:hidden}
+#selectScreen .formation-mark{position:relative;display:grid;place-items:center;width:44px;height:44px;border:1px solid rgba(235,207,138,.29);clip-path:polygon(50% 0,89% 23%,89% 77%,50% 100%,11% 77%,11% 23%);background:linear-gradient(145deg,rgba(65,37,78,.56),rgba(8,5,17,.93));isolation:isolate}
+#selectScreen .formation-mark::before{content:"";position:absolute;inset:3px;z-index:-1;clip-path:inherit;background:radial-gradient(circle at 50% 40%,rgba(255,226,156,.17),transparent 62%)}
+#selectScreen .formation-mark.is-filled{border-color:color-mix(in srgb,var(--mark-color) 76%,#fff);box-shadow:0 0 13px color-mix(in srgb,var(--mark-color) 35%,transparent)}
+#selectScreen .formation-mark.is-filled::after{content:"";position:absolute;inset:-6px;z-index:-2;border:1px solid color-mix(in srgb,var(--mark-color) 47%,transparent);clip-path:inherit;opacity:.7;animation:formation-sigil 2.8s ease-in-out infinite}
+#selectScreen .formation-mark img{width:36px;height:36px;object-fit:cover;object-position:center top;clip-path:inherit;filter:saturate(1.08) contrast(1.04)}
+#selectScreen .formation-mark span:not(.formation-empty){position:absolute;bottom:1px;max-width:42px;overflow:hidden;color:#fff2cb;font:800 6px/1 Georgia,serif;letter-spacing:.02em;text-overflow:ellipsis;white-space:nowrap;text-shadow:0 1px 3px #000}
+#selectScreen .formation-empty{color:rgba(247,215,141,.38);font:19px/1 Georgia,serif}
+@keyframes formation-sigil{0%,100%{transform:scale(.82) rotate(0deg);opacity:.26}50%{transform:scale(1.08) rotate(12deg);opacity:.72}}
+#selectScreen[data-selection-mode="story"] .select-counter{display:none}
+#selectScreen[data-selection-mode="story"] .selection-footer{grid-template-columns:minmax(0,1fr);width:min(440px,100%)}
+#selectScreen .mission-launch{position:relative;isolation:isolate;overflow:hidden;border:1px solid rgba(255,224,151,.8)!important;border-radius:15px!important;background:linear-gradient(105deg,#5d234e,#b55c98 47%,#64365c)!important;color:#fff5d5!important;font:800 14px Georgia,serif!important;letter-spacing:.09em;box-shadow:0 0 0 1px rgba(77,32,75,.8),0 12px 27px rgba(0,0,0,.35),0 0 24px rgba(224,115,176,.2)!important}
+#selectScreen .mission-launch:disabled{filter:saturate(.42) brightness(.64);box-shadow:none!important}
+#selectScreen .mission-launch::before{content:"";position:absolute;inset:3px;border:1px solid rgba(255,244,197,.43);border-radius:11px;pointer-events:none}
+#selectScreen .launch-vfx{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+#selectScreen .launch-vfx i{position:absolute;width:7px;height:7px;border-radius:50%;background:#fff5c5;box-shadow:0 0 8px #ffe58b;opacity:.68;animation:launch-spark 2.6s linear infinite}
+#selectScreen .launch-vfx i:nth-child(1){left:15%;top:58%;animation-delay:-.3s}#selectScreen .launch-vfx i:nth-child(2){left:52%;top:78%;animation-delay:-1.2s}#selectScreen .launch-vfx i:nth-child(3){left:78%;top:37%;animation-delay:-2s}
+@keyframes launch-spark{0%{transform:translateY(18px) scale(.35);opacity:0}18%{opacity:.82}72%{opacity:.55}100%{transform:translateY(-42px) scale(1.1);opacity:0}}
+@media (prefers-reduced-motion:reduce){#selectScreen .formation-mark.is-filled::after,#selectScreen .launch-vfx i{animation:none}}
+@media (max-width:620px){#selectScreen .selection-roster-stats{font-size:9px;gap:7px;margin-bottom:4px}#selectScreen .formation-constellation{gap:5px;min-height:45px;margin-bottom:4px}#selectScreen .formation-mark{width:39px;height:39px}#selectScreen .formation-mark img{width:32px;height:32px}#selectScreen .mission-launch{min-height:46px!important;font-size:12px!important;letter-spacing:.07em}}
+
+/* A mesma assinatura VFX conduz os controles da escalação. A paleta pertence
+   ao reino da fase (rosa somente para Humanos), não a um botão genérico. */
+#selectScreen .mission-launch{background:linear-gradient(105deg,color-mix(in srgb,var(--selection-realm) 54%,#160616),var(--selection-realm),color-mix(in srgb,var(--selection-realm) 50%,#170719))!important;border-color:color-mix(in srgb,var(--selection-realm-light) 76%,#fff)!important;box-shadow:0 0 0 1px color-mix(in srgb,var(--selection-realm) 55%,#160616),0 12px 27px rgba(0,0,0,.35),0 0 24px color-mix(in srgb,var(--selection-realm) 35%,transparent)!important}
+#selectScreen .screen-toolbar .ghost-btn{border:1px solid color-mix(in srgb,var(--selection-realm-light) 63%,#fff)!important;border-radius:11px!important;background:linear-gradient(135deg,color-mix(in srgb,var(--selection-realm) 62%,#150616),color-mix(in srgb,var(--selection-realm) 34%,#0b0715))!important;color:#fff3cf!important;box-shadow:0 0 0 1px rgba(11,5,19,.6),0 7px 16px rgba(0,0,0,.3),0 0 13px color-mix(in srgb,var(--selection-realm) 25%,transparent)!important;font:800 10px Georgia,serif!important;letter-spacing:.06em}
+#selectScreen .screen-toolbar .ghost-btn::after{content:"";display:block;height:1px;margin-top:3px;background:linear-gradient(90deg,transparent,var(--selection-realm-light),transparent);opacity:.72}
+#selectScreen[data-selection-mode="story"] .selection-footer{width:min(800px,100%);margin-left:0!important;margin-right:auto!important;justify-items:start}
+#selectScreen[data-selection-mode="story"] .selection-footer .mission-launch{width:178px!important}
+#selectScreen .alliance-hint{display:flex;align-items:center;justify-content:center;min-height:0;margin-top:6px;padding:0 10px;text-align:left}
+#selectScreen .alliance-copy{display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;padding:7px 12px;border:1px solid color-mix(in srgb,var(--selection-realm-light) 22%,transparent);border-radius:12px;background:linear-gradient(100deg,color-mix(in srgb,var(--selection-realm) 17%,transparent),rgba(11,7,22,.66));font:700 9px/1.2 Georgia,serif}
+#selectScreen .alliance-copy b{color:var(--selection-realm-light);letter-spacing:.07em;text-transform:uppercase}
+#selectScreen .alliance-copy em{color:#f5e7ca;font-style:normal}
+#selectScreen .alliance-copy.is-pending{opacity:.78}
+#selectScreen .alliance-vfx{position:relative;display:grid;place-items:center;width:25px;height:25px;margin-right:-4px;border:1px solid color-mix(in srgb,var(--selection-realm-light) 56%,#fff);border-radius:9px;background:radial-gradient(circle at 35% 28%,#fff7d3 0 8%,color-mix(in srgb,var(--selection-realm) 48%,#17071a) 36%,#0b0714 76%);color:#fff4c7;font:16px/1 Georgia,serif;text-shadow:0 0 8px var(--selection-realm);box-shadow:0 0 14px color-mix(in srgb,var(--selection-realm) 32%,transparent)}
+#selectScreen .selection-vfx-control{position:absolute!important;display:grid!important;place-items:center!important;isolation:isolate;overflow:hidden;border:1px solid color-mix(in srgb,var(--selection-realm-light) 72%,#fff)!important;background:linear-gradient(135deg,color-mix(in srgb,var(--selection-realm) 74%,#261022),color-mix(in srgb,var(--selection-realm) 44%,#130916))!important;color:#fff7d8!important;box-shadow:0 0 0 1px rgba(11,5,19,.58),0 5px 12px rgba(0,0,0,.42),0 0 12px color-mix(in srgb,var(--selection-realm) 31%,transparent)!important}
+#selectScreen .selection-vfx-control::before{content:"";position:absolute;inset:2px;z-index:-1;border:1px solid rgba(255,245,198,.37);border-radius:inherit}
+#selectScreen .selection-vfx-control .select-control-vfx{position:absolute;inset:0;z-index:-2;overflow:hidden;border-radius:inherit}
+#selectScreen .selection-vfx-control .select-control-vfx::after{content:"";position:absolute;left:45%;bottom:-7px;width:5px;height:5px;border-radius:50%;background:#fff7cc;box-shadow:0 0 7px #fff3b3;animation:select-control-spark 2.2s linear infinite}
+#selectScreen .constellation-card .zoom-btn.selection-vfx-control{top:8px!important;right:8px!important;width:29px!important;height:29px!important;border-radius:9px!important;font-size:15px!important}
+#selectScreen .pick-badge.selection-vfx-control{top:7px;left:7px;right:auto;width:28px;height:28px;border-radius:9px;font:800 13px/1 Georgia,serif}
+@keyframes select-control-spark{0%{transform:translateY(10px) scale(.3);opacity:0}25%{opacity:.85}100%{transform:translateY(-30px) scale(1);opacity:0}}
+@media (prefers-reduced-motion:reduce){#selectScreen .selection-vfx-control .select-control-vfx::after{animation:none}}
+@media (max-width:620px){#selectScreen .alliance-copy{gap:5px;padding:6px 8px;font-size:8px}#selectScreen .alliance-vfx{width:22px;height:22px;font-size:14px}#selectScreen .constellation-card .zoom-btn.selection-vfx-control{top:6px!important;right:6px!important;width:26px!important;height:26px!important;font-size:13px!important}#selectScreen .pick-badge.selection-vfx-control{top:6px;left:6px;width:25px;height:25px;font-size:12px}#selectScreen[data-selection-mode="story"] .selection-footer .mission-launch{width:164px!important}}
+
+/* v11.0.68 · Formação da Equipe — História: a missão conduz a escalação.
+   Sem coleção genérica ou painéis extras: o elenco elegível é a própria tela. */
+#selectScreen[data-selection-mode="story"]{padding-top:max(16px,env(safe-area-inset-top));background:radial-gradient(circle at 50% 4%,rgba(188,97,170,.17),transparent 31%),linear-gradient(180deg,rgba(8,5,18,.94),rgba(8,5,16,.985))!important}
+#selectScreen[data-selection-mode="story"] .screen-toolbar{margin-bottom:8px;border-bottom:0;padding-bottom:0}
+#selectScreen .story-selection-context{display:flex;align-items:baseline;justify-content:center;gap:9px;width:min(1180px,100%);margin:0 auto 9px;padding:8px 12px;border-top:1px solid rgba(247,216,136,.38);border-bottom:1px solid rgba(247,216,136,.24);background:linear-gradient(90deg,transparent,rgba(114,49,104,.25),transparent);text-align:center}
+#selectScreen .story-selection-kicker{color:#eecb83;font:800 9px/1 Georgia,serif;letter-spacing:.18em;text-transform:uppercase;white-space:nowrap}
+#selectScreen .story-selection-context strong{color:#fff0c2;font:700 clamp(15px,2.3vw,22px)/1.1 Georgia,serif;letter-spacing:.02em}
+#selectScreen[data-selection-mode="story"] .select-sub{max-width:760px;margin:0 auto!important;padding:0 14px 10px;border-left:0;background:transparent;color:#dcd1dd;text-align:center;font-size:clamp(11px,1.55vw,13px)}
+#selectScreen[data-selection-mode="story"] .select-counter{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:0;padding:7px 10px;border:1px solid rgba(247,216,136,.18);border-radius:999px;background:rgba(13,8,25,.58);font-size:11px}
+#selectScreen[data-selection-mode="story"] .select-constellation-roster{width:min(800px,100%);margin:13px auto 0;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+#selectScreen[data-selection-mode="story"] .select-card.constellation-card{min-height:260px;border-color:rgba(255,221,157,.5)!important;background:linear-gradient(165deg,rgba(88,35,75,.77),rgba(8,6,17,.98))!important}
+#selectScreen[data-selection-mode="story"] .constellation-card .thumb-wrap{height:174px!important;min-height:174px}
+#selectScreen[data-selection-mode="story"] .constellation-card .constellation-card-copy{min-height:67px;padding:8px 9px 9px}
+#selectScreen[data-selection-mode="story"] .constellation-card-copy span{display:none}
+#selectScreen[data-selection-mode="story"] .alliance-hint{min-height:18px;margin-top:7px;font-size:10px}
+#selectScreen[data-selection-mode="story"] .selection-footer{position:sticky;bottom:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:9px;margin-top:12px;padding:11px 0 max(12px,env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(8,5,16,0),rgba(8,5,16,.97) 36%)}
+#selectScreen[data-selection-mode="story"] .selection-footer button{width:100%;min-height:44px;margin:0}
+@media (max-width:620px){
+  #selectScreen[data-selection-mode="story"]{padding-inline:12px!important}
+  #selectScreen[data-selection-mode="story"] .screen-toolbar{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center}
+  #selectScreen[data-selection-mode="story"] .screen-toolbar .ghost-btn{min-width:0;padding:8px 9px;font-size:9px}
+  #selectScreen[data-selection-mode="story"] .screen-title{font-size:21px;line-height:1.02}
+  #selectScreen[data-selection-mode="story"] .screen-eyebrow{font-size:8px}
+  #selectScreen .story-selection-context{gap:7px;margin-bottom:7px;padding:7px 5px}
+  #selectScreen .story-selection-context strong{font-size:15px}
+  #selectScreen[data-selection-mode="story"] .select-sub{padding:0 8px 8px;font-size:10px;line-height:1.35}
+  #selectScreen[data-selection-mode="story"] .select-counter{padding:6px 8px;font-size:10px}
+  #selectScreen[data-selection-mode="story"] .select-counter b{font-size:15px}
+  #selectScreen[data-selection-mode="story"] .select-constellation-roster{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:10px}
+  #selectScreen[data-selection-mode="story"] .select-card.constellation-card{min-height:205px;border-radius:13px!important}
+  #selectScreen[data-selection-mode="story"] .constellation-card .thumb-wrap{height:136px!important;min-height:136px}
+  #selectScreen[data-selection-mode="story"] .constellation-card .constellation-card-copy{min-height:54px;padding:7px 8px}
+  #selectScreen[data-selection-mode="story"] .constellation-card-copy b{font-size:13px}
+  #selectScreen[data-selection-mode="story"] .selection-footer{gap:7px;margin-top:8px;padding-top:9px}
+  #selectScreen[data-selection-mode="story"] .selection-footer button{min-height:41px;padding:8px;font-size:10px}
+}
+
 /* Passagem de arte: cenários do próprio jogo entram como ilustrações de
    ambientação, preservando contraste e sem substituir mapa, cartas ou arena. */
 .command-hero{background-image:linear-gradient(90deg,rgba(30,14,44,.93) 0%,rgba(24,16,43,.82) 47%,rgba(13,9,29,.2) 100%),url('assets/bg/bg-09.png');background-size:cover,58% auto;background-position:center,right center;background-repeat:no-repeat}.command-hero::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 48%,rgba(243,205,113,.1));pointer-events:none}.command-hero>*{z-index:1}.command-grid .command-tile:nth-child(1){background-image:linear-gradient(145deg,rgba(42,25,70,.88),rgba(11,9,26,.82)),url('assets/bg/bg-04.png');background-size:cover;background-position:center}.command-grid .command-tile:nth-child(2){background-image:linear-gradient(145deg,rgba(18,28,58,.9),rgba(11,9,26,.83)),url('assets/bg/bg-10.png');background-size:cover;background-position:center}.command-grid .command-library{background-image:linear-gradient(110deg,rgba(52,30,77,.93),rgba(10,18,40,.76)),url('assets/bg/bg-07.png');background-size:cover;background-position:center}.library-hero{background-image:linear-gradient(105deg,rgba(46,26,67,.94),rgba(8,12,33,.72)),url('assets/bg/bg-07.png');background-size:cover;background-position:center}.library-study-intro{position:relative;overflow:hidden;border-radius:16px}.library-study-intro::after{content:"";position:absolute;inset:0;z-index:-1;opacity:.33;background:url('assets/bg/bg-05.png') center/cover}.special-destination.daily-destination{background-image:linear-gradient(145deg,rgba(76,32,82,.91),rgba(10,18,42,.83)),url('assets/bg/bg-04.png');background-size:cover;background-position:center}.special-destination:not(.daily-destination){background-image:linear-gradient(145deg,rgba(50,26,67,.91),rgba(9,12,34,.85)),url('assets/bg/bg-10.png');background-size:cover;background-position:center}#selectScreen::before{content:"";position:fixed;inset:0;z-index:-1;opacity:.12;background:url('assets/bg/bg-09.png') center/cover no-repeat;filter:saturate(.8) contrast(1.12)}#shopScreen .pro-dialog::before,#optionsScreen .pro-dialog::before{content:"";position:absolute;inset:0;z-index:-1;opacity:.09;background:url('assets/bg/bg-08.png') center/cover;pointer-events:none}
