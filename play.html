@@ -30,7 +30,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
 <link rel="apple-touch-icon" href="assets/icon.svg">
-<link rel="stylesheet" href="styles-v10.css?v=11.0.65">
+<link rel="stylesheet" href="styles-v10.css?v=11.0.66">
 </head>
 <body>
 <div class="scene-bg" data-screen="menu"></div>
@@ -435,20 +435,23 @@
   </div>
 </div>
 <div class="boot-screen" id="loginScreen">
-  <div class="boot-card">
-    <div class="boot-eyebrow" id="loginEyebrow">SUA LENDA COMEÇA AQUI</div>
-    <h2 class="boot-title small" id="loginTitle" style="font-size:22px">Entrar nos 12 Reinos</h2>
-    <button class="overlay-btn login-guest" id="guestBtn" type="button">🎭 Jogar como Convidado</button>
-    <p class="login-note" id="guestNote">Convidado: sem ranking, sem nuvem e sem PVP (em breve).</p>
-    <div class="login-divider"><span id="loginOu">ou entre com sua conta</span></div>
-    <form id="loginForm" class="login-form">
+  <div class="boot-card login-choice-card">
+    <img class="login-logo" src="assets/icon.svg" alt="Ygdria">
+    <h2 class="boot-title small" id="loginTitle">Como deseja entrar?</h2>
+    <p class="login-intro" id="loginIntro">Sua jornada pode começar agora ou continuar em uma conta.</p>
+    <div class="login-paths" id="loginPaths">
+      <button class="login-path login-path-account" id="loginChoiceBtn" type="button"><span class="login-path-mark" aria-hidden="true">✦</span><span><b id="loginChoiceLabel">Entrar</b><small id="loginChoiceNote">Acesse ou crie sua conta.</small></span><i aria-hidden="true">›</i></button>
+      <button class="login-path" id="guestBtn" type="button"><span class="login-path-mark" aria-hidden="true">◇</span><span><b id="guestLabel">Convidado</b><small id="guestNote">Jogue neste dispositivo sem criar conta.</small></span><i aria-hidden="true">›</i></button>
+    </div>
+    <form id="loginForm" class="login-form login-account-form" hidden>
+      <button class="login-back" id="loginBackBtn" type="button">← Voltar</button>
       <input id="loginEmail" type="email" placeholder="seu@email.com" autocomplete="username">
       <input id="loginPass" type="password" placeholder="senha (mín. 8 caracteres)" autocomplete="current-password" minlength="8" maxlength="256" required>
       <button class="overlay-btn" id="loginSubmit" type="submit">Entrar / Criar conta</button>
       <div class="err" id="loginError"></div>
+      <button class="google-btn" id="googleBtn" type="button"><span class="g-logo">G</span> Entrar com Google</button>
+      <p class="login-note" id="googleNote"></p>
     </form>
-    <button class="google-btn" id="googleBtn" type="button"><span class="g-logo">G</span> Entrar com Google</button>
-    <p class="login-note" id="googleNote"></p>
   </div>
 </div>
 <div class="boot-screen" id="onboardScreen">
@@ -499,11 +502,11 @@
   </div>
 </div>
 <script>window.addEventListener('error',function(e){(window.__bootErrors=window.__bootErrors||[]).push({m:String(e.message).slice(0,200),l:e.lineno,c:e.colno})});</script>
-<script src="v10-config.js?v=11.0.65"></script>
-<script src="v10-animations.js?v=11.0.65"></script>
-<script src="humanos-lore-v10.js?v=11.0.65"></script>
+<script src="v10-config.js?v=11.0.66"></script>
+<script src="v10-animations.js?v=11.0.66"></script>
+<script src="humanos-lore-v10.js?v=11.0.66"></script>
 <script src="map-effects-v1.js?v=1.0.0" defer></script>
-<script src="game-v10.js?v=11.0.65" defer></script>
+<script src="game-v10.js?v=11.0.66" defer></script>
 
 </body>
 </html>

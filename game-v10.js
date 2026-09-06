@@ -5639,11 +5639,12 @@ const STATIC_I18N=[
   ["#clearHistoryBtn","Limpar","Clear","Limpiar"],
   ["#mapBackBtn","← Menu","← Menu","← Menú"],
   ["#mapSubtitle","Escolha um reino para explorar","Choose a realm to explore","Elige un reino para explorar"],
-  ["#loginEyebrow","SUA LENDA COMEÇA AQUI","YOUR LEGEND BEGINS HERE","TU LEYENDA COMIENZA AQUÍ"],
-  ["#loginTitle","Entrar nos 12 Reinos","Enter the 12 Realms","Entrar a los 12 Reinos"],
-  ["#guestBtn","🎭 Jogar como Convidado","🎭 Play as Guest","🎭 Jugar como Invitado"],
-  ["#guestNote","Convidado: sem ranking, sem nuvem e sem PVP (em breve).","Guest: no ranking, no cloud save and no PVP (soon).","Invitado: sin ranking, sin nube y sin PVP (pronto)."],
-  ["#loginOu","ou entre com sua conta","or sign in with your account","o entra con tu cuenta"],
+  ["#loginTitle","Como deseja entrar?","How would you like to enter?","¿Cómo deseas entrar?"],
+  ["#loginIntro","Sua jornada pode começar agora ou continuar em uma conta.","Your journey can begin now or continue in an account.","Tu viaje puede comenzar ahora o continuar en una cuenta."],
+  ["#loginChoiceLabel","Entrar","Sign in","Entrar"],
+  ["#loginChoiceNote","Acesse ou crie sua conta.","Access or create your account.","Accede o crea tu cuenta."],
+  ["#guestLabel","Convidado","Guest","Invitado"],
+  ["#guestNote","Jogue neste dispositivo sem criar conta.","Play on this device without creating an account.","Juega en este dispositivo sin crear una cuenta."],
   ["#loginSubmit","Entrar / Criar conta","Sign in / Create account","Entrar / Crear cuenta"],
   ["#googleBtn","<span class=\"g-logo\">G</span> Entrar com Google","<span class=\"g-logo\">G</span> Sign in with Google","<span class=\"g-logo\">G</span> Entrar con Google"],
   ["#obStep1 .boot-eyebrow","PASSO 1 DE 3","STEP 1 OF 3","PASO 1 DE 3"],
@@ -10630,6 +10631,18 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
     localStorage.setItem('12r_guest','1');
     document.getElementById('loginScreen')?.classList.remove('show');
     renderAccountChip();
+    sfxSelect();
+  });
+  document.getElementById('loginChoiceBtn')?.addEventListener('click',()=>{
+    document.getElementById('loginPaths')?.setAttribute('hidden','');
+    const form=document.getElementById('loginForm');
+    if(form) form.hidden=false;
+    document.getElementById('loginEmail')?.focus();
+    sfxSelect();
+  });
+  document.getElementById('loginBackBtn')?.addEventListener('click',()=>{
+    document.getElementById('loginForm')?.setAttribute('hidden','');
+    document.getElementById('loginPaths')?.removeAttribute('hidden');
     sfxSelect();
   });
   document.getElementById('loginForm')?.addEventListener('submit',async(ev)=>{
