@@ -4557,13 +4557,13 @@ function computeAllianceBonus(ids){
       bonus.atk+=extra;
       const famTop=Object.keys(fams).find(f=>fams[f]===maxRepet);
       const lead=KINGDOMS.find(k=>k.id===famTop);
-      bonus.rotulos.push(`${maxRepet}× ${lead?L(lead.reino):famTop} · +${Math.round(extra*100)}% ${T('ATQ','ATK','ATQ')}`);
+      bonus.rotulos.push(`${lead?L(lead.reino):famTop}: +${Math.round(extra*100)}% ${T('ATQ','ATK','ATQ')}`);
     }
     const als=new Set(time.map(i=>allianceOf(KINGDOMS[i]?.iconId||KINGDOMS[i]?.id)?.id||'x'));
     if(als.size===1&&!als.has('x')){
       const al=ALLIANCES.find(a=>a.id===[...als][0]);
       bonus.atk+=0.05; bonus.hp+=0.10;
-      bonus.rotulos.push(`${al.icon} ${al.nome} · +5% ${T('ATQ','ATK','ATQ')} · +10% HP`);
+      bonus.rotulos.push(`${al.nome}: +5% ${T('ATQ','ATK','ATQ')} | +10% HP`);
     }
   }
   return bonus;
@@ -8759,7 +8759,7 @@ function renderSelectGrid(){
        liberado para aquela missão. */
     ? KINGDOMS.filter((hero,idx)=>storySelectionAllowed(idx))
     /* Modo livre: a tela principal mostra o grupo atual; a coleção completa
-       desbloqueada fica exclusivamente no lightbox Editar Grupo. */
+       desbloqueada fica exclusivamente no lightbox Selecionar Heróis. */
     : chosenIds.map(idx=>KINGDOMS[idx]).filter(Boolean);
   const rosterCards=rosterSource.slice().sort((a,b)=>{
     const realmDelta=ordem.indexOf(a.deck||a.id)-ordem.indexOf(b.deck||b.id);
@@ -8775,19 +8775,10 @@ function renderSelectGrid(){
       card.style.setProperty('--realm-light',k.colorLight);
       card.style.setProperty('--realm-dark',k.colorDark);
       const pickOrder = chosenIds.indexOf(idx);
-      const status=!availability.owned
-        ?T('Ainda não conquistada','Not yet earned','Aún no obtenida')
-        :!availability.allowed
-          ?T('Bloqueada nesta missão','Locked for this story mission','Bloqueada en esta misión de historia')
-          :(!storyMode&&chosenIds.includes(idx)
-            ?T('No grupo','In party','En el grupo')
-            :T('Disponível','Available','Disponible'));
       const zoomControl=availability.owned?`<button class="zoom-btn selection-vfx-control" type="button" data-idx="${idx}" aria-label="${T(`Abrir carta de ${L(k.nome)} em alta resolução`,`Open ${L(k.nome)}'s card in high resolution`,`Abrir la carta de ${L(k.nome)} en alta resolución`)}"><span class="select-control-vfx" aria-hidden="true"></span><span aria-hidden="true">⌕</span></button>`:'';
-      const statusMarkup=dailyRunMode?'':`<span class="select-card-status">${status}</span>`;
       card.innerHTML = `
         <div class="constellation-card-glow" aria-hidden="true"></div>
         <div class="thumb-wrap"><img src="${THUMB(k.cardThumb||k.img)}"${THUMBF(k.cardThumb||k.img)} alt="${k.nome}" loading="lazy" decoding="async">${pickOrder>=0?`<div class="pick-badge selection-vfx-control" aria-label="${T('Posição na equipe','Team position','Posición en el equipo')}"><span class="select-control-vfx" aria-hidden="true"></span>${pickOrder+1}</div>`:''}${availability.owned&&!availability.allowed?'<span class="story-card-lock" aria-hidden="true">🔒</span>':''}${zoomControl}</div>
-        <div class="constellation-card-copy"><small>${L(k.reino||k.deck||'YGDRIA')}</small><b>${L(k.nome)}</b>${statusMarkup}</div>
       `;
       card.setAttribute('role','button');
       card.setAttribute('tabindex','0');
@@ -8824,12 +8815,12 @@ function renderSelectGrid(){
       if(chosenIds.length===4){
         const b=computeAllianceBonus(chosenIds);
         hint.innerHTML=b.rotulos.length
-          ?`<span class="alliance-vfx" aria-hidden="true"><span>✦</span></span><span class="alliance-copy"><b>${T('Bônus da equipe','Party bonus','Bono del equipo')}</b><em>${b.rotulos.join(' · ')}</em></span>`
-          :`<span class="alliance-copy"><b>${T('Bônus da equipe','Party bonus','Bono del equipo')}</b><em>${T('Sem bônus de aliança','No alliance bonus','Sin bono de alianza')}</em></span>`;
+          ?`<span class="alliance-copy"><b>${T('Bônus do grupo:','Party bonus:','Bono del grupo:')}</b> <em>${b.rotulos.join(' | ')}</em></span>`
+          :`<span class="alliance-copy"><b>${T('Bônus do grupo:','Party bonus:','Bono del grupo:')}</b> <em>${T('Nenhum bônus ativo','No active bonus','Ningún bono activo')}</em></span>`;
         hint.classList.toggle('on',b.rotulos.length>0);
       } else if(chosenIds.length){
-        const als=[...new Set(chosenIds.map(i=>allianceOf(KINGDOMS[i]?.iconId||KINGDOMS[i]?.id)).filter(Boolean).map(a=>a.icon+' '+a.nome))];
-        hint.innerHTML=als.length?`<span class="alliance-copy is-pending"><b>${T('Alianças da equipe','Party alliances','Alianzas del equipo')}</b><em>${als.join(' · ')}</em></span>`:'';
+        const als=[...new Set(chosenIds.map(i=>allianceOf(KINGDOMS[i]?.iconId||KINGDOMS[i]?.id)).filter(Boolean).map(a=>a.nome))];
+        hint.innerHTML=als.length?`<span class="alliance-copy is-pending"><b>${T('Bônus do grupo:','Party bonus:','Bono del grupo:')}</b> <em>${als.join(' | ')}</em></span>`:'';
         hint.classList.remove('on');
       } else { hint.innerHTML=''; hint.classList.remove('on'); }
     } }
@@ -9207,7 +9198,7 @@ function showSelection(){
   const selectSub=document.querySelector('#selectScreen .select-sub');
   if(selectSub) selectSub.textContent=storyMode
     ?T('Escolha sua equipe com 4 cartas.','Choose your team with 4 cards.','Elige tu equipo con 4 cartas.')
-    :T('Escolha até 4 cartas para seu grupo. Use Editar Equipe para trocar entre todas as cartas conquistadas.','Choose up to 4 cards for your party. Use Edit Team to swap among all earned cards.','Elige hasta 4 cartas para tu grupo. Usa Editar equipo para cambiar entre todas las cartas obtenidas.');
+    :T('Escolha até 4 cartas para seu grupo. Use Selecionar Heróis para trocar entre todas as cartas conquistadas.','Choose up to 4 cards for your party. Use Select Heroes to swap among all earned cards.','Elige hasta 4 cartas para tu grupo. Usa Seleccionar Héroes para cambiar entre todas las cartas obtenidas.');
   document.body.classList.remove('game-active');
   sceneBgEl.dataset.screen='selection'; renderSelectGrid();
 }

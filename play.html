@@ -30,7 +30,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
 <link rel="apple-touch-icon" href="assets/icon.svg">
-<link rel="stylesheet" href="styles-v10.css?v=11.0.76">
+<link rel="stylesheet" href="styles-v10.css?v=11.0.77">
 </head>
 <body>
 <div class="scene-bg" data-screen="menu"></div>
@@ -73,7 +73,7 @@
   <div class="select-counter">Equipe escalada: <b id="selectCount">0</b>/4</div>
   <div class="alliance-hint" id="allianceHint" aria-live="polite"></div>
   <div class="selection-free-actions">
-    <button class="ghost-btn edit-group-btn" id="editGroupBtn" type="button" hidden>Editar Equipe</button>
+    <button class="ghost-btn edit-group-btn" id="editGroupBtn" type="button" hidden>Selecionar Heróis</button>
     <div class="selection-footer">
       <button class="start-btn mission-launch" id="startBtn" disabled><span class="launch-vfx" aria-hidden="true"><i></i><i></i><i></i></span>Iniciar a Aventura!</button>
     </div>
@@ -251,7 +251,7 @@
     <p class="account-note" id="missionReplayNote">Escolha como deseja jogar esta fase novamente.</p>
     <div class="replay-options">
       <button class="overlay-btn replay-option" id="replayStoryBtn" type="button"><b>↻ Seleção da história</b><small>Escolher novamente entre as cartas permitidas nesta fase.</small></button>
-      <button class="overlay-btn replay-option" id="replayFreeBtn" type="button"><b>✦ Modo livre</b><small>Montar outro grupo em Editar Equipe, com todas as cartas conquistadas.</small></button>
+      <button class="overlay-btn replay-option" id="replayFreeBtn" type="button"><b>✦ Modo livre</b><small>Montar outro grupo em Selecionar Heróis, com todas as cartas conquistadas.</small></button>
       <button class="overlay-btn replay-option" id="replayHardBtn" type="button"><b>◆ História em dificuldade acima</b><small id="replayHardHint">Escolher a equipe no próximo grau de dificuldade.</small></button>
     </div>
   </div>
@@ -270,7 +270,7 @@
 <div class="pro-overlay group-editor-overlay" id="editGroupScreen" role="dialog" aria-modal="true" aria-labelledby="editGroupTitle">
   <div class="pro-dialog group-editor-dialog">
     <button class="pro-close" id="editGroupClose" type="button" aria-label="Fechar">×</button>
-    <h2 id="editGroupTitle">Editar Equipe</h2>
+    <h2 id="editGroupTitle">Selecionar Heróis</h2>
     <p>Escolha até quatro cartas conquistadas. As cartas são separadas por reino.</p>
     <div class="group-editor-grid" id="editGroupGrid"></div>
   </div>
@@ -523,11 +523,11 @@
   </div>
 </div>
 <script>window.addEventListener('error',function(e){(window.__bootErrors=window.__bootErrors||[]).push({m:String(e.message).slice(0,200),l:e.lineno,c:e.colno})});</script>
-<script src="v10-config.js?v=11.0.76"></script>
-<script src="v10-animations.js?v=11.0.76"></script>
-<script src="humanos-lore-v10.js?v=11.0.76"></script>
+<script src="v10-config.js?v=11.0.77"></script>
+<script src="v10-animations.js?v=11.0.77"></script>
+<script src="humanos-lore-v10.js?v=11.0.77"></script>
 <script src="map-effects-v1.js?v=1.0.0" defer></script>
-<script src="game-v10.js?v=11.0.76" defer></script>
+<script src="game-v10.js?v=11.0.77" defer></script>
 
 </body>
 </html>

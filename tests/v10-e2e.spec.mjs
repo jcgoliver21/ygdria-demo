@@ -258,7 +258,7 @@ test('missões especiais usam artes próprias e iniciam Desafio Diário e Prova�
   /* Diário é um modo livre sem worldRun narrativo: precisa expor o editor
      para que uma equipe vazia consiga ser montada antes de iniciar. */
   await expect(page.locator('#editGroupBtn')).toBeVisible();
-  await expect(page.locator('#editGroupBtn')).toHaveText('Editar Equipe');
+  await expect(page.locator('#editGroupBtn')).toHaveText('Selecionar Heróis');
   await page.evaluate(()=>{
     saveCardUnlocks(['adriel-jovem','berenice-jovem','galateia-jovem','acqua-jovem']);
     renderSelectGrid();
@@ -283,10 +283,14 @@ test('missões especiais usam artes próprias e iniciam Desafio Diário e Prova�
       gridOverflow:Math.ceil(grid.scrollHeight-grid.clientHeight),
       startVisible:Boolean(start&&start.top>=0&&start.bottom<=innerHeight),
       groupStatus:[...screen.querySelectorAll('.select-card-status')].filter(node=>node.textContent.trim()==='No grupo').length,
-      cards:screen.querySelectorAll('.select-card.constellation-card').length
+      captions:screen.querySelectorAll('.constellation-card-copy').length,
+      cards:screen.querySelectorAll('.select-card.constellation-card').length,
+      groupBonus:document.getElementById('allianceHint')?.textContent.trim()
     };
   });
-  expect(dailySelectionLayout).toEqual({mode:'free',special:'daily',screenOverflow:0,gridOverflow:0,startVisible:true,groupStatus:0,cards:4});
+  expect(dailySelectionLayout).toMatchObject({mode:'free',special:'daily',screenOverflow:0,gridOverflow:0,startVisible:true,groupStatus:0,captions:0,cards:4});
+  expect(dailySelectionLayout.groupBonus).toMatch(/^BÔNUS DO GRUPO:|^Bônus do grupo:/);
+  expect(dailySelectionLayout.groupBonus).toContain(' | ');
   await page.locator('#startBtn').click();
   await expect(page.locator('#gameScreen')).toBeVisible();
 
@@ -2585,7 +2589,7 @@ test('pares de soldados no Pesadelo concluem o contra-ataque e devolvem o turno'
   expect(errors).toEqual([]);
 });
 
-test('seleção de história mostra só o elenco da missão; modo livre guarda o restante em Editar Grupo',async({page})=>{
+test('seleção de história mostra só o elenco da missão; modo livre guarda o restante em Selecionar Heróis',async({page})=>{
   const errors=await boot(page,'flow');
   const result=await page.evaluate(()=>{
     const starters=['adriel-jovem','berenice-jovem','galateia-jovem','acqua-jovem'];
@@ -2595,7 +2599,8 @@ test('seleção de história mostra só o elenco da missão; modo livre guarda o
     chosenIds=[...starterIndexes];
     prepareStorySelection(); renderSelectGrid();
     const story={
-      shown:[...document.querySelectorAll('.select-card')].map(card=>card.querySelector('b')?.textContent),
+      shown:[...document.querySelectorAll('.select-card')].map(card=>card.querySelector('img')?.alt),
+      captions:document.querySelectorAll('.constellation-card-copy').length,
       editHidden:document.getElementById('editGroupBtn').hidden,
       visualMode:document.getElementById('selectScreen').dataset.selectionMode
     };
@@ -2603,7 +2608,8 @@ test('seleção de história mostra só o elenco da missão; modo livre guarda o
     renderSelectGrid();
     document.getElementById('editGroupBtn').click();
     const free={
-      shown:[...document.querySelectorAll('.select-card')].map(card=>card.querySelector('b')?.textContent),
+      shown:[...document.querySelectorAll('.select-card')].map(card=>card.querySelector('img')?.alt),
+      captions:document.querySelectorAll('.constellation-card-copy').length,
       editHidden:document.getElementById('editGroupBtn').hidden,
       visualMode:document.getElementById('selectScreen').dataset.selectionMode,
       editLabel:document.getElementById('editGroupBtn').textContent.trim(),
@@ -2620,7 +2626,9 @@ test('seleção de história mostra só o elenco da missão; modo livre guarda o
   expect(result.free.shown).toHaveLength(4);
   expect(result.free.editHidden).toBe(false);
   expect(result.free.visualMode).toBe('free');
-  expect(result.free.editLabel).toBe('Editar Equipe');
+  expect(result.story.captions).toBe(0);
+  expect(result.free.captions).toBe(0);
+  expect(result.free.editLabel).toBe('Selecionar Heróis');
   expect(result.free.editorOpen).toBe(true);
   expect(result.free.editor).toContain('Gareth');
   expect(errors).toEqual([]);
@@ -2768,7 +2776,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.76');
+  expect(registration.caches).toContain('12r-v11.0.77');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2932,7 +2940,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.76');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.77');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 
