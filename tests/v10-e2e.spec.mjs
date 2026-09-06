@@ -272,8 +272,34 @@ test('missões especiais usam artes próprias e iniciam Desafio Diário e Prova�
   await dailyEditorCards.nth(3).click();
   await page.locator('#editGroupClose').click();
   await expect(page.locator('#startBtn')).toBeEnabled();
+  const dailySelectionLayout=await page.evaluate(()=>{
+    const screen=document.getElementById('selectScreen');
+    const start=document.getElementById('startBtn')?.getBoundingClientRect();
+    const grid=document.getElementById('selectGrid');
+    return {
+      mode:screen?.dataset.selectionMode,
+      special:screen?.dataset.specialSelection,
+      screenOverflow:Math.ceil(screen.scrollHeight-screen.clientHeight),
+      gridOverflow:Math.ceil(grid.scrollHeight-grid.clientHeight),
+      startVisible:Boolean(start&&start.top>=0&&start.bottom<=innerHeight),
+      groupStatus:[...screen.querySelectorAll('.select-card-status')].filter(node=>node.textContent.trim()==='No grupo').length,
+      cards:screen.querySelectorAll('.select-card.constellation-card').length
+    };
+  });
+  expect(dailySelectionLayout).toEqual({mode:'free',special:'daily',screenOverflow:0,gridOverflow:0,startVisible:true,groupStatus:0,cards:4});
   await page.locator('#startBtn').click();
   await expect(page.locator('#gameScreen')).toBeVisible();
+
+  const dailyFinal=await page.evaluate(()=>window.__12rQA.finishDaily());
+  expect(dailyFinal).toMatchObject({dailyRunMode:true,towerMode:true,victoryExitToMap:true,victoryExitMode:'daily',overlay:true,dailyFinal:'true'});
+  await expect(page.locator('#dungeonClearOverlay')).toHaveClass(/show/);
+  await expect(page.locator('#dungeonClearOverlay .victory-navigation')).toBeHidden();
+  await expect(page.locator('#shareDailyBtn')).toBeHidden();
+  await expect(page.locator('#playAgainBtn')).toBeVisible();
+  await expect(page.locator('#playAgainBtn')).toHaveText('Finalizar');
+  await page.locator('#playAgainBtn').click();
+  await expect(page.locator('#specialScreen')).toHaveClass(/show/);
+  expect(await page.evaluate(()=>({dailyRunMode,towerMode,overlay:document.getElementById('dungeonClearOverlay').classList.contains('show')}))).toEqual({dailyRunMode:false,towerMode:false,overlay:false});
 
   await page.goto(`${baseURL}/play.html?qa=special-boss&seed=v10-e2e`,{waitUntil:'networkidle'});
   await page.click('#dailyBtn');
@@ -2742,7 +2768,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.74');
+  expect(registration.caches).toContain('12r-v11.0.75');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2906,7 +2932,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.74');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.75');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

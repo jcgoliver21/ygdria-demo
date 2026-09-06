@@ -8111,8 +8111,16 @@ let victoryNextStage=false;
 let victoryCompletedPhase=null;
 function updateVictoryActionLabel(){
   const btn=document.getElementById('playAgainBtn');
+  const navigation=document.querySelector('#dungeonClearOverlay .victory-navigation');
+  const isDailyFinal=victoryExitMode==='daily';
+  const overlay=document.getElementById('dungeonClearOverlay');
+  if(overlay) overlay.dataset.dailyFinal=String(isDailyFinal);
+  if(navigation) navigation.hidden=isDailyFinal;
   if(!btn) return;
-  const label=victoryNextStage?T('Próxima fase','Next stage','Próxima fase'):T('Jogar novamente','Play again','Jugar de nuevo');
+  btn.hidden=!isDailyFinal;
+  const label=isDailyFinal
+    ?T('Finalizar','Finish','Finalizar')
+    :(victoryNextStage?T('Próxima fase','Next stage','Próxima fase'):T('Jogar novamente','Play again','Jugar de nuevo'));
   btn.textContent=label;
   btn.setAttribute('aria-label',label);
   const next=document.getElementById('victoryNextBtn');
@@ -8396,13 +8404,20 @@ function onStageCleared(){
         localStorage.setItem('12r_daily',JSON.stringify({date:todayKey(),combo:runStats.maxCombo}));
         checkAchievements('daily');
       }
+      /* O desafio diário é uma tentativa única. Depois do quinto andar, o
+         resultado só pode ser finalizado; não há repetir, voltar ou partilhar
+         que corte a conclusão da sequência. */
       const shareBtn=document.getElementById('shareDailyBtn');
-      if(shareBtn) shareBtn.style.display='inline-block';
+      if(shareBtn) shareBtn.style.display='none';
       const gt=document.getElementById('grandClearTitle'), gx=document.getElementById('grandClearText');
       if(gt) gt.textContent=T('Desafio Diário Concluído!','Daily Challenge Complete!','¡Desafío Diario Completado!');
       if(gx) gx.textContent=T('Você venceu os 5 andares de hoje. Volte amanhã para um novo desafio!','You beat all 5 floors today. Come back tomorrow!','¡Venciste los 5 pisos de hoy. Vuelve mañana!');
       renderVictoryStars(3); renderBattleReport('victoryReport');
       launchVictoryConfetti();
+      victoryExitToMap=true;
+      victoryExitMode='daily';
+      victoryNextStage=false;
+      victoryCompletedPhase=null;
       showOverlay('dungeonClearOverlay');
       return;
     }
@@ -8610,6 +8625,10 @@ document.getElementById('resetBtn').addEventListener('click', restartFromControl
 document.getElementById('restartTool')?.addEventListener('click',()=>{ toggleBattleTools(false); restartFromControls(); });
 document.getElementById('retryBtn').addEventListener('click', retryAfterDefeat);
 function returnFromVictoryToMap(){
+  if(victoryExitMode==='daily'){
+    finalizeDailyResult();
+    return;
+  }
   if(!victoryExitToMap){ resetGame(); return; }
   const destination=victoryExitMode;
   victoryExitToMap=false;
@@ -8624,10 +8643,27 @@ function returnFromVictoryToMap(){
     openPanel('worldScreen');
   }
 }
+function finalizeDailyResult(){
+  /* Não reaproveita resetGame: ele faria a tentativa diária parecer repetível.
+     O único desfecho do cartão de conclusão devolve o jogador aos desafios. */
+  hideOverlay('dungeonClearOverlay');
+  dailyRunMode=false;
+  towerMode=false;
+  victoryExitToMap=false;
+  victoryExitMode='world';
+  victoryNextStage=false;
+  victoryCompletedPhase=null;
+  showMainMenu({guard:false});
+  document.getElementById('dailyBtn')?.click();
+}
 function replayVictoryPhase(){
   /* Repetir não deve pular a escolha estratégica. As três rotas abaixo levam
      novamente à mesma fase, mas deixam o jogador manter/trocar a equipe ou
      escolher o próximo grau de dificuldade. */
+  if(victoryExitMode==='daily'){
+    finalizeDailyResult();
+    return;
+  }
   const phaseToReplay=victoryExitToMap&&Number.isInteger(victoryCompletedPhase)
     ?victoryCompletedPhase
     :(worldRun.active&&Number.isInteger(worldRun.fase)?worldRun.fase:null);
@@ -8715,7 +8751,9 @@ function renderSelectGrid(){
   /* A seleção também é atualizada por ações internas (por exemplo, trocar o
      modo de uma missão especial). Mantemos o atributo visual sincronizado
      aqui, em vez de depender apenas de showSelection(). */
-  document.getElementById('selectScreen')?.setAttribute('data-selection-mode',storyMode?'story':'free');
+  const selectScreen=document.getElementById('selectScreen');
+  selectScreen?.setAttribute('data-selection-mode',storyMode?'story':'free');
+  if(selectScreen) selectScreen.dataset.specialSelection=dailyRunMode?'daily':(bossRushMode?'boss':'');
   const rosterSource=storyMode
     /* Missão de história: a seleção principal mostra somente o elenco
        liberado para aquela missão. */
@@ -8745,10 +8783,11 @@ function renderSelectGrid(){
             ?T('No grupo','In party','En el grupo')
             :T('Disponível','Available','Disponible'));
       const zoomControl=availability.owned?`<button class="zoom-btn selection-vfx-control" type="button" data-idx="${idx}" aria-label="${T(`Abrir carta de ${L(k.nome)} em alta resolução`,`Open ${L(k.nome)}'s card in high resolution`,`Abrir la carta de ${L(k.nome)} en alta resolución`)}"><span class="select-control-vfx" aria-hidden="true"></span><span aria-hidden="true">⌕</span></button>`:'';
+      const statusMarkup=dailyRunMode?'':`<span class="select-card-status">${status}</span>`;
       card.innerHTML = `
         <div class="constellation-card-glow" aria-hidden="true"></div>
         <div class="thumb-wrap"><img src="${THUMB(k.cardThumb||k.img)}"${THUMBF(k.cardThumb||k.img)} alt="${k.nome}" loading="lazy" decoding="async">${pickOrder>=0?`<div class="pick-badge selection-vfx-control" aria-label="${T('Posição na equipe','Team position','Posición en el equipo')}"><span class="select-control-vfx" aria-hidden="true"></span>${pickOrder+1}</div>`:''}${availability.owned&&!availability.allowed?'<span class="story-card-lock" aria-hidden="true">🔒</span>':''}${zoomControl}</div>
-        <div class="constellation-card-copy"><small>${L(k.reino||k.deck||'YGDRIA')}</small><b>${L(k.nome)}</b><span class="select-card-status">${status}</span></div>
+        <div class="constellation-card-copy"><small>${L(k.reino||k.deck||'YGDRIA')}</small><b>${L(k.nome)}</b>${statusMarkup}</div>
       `;
       card.setAttribute('role','button');
       card.setAttribute('tabindex','0');
@@ -8765,7 +8804,9 @@ function renderSelectGrid(){
   const totalCount=document.getElementById('totalCardCount');
   if(missionCount) missionCount.textContent=storyMode
     ?`${rosterCards.length} ${T('cartas disponíveis nesta missão','cards available for this mission','cartas disponibles en esta misión')}`
-    :`${rosterCards.length} ${T('cartas no grupo','cards in party','cartas en el grupo')}`;
+    :(dailyRunMode
+      ?`${rosterCards.length} ${T('cartas selecionadas','selected cards','cartas seleccionadas')}`
+      :`${rosterCards.length} ${T('cartas no grupo','cards in party','cartas en el grupo')}`);
   if(totalCount) totalCount.textContent=`${KINGDOMS.length} ${T('cartas totais','total cards','cartas totales')}`;
   startBtnEl.disabled = !isValidHeroTeam(chosenIds)||!chosenIds.every(idx=>selectionAvailability(idx).selectable);
   const editButton=document.getElementById('editGroupBtn');
@@ -9148,6 +9189,10 @@ function showSelection(){
   const storyMode=Boolean(worldRun?.active&&worldRun.storyMode!==false);
   const selectionScreen=document.getElementById('selectScreen');
   selectionScreen?.setAttribute('data-selection-mode',storyMode?'story':'free');
+  /* O Diário continua sendo modo livre, porém sua tela de montagem precisa
+     caber inteira no retrato. A marca adicional evita alterar a formação
+     livre genérica ou a seleção narrativa. */
+  if(selectionScreen) selectionScreen.dataset.specialSelection=dailyRunMode?'daily':(bossRushMode?'boss':'');
   const realmKey=WORLDS?.[0]?.id;
   const realmCard=KINGDOMS.find(hero=>hero.id===realmKey);
   selectionScreen?.style.setProperty('--selection-realm',realmCard?.color||'#b55c98');
@@ -9972,6 +10017,12 @@ if(['127.0.0.1','localhost'].includes(location.hostname)){
       towerMode=false; bossRushMode=true; bossRushIdx=BOSS_RUSH_ORDER.length-1; worldRun.active=false;
       stageTransitioning=false; onStageCleared();
       return {bossRushMode,bossRushIdx,victoryExitToMap,victoryExitMode,overlay:document.getElementById('dungeonClearOverlay').classList.contains('show')};
+    },
+    finishDaily:()=>{
+      towerMode=true; dailyRunMode=true; bossRushMode=false; worldRun.active=false; towerFloor=5;
+      stageTransitioning=false; onStageCleared();
+      const overlay=document.getElementById('dungeonClearOverlay');
+      return {dailyRunMode,towerMode,victoryExitToMap,victoryExitMode,overlay:overlay?.classList.contains('show'),dailyFinal:overlay?.dataset.dailyFinal};
     },
     setRunConsumables:(values={})=>{
       coinDoubleRun=Boolean(values.coinDouble);
