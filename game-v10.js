@@ -10591,7 +10591,12 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
   renderIntroTexts();
   const bootParams=new URLSearchParams(location.search);
   const skipBoot=bootParams.get('qa')||bootParams.get('daily')==='1';
-  if(!skipBoot) document.getElementById('introScreen')?.classList.add('show');
+  if(!skipBoot){
+    document.getElementById('introScreen')?.classList.add('show');
+    /* Tenta a trilha automaticamente; o primeiro gesto só serve de fallback
+       nos navegadores que bloqueiam autoplay. */
+    setTimeout(()=>startIntroMusic(),80);
+  }
   function maybeShowLogin(){
     if(!hasAccountDecision()) document.getElementById('loginScreen')?.classList.add('show');
   }
@@ -10602,8 +10607,8 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
     else maybeShowLogin();
     sfxSelect();
   });
-  /* Letreiro: música começa no 1º toque (regra de áudio dos navegadores) e a
-     abertura avança sozinha quando o texto termina de subir */
+  /* O primeiro gesto é apenas um fallback técnico para autoplay bloqueado.
+     A abertura avança sozinha quando o texto termina de subir. */
   document.getElementById('introScreen')?.addEventListener('pointerdown',()=>startIntroMusic(),{once:true});
   document.getElementById('crawlScroll')?.addEventListener('animationend',()=>{
     if(document.getElementById('introScreen')?.classList.contains('show')) document.getElementById('introNext')?.click();
@@ -10872,10 +10877,18 @@ function renderIntroTexts(){
   if(btn) btn.textContent=T('Pular ⏭','Skip ⏭','Saltar ⏭');
 }
 /* 🎵 Música da introdução: arpejo suave gerado no WebAudio (para no Pular/fim) */
-let introMusicOn=false, introMusicTimer=null;
-function startIntroMusic(){
-  if(introMusicOn) return;
+let introMusicOn=false, introMusicTimer=null, introMusicStarting=false;
+async function startIntroMusic(){
+  if(introMusicOn||introMusicStarting) return;
   const ctx=ensureAudio(); if(!ctx) return;
+  introMusicStarting=true;
+  try{
+    /* Só declaramos a trilha ativa após o contexto realmente iniciar. Assim,
+       caso o autoplay seja recusado, o próximo gesto ainda pode iniciá-la. */
+    if(ctx.state!=='running') await ctx.resume();
+    if(ctx.state!=='running') return;
+  }catch(e){ return; }
+  finally{ introMusicStarting=false; }
   introMusicOn=true;
   const acordes=[[220,277.2,329.6],[196,246.9,293.7],[174.6,220,261.6],[196,246.9,293.7]];
   let barra=0;
@@ -10888,7 +10901,7 @@ function startIntroMusic(){
   };
   loop();
 }
-function stopIntroMusic(){ introMusicOn=false; clearTimeout(introMusicTimer); introMusicTimer=null; }
+function stopIntroMusic(){ introMusicOn=false; introMusicStarting=false; clearTimeout(introMusicTimer); introMusicTimer=null; }
 
 /* v9.1 · Smoke test automatizado de gameplay: abra com ?qa=smoke
    Joga de verdade: escala time, entra em batalha, dispara habilidade,
