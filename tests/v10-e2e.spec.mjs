@@ -255,6 +255,25 @@ test('missões especiais usam artes próprias e iniciam Desafio Diário e Prova�
   await page.waitForURL(/daily=1/);
   await expect(page.locator('#selectScreen')).toBeVisible();
   expect(await page.evaluate(()=>({dailyRunMode,towerMode,difficulty}))).toEqual({dailyRunMode:true,towerMode:true,difficulty:'pesadelo'});
+  /* Diário é um modo livre sem worldRun narrativo: precisa expor o editor
+     para que uma equipe vazia consiga ser montada antes de iniciar. */
+  await expect(page.locator('#editGroupBtn')).toBeVisible();
+  await expect(page.locator('#editGroupBtn')).toHaveText('Editar Equipe');
+  await page.evaluate(()=>{
+    saveCardUnlocks(['adriel-jovem','berenice-jovem','galateia-jovem','acqua-jovem']);
+    renderSelectGrid();
+  });
+  await page.locator('#editGroupBtn').click();
+  await expect(page.locator('#editGroupScreen')).toHaveClass(/show/);
+  const dailyEditorCards=page.locator('#editGroupGrid .group-editor-card');
+  await dailyEditorCards.nth(0).click();
+  await dailyEditorCards.nth(1).click();
+  await dailyEditorCards.nth(2).click();
+  await dailyEditorCards.nth(3).click();
+  await page.locator('#editGroupClose').click();
+  await expect(page.locator('#startBtn')).toBeEnabled();
+  await page.locator('#startBtn').click();
+  await expect(page.locator('#gameScreen')).toBeVisible();
 
   await page.goto(`${baseURL}/play.html?qa=special-boss&seed=v10-e2e`,{waitUntil:'networkidle'});
   await page.click('#dailyBtn');
@@ -2723,7 +2742,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.73');
+  expect(registration.caches).toContain('12r-v11.0.74');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2887,7 +2906,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.73');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.74');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

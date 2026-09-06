@@ -8770,7 +8770,10 @@ function renderSelectGrid(){
   startBtnEl.disabled = !isValidHeroTeam(chosenIds)||!chosenIds.every(idx=>selectionAvailability(idx).selectable);
   const editButton=document.getElementById('editGroupBtn');
   if(editButton){
-    const freeMode=Boolean(worldRun?.active&&worldRun.storyMode===false);
+    /* Desafios Diários, Torre e Provação também abrem a escalação sem uma
+       worldRun narrativa ativa. Todos são modo livre: somente a História
+       limita o elenco e esconde o editor. */
+    const freeMode=!storyMode;
     editButton.hidden=!freeMode;
     if(freeMode) renderGroupEditor();
   }
