@@ -1952,13 +1952,14 @@ test('persistência corrompida é normalizada e inventário ilimitado é rejeita
   expect(errors).toEqual([]);
 });
 
-test('equipe sugerida rejeita lastteam duplicado e beginGame não entra em estado quebrado',async({page})=>{
+test('seleção rejeita lastteam duplicado e beginGame não entra em estado quebrado',async({page})=>{
   await page.addInitScript(()=>localStorage.setItem('12r_lastteam',JSON.stringify([0,0,1,2])));
   const errors=await boot(page,'flow');
 
   await page.evaluate(()=>{ closeAllPanels(); showSelection(); });
   await page.waitForTimeout(400);
-  await page.evaluate(()=>document.getElementById('autoTeamBtn').click());
+  /* A seleção de História não oferece mais predefinições: a tela já deve
+     normalizar uma equipe inválida ao abrir, sem depender de botão auxiliar. */
   const suggested=await page.evaluate(()=>[...chosenIds]);
   const suggestedUi={
     ids:suggested,
@@ -1980,7 +1981,7 @@ test('equipe sugerida rejeita lastteam duplicado e beginGame não entra em estad
   await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
   await expect(page.locator('#gameScreen')).toBeVisible();
   await expect(page.locator('.hero-unit')).toHaveCount(4);
-  expect(suggestedUi).toEqual({ids:[0,1,2,3],unique:4,chosenCards:4,startEnabled:true});
+  expect(suggestedUi).toEqual({ids:[],unique:0,chosenCards:0,startEnabled:false});
   expect(started.gameVisible).not.toBe('flex');
   expect(new Set(started.active).size).toBe(started.active.length);
   expect(started.ready).toBe('1');
@@ -2676,7 +2677,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.70');
+  expect(registration.caches).toContain('12r-v11.0.71');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2840,7 +2841,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.70');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.71');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 
