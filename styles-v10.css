@@ -4676,6 +4676,27 @@ body.game-active .battle-row::before{
 #loginScreen .login-account-form[hidden]{display:none}
 #loginScreen .login-back{justify-self:start;padding:0;border:0;background:transparent;color:#f4d38c;font:700 11px Georgia,serif;cursor:pointer}#loginScreen .login-account-form .google-btn{margin-top:3px}
 
+/* Proposta in-game · criação de perfil: três decisões curtas, mantendo o
+   cenário visível e usando apenas controles ligados à identidade do jogador. */
+#onboardScreen{background:linear-gradient(90deg,rgba(5,3,12,.48),rgba(5,3,12,.06) 46%,rgba(5,3,12,.42)),linear-gradient(180deg,rgba(8,4,18,.04),rgba(6,3,12,.58)),url('assets/bg/prologo-torre-eternidade-v12.png') center top/cover no-repeat}
+#onboardScreen::before{content:"";position:absolute;inset:9px;border:1px solid rgba(249,220,153,.45);border-radius:19px;pointer-events:none}
+#onboardScreen .profile-creation-card{width:min(86vw,344px);padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+#onboardScreen .profile-logo{display:block;width:48px;height:48px;margin:0 auto 13px;filter:drop-shadow(0 4px 14px rgba(0,0,0,.85)) drop-shadow(0 0 18px rgba(239,132,192,.4))}
+#onboardScreen .profile-progress{display:grid;grid-template-columns:16px 1fr 16px 1fr 16px;align-items:center;gap:7px;width:112px;margin:0 auto 16px}
+#onboardScreen .profile-progress span{display:block;width:16px;height:16px;border:1px solid rgba(255,229,169,.55);border-radius:50%;background:rgba(7,4,15,.58);box-shadow:inset 0 0 8px rgba(0,0,0,.45)}
+#onboardScreen .profile-progress span.active{border-color:#f6d58a;background:radial-gradient(circle at 35% 30%,#fff0b4,#e287bc 53%,#6d325f);box-shadow:0 0 13px rgba(239,132,192,.36)}
+#onboardScreen .profile-progress i{height:1px;background:rgba(247,214,141,.38)}
+#onboardScreen .ob-step{padding:20px 17px 17px;border:1px solid rgba(247,214,141,.52);border-radius:18px;background:linear-gradient(150deg,rgba(18,10,33,.78),rgba(7,4,15,.58));box-shadow:0 16px 48px rgba(0,0,0,.5);backdrop-filter:blur(10px)}
+#onboardScreen .boot-eyebrow{margin:0 0 8px;color:#f4ce80;font:700 9px Arial,sans-serif;letter-spacing:.16em}
+#onboardScreen .ob-title{margin:0 0 17px;color:#fff0cb;font:clamp(23px,6.5vw,30px)/1.02 Georgia,serif;letter-spacing:-.02em}
+#onboardScreen .ob-input{padding:13px;border-color:rgba(247,214,141,.45);border-radius:12px;background:rgba(7,4,15,.62);font-size:16px}
+#onboardScreen .overlay-btn{min-height:48px;border-radius:12px;background:linear-gradient(110deg,#d69c4e,#f0c863,#d79e4b);color:#211009;font:700 12px Georgia,serif;letter-spacing:.08em}
+#onboardScreen .title-grid{gap:8px}
+#onboardScreen .title-opt{min-height:82px;padding:9px;border:1px solid rgba(247,214,141,.3);border-radius:12px;background:rgba(7,4,15,.38);color:#f8ead0;font:700 12px Georgia,serif;cursor:pointer}
+#onboardScreen .title-opt:hover,#onboardScreen .title-opt:focus-visible{border-color:#ef83ba;background:rgba(133,53,111,.3);box-shadow:0 0 16px rgba(239,132,192,.18)}
+#onboardScreen .ob-preview-wrap{margin:11px 0;padding:10px;border-top:1px solid rgba(247,214,141,.18);border-bottom:1px solid rgba(247,214,141,.18);color:#d9cde2;font-size:11px}
+#onboardScreen .ob-preview{margin-top:5px;color:#ffe3a6;font:700 17px Georgia,serif}
+
 /* A tela-base antiga limitava o menu a 480px em toda resolução. A central
    precisa usar o espaço de desktop sem perder a leitura do celular. */
 #mainMenu.screen-panel{width:min(calc(100vw - 28px),1180px)!important;max-width:none!important;align-self:center}

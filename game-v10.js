@@ -10821,6 +10821,11 @@ function openOnboarding(){
 }
 function showOnboardStep(n){
   [1,2,3].forEach(i=>document.getElementById('obStep'+i)?.classList.toggle('show',i===n));
+  const profile=document.getElementById('onboardScreen');
+  if(profile){
+    profile.dataset.step=String(n);
+    profile.querySelectorAll('[data-profile-step]').forEach(dot=>dot.classList.toggle('active',Number(dot.dataset.profileStep)<=n));
+  }
   if(n===3) updateNamePreview();
 }
 function updateNamePreview(){
