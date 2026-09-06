@@ -2599,6 +2599,7 @@ test('seleção de história mostra só o elenco da missão; modo livre guarda o
       const start=document.getElementById('startBtn')?.getBoundingClientRect();
       const bonus=document.querySelector('#allianceHint .alliance-copy');
       const sub=document.querySelector('#selectScreen .select-sub');
+      const cards=[...document.querySelectorAll('.select-card.constellation-card')].map(card=>card.getBoundingClientRect());
       return {
         screenOverflow:Math.ceil(screen.scrollHeight-screen.clientHeight),
         gridOverflow:Math.ceil(grid.scrollHeight-grid.clientHeight),
@@ -2606,7 +2607,9 @@ test('seleção de história mostra só o elenco da missão; modo livre guarda o
         captionCount:document.querySelectorAll('.constellation-card-copy').length,
         bonusRadius:getComputedStyle(bonus).borderRadius,
         bonusAligned:Math.round(bonus.getBoundingClientRect().left)===Math.round(grid.getBoundingClientRect().left),
-        subAlign:getComputedStyle(sub).textAlign
+        subAlign:getComputedStyle(sub).textAlign,
+        fixedFrames:new Set(cards.map(card=>`${Math.round(card.width)}×${Math.round(card.height)}`)).size===1,
+        sideMargin:Math.round(cards[0].left-grid.getBoundingClientRect().left)
       };
     };
     const starters=['adriel-jovem','berenice-jovem','galateia-jovem','acqua-jovem'];
@@ -2648,7 +2651,8 @@ test('seleção de história mostra só o elenco da missão; modo livre guarda o
   expect(result.story.captions).toBe(0);
   expect(result.free.captions).toBe(0);
   for(const layout of [result.story.layout,result.free.layout]){
-    expect(layout).toMatchObject({screenOverflow:0,gridOverflow:0,startVisible:true,captionCount:0,bonusRadius:'0px',bonusAligned:true,subAlign:'left'});
+    expect(layout).toMatchObject({screenOverflow:0,gridOverflow:0,startVisible:true,captionCount:0,bonusRadius:'0px',bonusAligned:true,subAlign:'left',fixedFrames:true});
+    expect(layout.sideMargin).toBeGreaterThan(0);
   }
   expect(result.free.editLabel).toBe('Selecionar Heróis');
   expect(result.free.editorOpen).toBe(true);
@@ -2798,7 +2802,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.78');
+  expect(registration.caches).toContain('12r-v11.0.79');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2962,7 +2966,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.78');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.79');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

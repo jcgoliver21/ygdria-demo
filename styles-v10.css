@@ -5108,3 +5108,14 @@ body.game-active .battle-row::before{
   #selectScreen[data-selection-mode="story"] .select-constellation-roster{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-template-rows:repeat(2,minmax(0,1fr));align-content:stretch;width:100%;height:100%;min-height:0;margin:0!important;gap:6px!important}
   #selectScreen[data-selection-mode="story"] .select-card.constellation-card{height:100%;min-height:0!important;border-radius:12px!important}
 }
+
+/* v11.0.79 · Molduras de seleção têm medida editorial fixa: o conteúdo não
+   estica uma carta diferente da outra e sobra uma margem lateral deliberada. */
+@media (max-width:620px){
+  #selectScreen{--selection-card-width:min(168px,calc((100vw - 38px)/2));--selection-card-height:252px}
+  #selectScreen .selection-roster-stats,#selectScreen .formation-constellation{justify-content:center!important}
+  #selectScreen .select-grid{display:block!important;flex:0 0 auto!important;min-height:0!important;overflow:visible!important}
+  #selectScreen[data-selection-mode="free"] .select-constellation-roster,#selectScreen[data-selection-mode="story"] .select-constellation-roster{grid-template-columns:repeat(2,var(--selection-card-width))!important;grid-template-rows:repeat(2,var(--selection-card-height))!important;justify-content:center!important;align-content:start!important;width:calc(var(--selection-card-width) + var(--selection-card-width) + 8px)!important;height:auto!important;margin:0 auto!important;column-gap:8px!important;row-gap:8px!important}
+  #selectScreen .select-card.constellation-card{width:var(--selection-card-width)!important;height:var(--selection-card-height)!important;min-height:var(--selection-card-height)!important;max-height:var(--selection-card-height)!important}
+  #selectScreen .constellation-card .thumb-wrap>img{object-fit:contain!important;background:rgba(3,2,8,.42)}
+}
