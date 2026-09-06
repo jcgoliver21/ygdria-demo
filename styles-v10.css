@@ -5082,3 +5082,29 @@ body.game-active .battle-row::before{
   #selectScreen[data-selection-mode="free"] .alliance-copy em{margin-left:3px}
   #selectScreen[data-selection-mode="story"] .select-card.constellation-card{min-height:205px!important}
 }
+
+/* v11.0.78 · A composição compacta aprovada também conduz a História.
+   A instrução e os bônus leem da esquerda; a grade sempre termina acima da
+   área segura, sem recorrer a rolagem para alcançar uma carta ou o início. */
+#selectScreen .select-sub{max-width:none!important;margin:0 auto 3px!important;padding:7px 10px!important;text-align:left!important}
+#selectScreen .alliance-hint{justify-content:flex-start!important;width:min(1180px,100%)!important;margin:3px auto!important;padding:0!important;text-align:left!important}
+#selectScreen .alliance-copy{width:100%!important;border-radius:0!important;text-align:left!important}
+@media (max-width:620px){
+  #selectScreen[data-selection-mode="free"],#selectScreen[data-selection-mode="story"]{height:100dvh;min-height:0!important;overflow:hidden!important;padding:8px 10px max(8px,env(safe-area-inset-bottom))!important}
+  #selectScreen .screen-toolbar{margin-bottom:3px!important;padding-bottom:4px!important}
+  #selectScreen .story-selection-context{justify-content:flex-start!important;margin:0 auto 3px!important;padding:4px 7px!important;text-align:left!important}
+  #selectScreen .story-selection-context strong{font-size:13px!important}
+  #selectScreen .select-sub{margin:0 auto 2px!important;padding:4px 8px!important;font-size:8.6px!important;line-height:1.27!important;text-align:left!important}
+  #selectScreen .selection-roster-stats{justify-content:flex-start!important;margin:1px auto!important;font-size:8.6px!important}
+  #selectScreen .formation-constellation{justify-content:flex-start!important;min-height:43px!important;margin:0 auto 1px!important;padding:0 6px!important}
+  #selectScreen .formation-mark,#selectScreen .formation-idle-sheet{width:42px!important;height:42px!important}
+  #selectScreen .formation-mark img{width:42px!important;height:42px!important}
+  #selectScreen .alliance-hint{margin:1px auto!important}
+  #selectScreen .alliance-copy{min-height:0;padding:4px 7px!important;border-radius:0!important;font-size:7.5px!important;line-height:1.28!important;text-align:left!important}
+  #selectScreen[data-selection-mode="story"] .selection-free-actions{display:flex!important;align-items:center;justify-content:flex-end;width:100%;min-height:34px;margin:3px auto 4px!important;order:5}
+  #selectScreen[data-selection-mode="story"] .selection-free-actions .selection-footer{display:flex!important;flex:0 1 51%;width:auto!important;margin:0!important;padding:0!important;background:transparent!important;position:static!important}
+  #selectScreen[data-selection-mode="story"] .selection-free-actions .mission-launch{width:100%!important;min-width:0!important;min-height:34px!important;padding:7px 9px!important;font-size:8.7px!important;white-space:nowrap}
+  #selectScreen[data-selection-mode="story"] .select-grid{display:flex!important;flex:1 1 auto;min-height:0!important;margin:0!important;overflow:hidden!important;order:6}
+  #selectScreen[data-selection-mode="story"] .select-constellation-roster{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-template-rows:repeat(2,minmax(0,1fr));align-content:stretch;width:100%;height:100%;min-height:0;margin:0!important;gap:6px!important}
+  #selectScreen[data-selection-mode="story"] .select-card.constellation-card{height:100%;min-height:0!important;border-radius:12px!important}
+}
