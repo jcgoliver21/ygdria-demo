@@ -8136,7 +8136,9 @@ function renderFormationConstellation(){
       const idleMarkup=idle?.src
         ?`<span class="formation-idle-sheet" aria-label="${L(hero.nome)}" style="--formation-idle-url:url('${animationAssetUrl(idle.src)}');--formation-idle-duration:${Number(idle.duration||2400)}ms"></span>`
         :`<img src="${hero.sprite||THUMB(hero.cardThumb||hero.img)}"${hero.sprite?'':THUMBF(hero.cardThumb||hero.img)} alt="${L(hero.nome)}">`;
-      mark.innerHTML=`${idleMarkup}<span>${L(hero.nome)}</span>`;
+      // A formação mostra somente os aventureiros em movimento. Os nomes já
+      // estão presentes nas cartas abaixo e aqui só reduziriam a leitura dos sprites.
+      mark.innerHTML=idleMarkup;
     }else{
       mark.setAttribute('aria-hidden','true');
       mark.innerHTML='<span class="formation-empty"><span>✦</span></span>';

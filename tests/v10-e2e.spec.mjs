@@ -108,6 +108,24 @@ test('fluxo real abre seletor, monta equipe e inicia tabuleiro',async({page})=>{
      transformar a coleção inteira em uma lista de bloqueadas. */
   await expect(page.locator('.select-card')).toHaveCount(4);
   await expect(page.locator('.select-card.collection-locked, .select-card.story-disabled')).toHaveCount(0);
+  /* A faixa de equipe é uma leitura visual: quatro idles em escala útil,
+     sem rótulos ou molduras que disputem atenção com as cartas. */
+  const formation=await page.locator('#formationConstellation').evaluate(node=>{
+    const marks=[...node.querySelectorAll('.formation-mark')];
+    return {
+      marks:marks.length,
+      labels:marks.map(mark=>mark.textContent.trim()),
+      sprites:marks.map(mark=>{
+        const sheet=mark.querySelector('.formation-idle-sheet');
+        const markStyle=getComputedStyle(mark);
+        const spriteStyle=sheet?getComputedStyle(sheet):null;
+        return {width:Number.parseFloat(spriteStyle?.width||'0'),height:Number.parseFloat(spriteStyle?.height||'0'),border:markStyle.borderWidth,background:markStyle.backgroundImage};
+      })
+    };
+  });
+  expect(formation.marks).toBe(4);
+  expect(formation.labels).toEqual(['','','','']);
+  expect(formation.sprites.every(sprite=>sprite.width>=64&&sprite.height>=64&&sprite.border==='0px'&&sprite.background==='none')).toBe(true);
   await expect(page.locator('#startBtn')).toBeEnabled();
   await page.click('#startBtn');
   await expect(page.locator('#gameScreen')).toBeVisible();
@@ -2658,7 +2676,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.69');
+  expect(registration.caches).toContain('12r-v11.0.70');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2822,7 +2840,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.69');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.70');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 
