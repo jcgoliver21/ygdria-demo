@@ -30,7 +30,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
 <link rel="apple-touch-icon" href="assets/icon.svg">
-<link rel="stylesheet" href="styles-v10.css?v=11.0.71">
+<link rel="stylesheet" href="styles-v10.css?v=11.0.72">
 </head>
 <body>
 <div class="scene-bg" data-screen="menu"></div>
@@ -214,10 +214,22 @@
 </div>
 <div class="pro-overlay" id="specialScreen" role="dialog" aria-modal="true" aria-labelledby="specialTitle">
   <div class="pro-dialog special-dialog">
-    <div class="dialog-header"><div><span class="dialog-kicker">DESAFIOS ALÉM DA CAMPANHA</span><h2 class="dialog-title" id="specialTitle">Missões Especiais</h2></div><button class="ghost-btn" data-close="specialScreen">Fechar</button></div>
-    <div class="special-destinations">
-      <button class="special-destination daily-destination" id="dailySpecialBtn" type="button"><span class="special-emblem">✧</span><span><b>Desafio Diário</b><small id="dailySpecialHint">Um tabuleiro novo para conquistar hoje.</small></span><i>›</i></button>
-      <button class="special-destination" id="bossRushBtn" type="button"><span class="special-emblem">♛</span><span><b>Provação dos Chefes</b><small>Enfrente os soberanos de Ygdria em sequência.</small></span><i>›</i></button>
+    <header class="special-command-header">
+      <div class="special-title-block"><span class="dialog-kicker">DESAFIOS ALÉM DA CAMPANHA</span><h2 class="dialog-title" id="specialTitle">Missões Especiais</h2></div>
+      <div class="special-header-info" aria-live="polite"><span id="specialToday">HOJE</span><i aria-hidden="true"></i><span id="specialAvailableCount">2 desafios habilitados</span></div>
+      <button class="ghost-btn" data-close="specialScreen">← Voltar</button>
+    </header>
+    <div class="special-destinations" aria-label="Missões especiais disponíveis">
+      <button class="special-mission-card daily-destination" id="dailySpecialBtn" type="button">
+        <img class="special-mission-art" src="assets/ui/special/desafio-diario-v1.png" alt="Tabuleiro mágico flutuando diante da cidade de Ygdria" loading="lazy" decoding="async">
+        <span class="special-mission-vignette" aria-hidden="true"></span>
+        <span class="special-mission-content"><span class="special-mission-meta"><i>DESAFIO DIÁRIO</i><b>PESADELO</b></span><strong>Tabuleiro do Dia</strong><small id="dailySpecialHint">Um tabuleiro novo para conquistar hoje.</small><span class="special-mission-footer"><em>5 andares · sequência única</em><b>Jogar <i aria-hidden="true">›</i></b></span></span>
+      </button>
+      <button class="special-mission-card boss-destination" id="bossRushBtn" type="button">
+        <img class="special-mission-art" src="assets/ui/special/provacao-dos-chefes-v1.png" alt="Trono arcano diante de uma arena de provação" loading="lazy" decoding="async">
+        <span class="special-mission-vignette" aria-hidden="true"></span>
+        <span class="special-mission-content"><span class="special-mission-meta"><i>DESAFIO DE REINO</i><b>CHEFES</b></span><strong>Provação dos Chefes</strong><small id="bossRushHint">Enfrente os soberanos de Ygdria em sequência.</small><span class="special-mission-footer"><em>Elenco de chefes · mapa de Ygdria</em><b>Desafiar <i aria-hidden="true">›</i></b></span></span>
+      </button>
     </div>
   </div>
 </div>
@@ -509,11 +521,11 @@
   </div>
 </div>
 <script>window.addEventListener('error',function(e){(window.__bootErrors=window.__bootErrors||[]).push({m:String(e.message).slice(0,200),l:e.lineno,c:e.colno})});</script>
-<script src="v10-config.js?v=11.0.71"></script>
-<script src="v10-animations.js?v=11.0.71"></script>
-<script src="humanos-lore-v10.js?v=11.0.71"></script>
+<script src="v10-config.js?v=11.0.72"></script>
+<script src="v10-animations.js?v=11.0.72"></script>
+<script src="humanos-lore-v10.js?v=11.0.72"></script>
 <script src="map-effects-v1.js?v=1.0.0" defer></script>
-<script src="game-v10.js?v=11.0.71" defer></script>
+<script src="game-v10.js?v=11.0.72" defer></script>
 
 </body>
 </html>

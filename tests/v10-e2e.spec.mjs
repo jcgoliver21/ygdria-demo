@@ -227,6 +227,43 @@ test('janela pública libera as dez fases humanas e prepara o prólogo final sem
   expect(errors).toEqual([]);
 });
 
+test('missões especiais usam artes próprias e iniciam Desafio Diário e Provação dos Chefes',async({page})=>{
+  const errors=await boot(page,'special-missions');
+  await page.setViewportSize({width:390,height:844});
+  await page.click('#dailyBtn');
+  await expect(page.locator('#specialScreen')).toHaveClass(/show/);
+  const special=await page.evaluate(()=>({
+    art:[...document.querySelectorAll('#specialScreen .special-mission-art')].map(img=>img.getAttribute('src')),
+    labels:[...document.querySelectorAll('#specialScreen .special-mission-card strong')].map(node=>node.textContent.trim()),
+    header:document.getElementById('specialAvailableCount')?.textContent.trim(),
+    daily:document.getElementById('dailySpecialHint')?.textContent.trim()
+  }));
+  expect(special.art).toEqual(['assets/ui/special/desafio-diario-v1.png','assets/ui/special/provacao-dos-chefes-v1.png']);
+  expect(special.labels).toEqual(['Tabuleiro do Dia','Provação dos Chefes']);
+  expect(special.header).toContain('2');
+  expect(special.daily).toBeTruthy();
+  const mobileLayout=await page.locator('#specialScreen .special-dialog').evaluate(dialog=>({
+    dialogWidth:Math.round(dialog.getBoundingClientRect().width),
+    viewport:innerWidth,
+    overflow:dialog.scrollWidth-dialog.clientWidth,
+    cards:[...dialog.querySelectorAll('.special-mission-card')].map(card=>Math.round(card.getBoundingClientRect().width))
+  }));
+  expect(mobileLayout.dialogWidth).toBeLessThanOrEqual(mobileLayout.viewport);
+  expect(mobileLayout.overflow).toBeLessThanOrEqual(1);
+  expect(mobileLayout.cards.every(width=>width>300)).toBe(true);
+  await page.click('#dailySpecialBtn');
+  await page.waitForURL(/daily=1/);
+  await expect(page.locator('#selectScreen')).toBeVisible();
+  expect(await page.evaluate(()=>({dailyRunMode,towerMode,difficulty}))).toEqual({dailyRunMode:true,towerMode:true,difficulty:'pesadelo'});
+
+  await page.goto(`${baseURL}/play.html?qa=special-boss&seed=v10-e2e`,{waitUntil:'networkidle'});
+  await page.click('#dailyBtn');
+  await page.click('#bossRushBtn');
+  await expect(page.locator('#mapScreen')).toHaveClass(/show/);
+  expect(await page.evaluate(()=>({bossRushMode,towerMode,mapMode}))).toEqual({bossRushMode:false,towerMode:false,mapMode:'boss'});
+  expect(errors).toEqual([]);
+});
+
 test('v11 mostra dez formações e seleciona pelo corpo visível sem setas',async({page})=>{
   const errors=await boot(page,'flow');
   await page.setViewportSize({width:390,height:844});
@@ -2677,7 +2714,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.71');
+  expect(registration.caches).toContain('12r-v11.0.72');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2841,7 +2878,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.71');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.72');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

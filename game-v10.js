@@ -10515,20 +10515,35 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
   let rec={}; try{ rec=JSON.parse(localStorage.getItem('12r_daily')||'{}'); }catch(e){}
   if(!rec||typeof rec!=='object'||Array.isArray(rec)) rec={};
   if(dailyHint) dailyHint.textContent = rec.date===todayKey() ? T(`Concluído hoje ✓ · combo ×${rec.combo||0}`,`Completed today ✓ · combo ×${rec.combo||0}`,`Completado hoy ✓ · combo ×${rec.combo||0}`) : `${T('Tabuleiro do dia','Daily board','Tablero del día')} ${todayKey().slice(8,10)}/${todayKey().slice(5,7)}`;
+  const refreshSpecialMissions=()=>{
+    let daily={}; try{ daily=JSON.parse(localStorage.getItem('12r_daily')||'{}'); }catch(e){}
+    if(!daily||typeof daily!=='object'||Array.isArray(daily)) daily={};
+    const completed=daily.date===todayKey();
+    const dailyCopy=completed
+      ?T(`Concluído hoje ✓ · combo ×${daily.combo||0}`,`Completed today ✓ · combo ×${daily.combo||0}`,`Completado hoy ✓ · combo ×${daily.combo||0}`)
+      :T(`Tabuleiro inédito · ${todayKey().slice(8,10)}/${todayKey().slice(5,7)}`,`New board · ${todayKey().slice(8,10)}/${todayKey().slice(5,7)}`,`Tablero nuevo · ${todayKey().slice(8,10)}/${todayKey().slice(5,7)}`);
+    if(dailyHint) dailyHint.textContent=dailyCopy;
+    const specialDailyHint=document.getElementById('dailySpecialHint');
+    if(specialDailyHint) specialDailyHint.textContent=dailyCopy;
+    const specialToday=document.getElementById('specialToday');
+    if(specialToday) specialToday.textContent=`${T('HOJE','TODAY','HOY')} · ${todayKey().slice(8,10)}/${todayKey().slice(5,7)}`;
+    const bossUnlocked=realmComplete('humanos');
+    const bossHint=document.getElementById('bossRushHint');
+    if(bossHint) bossHint.textContent=bossUnlocked
+      ?T('Reino dos Humanos liberado! Enfrente seus chefes em sequência.','Human Kingdom unlocked! Face its bosses in sequence.','¡Reino de los Humanos desbloqueado! Enfrenta a sus jefes en secuencia.')
+      :T('Enfrente os soberanos de Ygdria em sequência.','Face Ygdria’s sovereigns in sequence.','Enfrenta a los soberanos de Ygdria en secuencia.');
+    const available=document.getElementById('specialAvailableCount');
+    if(available) available.textContent=T('2 desafios habilitados','2 challenges available','2 desafíos habilitados');
+  };
   const startDaily=()=>{
     const url=new URL(location.href);
     url.searchParams.set('seed','12R-'+todayKey());
     url.searchParams.set('daily','1');
     location.href=url.toString();
   };
-  document.getElementById('dailyBtn')?.addEventListener('click',()=>{ openPanel('specialScreen'); sfxSelect(); });
+  document.getElementById('dailyBtn')?.addEventListener('click',()=>{ refreshSpecialMissions(); openPanel('specialScreen'); sfxSelect(); });
   document.getElementById('dailySpecialBtn')?.addEventListener('click',startDaily);
-  const dailySpecialHint=document.getElementById('dailySpecialHint');
-  if(dailySpecialHint) dailySpecialHint.textContent=dailyHint?.textContent||dailySpecialHint.textContent;
-  { const bossHint=document.getElementById('bossRushHint');
-    if(bossHint) bossHint.textContent=realmComplete('humanos')
-      ? T('Reino dos Humanos liberado!','Human Realm unlocked!','¡Reino de los Humanos desbloqueado!')
-      : T('Conquiste um reino para liberar','Conquer a realm to unlock','Conquista un reino para desbloquear'); }
+  refreshSpecialMissions();
   const towerHint=document.getElementById('towerHint');
   const bestT=Number(localStorage.getItem('12r_tower_best')||0);
   if(towerHint) towerHint.textContent = bestT>0 ? T(`(Torre Infinita) · Recorde: andar ${bestT}`,`(Infinite Tower) · Best: floor ${bestT}`,`(Torre Infinita) · Récord: piso ${bestT}`) : T('(Torre Infinita) · Survivor no Pesadelo','(Infinite Tower) · Nightmare survivor','(Torre Infinita) · Survivor en Pesadilla');
