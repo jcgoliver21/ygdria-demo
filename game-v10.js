@@ -8132,7 +8132,11 @@ function renderFormationConstellation(){
     mark.className='formation-mark'+(hero?' is-filled':'');
     if(hero){
       mark.style.setProperty('--mark-color',hero.colorLight||hero.color||'#f4d278');
-      mark.innerHTML=`<img src="${hero.sprite||THUMB(hero.cardThumb||hero.img)}"${hero.sprite?'':THUMBF(hero.cardThumb||hero.img)} alt="${L(hero.nome)}"><span>${L(hero.nome)}</span>`;
+      const idle=hero.sprites?.idle;
+      const idleMarkup=idle?.src
+        ?`<span class="formation-idle-sheet" aria-label="${L(hero.nome)}" style="--formation-idle-url:url('${animationAssetUrl(idle.src)}');--formation-idle-duration:${Number(idle.duration||2400)}ms"></span>`
+        :`<img src="${hero.sprite||THUMB(hero.cardThumb||hero.img)}"${hero.sprite?'':THUMBF(hero.cardThumb||hero.img)} alt="${L(hero.nome)}">`;
+      mark.innerHTML=`${idleMarkup}<span>${L(hero.nome)}</span>`;
     }else{
       mark.setAttribute('aria-hidden','true');
       mark.innerHTML='<span class="formation-empty"><span>✦</span></span>';
