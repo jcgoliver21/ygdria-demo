@@ -8712,6 +8712,10 @@ function renderSelectGrid(){
   const roster=document.createElement('section');
   roster.className='select-constellation-roster';
   const storyMode=Boolean(worldRun?.active&&worldRun.storyMode!==false);
+  /* A seleção também é atualizada por ações internas (por exemplo, trocar o
+     modo de uma missão especial). Mantemos o atributo visual sincronizado
+     aqui, em vez de depender apenas de showSelection(). */
+  document.getElementById('selectScreen')?.setAttribute('data-selection-mode',storyMode?'story':'free');
   const rosterSource=storyMode
     /* Missão de história: a seleção principal mostra somente o elenco
        liberado para aquela missão. */
@@ -9155,7 +9159,7 @@ function showSelection(){
   const selectSub=document.querySelector('#selectScreen .select-sub');
   if(selectSub) selectSub.textContent=storyMode
     ?T('Escolha sua equipe com 4 cartas.','Choose your team with 4 cards.','Elige tu equipo con 4 cartas.')
-    :T('Escolha até 4 cartas para seu grupo. Use Editar Grupo para trocar entre todas as cartas conquistadas.','Choose up to 4 cards for your party. Use Edit Group to swap among all earned cards.','Elige hasta 4 cartas para tu grupo. Usa Editar grupo para cambiar entre todas las cartas obtenidas.');
+    :T('Escolha até 4 cartas para seu grupo. Use Editar Equipe para trocar entre todas as cartas conquistadas.','Choose up to 4 cards for your party. Use Edit Team to swap among all earned cards.','Elige hasta 4 cartas para tu grupo. Usa Editar equipo para cambiar entre todas las cartas obtenidas.');
   document.body.classList.remove('game-active');
   sceneBgEl.dataset.screen='selection'; renderSelectGrid();
 }

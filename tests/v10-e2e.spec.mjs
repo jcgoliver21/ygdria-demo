@@ -2551,13 +2551,18 @@ test('seleção de história mostra só o elenco da missão; modo livre guarda o
     prepareStorySelection(); renderSelectGrid();
     const story={
       shown:[...document.querySelectorAll('.select-card')].map(card=>card.querySelector('b')?.textContent),
-      editHidden:document.getElementById('editGroupBtn').hidden
+      editHidden:document.getElementById('editGroupBtn').hidden,
+      visualMode:document.getElementById('selectScreen').dataset.selectionMode
     };
     worldRun.storyMode=false;
     renderSelectGrid();
+    document.getElementById('editGroupBtn').click();
     const free={
       shown:[...document.querySelectorAll('.select-card')].map(card=>card.querySelector('b')?.textContent),
       editHidden:document.getElementById('editGroupBtn').hidden,
+      visualMode:document.getElementById('selectScreen').dataset.selectionMode,
+      editLabel:document.getElementById('editGroupBtn').textContent.trim(),
+      editorOpen:document.getElementById('editGroupScreen').classList.contains('show'),
       editor:[...document.querySelectorAll('.group-editor-card')].map(card=>card.textContent.trim())
     };
     return {story,free};
@@ -2565,9 +2570,13 @@ test('seleção de história mostra só o elenco da missão; modo livre guarda o
   expect(result.story.shown).toHaveLength(4);
   expect(result.story.shown).toEqual(expect.arrayContaining(['Adriel (Jovem)','Berenice (Jovem)','Galatéia (Jovem)','Acqua (Jovem)']));
   expect(result.story.editHidden).toBe(true);
+  expect(result.story.visualMode).toBe('story');
   expect(result.free.shown).toEqual(expect.arrayContaining(result.story.shown));
   expect(result.free.shown).toHaveLength(4);
   expect(result.free.editHidden).toBe(false);
+  expect(result.free.visualMode).toBe('free');
+  expect(result.free.editLabel).toBe('Editar Equipe');
+  expect(result.free.editorOpen).toBe(true);
   expect(result.free.editor).toContain('Gareth');
   expect(errors).toEqual([]);
 });
@@ -2714,7 +2723,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.72');
+  expect(registration.caches).toContain('12r-v11.0.73');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2878,7 +2887,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.72');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.73');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 
