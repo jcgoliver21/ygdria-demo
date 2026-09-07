@@ -1552,13 +1552,17 @@ const LEGACY_SHOP_ITEMS=[
 ];
 /* v11.0.41 · Ícones ilustrados dos consumíveis do Reino dos Humanos. */
 const SHOP_ITEMS=[
-  {id:'regulacao',uso:'batalha',raridade:'Comum',nome:'Cristais de Regulação',desc:'Embaralha o tabuleiro e cria 1 power-up aleatório.',preco:90,icon:'crystal',en:{nome:'Regulation Crystals',desc:'Shuffles the board and creates 1 random power-up.'},es:{nome:'Cristales de Regulación',desc:'Baraja el tablero y crea 1 potenciador aleatorio.'}},
-  {id:'regulacao-bernyce',uso:'batalha',raridade:'Raro',nome:'Cristal de Regulação de Bernyce',desc:'Embaralha, cria 2 power-ups — incluindo 1 Estrela de Ygdria — e remove peças corrompidas.',preco:220,icon:'bernyce-crystal',en:{nome:'Bernyce Regulation Crystal',desc:'Shuffles, creates 2 power-ups — including 1 Star of Ygdria — and removes corrupted pieces.'},es:{nome:'Cristal de Regulación de Bernyce',desc:'Baraja, crea 2 potenciadores — incluida 1 Estrella de Ygdria — y elimina piezas corrompidas.'}},
-  {id:'flor-cerejeira',uso:'batalha',raridade:'Incomum',nome:'Flor de Cerejeira',desc:'Recupera 25% da vida máxima do grupo.',preco:120,icon:'sakura',en:{nome:'Cherry Blossom',desc:'Restores 25% of the party maximum HP.'},es:{nome:'Flor de Cerezo',desc:'Restaura el 25% de la vida máxima del grupo.'}},
-  {id:'espadas-lendarias',uso:'batalha',raridade:'Raro',nome:'Espadas do Guerreiro Lendário',desc:'Aumenta o ataque do grupo em 50% até o fim da missão.',preco:180,icon:'swords',en:{nome:'Legendary Warrior Swords',desc:'Raises party attack by 50% until the mission ends.'},es:{nome:'Espadas del Guerrero Legendario',desc:'Aumenta el ataque del grupo un 50% hasta el final de la misión.'}},
-  {id:'bencao-eternidade',uso:'passiva',raridade:'Lendário',nome:'Benção da Eternidade',desc:'Mantida na mochila, libera um único reinício de missão ao ser consumida.',preco:300,icon:'eternity',en:{nome:'Blessing of Eternity',desc:'While in the bag, enables one mission restart when consumed.'},es:{nome:'Bendición de la Eternidad',desc:'En la mochila, habilita un reinicio de misión al consumirse.'}}
+  {id:'regulacao',reino:'humanos',uso:'batalha',raridade:'Comum',nome:'Cristais de Regulação',desc:'Embaralha o tabuleiro e cria 1 power-up aleatório.',preco:90,icon:'crystal',en:{nome:'Regulation Crystals',desc:'Shuffles the board and creates 1 random power-up.'},es:{nome:'Cristales de Regulación',desc:'Baraja el tablero y crea 1 potenciador aleatorio.'}},
+  {id:'regulacao-bernyce',reino:'humanos',uso:'batalha',raridade:'Raro',nome:'Cristal de Regulação de Bernyce',desc:'Embaralha, cria 2 power-ups — incluindo 1 Estrela de Ygdria — e remove peças corrompidas.',preco:220,icon:'bernyce-crystal',en:{nome:'Bernyce Regulation Crystal',desc:'Shuffles, creates 2 power-ups — including 1 Star of Ygdria — and removes corrupted pieces.'},es:{nome:'Cristal de Regulación de Bernyce',desc:'Baraja, crea 2 potenciadores — incluida 1 Estrella de Ygdria — y elimina piezas corrompidas.'}},
+  {id:'flor-cerejeira',reino:'humanos',uso:'batalha',raridade:'Incomum',nome:'Flor de Cerejeira',desc:'Recupera 25% da vida máxima do grupo.',preco:120,icon:'sakura',en:{nome:'Cherry Blossom',desc:'Restores 25% of the party maximum HP.'},es:{nome:'Flor de Cerezo',desc:'Restaura el 25% de la vida máxima del grupo.'}},
+  {id:'espadas-lendarias',reino:'humanos',uso:'batalha',raridade:'Raro',nome:'Espadas do Guerreiro Lendário',desc:'Aumenta o ataque do grupo em 50% até o fim da missão.',preco:180,icon:'swords',en:{nome:'Legendary Warrior Swords',desc:'Raises party attack by 50% until the mission ends.'},es:{nome:'Espadas del Guerrero Legendario',desc:'Aumenta el ataque del grupo un 50% hasta el final de la misión.'}},
+  {id:'bencao-eternidade',reino:'humanos',uso:'passiva',raridade:'Lendário',nome:'Benção da Eternidade',desc:'Mantida na mochila, libera um único reinício de missão ao ser consumida.',preco:300,icon:'eternity',en:{nome:'Blessing of Eternity',desc:'While in the bag, enables one mission restart when consumed.'},es:{nome:'Bendición de la Eternidad',desc:'En la mochila, habilita un reinicio de misión al consumirse.'}},
+  {id:'elixir-divino',reino:'luz',uso:'batalha',raridade:'Incomum',nome:'Elixir Divino',desc:'Recupera 25% da vida máxima e aumenta o ataque do grupo em 25% por 1 turno.',preco:150,icon:'divine-elixir',en:{nome:'Divine Elixir',desc:'Restores 25% maximum HP and raises party attack by 25% for 1 turn.'},es:{nome:'Elixir Divino',desc:'Restaura el 25% de la vida máxima y aumenta el ataque del grupo un 25% por 1 turno.'}},
+  {id:'luz-protetora',reino:'luz',uso:'batalha',raridade:'Raro',nome:'Luz Protetora',desc:'Ergue um escudo de 25% da vida máxima por 2 turnos.',preco:170,icon:'protective-light',en:{nome:'Protective Light',desc:'Raises a shield worth 25% maximum HP for 2 turns.'},es:{nome:'Luz Protectora',desc:'Crea un escudo del 25% de la vida máxima durante 2 turnos.'}},
+  {id:'lanca-divina',reino:'luz',uso:'batalha',raridade:'Raro',nome:'Lança Divina',desc:'Atinge o inimigo selecionado com 200 de dano.',preco:190,icon:'divine-lance',en:{nome:'Divine Lance',desc:'Deals 200 damage to the selected enemy.'},es:{nome:'Lanza Divina',desc:'Inflige 200 de daño al enemigo seleccionado.'}},
+  {id:'espelho-ygdria',reino:'luz',uso:'batalha',raridade:'Lendário',nome:'Espelho de Ygdria',desc:'Escolha um herói: sua cópia causa 100% do ATQ dele até o fim da missão.',preco:360,icon:'ygdria-mirror',en:{nome:'Mirror of Ygdria',desc:'Choose a hero: their copy deals 100% of their ATK until the mission ends.'},es:{nome:'Espejo de Ygdria',desc:'Elige un héroe: su copia inflige el 100% de su ATQ hasta el final de la misión.'}}
 ];
-const INVENTORY_CATALOG_VERSION='humanos-consumables-v1';
+const INVENTORY_CATALOG_VERSION='realm-consumables-v2';
 const HUMAN_ITEM_ICONS={
   crystal:'<img src="assets/items/humanos/regulacao.png" alt="" draggable="false">',
   'bernyce-crystal':'<img src="assets/items/humanos/regulacao-bernyce.png" alt="" draggable="false">',
@@ -1566,6 +1570,13 @@ const HUMAN_ITEM_ICONS={
   swords:'<img src="assets/items/humanos/espadas-lendarias.png" alt="" draggable="false">',
   eternity:'<img src="assets/items/humanos/bencao-eternidade.png" alt="" draggable="false">'
 };
+const LIGHT_ITEM_ICONS={
+  'divine-elixir':'<span class="light-item-art light-item-elixir" aria-hidden="true"><i></i><b></b></span>',
+  'protective-light':'<span class="light-item-art light-item-protect" aria-hidden="true"><i></i><b></b></span>',
+  'divine-lance':'<span class="light-item-art light-item-lance" aria-hidden="true"><i></i><b></b></span>',
+  'ygdria-mirror':'<span class="light-item-art light-item-mirror" aria-hidden="true"><i></i><b></b></span>'
+};
+function itemIconMarkup(item){ return HUMAN_ITEM_ICONS[item?.icon]||LIGHT_ITEM_ICONS[item?.icon]||'✦'; }
 function sanitizeInventory(value){
   const clean={};
   if(!value||typeof value!=='object'||Array.isArray(value)) return clean;
@@ -1579,9 +1590,9 @@ function sanitizeInventory(value){
 let inventory={};
 try{ inventory=sanitizeInventory(JSON.parse(localStorage.getItem('12r_inv')||'{}')); }catch(e){ inventory={}; }
 if(localStorage.getItem('12r_inventory_catalog')!==INVENTORY_CATALOG_VERSION){
-  inventory={};
+  inventory=sanitizeInventory(inventory);
   localStorage.setItem('12r_inventory_catalog',INVENTORY_CATALOG_VERSION);
-  localStorage.setItem('12r_inv','{}');
+  localStorage.setItem('12r_inv',JSON.stringify(inventory));
 }
 function saveInventory(){ localStorage.setItem('12r_inv',JSON.stringify(inventory)); }
 
@@ -1697,7 +1708,7 @@ function rewardSummary(reward,{claimed=false}={}){
   const parts=[];
   if(reward.k) parts.push(`✦ ${formatKalegs(reward.k)}`);
   if(reward.card){ const hero=KINGDOMS.find(k=>k.id===reward.card); parts.push(`🎴 ${L(hero?.nome||reward.card)}`); }
-  Object.entries(reward.items||{}).forEach(([id,count])=>{ const item=SHOP_ITEMS.find(x=>x.id===id); parts.push(`${HUMAN_ITEM_ICONS[item?.icon]||'🎒'} ${count}× ${L(item?.nome||id)}`); });
+  Object.entries(reward.items||{}).forEach(([id,count])=>{ const item=SHOP_ITEMS.find(x=>x.id===id); parts.push(`${itemIconMarkup(item)} ${count}× ${L(item?.nome||id)}`); });
   return `${claimed?T('Recompensa já recebida: ','Reward already claimed: ','Recompensa ya recibida: '):''}${parts.join(' · ')}`;
 }
 function claimHumanPhaseReward(fase,diff,{winner=true}={}){
@@ -1725,7 +1736,7 @@ function renderPhaseReward(result){
   if(reward.k) tokens.push(`<span class="reward-token reward-kalegs"><i aria-hidden="true">K</i><b>${formatKalegs(reward.k)} Kalegs</b><small>${T('Moedas de Kalegar','Kalegar currency','Monedas de Kalegar')}</small></span>`);
   Object.entries(reward.items||{}).forEach(([id,count])=>{
     const item=SHOP_ITEMS.find(x=>x.id===id);
-    tokens.push(`<span class="reward-token reward-item"><i class="reward-item-icon" aria-hidden="true">${HUMAN_ITEM_ICONS[item?.icon]||'🎒'}</i><b>${count}× ${L(item?.nome||id)}</b><small>${T('Adicionado à mochila','Added to backpack','Añadido a la mochila')}</small></span>`);
+    tokens.push(`<span class="reward-token reward-item"><i class="reward-item-icon" aria-hidden="true">${itemIconMarkup(item)}</i><b>${count}× ${L(item?.nome||id)}</b><small>${T('Adicionado à mochila','Added to backpack','Añadido a la mochila')}</small></span>`);
   });
   box.hidden=false;
   box.classList.toggle('claimed',!!result.claimed);
@@ -1746,40 +1757,58 @@ function buyItem(id){
   updateRestartControls();
   sfxSelect();
 }
+const MARKET_REALMS=Object.freeze([
+  {id:'humanos',name:['Reino dos Humanos','Human Realm','Reino de los Humanos'],symbol:'♛'},
+  {id:'luz',name:['Reino da Luz','Realm of Light','Reino de la Luz'],symbol:'☀'}
+]);
+const marketOpenRealms=new Set();
 function renderShop(){
   const list=document.getElementById('shopList'); if(!list) return;
   updateCoinBadge();
-  const title=document.getElementById('marketShelfTitle');
-  const note=document.getElementById('marketShelfNote');
   const kicker=document.getElementById('marketKicker');
   const heading=document.getElementById('marketHeading');
   const copy=document.getElementById('marketNote');
   const balanceNote=document.getElementById('marketBalanceNote');
-  if(title) title.textContent=T('Acervo da Coroa','Crown Collection','Acervo de la Corona');
-  if(note) note.textContent=`${SHOP_ITEMS.length} ${T('relíquias disponíveis','relics available','reliquias disponibles')}`;
-  if(kicker) kicker.textContent=T('RELÍQUIAS DO REINO DOS HUMANOS','HUMAN REALM RELICS','RELIQUIAS DEL REINO HUMANO');
+  if(kicker) kicker.textContent=T('RELÍQUIAS DOS REINOS','REALM RELICS','RELIQUIAS DE LOS REINOS');
   if(heading) heading.textContent=T('Preparos para a próxima jornada','Supplies for the next journey','Preparativos para el próximo viaje');
   if(copy) copy.textContent=T('Escolha o que levar para sua mochila antes da batalha.','Choose what to carry into your backpack before battle.','Elige qué llevar a tu mochila antes de la batalla.');
   if(balanceNote) balanceNote.textContent=T('Tesouro de Kalegar','Kalegar treasury','Tesoro de Kalegar');
-  list.innerHTML=SHOP_ITEMS.map(i=>{
-    const owned=inventory[i.id]||0;
-    const affordable=coins>=i.preco;
-    return `<article class="shop-item market-relic rarity-${i.raridade.toLowerCase()}" data-item="${i.id}">
-      <span class="shop-icon human-item-icon item-${i.id}" aria-hidden="true">${HUMAN_ITEM_ICONS[i.icon]||''}</span>
-      <div class="shop-copy"><div class="market-item-heading"><small class="shop-uso">${L(i.raridade)}</small><b>${L(i.nome)}</b></div><p>${L(i.desc)}</p><small class="shop-owned"><span>${T('NA MOCHILA','IN BAG','EN LA MOCHILA')}</span> ${owned}</small></div>
-      <button class="overlay-btn shop-buy" data-item="${i.id}" ${affordable?'':'disabled'}><small>${T('COMPRAR','BUY','COMPRAR')}</small><b>✦ ${formatKalegs(i.preco)}</b></button>
-    </article>`;
+  list.innerHTML=MARKET_REALMS.map(realm=>{
+    const items=SHOP_ITEMS.filter(item=>item.reino===realm.id);
+    const open=marketOpenRealms.has(realm.id);
+    return `<section class="market-realm market-realm-${realm.id}${open?' open':''}" data-realm="${realm.id}">
+      <button class="market-realm-toggle" type="button" aria-expanded="${open}" data-market-realm="${realm.id}">
+        <span class="market-realm-sphere realm-${realm.id}" aria-hidden="true"><i>${realm.symbol}</i></span>
+        <span class="market-realm-title"><small>${L(realm.name)}</small><b>${items.length} ${T('itens disponíveis','items available','objetos disponibles')}</b></span>
+        <span class="market-realm-chevron" aria-hidden="true">⌄</span>
+      </button>
+      <div class="market-realm-items">${items.map(i=>{
+        const owned=inventory[i.id]||0;
+        const affordable=coins>=i.preco;
+        return `<article class="shop-item market-relic rarity-${i.raridade.toLowerCase()}" data-item="${i.id}">
+          <span class="market-item-art"><span class="shop-icon human-item-icon item-${i.id}" aria-hidden="true">${itemIconMarkup(i)}</span><small class="market-rarity">${L(i.raridade)}</small></span>
+          <div class="shop-copy"><div class="market-item-heading"><b>${L(i.nome)}</b></div><p>${L(i.desc)}</p><small class="shop-owned"><span>${T('NA MOCHILA','IN BAG','EN LA MOCHILA')}</span> ${owned}</small></div>
+          <button class="overlay-btn shop-buy" data-item="${i.id}" ${affordable?'':'disabled'}><small>${T('COMPRAR','BUY','COMPRAR')}</small><b>✦ ${formatKalegs(i.preco)}</b></button>
+        </article>`;
+      }).join('')}</div>
+    </section>`;
   }).join('');
+  list.querySelectorAll('[data-market-realm]').forEach(button=>button.addEventListener('click',()=>{
+    const realm=button.dataset.marketRealm;
+    if(marketOpenRealms.has(realm)) marketOpenRealms.delete(realm); else marketOpenRealms.add(realm);
+    renderShop(); sfxSelect();
+  }));
   list.querySelectorAll('.shop-buy').forEach(b=>b.addEventListener('click',()=>buyItem(b.dataset.item)));
 }
 /* Estados transitórios dos consumíveis da missão atual. */
-let eternalReviveCharges=0, coinDoubleRun=false, xpDoubleRun=false, bannerAtkRun=1;
+let eternalReviveCharges=0, coinDoubleRun=false, xpDoubleRun=false, bannerAtkRun=1, mirrorCopyHeroIndex=null;
 let battleConsumablesDone=false;
 function resetBattleRunConsumables(){
   eternalReviveCharges=0;
   coinDoubleRun=false;
   xpDoubleRun=false;
   bannerAtkRun=1;
+  mirrorCopyHeroIndex=null;
   battleConsumablesDone=false;
 }
 function coinsVitoria(n){ return coinDoubleRun ? n*2 : n; }
@@ -1799,7 +1828,7 @@ function renderMochila(){
   }
   list.innerHTML=itens.map(i=>`
     <div class="shop-item">
-      <span class="shop-icon human-item-icon item-${i.id}">${HUMAN_ITEM_ICONS[i.icon]||''}</span>
+      <span class="shop-icon human-item-icon item-${i.id}">${itemIconMarkup(i)}</span>
       <div class="shop-copy"><b>${L(i.nome)} ×${inventory[i.id]}</b><small>${L(i.desc)}</small></div>
       ${i.uso==='batalha'
         ? `<button class="overlay-btn shop-buy" data-usar="${i.id}" ${emBatalha?'':'disabled'}>${T('Usar','Use','Usar')}</button>`
@@ -1833,9 +1862,11 @@ function playConsumableVfx(id){
   arenaEl.appendChild(fx);
   scheduleCombat(()=>fx.remove(),1100);
 }
-async function usarItemBatalha(id){
+async function usarItemBatalha(id,mirrorHeroIdx=null){
   if(!document.body.classList.contains('game-active')||(inventory[id]||0)<=0){ sfxInvalid(); return; }
   if(playerHP<=0||busy||battlePhase!=='idle'){ sfxInvalid(); return; }
+  if(id==='espelho-ygdria'&&!Number.isInteger(mirrorHeroIdx)){ openMirrorHeroPicker(); return; }
+  if(id==='espelho-ygdria'&&(!ACTIVE.includes(mirrorHeroIdx)||!KINGDOMS[mirrorHeroIdx])){ sfxInvalid(); return; }
   const nomeItem=L(SHOP_ITEMS.find(i=>i.id===id)?.nome||id);
   const epoch=combatEpoch;
   busy=true;
@@ -1848,6 +1879,10 @@ async function usarItemBatalha(id){
     case 'regulacao-bernyce': shuffleBoard(false); spawnRandomColorBombs(1); spawnRandomPowerUps(1); clearCorruptedBoardPieces(); break;
     case 'flor-cerejeira': healPlayer(Math.round(PLAYER_MAX_HP*0.25)); break;
     case 'espadas-lendarias': bannerAtkRun=1.5; renderStatusTray(); break;
+    case 'elixir-divino': healPlayer(Math.round(PLAYER_MAX_HP*.25)); atkBuffTurns=Math.max(atkBuffTurns,1); atkBuffMult=Math.max(atkBuffMult,.25); renderStatusTray(); break;
+    case 'luz-protetora': addShield(Math.round(PLAYER_MAX_HP*.25),2); break;
+    case 'lanca-divina': applyDamageToEnemy(200,null); break;
+    case 'espelho-ygdria': mirrorCopyHeroIndex=mirrorHeroIdx; renderPartyArena(); renderStatusTray(); break;
     default: return;
   }
   inventory[id]--; saveInventory();
@@ -1857,6 +1892,20 @@ async function usarItemBatalha(id){
   updateRestartControls();
   busy=false;
   setBattlePhase('idle');
+}
+function openMirrorHeroPicker(){
+  document.querySelector('.mirror-hero-picker')?.remove();
+  const picker=document.createElement('div');
+  picker.className='mirror-hero-picker';
+  picker.setAttribute('role','dialog');
+  picker.setAttribute('aria-label',T('Escolha o herói do Espelho de Ygdria','Choose the hero for Mirror of Ygdria','Elige el héroe del Espejo de Ygdria'));
+  picker.innerHTML=`<div class="mirror-hero-picker-card"><b>${T('Espelho de Ygdria','Mirror of Ygdria','Espejo de Ygdria')}</b><small>${T('Escolha quem a cópia irá refletir até o fim da missão.','Choose who the copy will reflect until the end of the mission.','Elige a quién reflejará la copia hasta el fin de la misión.')}</small><div class="mirror-hero-options">${ACTIVE.map(idx=>{const hero=KINGDOMS[idx];return `<button type="button" data-mirror-hero="${idx}"><img src="${THUMB(hero.cardThumb||hero.img)}" alt=""><span>${L(hero.nome)}</span></button>`;}).join('')}</div><button type="button" class="mirror-picker-close">${T('Cancelar','Cancel','Cancelar')}</button></div>`;
+  arenaEl?.appendChild(picker);
+  picker.querySelectorAll('[data-mirror-hero]').forEach(button=>button.addEventListener('click',()=>{
+    const idx=Number(button.dataset.mirrorHero);
+    picker.remove(); usarItemBatalha('espelho-ygdria',idx);
+  }));
+  picker.querySelector('.mirror-picker-close')?.addEventListener('click',()=>picker.remove());
 }
 
 /* F2-1 · Desafio dos Chefes: os 8 chefes-Carta em sequência, escalando */
@@ -3625,10 +3674,12 @@ function renderPartyArena(){
     unit.style.setProperty('--aura-outer-light',k.rarity==='DIVINA'?'#ffffff':k.color);
     unit.style.setProperty('--unit-art-scale',String(cardArtScale(k)));
     const avatarContent = spriteMarkup(k,'idle');
+    const mirrorHtml=mirrorCopyHeroIndex===idx?`<div class="mirror-copy-avatar" id="mirrorCopy-${k.id}" aria-hidden="true">${spriteMarkup(k,'idle')}</div>`:'';
     const stageHtml=`
       <div class="unit-stage">
         <div class="unit-ground-shadow"></div>
         <div class="avatar-circle" id="party-${k.id}-avatar" data-hero-id="${k.id}" data-action="idle">${avatarContent}</div>
+        ${mirrorHtml}
       </div>`;
     const nomeHtml=vizPrefs.heroNames==='off'?'':`
        <div class="unit-name${vizPrefs.heroNames==='top'?' name-top':''}"><span class="unit-gem" style="--ug:${gemC};--ug-l:${gemL};--ug-d:${gemD}" aria-hidden="true"></span>${L(k.nome)}</div>`;
@@ -3644,6 +3695,8 @@ function renderPartyArena(){
     avatarEl.setAttribute('aria-label',T(`${L(k.nome)}: tocar para usar a habilidade quando estiver carregada`,`${L(k.nome)}: tap to use the ability when charged`,`${L(k.nome)}: toca para usar la habilidad cuando esté cargada`));
     avatarEl.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); onHeroAvatarClick(idx); } });
     animateHeroAvatar(avatarEl,k,'idle',{loop:true});
+    const mirrorEl=document.getElementById('mirrorCopy-'+k.id);
+    if(mirrorEl) animateHeroAvatar(mirrorEl,k,'idle',{loop:true});
     prepareHeroBodyHitTest(avatarEl);
   });
   renderGolemUnits();
@@ -5058,7 +5111,7 @@ function renderLoginCalendar(){
   return '<div class="quests-box login-cal"><b>📅 '+T('Login diário — ciclo de 7 dias','Daily login — 7-day cycle','Inicio diario — ciclo de 7 días')+'</b><div class="login-days">'+
     LOGIN_REWARDS.map((r,i)=>{
       const it=r.item?SHOP_ITEMS.find(x=>x.id===r.item):null;
-      return '<span class="login-day'+(i<diaAtual?' done':i===diaAtual?' today':'')+'"><i>'+(i+1)+'</i>✦'+formatKalegs(r.c)+(it?'<em class="login-item-art">'+(HUMAN_ITEM_ICONS[it.icon]||'')+'</em>':'')+'</span>';
+      return '<span class="login-day'+(i<diaAtual?' done':i===diaAtual?' today':'')+'"><i>'+(i+1)+'</i>✦'+formatKalegs(r.c)+(it?'<em class="login-item-art">'+itemIconMarkup(it)+'</em>':'')+'</span>';
     }).join('')+
     '</div><small>'+T('Sequência atual','Current streak','Racha actual')+': '+(st.streak||0)+' '+T('dia(s)','day(s)','día(s)')+'</small></div>';
 }
@@ -6996,6 +7049,7 @@ async function resolveMatches(){
     if(!energyDelivered||epoch!==combatEpoch) return;
     triggerHeroAttackAnim(colorIdx);
     applyDamageToEnemy(dmg, colorIdx);
+    if(allEnemiesDefeated()===false) triggerMirrorCopyAttack(colorIdx);
     if(KINGDOMS[colorIdx].id==='terra'&&golemAllies>0&&allEnemiesDefeated()===false){
       const golemDamage=Math.round(dmg*.5*golemAllies);
       playSummonAction('golem','attack');
@@ -7091,6 +7145,23 @@ function triggerHeroAttackAnim(colorIdx){
   unit?.classList.remove('attacking','casting');
   playHeroAction(colorIdx,'attack');
   return awaitHeroActionAsset(colorIdx,'attack');
+}
+function triggerMirrorCopyAttack(colorIdx){
+  if(mirrorCopyHeroIndex!==colorIdx) return 0;
+  const hero=KINGDOMS[colorIdx];
+  const copy=document.getElementById('mirrorCopy-'+hero?.id);
+  const enemy=document.getElementById('enemy-'+currentTargetIndex());
+  if(!hero||!copy||!enemy) return 0;
+  copy.classList.remove('mirror-copy-strike');
+  void copy.offsetWidth;
+  copy.classList.add('mirror-copy-strike');
+  const target=enemy.querySelector('.enemy-portrait')||enemy;
+  const damage=heroAtkBattle(colorIdx);
+  spawnCombatAttackFx(hero.iconId||hero.id,copy,target,hero.colorLight||hero.color,'impact',hero);
+  applyDamageToEnemy(damage,colorIdx);
+  setBattleStatus(T(`${L(hero.nome)} e seu reflexo causaram ${damage} de dano extra.`,`${L(hero.nome)} and their reflection dealt ${damage} bonus damage.`,`${L(hero.nome)} y su reflejo causaron ${damage} de daño extra.`),'support');
+  scheduleCombat(()=>copy.classList.remove('mirror-copy-strike'),620);
+  return damage;
 }
 
 function triggerHeroCastAnim(colorIdx){

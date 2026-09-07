@@ -20,13 +20,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.86/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.86/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.86/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.86/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.86/);
-  assert.match(config,/version:'v11\.0\.86'/);
-  assert.match(sw,/12r-v11\.0\.86/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.87/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.87/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.87/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.87/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.87/);
+  assert.match(config,/version:'v11\.0\.87'/);
+  assert.match(sw,/12r-v11\.0\.87/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -45,19 +45,22 @@ check('Bomba de Cor usa a Estrela do Prisma aprovada',()=>{
   assert.match(game,/Estrela de Ygdria \+ Embrulhado/);
 });
 
-check('consumíveis humanos substituem o catálogo anterior e têm VFX próprios',()=>{
-  const consumiveis=['regulacao','regulacao-bernyce','flor-cerejeira','espadas-lendarias','bencao-eternidade'];
+check('consumíveis dos Humanos e da Luz têm VFX, inventário migrável e efeitos próprios',()=>{
+  const consumiveis=['regulacao','regulacao-bernyce','flor-cerejeira','espadas-lendarias','bencao-eternidade','elixir-divino','luz-protetora','lanca-divina','espelho-ygdria'];
   for(const id of consumiveis) assert.ok(game.includes(`id:'${id}'`),`consumível ${id} ausente`);
-  for(const id of consumiveis){
+  for(const id of consumiveis.slice(0,5)){
     assert.ok(fs.existsSync(path.join(root,'assets','items','humanos',`${id}.png`)),`arte do consumível ${id} ausente`);
     assert.match(game,new RegExp(`assets/items/humanos/${id}\\.png`));
   }
-  assert.match(game,/const INVENTORY_CATALOG_VERSION='humanos-consumables-v1'/);
+  assert.match(game,/const INVENTORY_CATALOG_VERSION='realm-consumables-v2'/);
+  assert.match(game,/const LIGHT_ITEM_ICONS=/);
+  assert.match(game,/function openMirrorHeroPicker\(\)/);
+  assert.match(game,/function triggerMirrorCopyAttack\(colorIdx\)/);
   assert.match(game,/function clearCorruptedBoardPieces\(\)/);
   assert.match(game,/function playConsumableVfx\(id\)/);
   assert.match(game,/function hasEternityBlessing\(\)/);
   assert.match(game,/function startNightmareTurnWindow\(\)/);
-  for(const selector of ['.consumable-vfx-regulacao','.consumable-vfx-regulacao-bernyce','.consumable-vfx-flor-cerejeira','.consumable-vfx-espadas-lendarias','.consumable-vfx-bencao-eternidade']) assert.ok(css.includes(selector),`${selector} ausente`);
+  for(const selector of ['.consumable-vfx-regulacao','.consumable-vfx-regulacao-bernyce','.consumable-vfx-flor-cerejeira','.consumable-vfx-espadas-lendarias','.consumable-vfx-bencao-eternidade','.consumable-vfx-elixir-divino','.consumable-vfx-luz-protetora','.consumable-vfx-lanca-divina','.consumable-vfx-espelho-ygdria']) assert.ok(css.includes(selector),`${selector} ausente`);
   assert.match(html,/id="mochilaBtn"/);
   assert.match(html,/id="formationQuickBtn"/);
   assert.match(html,/id="fullscreenQuickBtn"/);
@@ -139,7 +142,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.86/);
+  assert.match(sw,/12r-v11\.0\.87/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -257,11 +260,13 @@ check('Prólogo e Reino dos Humanos usam trilhas autorais com troca para o confr
   assert.match(game,/playLicensedStageMusic\('prologue'\)/);
 });
 
-check('Mercado Central mantém relíquias humanas, saldo em Kalegs e compra integrada',()=>{
+check('Mercado Central usa acordeões de reino, Kalegs e compra integrada',()=>{
   assert.match(html,/market-hero/);
   assert.match(game,/market-relic/);
   assert.match(game,/NA MOCHILA/);
-  assert.match(html,/market-seal/);
+  assert.match(game,/MARKET_REALMS/);
+  assert.match(game,/market-realm-toggle/);
+  assert.match(css,/\.market-realm-sphere/);
   assert.match(css,/\.market-dialog/);
   assert.match(css,/\.market-relic/);
 });
@@ -566,7 +571,7 @@ check('mapa vertical preserva geografia e expande somente o oceano lateral',()=>
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.86');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.87');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
