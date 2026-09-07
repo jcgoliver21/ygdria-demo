@@ -2403,9 +2403,9 @@ test('Mercado Central compra relíquias, desconta Kalegs e atualiza a mochila',a
   expect(errors).toEqual([]);
 });
 
-test('Mercado usa acordeões por reino e a Luz aplica Elixir, escudo, lança e Espelho',async({page})=>{
+test('Mercado usa acordeões por reino e a Luz aplica Elixir, escudo, lança, Espelho e Esperança',async({page})=>{
   const errors=await boot(page,'flow');
-  await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); manualTarget=0; playerHP=Math.floor(PLAYER_MAX_HP*.5); enemies[0].hp=1000; enemies[0].maxHp=1000; inventory={'elixir-divino':1,'luz-protetora':1,'lanca-divina':1,'espelho-ygdria':1}; });
+  await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); manualTarget=0; playerHP=Math.floor(PLAYER_MAX_HP*.5); enemies[0].hp=1000; enemies[0].maxHp=1000; inventory={'elixir-divino':1,'luz-protetora':1,'lanca-divina':1,'espelho-ygdria':1,esperanca:1}; });
   const result=await page.evaluate(async()=>{
     renderShop();
     if(!document.querySelector('.market-realm-luz')?.classList.contains('open')) document.querySelector('[data-market-realm="luz"]')?.click();
@@ -2425,12 +2425,42 @@ test('Mercado usa acordeões por reino e a Luz aplica Elixir, escudo, lança e E
     const mirrorDamage=triggerMirrorCopyAttack(ACTIVE[0]);
     await new Promise(resolve=>setTimeout(resolve,60));
     const mirrorAttackAction=document.getElementById('mirrorCopy-'+mirroredHero.id)?.dataset.action;
+    hopeState={amount:2,updatedAt:Date.now()}; saveHopeState(); updateHopeBadge();
+    const hopeUsed=await usarItemBatalha('esperanca');
+    const hopeRestored=hopeState.amount===HOPE_MAX&&inventory.esperanca===0&&!!document.querySelector('.hope-restore-vfx');
     const overflow=[...document.querySelectorAll('.market-realm,.market-relic')].some(element=>element.scrollWidth>element.clientWidth+1);
-    return {opened,hpRaised:playerHP>hpBefore,attackBuff:atkBuffTurns,shieldTurns,enemyDamage:lanceDamage,mirror:mirrorCopyHeroIndex,mirrorVisible:!!document.querySelector('.mirror-copy-avatar'),mirrorExact,copyBesideHero,mirrorDamage,mirrorAttackAction,lightItems:document.querySelectorAll('.market-realm-luz .market-relic').length,overflow};
+    return {opened,hpRaised:playerHP>hpBefore,attackBuff:atkBuffTurns,shieldTurns,enemyDamage:lanceDamage,mirror:mirrorCopyHeroIndex,mirrorVisible:!!document.querySelector('.mirror-copy-avatar'),mirrorExact,copyBesideHero,mirrorDamage,mirrorAttackAction,hopeUsed,hopeRestored,lightItems:document.querySelectorAll('.market-realm-luz .market-relic').length,overflow};
   });
-  expect(result).toMatchObject({opened:true,hpRaised:true,attackBuff:1,shieldTurns:2,enemyDamage:200,mirrorVisible:true,mirrorExact:true,copyBesideHero:true,mirrorAttackAction:'attack',lightItems:4,overflow:false});
+  expect(result).toMatchObject({opened:true,hpRaised:true,attackBuff:1,shieldTurns:2,enemyDamage:200,mirrorVisible:true,mirrorExact:true,copyBesideHero:true,mirrorAttackAction:'attack',hopeUsed:true,hopeRestored:true,lightItems:5,overflow:false});
   expect(result.mirrorDamage).toBeGreaterThan(0);
   expect(Number.isInteger(result.mirror)).toBe(true);
+  expect(errors).toEqual([]);
+});
+
+test('Esperança cobra a campanha, recupera um ponto por hora e libera modos especiais',async({page})=>{
+  const errors=await boot(page,'flow');
+  const result=await page.evaluate(()=>{
+    const now=Date.now();
+    localStorage.removeItem(HOPE_ATTEMPTS_KEY);
+    hopeState={amount:HOPE_MAX,updatedAt:now}; saveHopeState(); updateHopeBadge(now);
+    towerMode=false; bossRushMode=false; dailyRunMode=false;
+    worldRun={active:true,fase:0,nivel:1,storyMode:true,hopeCharged:false};
+    const firstRun=spendStoryHope(), afterFirst=hopeState.amount;
+    worldRun={active:true,fase:0,nivel:1,storyMode:true,hopeCharged:false};
+    const replay=spendStoryHope(), afterReplay=hopeState.amount;
+    worldRun={active:true,fase:0,nivel:1,storyMode:true,hopeCharged:false};
+    const blocked=spendStoryHope(), blockedMessage=document.getElementById('hopeToast')?.textContent;
+    hopeState={amount:2,updatedAt:now-6*HOPE_HOUR_MS}; saveHopeState();
+    const afterSixHours=reconcileHope(now), readyAtEight=hopeState.amount>=8;
+    const afterFullRecovery=reconcileHope(now+2*HOPE_HOUR_MS);
+    hopeState={amount:10,updatedAt:now}; saveHopeState(); towerMode=true;
+    const towerFree=spendStoryHope()&&hopeState.amount===10;
+    towerMode=false; worldRun={active:true,fase:1,nivel:1,storyMode:false,hopeCharged:false};
+    const freeModeFree=spendStoryHope()&&hopeState.amount===10;
+    return {firstRun,afterFirst,replay,afterReplay,blocked,blockedMessage,afterSixHours,readyAtEight,afterFullRecovery,towerFree,freeModeFree,badge:document.getElementById('hopeBadge')?.textContent};
+  });
+  expect(result).toMatchObject({firstRun:true,afterFirst:2,replay:true,afterReplay:0,blocked:false,blockedMessage:'Você está sem Esperança, não pode jogar agora.',afterSixHours:8,readyAtEight:true,afterFullRecovery:10,towerFree:true,freeModeFree:true});
+  expect(result.badge).toContain('10/10');
   expect(errors).toEqual([]);
 });
 
@@ -3080,7 +3110,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.92');
+  expect(registration.caches).toContain('12r-v11.0.93');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -3244,7 +3274,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.92');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.93');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

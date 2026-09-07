@@ -32,9 +32,10 @@
 <link rel="apple-touch-icon" href="assets/icon.svg">
 <link rel="preload" href="assets/audio/Ygdria_Prologo.mp3" as="audio" type="audio/mpeg">
 <link rel="preload" href="assets/audio/Ygdria_Humanos_1_9.mp3" as="audio" type="audio/mpeg">
-<link rel="stylesheet" href="styles-v10.css?v=11.0.92">
+<link rel="stylesheet" href="styles-v10.css?v=11.0.93">
 </head>
 <body>
+<div class="hope-toast" id="hopeToast" role="status" aria-live="polite"></div>
 <div class="scene-bg" data-screen="menu"></div>
 <h1 class="maintitle">12 Reinos</h1>
 
@@ -51,7 +52,7 @@
       <button class="menu-btn command-tile" id="optionsBtn" type="button" data-tap-guard-bypass><span class="menu-icon vfx-icon vfx-options" aria-hidden="true"></span><span class="menu-label"><span class="menu-title-line">Opções</span><small class="menu-hint">Som, imagem e acessibilidade</small></span></button>
       <button class="menu-btn command-tile command-library" id="galleryBtn"><span class="menu-icon vfx-icon vfx-library" aria-hidden="true"></span><span class="menu-label"><span class="menu-title-line">Biblioteca da Eternidade</span><small class="menu-hint">Crônicas, criaturas, NPCs e cartas</small></span></button>
     </nav>
-    <footer class="command-footer"><button class="account-chip" id="accountChip" type="button">Entrar / Criar conta</button><div class="coin-badge" id="coinBadge">✦ 0Ks</div><div class="menu-footer" id="menuVersion">VERSÃO 11 · DEMO OFICIAL MOBILE</div></footer>
+    <footer class="command-footer"><button class="account-chip" id="accountChip" type="button">Entrar / Criar conta</button><div class="economy-badges"><div class="coin-badge" id="coinBadge">✦ 0Ks</div><div class="hope-badge" id="hopeBadge" role="status" aria-label="Esperança: 10 de 10"><span aria-hidden="true">✧</span><b>Esperança</b><strong>10/10</strong></div></div><div class="menu-footer" id="menuVersion">VERSÃO 11 · DEMO OFICIAL MOBILE</div></footer>
   </div>
 </div>
 
@@ -545,11 +546,11 @@
   </div>
 </div>
 <script>window.addEventListener('error',function(e){(window.__bootErrors=window.__bootErrors||[]).push({m:String(e.message).slice(0,200),l:e.lineno,c:e.colno})});</script>
-<script src="v10-config.js?v=11.0.92"></script>
-<script src="v10-animations.js?v=11.0.92"></script>
-<script src="humanos-lore-v10.js?v=11.0.92"></script>
+<script src="v10-config.js?v=11.0.93"></script>
+<script src="v10-animations.js?v=11.0.93"></script>
+<script src="humanos-lore-v10.js?v=11.0.93"></script>
 <script src="map-effects-v1.js?v=1.0.0" defer></script>
-<script src="game-v10.js?v=11.0.92" defer></script>
+<script src="game-v10.js?v=11.0.93" defer></script>
 
 </body>
 </html>

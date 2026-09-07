@@ -1387,6 +1387,75 @@ function updateCoinBadge(){
   const el2=document.getElementById('shopCoins');
   if(el2) el2.textContent=`✦ ${formatKalegs(coins)}`;
 }
+/* Esperança é o limite diário da campanha: 1 ponto por hora, até 10. A
+   marca de tempo só avança quando um ponto é recuperado, preservando horas
+   parciais e evitando perda de progresso ao fechar o navegador. */
+const HOPE_MAX=10, HOPE_HOUR_MS=60*60*1000, HOPE_STORAGE_KEY='12r_hope_v1', HOPE_ATTEMPTS_KEY='12r_hope_story_attempts_v1';
+function normalizeHopeState(value,now=Date.now()){
+  const raw=value&&typeof value==='object'?value:{};
+  const amount=Math.max(0,Math.min(HOPE_MAX,Number.isInteger(raw.amount)?raw.amount:HOPE_MAX));
+  const updatedAt=Number.isFinite(raw.updatedAt)&&raw.updatedAt>0&&raw.updatedAt<=now?raw.updatedAt:now;
+  return {amount,updatedAt};
+}
+function loadHopeState(now=Date.now()){
+  try{return normalizeHopeState(JSON.parse(localStorage.getItem(HOPE_STORAGE_KEY)||'null'),now);}catch(error){return normalizeHopeState(null,now);}
+}
+let hopeState=loadHopeState();
+function saveHopeState(){ localStorage.setItem(HOPE_STORAGE_KEY,JSON.stringify(hopeState)); }
+function hopeAmount(now=Date.now()){
+  const previous=hopeState.amount;
+  if(previous>=HOPE_MAX) return previous;
+  const gained=Math.floor(Math.max(0,now-hopeState.updatedAt)/HOPE_HOUR_MS);
+  if(!gained) return previous;
+  hopeState.amount=Math.min(HOPE_MAX,previous+gained);
+  hopeState.updatedAt+=gained*HOPE_HOUR_MS;
+  if(hopeState.amount>=HOPE_MAX) hopeState.updatedAt=now;
+  saveHopeState();
+  return hopeState.amount;
+}
+let hopeToastTimer=null;
+function showHopeToast(message){
+  const toast=document.getElementById('hopeToast'); if(!toast) return;
+  clearTimeout(hopeToastTimer); toast.textContent=message; toast.classList.add('show');
+  hopeToastTimer=setTimeout(()=>toast.classList.remove('show'),3600);
+}
+function updateHopeBadge(now=Date.now()){
+  const amount=hopeAmount(now), badge=document.getElementById('hopeBadge');
+  if(!badge) return amount;
+  badge.classList.toggle('full',amount===HOPE_MAX);
+  badge.querySelector('strong')?.replaceChildren(document.createTextNode(`${amount}/${HOPE_MAX}`));
+  badge.setAttribute('aria-label',T(`Esperança: ${amount} de ${HOPE_MAX}`,`Hope: ${amount} of ${HOPE_MAX}`,`Esperanza: ${amount} de ${HOPE_MAX}`));
+  return amount;
+}
+function reconcileHope(now=Date.now(),announce=false){
+  const before=hopeState.amount, amount=updateHopeBadge(now);
+  if(announce&&before<HOPE_MAX&&amount===HOPE_MAX) showHopeToast(T('Você recuperou suas Esperanças, retorne a batalha!','You recovered your Hope. Return to battle!','¡Recuperaste tu Esperanza, vuelve a la batalla!'));
+  return amount;
+}
+function readStoryHopeAttempts(){
+  try{const value=JSON.parse(localStorage.getItem(HOPE_ATTEMPTS_KEY)||'{}'); return value&&typeof value==='object'&&!Array.isArray(value)?value:{};}catch(error){return {};}
+}
+function storyHopeCost(){
+  if(!worldRun?.active||worldRun.storyMode===false||towerMode||bossRushMode||dailyRunMode) return 0;
+  const phase=Math.max(0,Number(worldRun.fase)||0), attempts=readStoryHopeAttempts();
+  return attempts[phase] ? 2 : 8;
+}
+function spendStoryHope(){
+  const cost=storyHopeCost(); if(!cost) return true;
+  const amount=reconcileHope();
+  if(amount<cost){
+    showHopeToast(amount===0
+      ?T('Você está sem Esperança, não pode jogar agora.','You are out of Hope and cannot play now.','No tienes Esperanza, no puedes jugar ahora.')
+      :T(`Você precisa de ${cost} Esperanças para iniciar esta fase.`,`You need ${cost} Hope to start this phase.`,`Necesitas ${cost} Esperanzas para iniciar esta fase.`));
+    sfxInvalid(); return false;
+  }
+  hopeState.amount-=cost; hopeState.updatedAt=Date.now(); saveHopeState(); updateHopeBadge();
+  const attempts=readStoryHopeAttempts(); attempts[Math.max(0,Number(worldRun.fase)||0)]=true; localStorage.setItem(HOPE_ATTEMPTS_KEY,JSON.stringify(attempts));
+  return true;
+}
+function restoreFullHope(){
+  hopeState={amount:HOPE_MAX,updatedAt:Date.now()}; saveHopeState(); updateHopeBadge();
+}
 const DAILY_BOOT_REQUESTED=new URLSearchParams(location.search).get('daily')==='1';
 let dailyRunMode=DAILY_BOOT_REQUESTED;
 
@@ -1560,9 +1629,10 @@ const SHOP_ITEMS=[
   {id:'elixir-divino',reino:'luz',uso:'batalha',raridade:'Incomum',nome:'Elixir Divino',desc:'Recupera 25% da vida máxima e aumenta o ataque do grupo em 25% por 1 turno.',preco:150,icon:'divine-elixir',en:{nome:'Divine Elixir',desc:'Restores 25% maximum HP and raises party attack by 25% for 1 turn.'},es:{nome:'Elixir Divino',desc:'Restaura el 25% de la vida máxima y aumenta el ataque del grupo un 25% por 1 turno.'}},
   {id:'luz-protetora',reino:'luz',uso:'batalha',raridade:'Raro',nome:'Luz Protetora',desc:'Ergue um escudo de 25% da vida máxima por 2 turnos.',preco:170,icon:'protective-light',en:{nome:'Protective Light',desc:'Raises a shield worth 25% maximum HP for 2 turns.'},es:{nome:'Luz Protectora',desc:'Crea un escudo del 25% de la vida máxima durante 2 turnos.'}},
   {id:'lanca-divina',reino:'luz',uso:'batalha',raridade:'Raro',nome:'Lança Divina',desc:'Atinge o inimigo selecionado com 200 de dano.',preco:190,icon:'divine-lance',en:{nome:'Divine Lance',desc:'Deals 200 damage to the selected enemy.'},es:{nome:'Lanza Divina',desc:'Inflige 200 de daño al enemigo seleccionado.'}},
-  {id:'espelho-ygdria',reino:'luz',uso:'batalha',raridade:'Lendário',nome:'Espelho de Ygdria',desc:'Escolha um herói: sua cópia causa 100% do ATQ dele até o fim da missão.',preco:360,icon:'ygdria-mirror',en:{nome:'Mirror of Ygdria',desc:'Choose a hero: their copy deals 100% of their ATK until the mission ends.'},es:{nome:'Espejo de Ygdria',desc:'Elige un héroe: su copia inflige el 100% de su ATQ hasta el final de la misión.'}}
+  {id:'espelho-ygdria',reino:'luz',uso:'batalha',raridade:'Lendário',nome:'Espelho de Ygdria',desc:'Escolha um herói: sua cópia causa 100% do ATQ dele até o fim da missão.',preco:360,icon:'ygdria-mirror',en:{nome:'Mirror of Ygdria',desc:'Choose a hero: their copy deals 100% of their ATK until the mission ends.'},es:{nome:'Espejo de Ygdria',desc:'Elige un héroe: su copia inflige el 100% de su ATQ hasta el final de la misión.'}},
+  {id:'esperanca',reino:'luz',uso:'global',raridade:'Lendário',nome:'Esperança',desc:'Restaura 100% da Esperança para voltar à jornada imediatamente.',preco:360,icon:'hope',en:{nome:'Hope',desc:'Restores 100% Hope so you can return to the journey immediately.'},es:{nome:'Esperanza',desc:'Restaura el 100% de la Esperanza para volver a la aventura de inmediato.'}}
 ];
-const INVENTORY_CATALOG_VERSION='realm-consumables-v2';
+const INVENTORY_CATALOG_VERSION='realm-consumables-v3';
 const HUMAN_ITEM_ICONS={
   crystal:'<img src="assets/items/humanos/regulacao.png" alt="" draggable="false">',
   'bernyce-crystal':'<img src="assets/items/humanos/regulacao-bernyce.png" alt="" draggable="false">',
@@ -1574,7 +1644,8 @@ const LIGHT_ITEM_ICONS={
   'divine-elixir':'<img src="assets/items/luz/elixir-divino-vfx.png" alt="" draggable="false">',
   'protective-light':'<img src="assets/items/luz/luz-protetora-vfx.png" alt="" draggable="false">',
   'divine-lance':'<img src="assets/items/luz/lanca-divina-vfx.png" alt="" draggable="false">',
-  'ygdria-mirror':'<img src="assets/items/luz/espelho-ygdria-vfx.png" alt="" draggable="false">'
+  'ygdria-mirror':'<img src="assets/items/luz/espelho-ygdria-vfx.png" alt="" draggable="false">',
+  'hope':'<span class="light-item-art light-item-hope" aria-hidden="true"><i></i><b></b></span>'
 };
 function itemIconMarkup(item){ return HUMAN_ITEM_ICONS[item?.icon]||LIGHT_ITEM_ICONS[item?.icon]||'✦'; }
 function sanitizeInventory(value){
@@ -1788,7 +1859,7 @@ function renderShop(){
         const affordable=coins>=i.preco;
         return `<article class="shop-item market-relic rarity-${i.raridade.toLowerCase()}" data-item="${i.id}">
           <span class="market-item-art"><span class="shop-icon human-item-icon item-${i.id}" aria-hidden="true">${itemIconMarkup(i)}</span><small class="market-rarity">${L(i.raridade)}</small></span>
-          <div class="shop-copy"><div class="market-item-heading"><b>${L(i.nome)}</b></div><p>${L(i.desc)}</p><small class="shop-owned"><span>${T('NA MOCHILA','IN BAG','EN LA MOCHILA')}</span> ${owned}</small></div>
+          <div class="shop-copy"><div class="market-item-heading"><b>${L(i.nome)}</b></div><p>${L(i.desc)}</p><small class="shop-owned"><span>${T('NA MOCHILA','IN BAG','EN LA MOCHILA')}</span> ${owned}</small>${i.uso==='global'?`<button class="shop-use-global" type="button" data-use-global="${i.id}" ${owned>0?'':'disabled'}>${T('USAR AGORA','USE NOW','USAR AHORA')}</button>`:''}</div>
           <button class="overlay-btn shop-buy" data-item="${i.id}" ${affordable?'':'disabled'}><small>${T('COMPRAR','BUY','COMPRAR')}</small><b>✦ ${formatKalegs(i.preco)}</b></button>
         </article>`;
       }).join('')}</div>
@@ -1800,6 +1871,7 @@ function renderShop(){
     renderShop(); sfxSelect();
   }));
   list.querySelectorAll('.shop-buy').forEach(b=>b.addEventListener('click',()=>buyItem(b.dataset.item)));
+  list.querySelectorAll('[data-use-global]').forEach(b=>b.addEventListener('click',()=>usarItemBatalha(b.dataset.useGlobal)));
 }
 /* Estados transitórios dos consumíveis da missão atual. */
 let eternalReviveCharges=0, coinDoubleRun=false, xpDoubleRun=false, bannerAtkRun=1, mirrorCopyHeroIndex=null;
@@ -1831,8 +1903,8 @@ function renderMochila(){
     <div class="shop-item">
       <span class="shop-icon human-item-icon item-${i.id}">${itemIconMarkup(i)}</span>
       <div class="shop-copy"><b>${L(i.nome)} ×${inventory[i.id]}</b><small>${L(i.desc)}</small></div>
-      ${i.uso==='batalha'
-        ? `<button class="overlay-btn shop-buy" data-usar="${i.id}" ${emBatalha?'':'disabled'}>${T('Usar','Use','Usar')}</button>`
+      ${i.uso==='batalha'||i.uso==='global'
+        ? `<button class="overlay-btn shop-buy" data-usar="${i.id}" ${(i.uso==='global'||emBatalha)?'':'disabled'}>${T('Usar','Use','Usar')}</button>`
         : `<small class="shop-uso">${T('libera reinício','enables restart','habilita reinicio')}</small>`}
     </div>`).join('');
   list.querySelectorAll('[data-usar]').forEach(b=>b.addEventListener('click',()=>usarItemBatalha(b.dataset.usar)));
@@ -1852,7 +1924,7 @@ function playConsumableVfx(id){
   const fx=document.createElement('div');
   fx.className=`consumable-vfx consumable-vfx-${id}`;
   fx.setAttribute('aria-hidden','true');
-  const particles={regulacao:18,'regulacao-bernyce':28,'flor-cerejeira':24,'elixir-divino':22,'luz-protetora':26,'lanca-divina':18,'espelho-ygdria':24}[id]||10;
+  const particles={regulacao:18,'regulacao-bernyce':28,'flor-cerejeira':24,'elixir-divino':22,'luz-protetora':26,'lanca-divina':18,'espelho-ygdria':24,esperanca:28}[id]||10;
   for(let i=0;i<particles;i++){
     const particle=document.createElement('i');
     particle.style.setProperty('--i',String(i));
@@ -1863,7 +1935,31 @@ function playConsumableVfx(id){
   arenaEl.appendChild(fx);
   scheduleCombat(()=>fx.remove(),1100);
 }
+function playHopeRestoreVfx(){
+  if(reducedMotion) return;
+  const anchor=document.getElementById('hopeBadge'); if(!anchor) return;
+  const fx=document.createElement('div'); fx.className='hope-restore-vfx'; fx.setAttribute('aria-hidden','true');
+  for(let i=0;i<20;i++){ const spark=document.createElement('i'); spark.style.setProperty('--i',String(i)); fx.appendChild(spark); }
+  anchor.appendChild(fx); setTimeout(()=>fx.remove(),1100);
+}
+function useHopeItem(){
+  if((inventory.esperanca||0)<=0){ sfxInvalid(); return false; }
+  if(reconcileHope()>=HOPE_MAX){ showHopeToast(T('Sua Esperança já está completa.','Your Hope is already full.','Tu Esperanza ya está completa.')); sfxInvalid(); return false; }
+  const nextInventory={...inventory,esperanca:Math.max(0,(inventory.esperanca||0)-1)};
+  const previousInventory=inventory, previousHope={...hopeState};
+  try{
+    localStorage.setItem('12r_inv',JSON.stringify(nextInventory));
+    inventory=nextInventory; restoreFullHope(); playHopeRestoreVfx(); sfxPassive();
+    showHopeToast(T('Esperança restaurada: 10/10. Retorne à batalha!','Hope restored: 10/10. Return to battle!','Esperanza restaurada: 10/10. ¡Vuelve a la batalla!'));
+    renderMochila(); renderShop(); return true;
+  }catch(error){
+    inventory=previousInventory; hopeState=previousHope;
+    try{ localStorage.setItem('12r_inv',JSON.stringify(previousInventory)); saveHopeState(); }catch(rollbackError){}
+    return false;
+  }
+}
 async function usarItemBatalha(id,mirrorHeroIdx=null){
+  if(id==='esperanca') return useHopeItem();
   if(!document.body.classList.contains('game-active')||(inventory[id]||0)<=0){ sfxInvalid(); return; }
   if(playerHP<=0||busy||battlePhase!=='idle'){ sfxInvalid(); return; }
   if(id==='espelho-ygdria'&&!Number.isInteger(mirrorHeroIdx)){ openMirrorHeroPicker(); return; }
@@ -9441,6 +9537,10 @@ function beginGame(startAt=0,restoredHP=null){
     chosenIds=[...new Set(chosenIds)].filter(index=>Number.isInteger(index)&&KINGDOMS[index]).slice(0,4);
     renderSelectGrid(); sfxInvalid(); return;
   }
+  if(worldRun?.hopeCharged!==true){
+    if(!spendStoryHope()) return;
+    if(worldRun) worldRun.hopeCharged=true;
+  }
   ensureAudio();
   ACTIVE = [...chosenIds];
   preloadHeroActions(ACTIVE);
@@ -10707,7 +10807,7 @@ function startWorldFase(faseIdx,options={}){
   armTapGuard();
   const prog=worldProg('humanos');
   if(faseIdx>worldAccessLimit('humanos',prog)){ sfxInvalid(); return; }
-  worldRun={active:true,fase:faseIdx,nivel:1,storyMode:options.storyMode!==false};
+  worldRun={active:true,fase:faseIdx,nivel:1,storyMode:options.storyMode!==false,hopeCharged:false};
   if(options.difficulty){ difficulty=options.difficulty; localStorage.setItem('12r_difficulty',difficulty); applyDifficultyUI(); }
   towerMode=false;
   bossRushMode=false;
@@ -10918,6 +11018,9 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
   if(DAILY_BOOT_REQUESTED && difficulty!=='pesadelo'){ towerPrevDifficulty=difficulty; difficulty='pesadelo'; applyDifficultyUI(); }
   if(DAILY_BOOT_REQUESTED){ dailyRunMode=true; towerMode=true; towerFloor=1; worldRun.active=false; pendingStage=0; showSelection(); } /* Diário = torre seeded de 5 andares */
   updateCoinBadge();
+  reconcileHope(Date.now(),true);
+  setInterval(()=>reconcileHope(Date.now(),true),60_000);
+  document.addEventListener('visibilitychange',()=>{ if(!document.hidden) reconcileHope(Date.now(),true); });
 
   // v9.1 · Fluxo de abertura: Introdução da história -> Idioma (1ª vez) -> Menu
   renderIntroTexts();
@@ -11321,7 +11424,7 @@ async function runSmokeTest(){
     /* v9.2 · contratos novos */
     ok('dificuldade Difícil (4 níveis)', !!DIFFICULTY_MULTS.dificil && DIFFICULTY_MULTS.dificil.hpFactor===30 && typeof allEnemiesAttackMode==='function');
     ok('3 grandes alianças nomeadas', ALLIANCES.length===3 && ALLIANCES.every(a=>a.membros.length===4) && ALLIANCES[0].nome.includes('Lago') && ALLIANCES[1].nome.includes('Dragão') && ALLIANCES[2].nome.includes('Barion'));
-    ok('catálogo humano com cinco consumíveis e reinício condicionado', SHOP_ITEMS.length===5 && ['regulacao','regulacao-bernyce','flor-cerejeira','espadas-lendarias','bencao-eternidade'].every(id=>SHOP_ITEMS.some(item=>item.id===id)) && typeof usarItemBatalha==='function' && typeof updateRestartControls==='function');
+    ok('catálogo dos Humanos e da Luz, reinício e Esperança', SHOP_ITEMS.length===10 && ['regulacao','regulacao-bernyce','flor-cerejeira','espadas-lendarias','bencao-eternidade','elixir-divino','luz-protetora','lanca-divina','espelho-ygdria','esperanca'].every(id=>SHOP_ITEMS.some(item=>item.id===id)) && typeof usarItemBatalha==='function' && typeof updateRestartControls==='function' && HOPE_MAX===10 && typeof spendStoryHope==='function');
     ok('login diário: ciclo de 7 dias', LOGIN_REWARDS.length===7 && LOGIN_REWARDS[6].c===80);
     ok('Torre da Eternidade: 1 personagem/andar + cenário exclusivo', (()=>{ const t2=buildTowerStage(1); return t2.enemies.length===1 && t2.bgUrl==='assets/bg/torre-eternidade-andar-v11.png' && buildTowerStage(1+KINGDOMS.length).enemies[0].hp>t2.enemies[0].hp; })());
     ok('timer de missão, janela Pesadelo e mochila discreta estão na batalha', !!document.getElementById('missionTimer') && !!document.getElementById('nightmareTurnTimer') && !!document.getElementById('mochilaBtn') && !!document.getElementById('mochilaScreen'));
