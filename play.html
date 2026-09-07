@@ -32,7 +32,7 @@
 <link rel="apple-touch-icon" href="assets/icon.svg">
 <link rel="preload" href="assets/audio/Ygdria_Prologo.mp3" as="audio" type="audio/mpeg">
 <link rel="preload" href="assets/audio/Ygdria_Humanos_1_9.mp3" as="audio" type="audio/mpeg">
-<link rel="stylesheet" href="styles-v10.css?v=11.0.89">
+<link rel="stylesheet" href="styles-v10.css?v=11.0.90">
 </head>
 <body>
 <div class="scene-bg" data-screen="menu"></div>
@@ -303,11 +303,20 @@
   </div>
 </div>
 <div class="pro-overlay" id="towerScreen" role="dialog" aria-modal="true" aria-labelledby="towerTitle">
-  <div class="pro-dialog">
-    <div class="dialog-header"><h2 class="dialog-title" id="towerTitle">🗼 Torre de Acesso à Eternidade</h2><button class="ghost-btn" data-close="towerScreen">Fechar</button></div>
-    <p class="account-note" id="towerRules"></p>
-    <div id="towerRankBox"></div>
-    <button class="overlay-btn" id="towerStartBtn" type="button" style="width:100%;margin-top:12px;">🗼 Escalar a Torre (Pesadelo)</button>
+  <div class="pro-dialog tower-dialog">
+    <header class="tower-dialog-header">
+      <div class="tower-title-lockup"><span class="tower-title-sigil" aria-hidden="true"></span><div><small>O LIMIAR DA ETERNIDADE</small><h2 class="dialog-title" id="towerTitle">Torre de Acesso à Eternidade</h2></div></div>
+      <button class="ghost-btn tower-close" data-close="towerScreen">Fechar</button>
+    </header>
+    <section class="tower-hero-panel" aria-label="A Torre de Acesso à Eternidade">
+      <div class="tower-hero-art" aria-hidden="true"><span class="tower-hero-floor">∞</span><span class="tower-hero-rune rune-a"></span><span class="tower-hero-rune rune-b"></span></div>
+      <div class="tower-hero-copy"><span class="tower-kicker">SURVIVOR · PESADELO</span><h3>Ascenda além do último andar.</h3><p id="towerRules"></p></div>
+    </section>
+    <section class="tower-command-panel">
+      <div class="tower-command-heading"><span>REGISTRO DA ESCALADA</span><small>Os andares não perdoam.</small></div>
+      <div id="towerRankBox"></div>
+    </section>
+    <button class="overlay-btn tower-start-btn" id="towerStartBtn" type="button"><span class="tower-start-vfx" aria-hidden="true"></span><span data-tower-start-label>Escalar a Torre</span><small data-tower-start-mode>Pesadelo</small></button>
   </div>
 </div>
 <aside class="battle-inventory-dock" id="mochilaScreen" aria-labelledby="mochilaTitle" aria-hidden="true">
@@ -536,11 +545,11 @@
   </div>
 </div>
 <script>window.addEventListener('error',function(e){(window.__bootErrors=window.__bootErrors||[]).push({m:String(e.message).slice(0,200),l:e.lineno,c:e.colno})});</script>
-<script src="v10-config.js?v=11.0.89"></script>
-<script src="v10-animations.js?v=11.0.89"></script>
-<script src="humanos-lore-v10.js?v=11.0.89"></script>
+<script src="v10-config.js?v=11.0.90"></script>
+<script src="v10-animations.js?v=11.0.90"></script>
+<script src="humanos-lore-v10.js?v=11.0.90"></script>
 <script src="map-effects-v1.js?v=1.0.0" defer></script>
-<script src="game-v10.js?v=11.0.89" defer></script>
+<script src="game-v10.js?v=11.0.90" defer></script>
 
 </body>
 </html>

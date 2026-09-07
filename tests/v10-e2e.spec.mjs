@@ -1187,10 +1187,34 @@ test('Torre ancora personagens no pátio real da arte',async({page})=>{
     };
   });
   expect(layout.towerClass).toBe(true);
-  expect(layout.horizon).toBe('66%');
-  expect(layout.band).toEqual({top:.70,bot:1});
-  expect(Math.min(...layout.feet)).toBeGreaterThanOrEqual(.64);
+  expect(layout.horizon).toBe('56%');
+  expect(layout.band).toEqual({top:.57,bot:1});
+  expect(Math.min(...layout.feet)).toBeGreaterThanOrEqual(.52);
   expect(Math.max(...layout.feet)).toBeLessThanOrEqual(1.02);
+  expect(errors).toEqual([]);
+});
+
+test('Torre apresenta painel próprio e ilustração distinta da campanha',async({page})=>{
+  const errors=await boot(page,'flow');
+  const result=await page.evaluate(()=>{
+    renderTowerScreen();
+    const panel=document.getElementById('towerScreen');
+    panel?.classList.add('show');
+    const art=panel?.querySelector('.tower-hero-art');
+    const start=panel?.querySelector('#towerStartBtn');
+    const title=panel?.querySelector('#towerTitle');
+    const rect=panel?.querySelector('.tower-dialog')?.getBoundingClientRect();
+    return {
+      panelVisible:panel?.classList.contains('show'),
+      title:title?.textContent?.trim(),
+      stats:panel?.querySelectorAll('.tower-ledger-stats>div').length,
+      hasStart:Boolean(start?.querySelector('[data-tower-start-label]')),
+      usesTowerArt:getComputedStyle(art).backgroundImage.includes('torre-eternidade-andar-v11.png'),
+      fitsViewport:!!rect&&rect.left>=0&&rect.right<=innerWidth&&rect.top>=0&&rect.bottom<=innerHeight,
+      noHorizontalOverflow:document.documentElement.scrollWidth<=innerWidth
+    };
+  });
+  expect(result).toEqual({panelVisible:true,title:'Torre de Acesso à Eternidade',stats:3,hasStart:true,usesTowerArt:true,fitsViewport:true,noHorizontalOverflow:true});
   expect(errors).toEqual([]);
 });
 
@@ -3054,7 +3078,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.89');
+  expect(registration.caches).toContain('12r-v11.0.90');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -3218,7 +3242,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.89');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.90');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

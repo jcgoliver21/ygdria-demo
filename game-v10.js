@@ -1982,7 +1982,7 @@ function buildTowerStage(floor){
   return {
     title:`${T('Torre de Acesso à Eternidade','Tower of Access to Eternity','Torre de Acceso a la Eternidad')} · ${T('Andar','Floor','Piso')} ${floor}${ciclo>0?` · ${T('Ciclo','Cycle','Ciclo')} ${ciclo+1}`:''}`,
     scene:4,
-    bgUrl:'assets/bg/humanos/fase-09.jpg', /* cenário: Lendária Torre de Acesso à Eternidade */
+    bgUrl:'assets/bg/torre-eternidade-andar-v11.png', /* cenário exclusivo: andares e escadarias da Torre */
     enemies:[{...k, hp, atk, maxHp:hp, isBoss:((floor-1)%n)===n-1}]
   };
 }
@@ -4261,7 +4261,7 @@ const SCENE_GROUND={
 /* A praça da Torre de Acesso à Eternidade começa visualmente mais abaixo na
    composição. Sem esta faixa dedicada, o fallback genérico (55%) suspendia as
    unidades sobre a cidade e encurtava artificialmente o piso jogável. */
-const TOWER_GROUND=[0.70,1];
+const TOWER_GROUND=[0.57,1];
 function groundBand(){
   let top=0.55, bot=1;
   if(worldRun.active){ const g=SCENE_GROUND.humanos[worldRun.fase]; if(g){ top=g[0]; bot=g[1]; } }
@@ -5735,9 +5735,10 @@ const STATIC_I18N=[
   ["#mochilaTitle","🎒 Mochila","🎒 Bag","🎒 Mochila"],
   ["[data-close=\"mochilaScreen\"]","Fechar","Close","Cerrar"],
   ["#mochilaShopBtn","🪙 Abrir Loja de Consumíveis","🪙 Open Consumables Shop","🪙 Abrir Tienda de Consumibles"],
-  ["#towerTitle","🗼 Torre de Acesso à Eternidade","🗼 Tower of Access to Eternity","🗼 Torre de Acceso a la Eternidad"],
+  ["#towerTitle","Torre de Acesso à Eternidade","Tower of Access to Eternity","Torre de Acceso a la Eternidad"],
   ["[data-close=\"towerScreen\"]","Fechar","Close","Cerrar"],
-  ["#towerStartBtn","🗼 Escalar a Torre (Pesadelo)","🗼 Climb the Tower (Nightmare)","🗼 Escalar la Torre (Pesadilla)"],
+  ["[data-tower-start-label]","Escalar a Torre","Climb the Tower","Escalar la Torre"],
+  ["[data-tower-start-mode]","Pesadelo","Nightmare","Pesadilla"],
   ["#resetProgressBtn","Apagar progresso local","Erase local progress","Borrar progreso local"],
   ["#helpTitle","Como jogar","How to play","Cómo jugar"],
   ["#helpScreen .tutorial-step:nth-child(1)","<b>1. Forme o grupo</b><p>Escolha quatro cartas. A esfera colorida de cada carta passa a fazer parte do tabuleiro.</p>","<b>1. Build your party</b><p>Pick four cards. Each card's colored orb becomes part of the board.</p>","<b>1. Forma tu grupo</b><p>Elige cuatro cartas. La esfera de color de cada carta pasa a formar parte del tablero.</p>"],
@@ -10821,10 +10822,11 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
     const box=document.getElementById('towerRankBox');
     if(box){
       const tm=towerMonthly(); const mk=towerMonthKey();
-      box.innerHTML='<div class="quests-box"><b>🏆 '+T('Ranking mensal','Monthly ranking','Ranking mensual')+' · '+mk+'</b>'
-        +'<div class="quest-row"><span>'+T('Seu recorde do mês','Your record this month','Tu récord del mes')+'</span><span>'+(tm[mk]||0)+' '+T('andares','floors','pisos')+'</span></div>'
-        +TOWER_RANK_REWARDS.map(r=>'<div class="quest-row"><span>'+r[0]+'</span><span>'+r[1]+'</span></div>').join('')
-        +'<small style="opacity:.7">'+T('O ranking global e a entrega dos prêmios serão ativados junto com o servidor.','Global ranking and prize delivery activate with the server.','El ranking global se activa con el servidor.')+'</small></div>';
+      const best=Number(localStorage.getItem('12r_tower_best')||0);
+      box.innerHTML='<div class="tower-ledger">'
+        +'<div class="tower-ledger-stats"><div><small>'+T('Recorde pessoal','Personal best','Récord personal')+'</small><b>'+best+'</b><span>'+T('andares','floors','pisos')+'</span></div><div><small>'+T('Marca do mês','Monthly mark','Marca del mes')+'</small><b>'+(tm[mk]||0)+'</b><span>'+mk+'</span></div><div><small>'+T('Escalonamento','Scaling','Escalado')+'</small><b>+20%</b><span>'+T('a cada ciclo','each cycle','por ciclo')+'</span></div></div>'
+        +'<div class="tower-reward-track"><small>'+T('Marcos mensais','Monthly milestones','Hitos mensuales')+'</small>'+TOWER_RANK_REWARDS.map(r=>'<div><span>'+r[0]+'</span><b>'+r[1]+'</b></div>').join('')+'</div>'
+        +'<p>'+T('Um oponente por andar. Ao concluir todo o elenco, a Torre reinicia com inimigos 20% mais fortes. A vida não se recupera entre andares; leve sua mochila.','One opponent per floor. After clearing the full roster, the Tower restarts with enemies 20% stronger. HP does not recover between floors; bring your bag.','Un oponente por piso. Tras completar todo el elenco, la Torre reinicia con enemigos 20% más fuertes. La vida no se recupera entre pisos; lleva tu mochila.')+'</p></div>';
     }
   }
   window.renderTowerScreen=renderTowerScreen;
@@ -11320,7 +11322,7 @@ async function runSmokeTest(){
     ok('3 grandes alianças nomeadas', ALLIANCES.length===3 && ALLIANCES.every(a=>a.membros.length===4) && ALLIANCES[0].nome.includes('Lago') && ALLIANCES[1].nome.includes('Dragão') && ALLIANCES[2].nome.includes('Barion'));
     ok('catálogo humano com cinco consumíveis e reinício condicionado', SHOP_ITEMS.length===5 && ['regulacao','regulacao-bernyce','flor-cerejeira','espadas-lendarias','bencao-eternidade'].every(id=>SHOP_ITEMS.some(item=>item.id===id)) && typeof usarItemBatalha==='function' && typeof updateRestartControls==='function');
     ok('login diário: ciclo de 7 dias', LOGIN_REWARDS.length===7 && LOGIN_REWARDS[6].c===80);
-    ok('Torre da Eternidade: 1 personagem/andar + cenário fase 9', (()=>{ const t2=buildTowerStage(1); return t2.enemies.length===1 && t2.bgUrl==='assets/bg/humanos/fase-09.jpg' && buildTowerStage(1+KINGDOMS.length).enemies[0].hp>t2.enemies[0].hp; })());
+    ok('Torre da Eternidade: 1 personagem/andar + cenário exclusivo', (()=>{ const t2=buildTowerStage(1); return t2.enemies.length===1 && t2.bgUrl==='assets/bg/torre-eternidade-andar-v11.png' && buildTowerStage(1+KINGDOMS.length).enemies[0].hp>t2.enemies[0].hp; })());
     ok('timer de missão, janela Pesadelo e mochila discreta estão na batalha', !!document.getElementById('missionTimer') && !!document.getElementById('nightmareTurnTimer') && !!document.getElementById('mochilaBtn') && !!document.getElementById('mochilaScreen'));
     ok('letreiro da história (7 parágrafos)', !!document.getElementById('crawlScroll') && introStoryParagraphs().length===7);
     ok('falas de entrada dos inimigos', Object.keys(ENEMY_LINES).length>=23 && typeof enemyLineFor==='function');
