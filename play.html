@@ -32,7 +32,7 @@
 <link rel="apple-touch-icon" href="assets/icon.svg">
 <link rel="preload" href="assets/audio/Ygdria_Prologo.mp3" as="audio" type="audio/mpeg">
 <link rel="preload" href="assets/audio/Ygdria_Humanos_1_9.mp3" as="audio" type="audio/mpeg">
-<link rel="stylesheet" href="styles-v10.css?v=11.0.85">
+<link rel="stylesheet" href="styles-v10.css?v=11.0.86">
 </head>
 <body>
 <div class="scene-bg" data-screen="menu"></div>
@@ -293,10 +293,14 @@
   </div>
 </div>
 <div class="pro-overlay" id="shopScreen" role="dialog" aria-modal="true" aria-labelledby="shopTitle">
-  <div class="pro-dialog">
+  <div class="pro-dialog market-dialog">
     <div class="dialog-header"><h2 class="dialog-title" id="shopTitle">Loja Real</h2><button class="ghost-btn" data-close="shopScreen">Fechar</button></div>
-    <div class="shop-coins" id="shopCoins">✦ 0Ks</div>
-    <div class="shop-list" id="shopList"></div>
+    <section class="market-hero">
+      <div class="market-seal" aria-hidden="true"><i>✦</i><b>✦</b></div>
+      <div class="market-copy"><small id="marketKicker">RELÍQUIAS DO REINO DOS HUMANOS</small><h3 id="marketHeading">Preparos para a próxima jornada</h3><p id="marketNote">Escolha o que levar para sua mochila antes da batalha.</p></div>
+      <div class="market-balance"><small>KALEGS</small><b class="shop-coins" id="shopCoins">✦ 0Ks</b><span id="marketBalanceNote">Tesouro de Kalegar</span></div>
+    </section>
+    <section class="market-shelf"><header><b id="marketShelfTitle">Acervo da Coroa</b><small id="marketShelfNote">5 relíquias disponíveis</small></header><div class="shop-list" id="shopList"></div></section>
   </div>
 </div>
 <div class="pro-overlay" id="towerScreen" role="dialog" aria-modal="true" aria-labelledby="towerTitle">
@@ -533,11 +537,11 @@
   </div>
 </div>
 <script>window.addEventListener('error',function(e){(window.__bootErrors=window.__bootErrors||[]).push({m:String(e.message).slice(0,200),l:e.lineno,c:e.colno})});</script>
-<script src="v10-config.js?v=11.0.85"></script>
-<script src="v10-animations.js?v=11.0.85"></script>
-<script src="humanos-lore-v10.js?v=11.0.85"></script>
+<script src="v10-config.js?v=11.0.86"></script>
+<script src="v10-animations.js?v=11.0.86"></script>
+<script src="humanos-lore-v10.js?v=11.0.86"></script>
 <script src="map-effects-v1.js?v=1.0.0" defer></script>
-<script src="game-v10.js?v=11.0.85" defer></script>
+<script src="game-v10.js?v=11.0.86" defer></script>
 
 </body>
 </html>

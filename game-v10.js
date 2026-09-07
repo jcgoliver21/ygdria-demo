@@ -1749,12 +1749,27 @@ function buyItem(id){
 function renderShop(){
   const list=document.getElementById('shopList'); if(!list) return;
   updateCoinBadge();
-  list.innerHTML=SHOP_ITEMS.map(i=>`
-    <div class="shop-item">
-      <span class="shop-icon human-item-icon item-${i.id}">${HUMAN_ITEM_ICONS[i.icon]||''}</span>
-      <div class="shop-copy"><b>${L(i.nome)}</b> <small class="shop-uso rarity-${i.raridade.toLowerCase()}">${i.raridade}</small><small>${L(i.desc)}</small><small class="shop-owned">${T('Na mochila','In bag','En la mochila')}: ${inventory[i.id]||0}</small></div>
-      <button class="overlay-btn shop-buy" data-item="${i.id}" ${coins<i.preco?'disabled':''}>✦ ${formatKalegs(i.preco)}</button>
-    </div>`).join('');
+  const title=document.getElementById('marketShelfTitle');
+  const note=document.getElementById('marketShelfNote');
+  const kicker=document.getElementById('marketKicker');
+  const heading=document.getElementById('marketHeading');
+  const copy=document.getElementById('marketNote');
+  const balanceNote=document.getElementById('marketBalanceNote');
+  if(title) title.textContent=T('Acervo da Coroa','Crown Collection','Acervo de la Corona');
+  if(note) note.textContent=`${SHOP_ITEMS.length} ${T('relíquias disponíveis','relics available','reliquias disponibles')}`;
+  if(kicker) kicker.textContent=T('RELÍQUIAS DO REINO DOS HUMANOS','HUMAN REALM RELICS','RELIQUIAS DEL REINO HUMANO');
+  if(heading) heading.textContent=T('Preparos para a próxima jornada','Supplies for the next journey','Preparativos para el próximo viaje');
+  if(copy) copy.textContent=T('Escolha o que levar para sua mochila antes da batalha.','Choose what to carry into your backpack before battle.','Elige qué llevar a tu mochila antes de la batalla.');
+  if(balanceNote) balanceNote.textContent=T('Tesouro de Kalegar','Kalegar treasury','Tesoro de Kalegar');
+  list.innerHTML=SHOP_ITEMS.map(i=>{
+    const owned=inventory[i.id]||0;
+    const affordable=coins>=i.preco;
+    return `<article class="shop-item market-relic rarity-${i.raridade.toLowerCase()}" data-item="${i.id}">
+      <span class="shop-icon human-item-icon item-${i.id}" aria-hidden="true">${HUMAN_ITEM_ICONS[i.icon]||''}</span>
+      <div class="shop-copy"><div class="market-item-heading"><small class="shop-uso">${L(i.raridade)}</small><b>${L(i.nome)}</b></div><p>${L(i.desc)}</p><small class="shop-owned"><span>${T('NA MOCHILA','IN BAG','EN LA MOCHILA')}</span> ${owned}</small></div>
+      <button class="overlay-btn shop-buy" data-item="${i.id}" ${affordable?'':'disabled'}><small>${T('COMPRAR','BUY','COMPRAR')}</small><b>✦ ${formatKalegs(i.preco)}</b></button>
+    </article>`;
+  }).join('');
   list.querySelectorAll('.shop-buy').forEach(b=>b.addEventListener('click',()=>buyItem(b.dataset.item)));
 }
 /* Estados transitórios dos consumíveis da missão atual. */

@@ -2328,6 +2328,35 @@ test('ícones ilustrados dos consumíveis carregam na loja sem regressão visual
   expect(errors).toEqual([]);
 });
 
+test('Mercado Central compra relíquias, desconta Kalegs e atualiza a mochila',async({page})=>{
+  const errors=await boot(page,'flow');
+  const result=await page.evaluate(()=>{
+    coins=400;
+    inventory={};
+    renderShop();
+    const before={
+      cards:document.querySelectorAll('#shopList .market-relic').length,
+      buttons:document.querySelectorAll('#shopList .shop-buy').length,
+      title:document.getElementById('marketShelfTitle')?.textContent,
+      balance:document.getElementById('shopCoins')?.textContent
+    };
+    document.querySelector('#shopList .shop-buy[data-item="regulacao"]')?.click();
+    return {
+      before,
+      coins,
+      owned:inventory.regulacao||0,
+      balance:document.getElementById('shopCoins')?.textContent,
+      bagCount:document.querySelector('#shopList [data-item="regulacao"] .shop-owned')?.textContent
+    };
+  });
+  expect(result.before).toMatchObject({cards:5,buttons:5,title:'Acervo da Coroa'});
+  expect(result.coins).toBe(310);
+  expect(result.owned).toBe(1);
+  expect(result.balance).toContain('310Ks');
+  expect(result.bagCount).toContain('1');
+  expect(errors).toEqual([]);
+});
+
 test('Pesadelo devolve o turno aos inimigos após 30 segundos sem jogada',async({page})=>{
   const errors=await boot(page,'flow');
   await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); window.__12rQA.nightmareTurnProbe(110); });
@@ -2974,7 +3003,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.85');
+  expect(registration.caches).toContain('12r-v11.0.86');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -3138,7 +3167,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.85');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.86');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 
