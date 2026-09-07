@@ -20,13 +20,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.84/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.84/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.84/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.84/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.84/);
-  assert.match(config,/version:'v11\.0\.84'/);
-  assert.match(sw,/12r-v11\.0\.84/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.85/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.85/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.85/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.85/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.85/);
+  assert.match(config,/version:'v11\.0\.85'/);
+  assert.match(sw,/12r-v11\.0\.85/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -139,7 +139,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.84/);
+  assert.match(sw,/12r-v11\.0\.85/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -233,13 +233,17 @@ check('inimigos exclusivos usam folhas reais, impactos e arena viva',()=>{
   for(const needle of ['enemyOriginalAttack','arena-petals','arena-cold-fog','arena-world-drift','.enemy-unit.dead .unit-ground-shadow','@keyframes enemyDefeatGroundedFallback']) assert.ok(css.includes(needle),`${needle} ausente`);
 });
 
-check('Fase 10 usa trilhas autorais com troca para o confronto final',()=>{
-  for(const file of ['Ygdria_10_Sombras_Que_Devoram.mp3','Ygdria_10_Sombras_Que_Devoram_Final.mp3']){
+check('Prólogo e Reino dos Humanos usam trilhas autorais com troca para o confronto final',()=>{
+  for(const file of ['Ygdria_Prologo.mp3','Ygdria_Humanos_1_9.mp3','Ygdria_10_Sombras_Que_Devoram.mp3','Ygdria_10_Sombras_Que_Devoram_Final.mp3']){
     assert.ok(fs.existsSync(path.join(root,'assets','audio',file)),`${file}: trilha ausente`);
   }
-  assert.match(game,/function stage10MusicSelection\(\)/);
-  assert.match(game,/worldRun\.fase!==9/);
+  assert.match(html,/rel="preload" href="assets\/audio\/Ygdria_Prologo\.mp3"/);
+  assert.match(html,/rel="preload" href="assets\/audio\/Ygdria_Humanos_1_9\.mp3"/);
+  assert.match(game,/function stageMusicForWorldRun\(\)/);
+  assert.match(game,/worldRun\.fase>=0&&worldRun\.fase<=8/);
   assert.match(game,/worldRun\.nivel===5\?'final':'base'/);
+  assert.match(game,/prologue:\{src:'assets\/audio\/Ygdria_Prologo\.mp3'/);
+  assert.match(game,/humanos:\{src:'assets\/audio\/Ygdria_Humanos_1_9\.mp3'/);
   assert.match(game,/STAGE10_MUSIC_GAIN=\.24/);
   assert.match(game,/STAGE10_LOOP_CROSSFADE=\.8/);
   assert.match(game,/loopOut:\.95/);
@@ -250,6 +254,15 @@ check('Fase 10 usa trilhas autorais com troca para o confronto final',()=>{
   assert.match(game,/12r_stage_music_volume/);
   assert.match(game,/filter\.type='lowpass'/);
   assert.match(game,/function playLicensedStageMusic\(key\)/);
+  assert.match(game,/playLicensedStageMusic\('prologue'\)/);
+});
+
+check('Perfil e Conquistas usam painel de jornada e galeria categorizada',()=>{
+  for(const needle of ['profile-dialog','profile-banner','profile-journey','profile-highlights','profile-achievement-section','achievement-group','achievement-list']) assert.ok(html.includes(needle)||game.includes(needle)||css.includes(needle),`${needle} ausente`);
+  assert.match(game,/const groups=\[/);
+  assert.match(game,/profile-crest/);
+  assert.match(css,/#achScreen \.profile-dialog/);
+  assert.match(css,/\.achievement-list\{display:grid/);
 });
 
 check('Maril usa folhas corporais aprovadas e efeitos reais de água separados',()=>{
@@ -544,7 +557,7 @@ check('mapa vertical preserva geografia e expande somente o oceano lateral',()=>
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.84');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.85');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
@@ -717,7 +730,8 @@ check('dados locais de conta são escapados antes de entrar no HTML',()=>{
   assert.match(game,/const safeCategory=\['damage','support','system','action'\]\.includes\(category\)/);
   assert.match(game,/function normalizeProfile\(raw=\{\}\)/);
   assert.match(game,/KINGDOMS\.forEach\(character=>\{/);
-  assert.match(game,/escapeHtml\(v\)/);
+  assert.match(game,/escapeHtml\(displayName\)/);
+  assert.match(game,/escapeHtml\(favName\)/);
 });
 
 check('vitrine de movimentos e HP acessível estão integrados',()=>{

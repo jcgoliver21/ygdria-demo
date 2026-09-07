@@ -721,24 +721,26 @@ let musicMoodMode = 0;
 let musicBossLayer = false;
 let musicFinalBoss = false;
 const activeMusicNodes = new Set();
-/* Fase 10: as trilhas autorais têm barramento e volume próprios. Cada retorno
-   ao início usa duas vozes brevemente sobrepostas. A reentrada acontece antes
-   da cauda quase silenciosa do MP3, para o loop permanecer musical e contínuo. */
+/* Trilhas autorais: usam barramento e volume próprios. Cada retorno ao início
+   usa duas vozes brevemente sobrepostas. A reentrada acontece antes da cauda
+   quase silenciosa do MP3, para o loop permanecer musical e contínuo. */
 const STAGE10_MUSIC_GAIN=.24;
 const STAGE10_LOOP_CROSSFADE=.8;
-const STAGE10_MUSIC=Object.freeze({
-  /* Os dois masters têm caudas diferentes. Estes pontos encerram cada voz
-     enquanto ela ainda tem corpo musical; nunca deixamos o MP3 chegar ao
-     trecho de fade quase silencioso antes de reabrir a próxima volta. */
+const LICENSED_STAGE_MUSIC=Object.freeze({
+  /* Cada master informa seu próprio ponto de reentrada, antes da cauda. */
+  prologue:{src:'assets/audio/Ygdria_Prologo.mp3',loopOut:1.8},
+  humanos:{src:'assets/audio/Ygdria_Humanos_1_9.mp3',loopOut:.9},
   base:{src:'assets/audio/Ygdria_10_Sombras_Que_Devoram.mp3',loopOut:.95},
   final:{src:'assets/audio/Ygdria_10_Sombras_Que_Devoram_Final.mp3',loopOut:1.35}
 });
 let stageMusicActive=null;
 let stageMusicSelection=null;
 
-function stage10MusicSelection(){
-  if(!worldRun?.active||worldRun.fase!==9) return null;
-  return worldRun.nivel===5?'final':'base';
+function stageMusicForWorldRun(){
+  if(!worldRun?.active) return null;
+  if(worldRun.fase>=0&&worldRun.fase<=8) return 'humanos';
+  if(worldRun.fase===9) return worldRun.nivel===5?'final':'base';
+  return null;
 }
 function stageMusicTargetGain(){ return STAGE10_MUSIC_GAIN*masterVolume*stageMusicVolume; }
 function rampStageMusicVoice(voice,value,seconds=.22){
@@ -799,7 +801,7 @@ function createStageMusicVoice(track){
   return voice;
 }
 function prepareStageMusic(key){
-  const track=STAGE10_MUSIC[key];
+  const track=LICENSED_STAGE_MUSIC[key];
   if(!track||!ensureAudio()) return track||null;
   if(!track.activeVoice){
     const voice=createStageMusicVoice(track);
@@ -1112,7 +1114,7 @@ function scheduleMusicBar(sceneIdx,generation){
 }
 
 function playStageMusic(sceneIdx){
-  const licensedTrack=stage10MusicSelection();
+  const licensedTrack=stageMusicForWorldRun();
   if(licensedTrack){
     stopGeneratedMusic();
     playLicensedStageMusic(licensedTrack);
@@ -1153,7 +1155,9 @@ function toggleMusic(){
   localStorage.setItem('12r_muted',musicMuted?'true':'false');
   const btn=document.getElementById('muteBtn');
   if(btn) btn.textContent=musicMuted?'🔇':'🔊';
-  if(musicMuted) stopMusic(); else if(currentTrack>=0||stage10MusicSelection()) playStageMusic(activeStageData?.scene??stageIndex);
+  if(musicMuted) stopMusic();
+  else if(document.getElementById('introScreen')?.classList.contains('show')) startIntroMusic();
+  else if(currentTrack>=0||stageMusicForWorldRun()) playStageMusic(activeStageData?.scene??stageIndex);
 }
 function cycleMusicMood(){
   musicMoodMode=(musicMoodMode+1)%3;
@@ -1498,15 +1502,28 @@ function renderQuestsPanel(){
   box.innerHTML=html;
 }
 function renderAchievements(){
-  renderQuestsPanel();
+  /* Missões diárias têm seu próprio destino no menu. Não comprimem mais o
+     perfil, que fica reservado à jornada e às conquistas do aventureiro. */
+  document.getElementById('questsPanel')?.remove();
   renderProfileStats();
   const grid=document.getElementById('achGrid'); if(!grid) return;
-  grid.innerHTML=ACHIEVEMENTS.map(a=>`
-    <div class="ach-item${unlockedAch[a.id]?' unlocked':''}">
-      <span class="ach-icon">${a.icon}</span>
-      <div><b>${L(a.nome)}</b><small>${L(a.desc)}</small></div>
-      ${unlockedAch[a.id]?'<span class="ach-check">✓</span>':'<span class="ach-lock">🔒</span>'}
-    </div>`).join('');
+  const groups=[
+    {title:T('Jornada','Journey','Jornada'),ids:['first-win','no-damage','combo8','powerup10','stars-all']},
+    {title:T('Coleção','Collection','Colección'),ids:['colecionador','bestia10','rich']},
+    {title:T('Desafios','Challenges','Desafíos'),ids:['streak3','daily','lenda','dungeon','tower5','tower10','dark-court','lv5']}
+  ];
+  const byId=new Map(ACHIEVEMENTS.map(achievement=>[achievement.id,achievement]));
+  const overview=document.getElementById('achievementOverview');
+  if(overview) overview.textContent=`${Object.keys(unlockedAch).length}/${ACHIEVEMENTS.length}`;
+  grid.innerHTML=groups.map(group=>{
+    const entries=group.ids.map(id=>byId.get(id)).filter(Boolean);
+    return `<section class="achievement-group"><header><b>${escapeHtml(group.title)}</b><small>${entries.filter(achievement=>unlockedAch[achievement.id]).length}/${entries.length}</small></header><div class="achievement-list">${entries.map(a=>`
+      <div class="ach-item${unlockedAch[a.id]?' unlocked':''}">
+        <span class="ach-icon">${a.icon}</span>
+        <div><b>${L(a.nome)}</b><small>${L(a.desc)}</small></div>
+        ${unlockedAch[a.id]?'<span class="ach-check">✓</span>':'<span class="ach-lock">🔒</span>'}
+      </div>`).join('')}</div></section>`;
+  }).join('');
 }
 
 /* v9.2 · Loja de consumíveis: 20 itens (uso 'auto' = disparam sozinhos ao entrar na
@@ -6053,22 +6070,36 @@ function flushRunToProfile(won){
 function renderProfileStats(){
   const el=document.getElementById('profileStats'); if(!el) return;
   const fav=Object.entries(profile.heroUse).sort((a,b)=>b[1]-a[1])[0];
-  const favName=fav?L(KINGDOMS.find(k=>k.id===fav[0])?.nome||fav[0]):'—';
+  const favHero=fav?KINGDOMS.find(k=>k.id===fav[0]):null;
+  const favName=favHero?L(favHero.nome):'—';
   const towerBest=Number(localStorage.getItem('12r_tower_best')||0);
   const achCount=Object.keys(unlockedAch).length;
   const nextXp=profileXpForNext();
-  const rows=[
-    [T('Nível do Perfil','Profile Level','Nivel del Perfil'),`Lv ${profileLevel()}${nextXp?` · ${profileXp}/${nextXp} XP`:''}`],
-    [T('Vitórias','Wins','Victorias'),profile.wins],[T('Derrotas','Losses','Derrotas'),profile.losses],
-    [T('Dano total','Total damage','Daño total'),profile.damage.toLocaleString('pt-BR')],
-    [T('Maior combo','Best combo','Mejor combo'),'×'+profile.maxCombo],
-    [T('Power-ups criados','Power-ups crafted','Power-ups creados'),profile.powerUps],
-    [T('Herói favorito','Favorite hero','Héroe favorito'),favName],
-    [T('Melhor andar da Torre','Best tower floor','Mejor piso de la Torre'),towerBest||'—'],
-    [T('Kalegs','Kalegs','Kalegs'),'✦ '+formatKalegs(coins)],
-    [T('Conquistas','Achievements','Logros'),`${achCount}/${ACHIEVEMENTS.length}`]
-  ];
-  el.innerHTML=rows.map(([l,v])=>`<div class="pstat"><small>${escapeHtml(l)}</small><b>${escapeHtml(v)}</b></div>`).join('');
+  const level=profileLevel();
+  const xpLabel=nextXp?`${profileXp}/${nextXp} XP`:'XP Máximo';
+  const xpWidth=nextXp?Math.max(0,Math.min(100,Math.round(profileXp/nextXp*100))):100;
+  const displayName=account?.displayName||account?.username||T('Aventureiro de Ygdria','Ygdria Adventurer','Aventurero de Ygdria');
+  const totalBattles=profile.wins+profile.losses;
+  const winRate=totalBattles?Math.round(profile.wins/totalBattles*100):0;
+  el.innerHTML=`
+    <section class="profile-banner">
+      <div class="profile-crest" aria-hidden="true"><span>✦</span></div>
+      <div class="profile-identity"><small>${T('CRÔNICA DO AVENTUREIRO','ADVENTURER CHRONICLE','CRÓNICA DEL AVENTURERO')}</small><h3>${escapeHtml(displayName)}</h3><p>${T('Reino dos Humanos · jornada em andamento','Human Realm · journey in progress','Reino de los Humanos · viaje en curso')}</p></div>
+      <div class="profile-level"><small>${T('NÍVEL','LEVEL','NIVEL')}</small><b>${level}</b></div>
+      <div class="profile-xp"><span><b>${escapeHtml(xpLabel)}</b><small>${T('Experiência do perfil','Profile experience','Experiencia de perfil')}</small></span><i><em style="width:${xpWidth}%"></em></i></div>
+    </section>
+    <section class="profile-section profile-journey"><header><b>${T('Jornada','Journey','Jornada')}</b><small>${totalBattles?`${winRate}% ${T('de vitórias','wins','victorias')}`:T('Primeira batalha aguarda','First battle awaits','La primera batalla espera')}</small></header><div class="profile-metric-grid">
+      <article><small>${T('VITÓRIAS','WINS','VICTORIAS')}</small><b>${profile.wins}</b></article>
+      <article><small>${T('DERROTAS','LOSSES','DERROTAS')}</small><b>${profile.losses}</b></article>
+      <article><small>${T('DANO TOTAL','TOTAL DAMAGE','DAÑO TOTAL')}</small><b>${profile.damage.toLocaleString('pt-BR')}</b></article>
+      <article><small>${T('MAIOR COMBO','BEST COMBO','MEJOR COMBO')}</small><b>×${profile.maxCombo}</b></article>
+    </div></section>
+    <section class="profile-section profile-highlights"><header><b>${T('Destaques','Highlights','Destacados')}</b><small>${achCount}/${ACHIEVEMENTS.length} ${T('conquistas','achievements','logros')}</small></header><div class="profile-highlight-grid">
+      <article class="profile-favorite">${favHero?`<img src="${IMGL(favHero.cardThumb||favHero.img)}" alt="" loading="lazy">`:'<span class="profile-empty-card">✦</span>'}<div><small>${T('HERÓI FAVORITO','FAVORITE HERO','HÉROE FAVORITO')}</small><b>${escapeHtml(favName)}</b></div></article>
+      <article><small>${T('MELHOR ANDAR','BEST FLOOR','MEJOR PISO')}</small><b>${towerBest||'—'}</b><span>${T('Torre da Eternidade','Tower of Eternity','Torre de la Eternidad')}</span></article>
+      <article><small>KALEGS</small><b>✦ ${escapeHtml(formatKalegs(coins))}</b><span>${T('Tesouro reunido','Treasure gathered','Tesoro reunido')}</span></article>
+      <article><small>${T('POWER-UPS','POWER-UPS','POTENCIADORES')}</small><b>${profile.powerUps}</b><span>${T('Criados em batalha','Crafted in battle','Creados en batalla')}</span></article>
+    </div></section>`;
 }
 
 /* v10 · Backup de progresso com esquema explícito. Dados de conta, e-mail,
@@ -11101,8 +11132,8 @@ function renderIntroTexts(){
   const btn=document.getElementById('introNext');
   if(btn) btn.textContent=T('Pular ⏭','Skip ⏭','Saltar ⏭');
 }
-/* 🎵 Música da introdução: arpejo suave gerado no WebAudio (para no Pular/fim) */
-let introMusicOn=false, introMusicTimer=null, introMusicStarting=false;
+/* 🎵 Música da introdução: master autoral com a mesma reentrada contínua das fases. */
+let introMusicOn=false, introMusicStarting=false;
 async function startIntroMusic(){
   if(introMusicOn||introMusicStarting) return;
   const ctx=ensureAudio(); if(!ctx) return;
@@ -11114,19 +11145,14 @@ async function startIntroMusic(){
     if(ctx.state!=='running') return;
   }catch(e){ return; }
   finally{ introMusicStarting=false; }
+  if(musicMuted) return;
   introMusicOn=true;
-  const acordes=[[220,277.2,329.6],[196,246.9,293.7],[174.6,220,261.6],[196,246.9,293.7]];
-  let barra=0;
-  const loop=()=>{
-    if(!introMusicOn) return;
-    const notas=acordes[barra%acordes.length]; barra++;
-    beep(notas[0]/2,1.9,'sine',.045);
-    notas.forEach((f,i)=>{ beep(f,0.95,'triangle',.05,i*0.55); beep(f*2,0.55,'sine',.026,i*0.55+0.28); });
-    introMusicTimer=setTimeout(loop,1800);
-  };
-  loop();
+  playLicensedStageMusic('prologue');
 }
-function stopIntroMusic(){ introMusicOn=false; introMusicStarting=false; clearTimeout(introMusicTimer); introMusicTimer=null; }
+function stopIntroMusic(){
+  introMusicOn=false; introMusicStarting=false;
+  if(stageMusicSelection==='prologue') stopLicensedStageMusic();
+}
 
 /* v9.1 · Smoke test automatizado de gameplay: abra com ?qa=smoke
    Joga de verdade: escala time, entra em batalha, dispara habilidade,

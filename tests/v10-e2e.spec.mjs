@@ -2335,9 +2335,19 @@ test('Pesadelo devolve o turno aos inimigos após 30 segundos sem jogada',async(
   expect(errors).toEqual([]);
 });
 
-test('Fase 10 usa as duas trilhas licenciadas com mixagem protegida',async({page})=>{
+test('Prólogo e Reino dos Humanos usam trilhas licenciadas com mixagem protegida',async({page})=>{
   const errors=await boot(page,'flow');
   const audio=await page.evaluate(()=>{
+    startIntroMusic();
+    const prologueTrack=stageMusicActive;
+    const prologue={key:stageMusicSelection,src:prologueTrack?.audio?.getAttribute('src'),loop:prologueTrack?.audio?.loop,gain:stageMusicTargetGain()};
+    stopIntroMusic();
+    worldRun={active:true,fase:0,nivel:1,storyMode:false};
+    chosenIds=['adriel-jovem','berenice-jovem','galateia-jovem','acqua-jovem'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    beginGame(0); skipStory();
+    const humanTrack=stageMusicActive;
+    const human={key:stageMusicSelection,src:humanTrack?.audio?.getAttribute('src'),loop:humanTrack?.audio?.loop,gain:stageMusicTargetGain(),filter:humanTrack?.filter?.type};
+    stopMusic();
     worldRun={active:true,fase:9,nivel:1,storyMode:false};
     chosenIds=['adriel-jovem','gareth','roland','elizier'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
     beginGame(0); skipStory();
@@ -2355,8 +2365,10 @@ test('Fase 10 usa as duas trilhas licenciadas com mixagem protegida',async({page
     playStageMusic(activeStageData.scene);
     const finalTrack=stageMusicActive;
     const final={key:stageMusicSelection,src:finalTrack?.audio?.getAttribute('src'),loop:finalTrack?.audio?.loop,gain:stageMusicTargetGain(),filter:finalTrack?.filter?.type,loopOut:finalTrack?.loopOut};
-    return {base,loop,paused,resume,final};
+    return {prologue,human,base,loop,paused,resume,final};
   });
+  expect(audio.prologue).toMatchObject({key:'prologue',src:'assets/audio/Ygdria_Prologo.mp3',loop:false});
+  expect(audio.human).toMatchObject({key:'humanos',src:'assets/audio/Ygdria_Humanos_1_9.mp3',loop:false,filter:'lowpass'});
   expect(audio.base).toMatchObject({key:'base',src:'assets/audio/Ygdria_10_Sombras_Que_Devoram.mp3',loop:false});
   expect(audio.final).toMatchObject({key:'final',src:'assets/audio/Ygdria_10_Sombras_Que_Devoram_Final.mp3',loop:false,filter:'lowpass',loopOut:1.35});
   expect(audio.base.gain).toBeLessThan(.12);
@@ -2377,6 +2389,8 @@ test('Fase 10 usa as duas trilhas licenciadas com mixagem protegida',async({page
       return {type:response.headers.get('content-type'),duration};
     };
     return Promise.all([
+      inspect('assets/audio/Ygdria_Prologo.mp3'),
+      inspect('assets/audio/Ygdria_Humanos_1_9.mp3'),
       inspect('assets/audio/Ygdria_10_Sombras_Que_Devoram.mp3'),
       inspect('assets/audio/Ygdria_10_Sombras_Que_Devoram_Final.mp3')
     ]);
@@ -2687,6 +2701,25 @@ test('Benção da Eternidade reinicia somente a missão atual das sequências',a
   expect(errors).toEqual([]);
 });
 
+test('Perfil & Conquistas apresenta jornada, destaques e galeria categorizada',async({page})=>{
+  const errors=await boot(page,'flow');
+  const profile=await page.evaluate(()=>{
+    profile={wins:7,losses:2,damage:18420,maxCombo:11,powerUps:23,heroUse:{'adriel-jovem':6}};
+    unlockedAch={'first-win':{t:1},'combo8':{t:1}};
+    renderAchievements();
+    return {
+      banner:Boolean(document.querySelector('.profile-banner')),
+      metrics:document.querySelectorAll('.profile-metric-grid article').length,
+      highlights:document.querySelectorAll('.profile-highlight-grid article').length,
+      groups:document.querySelectorAll('.achievement-group').length,
+      items:document.querySelectorAll('.ach-item').length,
+      overview:document.getElementById('achievementOverview')?.textContent
+    };
+  });
+  expect(profile).toMatchObject({banner:true,metrics:4,highlights:4,groups:3,items:16,overview:'2/16'});
+  expect(errors).toEqual([]);
+});
+
 test('pares de soldados no Pesadelo concluem o contra-ataque e devolvem o turno',async({page})=>{
   const errors=await boot(page,'flow');
   const reports=await page.evaluate(async()=>{
@@ -2941,7 +2974,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.84');
+  expect(registration.caches).toContain('12r-v11.0.85');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -3105,7 +3138,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.84');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.85');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 
