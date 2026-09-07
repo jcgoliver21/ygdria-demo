@@ -2323,8 +2323,28 @@ test('ícones ilustrados dos consumíveis carregam na loja sem regressão visual
     {src:'/assets/items/humanos/regulacao-bernyce.png',loaded:true},
     {src:'/assets/items/humanos/flor-cerejeira.png',loaded:true},
     {src:'/assets/items/humanos/espadas-lendarias.png',loaded:true},
-    {src:'/assets/items/humanos/bencao-eternidade.png',loaded:true}
+    {src:'/assets/items/humanos/bencao-eternidade.png',loaded:true},
+    {src:'/assets/items/luz/elixir-divino-vfx.png',loaded:true},
+    {src:'/assets/items/luz/luz-protetora-vfx.png',loaded:true},
+    {src:'/assets/items/luz/lanca-divina-vfx.png',loaded:true},
+    {src:'/assets/items/luz/espelho-ygdria-vfx.png',loaded:true}
   ]);
+  expect(errors).toEqual([]);
+});
+
+test('Mercado usa emblemas das esferas, idioma ativo e compra compacta sem sobrepor texto',async({page})=>{
+  const errors=await boot(page,'flow');
+  const result=await page.evaluate(()=>{
+    renderShop();
+    for(const toggle of document.querySelectorAll('#shopList .market-realm-toggle')) toggle.click();
+    const titles=[...document.querySelectorAll('#shopList .market-realm-title small')].map(node=>node.textContent?.trim());
+    const emblems=[...document.querySelectorAll('#shopList .market-realm-sphere svg')].map(node=>node.querySelector('path')!==null);
+    const card=document.querySelector('#shopList [data-item="elixir-divino"]');
+    const copy=card?.querySelector('.shop-copy')?.getBoundingClientRect();
+    const buy=card?.querySelector('.shop-buy')?.getBoundingClientRect();
+    return {titles,emblems,buyBelow:!!copy&&!!buy&&buy.top>=copy.bottom-1,compact:!!buy&&buy.width<160};
+  });
+  expect(result).toEqual({titles:['Reino dos Humanos','Reino da Luz'],emblems:[true,true],buyBelow:true,compact:true});
   expect(errors).toEqual([]);
 });
 
@@ -3024,7 +3044,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.87');
+  expect(registration.caches).toContain('12r-v11.0.88');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -3188,7 +3208,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.87');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.88');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

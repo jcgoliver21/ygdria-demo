@@ -20,13 +20,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.87/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.87/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.87/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.87/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.87/);
-  assert.match(config,/version:'v11\.0\.87'/);
-  assert.match(sw,/12r-v11\.0\.87/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.88/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.88/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.88/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.88/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.88/);
+  assert.match(config,/version:'v11\.0\.88'/);
+  assert.match(sw,/12r-v11\.0\.88/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -52,8 +52,15 @@ check('consumíveis dos Humanos e da Luz têm VFX, inventário migrável e efeit
     assert.ok(fs.existsSync(path.join(root,'assets','items','humanos',`${id}.png`)),`arte do consumível ${id} ausente`);
     assert.match(game,new RegExp(`assets/items/humanos/${id}\\.png`));
   }
+  for(const file of ['elixir-divino-vfx.png','luz-protetora-vfx.png','lanca-divina-vfx.png','espelho-ygdria-vfx.png']){
+    assert.ok(fs.existsSync(path.join(root,'assets','items','luz',file)),`arte VFX da Luz ${file} ausente`);
+    assert.ok(game.includes(`assets/items/luz/${file}`),`referência à arte VFX da Luz ${file} ausente`);
+  }
   assert.match(game,/const INVENTORY_CATALOG_VERSION='realm-consumables-v2'/);
   assert.match(game,/const LIGHT_ITEM_ICONS=/);
+  assert.match(game,/KINGDOM_ICON\[realm\.id\]/);
+  assert.doesNotMatch(game,/symbol:'♛'/);
+  assert.doesNotMatch(game,/symbol:'☀'/);
   assert.match(game,/function openMirrorHeroPicker\(\)/);
   assert.match(game,/function triggerMirrorCopyAttack\(colorIdx\)/);
   assert.match(game,/function clearCorruptedBoardPieces\(\)/);
@@ -142,7 +149,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.87/);
+  assert.match(sw,/12r-v11\.0\.88/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -571,7 +578,7 @@ check('mapa vertical preserva geografia e expande somente o oceano lateral',()=>
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.87');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.88');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);

@@ -1571,10 +1571,10 @@ const HUMAN_ITEM_ICONS={
   eternity:'<img src="assets/items/humanos/bencao-eternidade.png" alt="" draggable="false">'
 };
 const LIGHT_ITEM_ICONS={
-  'divine-elixir':'<span class="light-item-art light-item-elixir" aria-hidden="true"><i></i><b></b></span>',
-  'protective-light':'<span class="light-item-art light-item-protect" aria-hidden="true"><i></i><b></b></span>',
-  'divine-lance':'<span class="light-item-art light-item-lance" aria-hidden="true"><i></i><b></b></span>',
-  'ygdria-mirror':'<span class="light-item-art light-item-mirror" aria-hidden="true"><i></i><b></b></span>'
+  'divine-elixir':'<img src="assets/items/luz/elixir-divino-vfx.png" alt="" draggable="false">',
+  'protective-light':'<img src="assets/items/luz/luz-protetora-vfx.png" alt="" draggable="false">',
+  'divine-lance':'<img src="assets/items/luz/lanca-divina-vfx.png" alt="" draggable="false">',
+  'ygdria-mirror':'<img src="assets/items/luz/espelho-ygdria-vfx.png" alt="" draggable="false">'
 };
 function itemIconMarkup(item){ return HUMAN_ITEM_ICONS[item?.icon]||LIGHT_ITEM_ICONS[item?.icon]||'✦'; }
 function sanitizeInventory(value){
@@ -1758,8 +1758,8 @@ function buyItem(id){
   sfxSelect();
 }
 const MARKET_REALMS=Object.freeze([
-  {id:'humanos',name:['Reino dos Humanos','Human Realm','Reino de los Humanos'],symbol:'♛'},
-  {id:'luz',name:['Reino da Luz','Realm of Light','Reino de la Luz'],symbol:'☀'}
+  {id:'humanos',name:['Reino dos Humanos','Human Realm','Reino de los Humanos']},
+  {id:'luz',name:['Reino da Luz','Realm of Light','Reino de la Luz']}
 ]);
 const marketOpenRealms=new Set();
 function renderShop(){
@@ -1776,10 +1776,11 @@ function renderShop(){
   list.innerHTML=MARKET_REALMS.map(realm=>{
     const items=SHOP_ITEMS.filter(item=>item.reino===realm.id);
     const open=marketOpenRealms.has(realm.id);
+    const label=T(...realm.name);
     return `<section class="market-realm market-realm-${realm.id}${open?' open':''}" data-realm="${realm.id}">
       <button class="market-realm-toggle" type="button" aria-expanded="${open}" data-market-realm="${realm.id}">
-        <span class="market-realm-sphere realm-${realm.id}" aria-hidden="true"><i>${realm.symbol}</i></span>
-        <span class="market-realm-title"><small>${L(realm.name)}</small><b>${items.length} ${T('itens disponíveis','items available','objetos disponibles')}</b></span>
+        <span class="market-realm-sphere realm-${realm.id}" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false">${KINGDOM_ICON[realm.id]||''}</svg></span>
+        <span class="market-realm-title"><small>${label}</small><b>${items.length} ${T('itens disponíveis','items available','objetos disponibles')}</b></span>
         <span class="market-realm-chevron" aria-hidden="true">⌄</span>
       </button>
       <div class="market-realm-items">${items.map(i=>{
@@ -1851,7 +1852,7 @@ function playConsumableVfx(id){
   const fx=document.createElement('div');
   fx.className=`consumable-vfx consumable-vfx-${id}`;
   fx.setAttribute('aria-hidden','true');
-  const particles=id==='regulacao'?18:id==='regulacao-bernyce'?28:id==='flor-cerejeira'?24:10;
+  const particles={regulacao:18,'regulacao-bernyce':28,'flor-cerejeira':24,'elixir-divino':22,'luz-protetora':26,'lanca-divina':18,'espelho-ygdria':24}[id]||10;
   for(let i=0;i<particles;i++){
     const particle=document.createElement('i');
     particle.style.setProperty('--i',String(i));
