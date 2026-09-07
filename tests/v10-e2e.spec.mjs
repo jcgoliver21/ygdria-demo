@@ -2421,13 +2421,14 @@ test('Mercado usa acordeões por reino e a Luz aplica Elixir, escudo, lança e E
     const copy=document.querySelector('#mirrorCopy-'+mirroredHero.id+' .hero-sprite-sheet,#mirrorCopy-'+mirroredHero.id+' .hero-sprite-image');
     const originalRect=original?.getBoundingClientRect(),copyRect=copy?.getBoundingClientRect();
     const mirrorExact=Boolean(original&&copy&&original.dataset.hitSrc===copy.dataset.hitSrc&&original.classList.contains('flip')===copy.classList.contains('flip')&&Math.abs((originalRect?.height||0)-(copyRect?.height||0))<1&&getComputedStyle(copy).opacity==='1');
+    const copyBesideHero=Boolean(originalRect&&copyRect&&Math.abs((copyRect.left+copyRect.width/2)-(originalRect.left+originalRect.width/2))<=originalRect.width*.7&&Math.abs(copyRect.bottom-originalRect.bottom)<=2);
     const mirrorDamage=triggerMirrorCopyAttack(ACTIVE[0]);
     await new Promise(resolve=>setTimeout(resolve,60));
     const mirrorAttackAction=document.getElementById('mirrorCopy-'+mirroredHero.id)?.dataset.action;
     const overflow=[...document.querySelectorAll('.market-realm,.market-relic')].some(element=>element.scrollWidth>element.clientWidth+1);
-    return {opened,hpRaised:playerHP>hpBefore,attackBuff:atkBuffTurns,shieldTurns,enemyDamage:lanceDamage,mirror:mirrorCopyHeroIndex,mirrorVisible:!!document.querySelector('.mirror-copy-avatar'),mirrorExact,mirrorDamage,mirrorAttackAction,lightItems:document.querySelectorAll('.market-realm-luz .market-relic').length,overflow};
+    return {opened,hpRaised:playerHP>hpBefore,attackBuff:atkBuffTurns,shieldTurns,enemyDamage:lanceDamage,mirror:mirrorCopyHeroIndex,mirrorVisible:!!document.querySelector('.mirror-copy-avatar'),mirrorExact,copyBesideHero,mirrorDamage,mirrorAttackAction,lightItems:document.querySelectorAll('.market-realm-luz .market-relic').length,overflow};
   });
-  expect(result).toMatchObject({opened:true,hpRaised:true,attackBuff:1,shieldTurns:2,enemyDamage:200,mirrorVisible:true,mirrorExact:true,mirrorAttackAction:'attack',lightItems:4,overflow:false});
+  expect(result).toMatchObject({opened:true,hpRaised:true,attackBuff:1,shieldTurns:2,enemyDamage:200,mirrorVisible:true,mirrorExact:true,copyBesideHero:true,mirrorAttackAction:'attack',lightItems:4,overflow:false});
   expect(result.mirrorDamage).toBeGreaterThan(0);
   expect(Number.isInteger(result.mirror)).toBe(true);
   expect(errors).toEqual([]);
@@ -3079,7 +3080,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.91');
+  expect(registration.caches).toContain('12r-v11.0.92');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -3243,7 +3244,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.91');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.92');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 
