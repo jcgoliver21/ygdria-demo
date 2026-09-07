@@ -2038,6 +2038,38 @@ test('nova fase volta ao idle e trocar equipe encerra a luta oculta',async({page
   expect(errors).toEqual([]);
 });
 
+test('protagonistas fixos entram em toda missão de História e não atingem o modo livre',async({page})=>{
+  const errors=await boot(page,'flow');
+  const audit=await page.evaluate(()=>{
+    const nameOf=index=>KINGDOMS[index]?.id;
+    const fixedByPhase=STORY_RULES.map((rule,fase)=>{
+      worldRun={active:true,fase,nivel:1,storyMode:true};
+      chosenIds=[];
+      prepareStorySelection();
+      return chosenIds.map(nameOf);
+    });
+    const adriel=KINGDOMS.findIndex(hero=>hero.id==='adriel-jovem');
+    const berenice=KINGDOMS.findIndex(hero=>hero.id==='berenice-jovem');
+    const galateia=KINGDOMS.findIndex(hero=>hero.id==='galateia-jovem');
+    const gareth=KINGDOMS.findIndex(hero=>hero.id==='gareth');
+    worldRun={active:true,fase:3,nivel:1,storyMode:true};
+    chosenIds=[berenice,galateia,gareth];
+    beginGame(0); skipStory(false);
+    const arena=ACTIVE.map(nameOf);
+    toggleHero(adriel);
+    const afterToggle=chosenIds.map(nameOf);
+    worldRun={active:true,fase:3,nivel:1,storyMode:false};
+    chosenIds=[gareth];
+    prepareStorySelection();
+    return {expected:STORY_RULES.map(rule=>rule.fixed),fixedByPhase,arena,afterToggle,free:chosenIds.map(nameOf)};
+  });
+  expect(audit.fixedByPhase).toEqual(audit.expected);
+  expect(audit.arena).toEqual(['adriel-jovem','berenice-jovem','galateia-jovem','gareth']);
+  expect(audit.afterToggle).toEqual(['adriel-jovem','berenice-jovem','galateia-jovem','gareth']);
+  expect(audit.free).toEqual(['gareth']);
+  expect(errors).toEqual([]);
+});
+
 test('backup omite conta e credenciais',async({page})=>{
   const errors=await boot(page);
   const payload=await page.evaluate(()=>{
@@ -2909,7 +2941,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.83');
+  expect(registration.caches).toContain('12r-v11.0.84');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -3073,7 +3105,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.83');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.84');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

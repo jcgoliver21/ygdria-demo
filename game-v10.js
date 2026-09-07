@@ -8848,7 +8848,8 @@ function renderSelectGrid(){
       const idx=KINGDOMS.indexOf(k);
       const card = document.createElement('div');
       const availability=selectionAvailability(idx);
-      card.className = 'select-card constellation-card' + (chosenIds.includes(idx) ? ' chosen' : '') + (!availability.owned?' collection-locked':'') + (availability.owned&&!availability.allowed?' story-disabled':'');
+      const fixedStoryHero=isFixedStoryHero(idx);
+      card.className = 'select-card constellation-card' + (chosenIds.includes(idx) ? ' chosen' : '') + (fixedStoryHero?' story-fixed':'') + (!availability.owned?' collection-locked':'') + (availability.owned&&!availability.allowed?' story-disabled':'');
       card.setAttribute('aria-disabled',availability.selectable?'false':'true');
       card.style.setProperty('--realm',k.color);
       card.style.setProperty('--realm-light',k.colorLight);
@@ -8861,7 +8862,9 @@ function renderSelectGrid(){
       `;
       card.setAttribute('role','button');
       card.setAttribute('tabindex','0');
-      card.setAttribute('aria-label',chosenIds.includes(idx)?T(`Remover ${L(k.nome)} da equipe`,`Remove ${L(k.nome)} from the team`,`Quitar a ${L(k.nome)} del equipo`):T(`Adicionar ${L(k.nome)} à equipe`,`Add ${L(k.nome)} to the team`,`Añadir a ${L(k.nome)} al equipo`));
+      card.setAttribute('aria-label',fixedStoryHero
+        ?T(`${L(k.nome)} é protagonista obrigatório desta missão.`,`${L(k.nome)} is a required protagonist for this mission.`,`${L(k.nome)} es protagonista obligatorio de esta misión.`)
+        :(chosenIds.includes(idx)?T(`Remover ${L(k.nome)} da equipe`,`Remove ${L(k.nome)} from the team`,`Quitar a ${L(k.nome)} del equipo`):T(`Adicionar ${L(k.nome)} à equipe`,`Add ${L(k.nome)} to the team`,`Añadir a ${L(k.nome)} al equipo`)));
       card.addEventListener('click',()=>toggleHero(idx));
       card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleHero(idx);}});
       card.querySelector('.zoom-btn')?.addEventListener('click', e=>{ e.stopPropagation(); openCardModal(idx); });
@@ -8915,6 +8918,11 @@ function toggleHero(idx){
   }
   if(!availability.allowed){
     setBattleStatus(T('Esta carta está bloqueada nesta missão de história.','This card is locked in this story mission.','Esta carta está bloqueada en esta misión de historia.'),'system');
+    sfxInvalid();
+    return;
+  }
+  if(isFixedStoryHero(idx)){
+    setBattleStatus(T(`${L(KINGDOMS[idx]?.nome)} é protagonista obrigatório desta missão.`,`${L(KINGDOMS[idx]?.nome)} is a required protagonist for this mission.`,`${L(KINGDOMS[idx]?.nome)} es protagonista obligatorio de esta misión.`),'system');
     sfxInvalid();
     return;
   }
@@ -10371,12 +10379,19 @@ function markStoryPhaseDone(f){ localStorage.setItem(storyPhaseKey(f),'1'); }
 function prepareStorySelection(){
   if(!worldRun.active||worldRun.storyMode===false) return;
   const rule=STORY_RULES[worldRun.fase];
-  if(!rule||storyMissionDone(worldRun.fase,worldRun.nivel)) return;
+  if(!rule) return;
   const allowedIdx=rule.allowed.map(id=>KINGDOMS.findIndex(k=>k.id===id)).filter(i=>i>=0);
   const fixedIdx=rule.fixed.map(id=>KINGDOMS.findIndex(k=>k.id===id)).filter(i=>i>=0);
-  chosenIds=chosenIds.filter(i=>allowedIdx.includes(i));
-  fixedIdx.forEach(i=>{ if(!chosenIds.includes(i)&&chosenIds.length<4) chosenIds.push(i); });
-  if(rule.fixed.length===4) chosenIds=fixedIdx;
+  /* Protagonistas não são uma sugestão visual. O elenco é normalizado no
+     limite de seleção e novamente antes da arena: primeiro os fixos, depois
+     apenas vagas restantes com cartas habilitadas. */
+  const optional=[...new Set(chosenIds)].filter(i=>allowedIdx.includes(i)&&!fixedIdx.includes(i));
+  chosenIds=[...fixedIdx,...optional].slice(0,4);
+}
+function isFixedStoryHero(idx){
+  if(!worldRun?.active||worldRun.storyMode===false) return false;
+  const rule=STORY_RULES[worldRun.fase];
+  return Boolean(rule?.fixed?.includes(KINGDOMS[idx]?.id));
 }
 function storySelectionAllowed(idx){
   /* renderSelectGrid() é executado no boot, antes da declaração de worldRun

@@ -2,7 +2,7 @@
    Regras de interface e qualidade ficam aqui para evitar valores divergentes. */
 (function exposeV10Config(){
   const config={
-    version:'v11.0.83',
+    version:'v11.0.84',
     label:'VERSÃO 11',
     release:'2026-08-31',
     battle:{
