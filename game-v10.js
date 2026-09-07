@@ -5546,7 +5546,7 @@ const STATIC_I18N=[
   ['#startBtn','<span class="launch-vfx" aria-hidden="true"><i></i><i></i><i></i></span>Iniciar a Aventura!','<span class="launch-vfx" aria-hidden="true"><i></i><i></i><i></i></span>Begin the Adventure!','<span class="launch-vfx" aria-hidden="true"><i></i><i></i><i></i></span>¡Iniciar la Aventura!'],
   ["#continueBtn .menu-label","<span class=\"menu-title-line\">Continuar</span><small class=\"menu-hint\" id=\"continueHint\">Sem progresso salvo</small>","<span class=\"menu-title-line\">Continue</span><small class=\"menu-hint\" id=\"continueHint\">No saved progress</small>","<span class=\"menu-title-line\">Continuar</span><small class=\"menu-hint\" id=\"continueHint\">Sin progreso guardado</small>"],
   ["#menuVersion","VERSÃO 11 · DEMO OFICIAL MOBILE","VERSION 11 · OFFICIAL MOBILE DEMO","VERSIÓN 11 · DEMO OFICIAL MÓVIL"],
-  ["#selectBackBtn","← Voltar","← Back","← Volver"],
+  ["#selectBackBtn","Voltar","Back","Volver"],
   ["#selectScreen .screen-title","Escolha seus Aventureiros","Choose Your Adventurers","Elige a tus Aventureros"],
   ["#selectGalleryBtn","Biblioteca","Library","Biblioteca"],
   [".select-counter","Equipe escalada: <b id=\"selectCount\">0</b>/4","Party formed: <b id=\"selectCount\">0</b>/4","Equipo formado: <b id=\"selectCount\">0</b>/4"],
