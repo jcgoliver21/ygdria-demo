@@ -2383,17 +2383,27 @@ test('Mercado usa acordeões por reino e a Luz aplica Elixir, escudo, lança e E
   await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); manualTarget=0; playerHP=Math.floor(PLAYER_MAX_HP*.5); enemies[0].hp=1000; enemies[0].maxHp=1000; inventory={'elixir-divino':1,'luz-protetora':1,'lanca-divina':1,'espelho-ygdria':1}; });
   const result=await page.evaluate(async()=>{
     renderShop();
-    document.querySelector('[data-market-realm="luz"]')?.click();
+    if(!document.querySelector('.market-realm-luz')?.classList.contains('open')) document.querySelector('[data-market-realm="luz"]')?.click();
     const opened=document.querySelector('.market-realm-luz')?.classList.contains('open');
     const target=0, hpBefore=playerHP, enemyBefore=enemies[target].hp;
     await usarItemBatalha('elixir-divino');
     await usarItemBatalha('luz-protetora');
     await usarItemBatalha('lanca-divina');
+    const lanceDamage=enemyBefore-enemies[target].hp;
     await usarItemBatalha('espelho-ygdria',ACTIVE[0]);
+    const mirroredHero=KINGDOMS[ACTIVE[0]];
+    const original=document.querySelector('#party-'+mirroredHero.id+'-avatar .hero-sprite-sheet,#party-'+mirroredHero.id+'-avatar .hero-sprite-image');
+    const copy=document.querySelector('#mirrorCopy-'+mirroredHero.id+' .hero-sprite-sheet,#mirrorCopy-'+mirroredHero.id+' .hero-sprite-image');
+    const originalRect=original?.getBoundingClientRect(),copyRect=copy?.getBoundingClientRect();
+    const mirrorExact=Boolean(original&&copy&&original.dataset.hitSrc===copy.dataset.hitSrc&&original.classList.contains('flip')===copy.classList.contains('flip')&&Math.abs((originalRect?.height||0)-(copyRect?.height||0))<1&&getComputedStyle(copy).opacity==='1');
+    const mirrorDamage=triggerMirrorCopyAttack(ACTIVE[0]);
+    await new Promise(resolve=>setTimeout(resolve,60));
+    const mirrorAttackAction=document.getElementById('mirrorCopy-'+mirroredHero.id)?.dataset.action;
     const overflow=[...document.querySelectorAll('.market-realm,.market-relic')].some(element=>element.scrollWidth>element.clientWidth+1);
-    return {opened,hpRaised:playerHP>hpBefore,attackBuff:atkBuffTurns,shieldTurns,enemyDamage:enemyBefore-enemies[target].hp,mirror:mirrorCopyHeroIndex,mirrorVisible:!!document.querySelector('.mirror-copy-avatar'),lightItems:document.querySelectorAll('.market-realm-luz .market-relic').length,overflow};
+    return {opened,hpRaised:playerHP>hpBefore,attackBuff:atkBuffTurns,shieldTurns,enemyDamage:lanceDamage,mirror:mirrorCopyHeroIndex,mirrorVisible:!!document.querySelector('.mirror-copy-avatar'),mirrorExact,mirrorDamage,mirrorAttackAction,lightItems:document.querySelectorAll('.market-realm-luz .market-relic').length,overflow};
   });
-  expect(result).toMatchObject({opened:true,hpRaised:true,attackBuff:1,shieldTurns:2,enemyDamage:200,mirrorVisible:true,lightItems:4,overflow:false});
+  expect(result).toMatchObject({opened:true,hpRaised:true,attackBuff:1,shieldTurns:2,enemyDamage:200,mirrorVisible:true,mirrorExact:true,mirrorAttackAction:'attack',lightItems:4,overflow:false});
+  expect(result.mirrorDamage).toBeGreaterThan(0);
   expect(Number.isInteger(result.mirror)).toBe(true);
   expect(errors).toEqual([]);
 });
@@ -3044,7 +3054,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.88');
+  expect(registration.caches).toContain('12r-v11.0.89');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -3208,7 +3218,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.88');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.89');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

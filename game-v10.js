@@ -3675,7 +3675,7 @@ function renderPartyArena(){
     unit.style.setProperty('--aura-outer-light',k.rarity==='DIVINA'?'#ffffff':k.color);
     unit.style.setProperty('--unit-art-scale',String(cardArtScale(k)));
     const avatarContent = spriteMarkup(k,'idle');
-    const mirrorHtml=mirrorCopyHeroIndex===idx?`<div class="mirror-copy-avatar" id="mirrorCopy-${k.id}" aria-hidden="true">${spriteMarkup(k,'idle')}</div>`:'';
+    const mirrorHtml=mirrorCopyHeroIndex===idx?`<div class="mirror-copy-avatar avatar-circle" id="mirrorCopy-${k.id}" aria-hidden="true" data-action="idle">${spriteMarkup(k,'idle')}</div>`:'';
     const stageHtml=`
       <div class="unit-stage">
         <div class="unit-ground-shadow"></div>
@@ -7156,6 +7156,9 @@ function triggerMirrorCopyAttack(colorIdx){
   copy.classList.remove('mirror-copy-strike');
   void copy.offsetWidth;
   copy.classList.add('mirror-copy-strike');
+  /* O Espelho não é uma silhueta decorativa: ele reusa a mesma folha, escala,
+     orientação e coreografia corporal do herói refletido. */
+  animateHeroAvatar(copy,hero,'attack',{loop:false,hold:false});
   const target=enemy.querySelector('.enemy-portrait')||enemy;
   const damage=heroAtkBattle(colorIdx);
   spawnCombatAttackFx(hero.iconId||hero.id,copy,target,hero.colorLight||hero.color,'impact',hero);
