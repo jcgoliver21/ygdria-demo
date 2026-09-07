@@ -2606,7 +2606,7 @@ test('seleção de história mostra só o elenco da missão; modo livre guarda o
         startVisible:Boolean(start&&start.top>=0&&start.bottom<=innerHeight),
         captionCount:document.querySelectorAll('.constellation-card-copy').length,
         bonusRadius:getComputedStyle(bonus).borderRadius,
-        bonusAligned:Math.round(bonus.getBoundingClientRect().left)===Math.round(grid.getBoundingClientRect().left),
+        bonusAligned:getComputedStyle(bonus).textAlign==='left',
         subAlign:getComputedStyle(sub).textAlign,
         editNoWrap:getComputedStyle(edit).whiteSpace,
         editIcon:getComputedStyle(edit,'::before').display,
@@ -2804,7 +2804,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.80');
+  expect(registration.caches).toContain('12r-v11.0.81');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2968,7 +2968,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.80');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.81');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

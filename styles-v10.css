@@ -5109,8 +5109,10 @@ body.game-active .battle-row::before{
   #selectScreen[data-selection-mode="story"] .select-card.constellation-card{height:100%;min-height:0!important;border-radius:12px!important}
 }
 
-/* v11.0.80 · Mantém a grade aprovada e apenas limpa a leitura dos controles. */
+/* v11.0.81 · Mantém a grade aprovada e apenas limpa a leitura dos controles. */
 @media (max-width:620px){
+  #selectScreen[data-selection-mode="free"] .select-grid,#selectScreen[data-selection-mode="story"] .select-grid{width:calc(100% - 12px)!important;margin-left:6px!important;margin-right:6px!important}
+  #selectScreen[data-selection-mode="free"] .select-constellation-roster,#selectScreen[data-selection-mode="story"] .select-constellation-roster{column-gap:12px!important}
   #selectScreen .selection-roster-stats,#selectScreen .formation-constellation{justify-content:center!important}
   #selectScreen[data-selection-mode="free"] .edit-group-btn::before{display:none!important}
   #selectScreen[data-selection-mode="free"] .edit-group-btn{gap:0!important;white-space:nowrap!important}
