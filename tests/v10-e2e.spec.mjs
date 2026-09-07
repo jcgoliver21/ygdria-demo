@@ -63,6 +63,60 @@ test('premiação humana credita uma vez Kalegs, mochila e carta, inclusive reci
   expect(errors).toEqual([]);
 });
 
+test('recibo de fase antiga restaura a carta na seleção narrativa sem duplicar recursos',async({page})=>{
+  const errors=await boot(page,'reward-card-recovery');
+  await page.evaluate(()=>{
+    /* Perfil afetado: a vitória da fase 1 foi registrada, mas Gareth não
+       chegou à lista persistida de cartas. */
+    localStorage.setItem('12r_card_unlocks','[]');
+    localStorage.setItem('12r_coins','77');
+    localStorage.setItem('12r_inv',JSON.stringify({regulacao:2}));
+    localStorage.setItem('12r_human_phase_rewards',JSON.stringify({'1:normal':1700000000000}));
+    localStorage.setItem('12r_human_reward_ledger_v2',JSON.stringify({'1:normal':{grantedAt:1700000000000,phase:1,difficulty:'normal'}}));
+  });
+  await page.reload({waitUntil:'networkidle'});
+  await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
+  const result=await page.evaluate(()=>{
+    const gareth=KINGDOMS.findIndex(hero=>hero.id==='gareth');
+    worldRun={active:true,fase:3,nivel:1,storyMode:true};
+    chosenIds=[];
+    showSelection();
+    const card=[...document.querySelectorAll('.select-card')].find(node=>node.querySelector('img')?.alt==='Gareth');
+    return {
+      owned:cardOwned('gareth'),
+      persisted:JSON.parse(localStorage.getItem('12r_card_unlocks')||'[]'),
+      selectable:selectionAvailability(gareth).selectable,
+      locked:card?.classList.contains('collection-locked')||false,
+      coins:Number(localStorage.getItem('12r_coins')),
+      inventory:JSON.parse(localStorage.getItem('12r_inv')||'{}')
+    };
+  });
+  expect(result.owned).toBe(true);
+  expect(result.persisted).toContain('gareth');
+  expect(result.selectable).toBe(true);
+  expect(result.locked).toBe(false);
+  expect(result.coins).toBe(77);
+  expect(result.inventory).toEqual({regulacao:2});
+  const allRewards=await page.evaluate(()=>{
+    const receipts={};
+    const expected=[];
+    HUMAN_PHASE_REWARDS.forEach((phase,fase)=>Object.entries(phase).forEach(([difficulty,reward])=>{
+      if(!reward.card) return;
+      const key=`${fase+1}:${difficulty}`;
+      receipts[key]={grantedAt:1700000000000,phase:fase+1,difficulty};
+      expected.push(reward.card);
+    }));
+    localStorage.setItem('12r_card_unlocks','[]');
+    localStorage.setItem('12r_human_phase_rewards','{}');
+    localStorage.setItem('12r_human_reward_ledger_v2',JSON.stringify(receipts));
+    const restored=[...reconcileHumanCardUnlocks()].sort();
+    return {expected:[...new Set(expected)].sort(),restored,known:restored.every(id=>KINGDOMS.some(hero=>hero.id===id))};
+  });
+  expect(allRewards.restored).toEqual(allRewards.expected);
+  expect(allRewards.known).toBe(true);
+  expect(errors).toEqual([]);
+});
+
 test('cartas não conquistadas não exibem lupa, repetir oferece as três rotas e editor cabe no celular',async({page})=>{
   const errors=await boot(page,'collection-replay');
   await page.setViewportSize({width:390,height:844});
@@ -299,6 +353,7 @@ test('missões especiais usam artes próprias e iniciam Desafio Diário e Prova�
   await expect(page.locator('#dungeonClearOverlay')).toHaveClass(/show/);
   await expect(page.locator('#dungeonClearOverlay .victory-navigation')).toBeHidden();
   await expect(page.locator('#shareDailyBtn')).toBeHidden();
+  await expect(page.locator('#storyLayer')).not.toHaveClass(/show/);
   await expect(page.locator('#playAgainBtn')).toBeVisible();
   await expect(page.locator('#playAgainBtn')).toHaveText('Finalizar');
   await page.locator('#playAgainBtn').click();
@@ -1945,10 +2000,13 @@ test('backup omite conta e credenciais',async({page})=>{
     localStorage.setItem('12r_localusers',JSON.stringify({'segredo@example.test':{passHash:'nao-exportar'}}));
     localStorage.setItem('12r_login',JSON.stringify({date:'2026-08-13',streak:7}));
     localStorage.setItem('12r_coins','123');
+    localStorage.setItem('12r_card_unlocks',JSON.stringify(['gareth','cedric']));
     const code=window.__12rQA.exportProgress();
     return new TextDecoder().decode(Uint8Array.from(atob(code),char=>char.charCodeAt(0)));
   });
   expect(payload).toContain('12r_coins');
+  expect(payload).toContain('12r_card_unlocks');
+  expect(payload).toContain('gareth');
   expect(payload).not.toContain('12r_account');
   expect(payload).not.toContain('12r_localusers');
   expect(payload).not.toContain('12r_login');
@@ -1977,11 +2035,12 @@ test('backup restaura snapshot, preserva conta e rejeita equipes malformadas',as
     localStorage.setItem('12r_world_humanos',JSON.stringify({unlocked:9,stars:{9:3}}));
     localStorage.setItem('12r_account',JSON.stringify({email:'preservar@example.test'}));
     localStorage.setItem('12r_coins','777');
-    const entries=Object.entries({'12r_coins':'10'}).map(([key,value])=>validateImportedSaveEntry(key,value));
+    const entries=Object.entries({'12r_coins':'10','12r_card_unlocks':'["gareth","cedric"]'}).map(([key,value])=>validateImportedSaveEntry(key,value));
     applyImportedSaveEntries(entries);
     const restored=true;
     const afterRestore={
       coins:localStorage.getItem('12r_coins'),
+      cards:localStorage.getItem('12r_card_unlocks'),
       world:localStorage.getItem('12r_world_humanos'),
       account:localStorage.getItem('12r_account')
     };
@@ -1991,6 +2050,7 @@ test('backup restaura snapshot, preserva conta e rejeita equipes malformadas',as
   });
   expect(result.restored).toBe(true);
   expect(result.afterRestore.coins).toBe('10');
+  expect(result.afterRestore.cards).toBe('["gareth","cedric"]');
   expect(result.afterRestore.world).toBeNull();
   expect(result.afterRestore.account).toContain('preservar@example.test');
   expect(result.malformed).toBe(false);
@@ -2804,7 +2864,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.81');
+  expect(registration.caches).toContain('12r-v11.0.82');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -2968,7 +3028,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.81');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.82');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

@@ -1591,13 +1591,37 @@ function cardUnlocks(){
   try{ return new Set(sanitizeHeroIdList(JSON.parse(localStorage.getItem('12r_card_unlocks')||'[]'))); }catch(e){ return new Set(); }
 }
 function saveCardUnlocks(ids){ localStorage.setItem('12r_card_unlocks',JSON.stringify([...ids])); }
-function cardOwned(id){ return HUMAN_STARTER_CARDS.includes(id)||cardUnlocks().has(id); }
 function rewardClaims(){
   try{ const raw=JSON.parse(localStorage.getItem('12r_human_phase_rewards')||'{}'); return raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:{}; }catch(e){ return {}; }
 }
 function rewardLedger(){
   try{ const raw=JSON.parse(localStorage.getItem(HUMAN_REWARD_LEDGER_KEY)||'{}'); return raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:{}; }catch(e){ return {}; }
 }
+/* Cartas são conquistas únicas. Perfis que receberam uma recompensa em uma
+   versão anterior podem conservar o recibo sem a lista de cartas: o recibo
+   válido também é uma prova de propriedade e repara a coleção sem repetir
+   Kalegs nem itens. */
+function humanRewardCardUnlocks(){
+  const earned=new Set();
+  const receipts={...rewardClaims(),...rewardLedger()};
+  Object.keys(receipts).forEach(key=>{
+    const match=/^(\d+):(facil|normal|dificil|pesadelo)$/.exec(key);
+    if(!match) return;
+    const reward=HUMAN_PHASE_REWARDS[Number(match[1])-1]?.[match[2]];
+    if(reward?.card) earned.add(reward.card);
+  });
+  return earned;
+}
+function reconcileHumanCardUnlocks(){
+  const owned=cardUnlocks();
+  let changed=false;
+  humanRewardCardUnlocks().forEach(id=>{
+    if(!owned.has(id)){ owned.add(id); changed=true; }
+  });
+  if(changed) saveCardUnlocks(owned);
+  return owned;
+}
+function cardOwned(id){ return HUMAN_STARTER_CARDS.includes(id)||cardUnlocks().has(id)||humanRewardCardUnlocks().has(id); }
 function restoreRewardStorage(snapshot){
   Object.entries(snapshot).forEach(([key,value])=>{
     if(value===null) localStorage.removeItem(key);
@@ -1614,7 +1638,7 @@ function applyHumanPhaseReward(fase,diff,reward,key){
   Object.entries(reward.items||{}).forEach(([id,count])=>{
     if(SHOP_ITEMS.some(item=>item.id===id)) nextInventory[id]=Math.min(9999,(nextInventory[id]||0)+Math.max(0,Math.round(Number(count)||0)));
   });
-  const nextCards=cardUnlocks();
+  const nextCards=new Set([...cardUnlocks(),...humanRewardCardUnlocks()]);
   if(reward.card) nextCards.add(reward.card);
   const grantedAt=Date.now();
   const nextClaims={...rewardClaims(),[key]:grantedAt};
@@ -1663,7 +1687,10 @@ function claimHumanPhaseReward(fase,diff,{winner=true}={}){
   const reward=HUMAN_PHASE_REWARDS[fase]?.[diff];
   if(!reward||(!winner&&fase===9)) return {reward:null,claimed:false,summary:''};
   const key=`${fase+1}:${diff}`;
-  if(rewardLedger()[key]) return {reward,claimed:false,summary:rewardSummary(reward,{claimed:true})};
+  if(rewardLedger()[key]){
+    reconcileHumanCardUnlocks();
+    return {reward,claimed:false,summary:rewardSummary(reward,{claimed:true})};
+  }
   const claimed=applyHumanPhaseReward(fase,diff,reward,key);
   return {reward,claimed,summary:rewardSummary(reward,{claimed:!claimed})};
 }
@@ -4228,7 +4255,13 @@ window.addEventListener('resize',()=>{
     positionStorySpeechBubble();
     /* Girar o aparelho não pode fechar o mapa por uma troca de viewport. */
     const mapScreen=document.getElementById('mapScreen');
-    if(mapScreen?.dataset.keepOpenOnResize==='1') mapScreen.classList.add('show');
+    if(mapScreen?.dataset.keepOpenOnResize==='1'){
+      mapScreen.classList.add('show');
+      /* O canvas usa container queries. Recriar somente os pins após a
+         rotação impede que a arte fique com a área calculada do viewport
+         anterior e preserva a navegação aberta. */
+      renderMapScreen();
+    }
   },220);
 });
 
@@ -6040,7 +6073,7 @@ function renderProfileStats(){
 const SAVE_EXPORT_SCHEMA='12r-progress';
 const SAVE_EXPORT_VERSION=10;
 const SAVE_EXPORT_EXACT_KEYS=new Set([
-  '12r_ach','12r_autoactives','12r_bestiary','12r_bossrush_best','12r_coins','12r_daily',
+  '12r_ach','12r_autoactives','12r_bestiary','12r_bossrush_best','12r_card_unlocks','12r_coins','12r_daily',
   '12r_difficulty','12r_fase_best','12r_fase_time','12r_favs','12r_firstwin','12r_formation',
   '12r_haptics','12r_high_contrast','12r_human_phase_rewards','12r_human_reward_ledger_v2','12r_inv','12r_inventory_catalog','12r_lang','12r_lang_set','12r_large_text',
   '12r_lastteam','12r_motion','12r_music_volume','12r_muted','12r_particles','12r_stage_music_volume',
@@ -6102,6 +6135,10 @@ function validateImportedSaveEntry(key,value){
   if(SAVE_JSON_ARRAY_KEYS.has(key)){
     const parsed=parseImportedJson(value,key);
     if(!Array.isArray(parsed)) throw new Error(`${key}: lista esperada`);
+    if(key==='12r_card_unlocks'){
+      const sanitized=sanitizeHeroIdList(parsed);
+      if(JSON.stringify(sanitized)!==JSON.stringify(parsed)) throw new Error(`${key}: cartas inválidas`);
+    }
     if(key==='12r_teams'){
       if(parsed.length!==3||parsed.some(slot=>slot!==null&&!isValidHeroTeam(slot))) throw new Error(`${key}: equipes inválidas`);
     }
@@ -8397,6 +8434,9 @@ function onStageCleared(){
     }
     if(dailyRunMode && towerFloor>5){
       /* Desafio Diário concluído: 5 andares vencidos */
+      /* Nenhuma fala do último inimigo pode permanecer acima do relatório
+         final ou interceptar o único botão permitido, Finalizar. */
+      skipStory(false);
       let dailyRecord={}; try{ dailyRecord=JSON.parse(localStorage.getItem('12r_daily')||'{}'); }catch(e){}
       if(!dailyRecord||typeof dailyRecord!=='object'||Array.isArray(dailyRecord)) dailyRecord={};
       if(dailyRecord.date!==todayKey()){
@@ -10696,6 +10736,7 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
   applyLanguage();
   checkLoginReward();
   reconcileLegacyHumanPhaseRewards();
+  reconcileHumanCardUnlocks();
   if(DAILY_BOOT_REQUESTED && difficulty!=='pesadelo'){ towerPrevDifficulty=difficulty; difficulty='pesadelo'; applyDifficultyUI(); }
   if(DAILY_BOOT_REQUESTED){ dailyRunMode=true; towerMode=true; towerFloor=1; worldRun.active=false; pendingStage=0; showSelection(); } /* Diário = torre seeded de 5 andares */
   updateCoinBadge();
