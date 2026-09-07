@@ -1979,6 +1979,51 @@ test('derrota finaliza timers e não duplica estatísticas',async({page})=>{
   expect(errors).toEqual([]);
 });
 
+test('derrota de fase oferece sair, reiniciar fase e Benção para reiniciar a missão',async({page})=>{
+  const errors=await boot(page,'flow');
+  const heroIds=['adriel-jovem','berenice-jovem','galateia-jovem','acqua-jovem'];
+  await page.evaluate((ids)=>{
+    worldRun={active:true,fase:1,nivel:3,storyMode:true};
+    chosenIds=ids.map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    inventory={...inventory,'bencao-eternidade':1}; saveInventory();
+    beginGame(0); skipStory(false); updateRestartControls(); finalizeDefeat();
+  },heroIds);
+  await expect(page.locator('#defeatOverlay')).toHaveClass(/show/);
+  await expect(page.locator('#defeatActions')).toBeVisible();
+  await expect(page.locator('#defeatExitBtn')).toBeVisible();
+  await expect(page.locator('#defeatRestartPhaseBtn')).toBeVisible();
+  await expect(page.locator('#defeatRestartMissionBtn')).toBeEnabled();
+  await expect(page.locator('#defeatRestartMissionBtn img')).toHaveAttribute('src',/bencao-eternidade\.png$/);
+  await page.locator('#defeatRestartPhaseBtn').click();
+  await expect.poll(()=>page.evaluate(()=>worldRun.nivel)).toBe(1);
+  await expect(page.locator('#defeatOverlay')).not.toHaveClass(/show/);
+
+  await page.evaluate((ids)=>{
+    worldRun={active:true,fase:2,nivel:4,storyMode:true};
+    chosenIds=ids.map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    inventory={...inventory,'bencao-eternidade':1}; saveInventory();
+    beginGame(0); skipStory(false); updateRestartControls(); finalizeDefeat();
+  },heroIds);
+  await expect(page.locator('#defeatOverlay')).toHaveClass(/show/);
+  await page.locator('#defeatRestartMissionBtn').click();
+  await page.waitForTimeout(620);
+  expect(await page.evaluate(()=>({mission:worldRun.nivel,blessing:inventory['bencao-eternidade']||0,paused:gamePaused,phase:battlePhase}))).toMatchObject({mission:4,blessing:0,paused:false,phase:'idle'});
+
+  await page.evaluate(()=>{ skipStory(false); syncDefeatActionChoices(); showOverlay('defeatOverlay'); });
+  await expect(page.locator('#defeatRestartMissionBtn')).toBeDisabled();
+  await page.locator('#defeatExitBtn').click();
+  await expect(page.locator('#mapScreen')).toHaveClass(/show/);
+
+  const finalChoice=await page.evaluate(()=>{
+    worldRun={active:true,fase:9,nivel:5,storyMode:true};
+    activeStageData={bgUrl:'assets/bg/humanos/fase-10.jpg'};
+    syncDefeatActionChoices();
+    return document.getElementById('defeatActions').hidden;
+  });
+  expect(finalChoice).toBe(true);
+  expect(errors).toEqual([]);
+});
+
 test('nova fase volta ao idle e trocar equipe encerra a luta oculta',async({page})=>{
   const errors=await boot(page);
   await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); startMissionTimer(); });
@@ -2864,7 +2909,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.82');
+  expect(registration.caches).toContain('12r-v11.0.83');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -3028,7 +3073,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.82');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.83');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

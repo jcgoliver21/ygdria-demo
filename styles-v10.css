@@ -2289,6 +2289,18 @@ button:focus-visible, .select-card:focus-visible, .mini-card:focus-visible, .gem
 .battle-report{ width:min(92%,340px); margin:10px auto 14px; text-align:left;
   background:rgba(8,5,14,.72); border:1px solid rgba(212,175,90,.3); border-radius:12px; padding:10px 12px; }
 .battle-report:empty{ display:none; }
+.defeat-actions{width:min(92vw,350px);display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:2px auto 0}
+.defeat-actions[hidden]{display:none!important}
+.defeat-action{min-height:42px;padding:8px 10px;display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid rgba(247,220,157,.62);border-radius:10px;background:linear-gradient(145deg,rgba(60,25,48,.97),rgba(20,10,27,.98));color:#fff0d2;font:700 10px/1.1 Georgia,serif;letter-spacing:.65px;text-transform:uppercase;cursor:pointer;box-shadow:inset 0 1px rgba(255,239,211,.15),0 5px 13px rgba(0,0,0,.24);transition:transform .16s ease,filter .16s ease,opacity .16s ease}
+.defeat-action:hover:not(:disabled){filter:brightness(1.12)}
+.defeat-action:active:not(:disabled){transform:scale(.98)}
+.defeat-exit{border-color:rgba(238,211,158,.46);background:linear-gradient(145deg,rgba(42,29,48,.97),rgba(15,10,24,.98))}
+.defeat-phase{border-color:rgba(239,167,181,.72);background:linear-gradient(145deg,rgba(110,38,66,.98),rgba(42,15,35,.98))}
+.defeat-mission{grid-column:1/-1;border-color:#f1ca6c;background:linear-gradient(145deg,rgba(109,71,32,.98),rgba(50,25,38,.98));box-shadow:inset 0 1px rgba(255,241,191,.2),0 0 16px rgba(239,185,82,.17)}
+.defeat-mission img{width:26px;height:26px;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.72))}
+.defeat-mission:disabled{cursor:not-allowed;opacity:.43;filter:grayscale(.5)}
+.defeat-mission:disabled img{filter:grayscale(.85) opacity(.72)}
+@media(max-width:390px){.defeat-action{font-size:9px;letter-spacing:.35px}.defeat-mission img{width:23px;height:23px}}
 .report-mvp{ display:flex; align-items:center; gap:10px; margin-bottom:8px; }
 .report-mvp img{ width:44px; height:60px; object-fit:cover; border-radius:6px; border:1px solid rgba(255,225,152,.5); }
 .report-mvp small{ display:block; font-size:8px; letter-spacing:1.6px; color:#d7ba72; }

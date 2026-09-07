@@ -5576,6 +5576,9 @@ const STATIC_I18N=[
   ['#galleryTitle','Biblioteca da Eternidade','Library of Eternity','Biblioteca de la Eternidad'],
   ['#playAgainBtn','Jogar novamente','Play again','Jugar de nuevo'],
   ['#retryBtn','Tentar novamente','Try again','Intentar de nuevo'],
+  ['#defeatExitBtn','Sair','Exit','Salir'],
+  ['#defeatRestartPhaseBtn','Reiniciar fase','Restart phase','Reiniciar fase'],
+  ['#defeatRestartMissionBtn .defeat-action-label','Reiniciar missão','Restart mission','Reiniciar misión'],
   ['#startBtn','<span class="launch-vfx" aria-hidden="true"><i></i><i></i><i></i></span>Iniciar a Aventura!','<span class="launch-vfx" aria-hidden="true"><i></i><i></i><i></i></span>Begin the Adventure!','<span class="launch-vfx" aria-hidden="true"><i></i><i></i><i></i></span>¡Iniciar la Aventura!'],
   ["#continueBtn .menu-label","<span class=\"menu-title-line\">Continuar</span><small class=\"menu-hint\" id=\"continueHint\">Sem progresso salvo</small>","<span class=\"menu-title-line\">Continue</span><small class=\"menu-hint\" id=\"continueHint\">No saved progress</small>","<span class=\"menu-title-line\">Continuar</span><small class=\"menu-hint\" id=\"continueHint\">Sin progreso guardado</small>"],
   ["#menuVersion","VERSÃO 11 · DEMO OFICIAL MOBILE","VERSION 11 · OFFICIAL MOBILE DEMO","VERSIÓN 11 · DEMO OFICIAL MÓVIL"],
@@ -7993,6 +7996,7 @@ function finalizeDefeat({towerGameOver=false}={}){
   stopMissionTimer();
   cancelTempoSombrio();
   resetCombatSchedule();
+  skipStory(false); /* diálogo pendente jamais pode cobrir as ações de derrota */
   sfxDefeat();
   playHeroDefeatPoses();
   flushRunToProfile(false);
@@ -8001,7 +8005,7 @@ function finalizeDefeat({towerGameOver=false}={}){
     hideOverlay('defeatOverlay');
     scheduleCombat(()=>showTowerGameOverPanel(),1000);
   }else{
-    scheduleCombat(()=>showOverlay('defeatOverlay'),1000);
+    scheduleCombat(()=>{ syncDefeatActionChoices(); showOverlay('defeatOverlay'); },1000);
   }
   return true;
 }
@@ -8586,6 +8590,27 @@ function restartCurrentStage(){
 }
 
 function hasEternityBlessing(){ return (inventory['bencao-eternidade']||0)>0; }
+function isCampaignPhaseDefeat(){
+  return Boolean(worldRun?.active&&worldRun.storyMode!==false&&!towerMode&&!bossRushMode&&!dailyRunMode&&!isHumanFinaleBattle());
+}
+/* A perda de uma fase da campanha dá três saídas claras. Modos especiais
+   mantêm seu fluxo próprio, e a última luta humana continua sendo resolvida
+   exclusivamente pela cinemática do capítulo. */
+function syncDefeatActionChoices(){
+  const phaseDefeat=isCampaignPhaseDefeat();
+  const actions=document.getElementById('defeatActions');
+  const legacyRetry=document.getElementById('retryBtn');
+  const restartMission=document.getElementById('defeatRestartMissionBtn');
+  if(actions) actions.hidden=!phaseDefeat;
+  if(legacyRetry) legacyRetry.hidden=phaseDefeat;
+  if(restartMission){
+    const enabled=phaseDefeat&&hasEternityBlessing();
+    restartMission.disabled=!enabled;
+    restartMission.setAttribute('aria-label',enabled
+      ? T('Reiniciar missão usando Benção da Eternidade','Restart mission using Blessing of Eternity','Reiniciar misión usando Bendición de la Eternidad')
+      : T('Reiniciar missão indisponível: requer Benção da Eternidade na mochila','Mission restart unavailable: requires Blessing of Eternity in the bag','Reinicio de misión no disponible: requiere Bendición de la Eternidad en la mochila'));
+  }
+}
 function updateRestartControls(){
   const enabled=hasEternityBlessing();
   ['resetBtn','restartTool','restartStageBtn'].forEach(id=>{
@@ -8601,6 +8626,7 @@ function updateRestartControls(){
   if(pauseIcon) pauseIcon.textContent=enabled?'∞':'✦';
   const tool=document.getElementById('restartTool');
   if(tool) tool.textContent=enabled?`∞ ${T('Reiniciar missão','Restart mission','Reiniciar misión')}`:`✦ ${T('Reiniciar missão bloqueado','Restart mission locked','Reinicio de misión bloqueado')}`;
+  syncDefeatActionChoices();
 }
 
 function retryAfterDefeat(){
@@ -8617,6 +8643,16 @@ function retryAfterDefeat(){
     return;
   }
   restartCurrentStage();
+}
+
+function restartPhaseAfterDefeat(){
+  if(!isCampaignPhaseDefeat()) return;
+  resetGame();
+}
+function exitAfterDefeat(){
+  if(!isCampaignPhaseDefeat()) return;
+  showMainMenu({guard:false});
+  openMapScreen('world');
 }
 
 let restartMissionPending=false;
@@ -8664,6 +8700,9 @@ async function restartFromControls(){
 document.getElementById('resetBtn').addEventListener('click', restartFromControls);
 document.getElementById('restartTool')?.addEventListener('click',()=>{ toggleBattleTools(false); restartFromControls(); });
 document.getElementById('retryBtn').addEventListener('click', retryAfterDefeat);
+document.getElementById('defeatExitBtn')?.addEventListener('click',exitAfterDefeat);
+document.getElementById('defeatRestartPhaseBtn')?.addEventListener('click',restartPhaseAfterDefeat);
+document.getElementById('defeatRestartMissionBtn')?.addEventListener('click',restartFromControls);
 function returnFromVictoryToMap(){
   if(victoryExitMode==='daily'){
     finalizeDailyResult();

@@ -30,7 +30,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
 <link rel="apple-touch-icon" href="assets/icon.svg">
-<link rel="stylesheet" href="styles-v10.css?v=11.0.82">
+<link rel="stylesheet" href="styles-v10.css?v=11.0.83">
 </head>
 <body>
 <div class="scene-bg" data-screen="menu"></div>
@@ -198,7 +198,15 @@
   <h2>Derrota</h2>
   <p>Seu grupo caiu em batalha. As gemas dos reinos ainda esperam por você.</p>
   <div class="battle-report" id="defeatReport"></div>
-  <button class="overlay-btn" id="retryBtn">Tentar novamente</button>
+  <div class="defeat-actions" id="defeatActions" aria-label="Ações após a derrota">
+    <button class="defeat-action defeat-exit" id="defeatExitBtn" type="button">Sair</button>
+    <button class="defeat-action defeat-phase" id="defeatRestartPhaseBtn" type="button">Reiniciar fase</button>
+    <button class="defeat-action defeat-mission" id="defeatRestartMissionBtn" type="button">
+      <img src="assets/items/humanos/bencao-eternidade.png" alt="" draggable="false">
+      <span class="defeat-action-label">Reiniciar missão</span>
+    </button>
+  </div>
+  <button class="overlay-btn" id="retryBtn" hidden type="button">Tentar novamente</button>
 </div>
 
 <div class="pro-overlay" id="galleryScreen" role="dialog" aria-modal="true" aria-labelledby="galleryTitle">
@@ -523,11 +531,11 @@
   </div>
 </div>
 <script>window.addEventListener('error',function(e){(window.__bootErrors=window.__bootErrors||[]).push({m:String(e.message).slice(0,200),l:e.lineno,c:e.colno})});</script>
-<script src="v10-config.js?v=11.0.82"></script>
-<script src="v10-animations.js?v=11.0.82"></script>
-<script src="humanos-lore-v10.js?v=11.0.82"></script>
+<script src="v10-config.js?v=11.0.83"></script>
+<script src="v10-animations.js?v=11.0.83"></script>
+<script src="humanos-lore-v10.js?v=11.0.83"></script>
 <script src="map-effects-v1.js?v=1.0.0" defer></script>
-<script src="game-v10.js?v=11.0.82" defer></script>
+<script src="game-v10.js?v=11.0.83" defer></script>
 
 </body>
 </html>

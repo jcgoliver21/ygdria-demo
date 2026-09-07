@@ -20,13 +20,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.82/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.82/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.82/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.82/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.82/);
-  assert.match(config,/version:'v11\.0\.82'/);
-  assert.match(sw,/12r-v11\.0\.82/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.83/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.83/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.83/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.83/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.83/);
+  assert.match(config,/version:'v11\.0\.83'/);
+  assert.match(sw,/12r-v11\.0\.83/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -139,7 +139,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.82/);
+  assert.match(sw,/12r-v11\.0\.83/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -541,7 +541,7 @@ check('mapa vertical preserva geografia e expande somente o oceano lateral',()=>
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.82');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.83');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
@@ -643,6 +643,17 @@ check('derrota encerra relógios uma vez e entra em transição',()=>{
   assert.match(game,/function restartFromControls\(\)/);
   assert.match(game,/getElementById\('resetBtn'\)\.addEventListener\('click', restartFromControls\)/);
   assert.match(game,/getElementById\('restartStageBtn'\)[\s\S]+?restartFromControls\(\)/);
+});
+
+check('derrota de fase oferece saída, reinício e Benção sem tocar no final humano',()=>{
+  for(const id of ['defeatActions','defeatExitBtn','defeatRestartPhaseBtn','defeatRestartMissionBtn']) assert.match(html,new RegExp(`id="${id}"`),`${id} ausente`);
+  assert.match(html,/assets\/items\/humanos\/bencao-eternidade\.png/);
+  assert.match(game,/function isCampaignPhaseDefeat\(\)/);
+  assert.match(game,/function syncDefeatActionChoices\(\)/);
+  assert.match(game,/function restartPhaseAfterDefeat\(\)/);
+  assert.match(game,/function exitAfterDefeat\(\)/);
+  assert.match(game,/!isHumanFinaleBattle\(\)/);
+  assert.match(css,/\.defeat-mission img\{/);
 });
 
 check('save migra versões antigas e grava o esquema v10',()=>{
