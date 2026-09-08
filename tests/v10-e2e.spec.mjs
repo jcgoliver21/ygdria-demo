@@ -2395,7 +2395,7 @@ test('Mercado Central compra relíquias, desconta Kalegs e atualiza a mochila',a
       bagCount:document.querySelector('#shopList [data-item="regulacao"] .shop-owned')?.textContent
     };
   });
-  expect(result.before).toMatchObject({cards:9,buttons:9,realms:2,humanOpen:false});
+  expect(result.before).toMatchObject({cards:10,buttons:10,realms:2,humanOpen:false});
   expect(result.coins).toBe(310);
   expect(result.owned).toBe(1);
   expect(result.balance).toContain('310Ks');
@@ -2403,12 +2403,34 @@ test('Mercado Central compra relíquias, desconta Kalegs e atualiza a mochila',a
   expect(errors).toEqual([]);
 });
 
+test('cronômetro inicia ao liberar o campo e Mochila e Loja trocam sem se sobrepor',async({page})=>{
+  const errors=await boot(page,'flow');
+  const result=await page.evaluate(async()=>{
+    chosenIds=[0,1,2,3]; beginGame(0); skipStory();
+    await new Promise(resolve=>setTimeout(resolve,1050));
+    const timerStarted=missionElapsed()>=1&&!!missionTimerInt;
+    inventory={'flor-cerejeira':1};
+    const bag=document.getElementById('mochilaScreen');
+    bag.classList.add('show'); bag.setAttribute('aria-hidden','false');
+    openShopFromMochila();
+    const shopExclusive=!bag.classList.contains('show')&&document.getElementById('shopScreen').classList.contains('show');
+    closeShopToMochila();
+    const bagRestored=bag.classList.contains('show')&&!document.getElementById('shopScreen').classList.contains('show');
+    await usarItemBatalha('flor-cerejeira');
+    const bagClosedForVfx=!bag.classList.contains('show')&&battlePhase==='idle';
+    document.getElementById('dungeonTitle').textContent='Lendária Torre de Acesso à Eternidade do Reino dos Humanos';
+    fitDungeonTitle();
+    return {timerStarted,shopExclusive,bagRestored,bagClosedForVfx,longTitle:document.getElementById('dungeonTitle').classList.contains('is-extra-long-title')};
+  });
+  expect(result).toEqual({timerStarted:true,shopExclusive:true,bagRestored:true,bagClosedForVfx:true,longTitle:true});
+  expect(errors).toEqual([]);
+});
+
 test('Mercado usa acordeões por reino e a Luz aplica Elixir, escudo, lança, Espelho e Esperança',async({page})=>{
   const errors=await boot(page,'flow');
   await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); manualTarget=0; playerHP=Math.floor(PLAYER_MAX_HP*.5); enemies[0].hp=1000; enemies[0].maxHp=1000; inventory={'elixir-divino':1,'luz-protetora':1,'lanca-divina':1,'espelho-ygdria':1,esperanca:1}; });
   const result=await page.evaluate(async()=>{
-    renderShop();
-    if(!document.querySelector('.market-realm-luz')?.classList.contains('open')) document.querySelector('[data-market-realm="luz"]')?.click();
+    marketOpenRealms.add('luz'); renderShop();
     const opened=document.querySelector('.market-realm-luz')?.classList.contains('open');
     const target=0, hpBefore=playerHP, enemyBefore=enemies[target].hp;
     await usarItemBatalha('elixir-divino');
@@ -3117,7 +3139,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.96');
+  expect(registration.caches).toContain('12r-v11.0.97');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -3281,7 +3303,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.96');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.97');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

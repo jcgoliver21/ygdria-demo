@@ -3546,6 +3546,37 @@ body.quality-economy .unit-ground-shadow,body.quality-economy .arena-floor{filte
   .pro-dialog{max-height:94dvh!important}
 }
 
+/* v11.0.97 · título de missão contido e mapa com um único rodapé.
+   O relógio é uma coluna própria: nomes extensos nunca passam por baixo dele. */
+.mission-topbar{
+  grid-template-columns:minmax(0,1fr) auto!important;
+  grid-template-areas:"identity clock" "metrics metrics"!important;
+  column-gap:8px!important;
+}
+.mission-identity{min-width:0!important}
+.mission-clock-group{max-width:44vw!important;align-self:start!important;padding-top:1px}
+.mission-identity .arena-dungeon-title{
+  display:-webkit-box!important;
+  -webkit-box-orient:vertical!important;
+  -webkit-line-clamp:2!important;
+  white-space:normal!important;
+  overflow:hidden!important;
+  overflow-wrap:anywhere!important;
+  text-overflow:clip!important;
+  max-width:100%!important;
+  line-height:1.08!important;
+}
+.mission-identity .arena-dungeon-title.is-long-title{font-size:9px!important;letter-spacing:1px!important}
+.mission-identity .arena-dungeon-title.is-extra-long-title{font-size:8px!important;letter-spacing:.75px!important}
+.map-viewport > #worldScreen .world-map{margin-bottom:0!important;padding-bottom:0!important}
+.map-viewport > #worldScreen .fase-node{min-height:clamp(96px,16cqh,150px)!important}
+@media (max-width:600px){
+  .mission-clock-group{max-width:47vw!important;gap:3px!important}
+  .mission-identity .arena-dungeon-title.is-long-title{font-size:8.5px!important}
+  .mission-identity .arena-dungeon-title.is-extra-long-title{font-size:7.7px!important}
+  .map-viewport > #worldScreen .fase-node{min-height:96px!important}
+}
+
 @media (prefers-reduced-motion:reduce){
   .realm-particle,.ability-banner,.cutin-layer,.hero-sprite-image,.enemy-sprite-image{animation-duration:.001ms!important;animation-iteration-count:1!important}
 }

@@ -1963,10 +1963,45 @@ function useHopeItem(){
     return false;
   }
 }
+/* Mochila e loja ocupam o mesmo espaço de interação. Ao ir à loja a partir da
+   mochila, ela sai do campo antes; ao fechar a loja, a mochila volta sozinha. */
+let restoreMochilaAfterShop=false;
+function closeMochila(){
+  const bag=document.getElementById('mochilaScreen');
+  if(!bag) return false;
+  const wasOpen=bag.classList.contains('show');
+  bag.classList.remove('show');
+  bag.setAttribute('aria-hidden','true');
+  return wasOpen;
+}
+function openShopFromMochila(){
+  restoreMochilaAfterShop=closeMochila();
+  openPanel('shopScreen');
+  sfxSelect();
+}
+function closeShopToMochila(){
+  document.getElementById('shopScreen')?.classList.remove('show');
+  if(!restoreMochilaAfterShop) return;
+  restoreMochilaAfterShop=false;
+  renderMochila();
+  const bag=document.getElementById('mochilaScreen');
+  bag?.classList.add('show');
+  bag?.setAttribute('aria-hidden','false');
+}
+async function closeMochilaBeforeItemUse(){
+  if(!closeMochila()) return;
+  /* A superfície precisa sair antes que o VFX nasça na arena. */
+  await wait(140);
+}
 async function usarItemBatalha(id,mirrorHeroIdx=null){
-  if(id==='esperanca') return useHopeItem();
+  if(id==='esperanca'){
+    if((inventory.esperanca||0)<=0||reconcileHope()>=HOPE_MAX) return useHopeItem();
+    await closeMochilaBeforeItemUse();
+    return useHopeItem();
+  }
   if(!document.body.classList.contains('game-active')||(inventory[id]||0)<=0){ sfxInvalid(); return; }
   if(playerHP<=0||busy||battlePhase!=='idle'){ sfxInvalid(); return; }
+  await closeMochilaBeforeItemUse();
   if(id==='espelho-ygdria'&&!Number.isInteger(mirrorHeroIdx)){ openMirrorHeroPicker(); return; }
   if(id==='espelho-ygdria'&&(!ACTIVE.includes(mirrorHeroIdx)||!KINGDOMS[mirrorHeroIdx])){ sfxInvalid(); return; }
   const nomeItem=L(SHOP_ITEMS.find(i=>i.id===id)?.nome||id);
@@ -2729,6 +2764,13 @@ function pumpHeroHitMaskWarmup(){
       window.setTimeout(pumpHeroHitMaskWarmup,140);
     });
   },{timeout:4200});
+}
+function fitDungeonTitle(){
+  const title=document.getElementById('dungeonTitle');
+  if(!title) return;
+  const length=title.textContent.trim().length;
+  title.classList.toggle('is-long-title',length>24);
+  title.classList.toggle('is-extra-long-title',length>39);
 }
 function prepareHeroHitMask(src){
   if(!src) return Promise.resolve(null);
@@ -4246,6 +4288,7 @@ function renderStageProgress(){
     stageLabelEl.textContent = bossRushMode ? `${T('Chefe','Boss','Jefe')} ${bossRushIdx+1}/8` : '';
     dungeonTitleEl.textContent = activeStageData?.title || '';
   }
+  fitDungeonTitle();
   /* A Torre usa uma arte com um pátio bem mais baixo que os cenários comuns.
      A classe própria mantém a banda de aterrissagem e a malha tática presas ao
      piso pintado, sem deslocar os demais cenários que também usam scene-4. */
@@ -5586,6 +5629,9 @@ function beginMissionField(){
     return triggerHumanFinalePrelude();
   }
   missionFieldStarted=true;
+  /* O relógio de missão e a janela Pesadelo começam ao liberar o campo,
+     inclusive se o jogador ainda não fizer a primeira combinação. */
+  startMissionTimer(true);
   setBattlePhase('idle');
   if(pendingRoomPassives.length) scheduleCombat(()=>launchPendingRoomPassives(),260);
   ACTIVE.forEach(idx2=>{
@@ -9942,7 +9988,8 @@ document.getElementById('swapTool')?.addEventListener('click',()=>{
 document.querySelectorAll('[data-close]').forEach(btn=>{
   btn.addEventListener('click',()=>{
     const panel=btn.closest('.pro-overlay');
-    panel?.classList.remove('show');
+    if(panel?.id==='shopScreen') closeShopToMochila();
+    else panel?.classList.remove('show');
     if(panel?.id==='worldScreen') document.getElementById('mapScreen')?.classList.remove('world-picker-open');
     if(btn.closest('#helpScreen'))localStorage.setItem('12r_tutorial_seen','true');
   });
@@ -9950,7 +9997,8 @@ document.querySelectorAll('[data-close]').forEach(btn=>{
 document.querySelectorAll('.pro-overlay').forEach(panel=>{
   panel.addEventListener('click',e=>{
     if(e.target===panel && panel.id!=='pauseScreen'){
-      panel.classList.remove('show');
+      if(panel.id==='shopScreen') closeShopToMochila();
+      else panel.classList.remove('show');
       if(panel.id==='worldScreen') document.getElementById('mapScreen')?.classList.remove('world-picker-open');
     }
   });
@@ -10833,9 +10881,7 @@ function renderWorldMap(){
   if(!map) return;
   const prog=worldProg('humanos');
   const note=document.getElementById('worldNote');
-  if(note) note.textContent=HUMANOS_PUBLIC_TEST_UNLOCK
-    ? 'Teste público: todas as 10 fases do Reino dos Humanos estão liberadas. Seu progresso salvo não será alterado.'
-    : 'Cada fase tem 5 níveis — o 5º guarda o CHEFE. Vença o chefe para desbloquear a próxima fase. Os demais reinos serão revelados em breve.';
+  if(note) note.textContent=T('Cada fase tem 5 níveis — o 5º guarda o CHEFE. Vença o chefe para desbloquear a próxima fase. Os demais reinos serão revelados em breve.','Each phase has 5 levels — the 5th holds the BOSS. Defeat the boss to unlock the next phase. The other realms will be revealed soon.','Cada fase tiene 5 niveles — el 5º guarda al JEFE. Derrota al jefe para desbloquear la siguiente fase. Los demás reinos serán revelados pronto.');
   map.innerHTML='';
   const fb=faseBest();
   const ft=faseTime();
@@ -10945,7 +10991,7 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
     sfxSelect();
   });
   document.getElementById('mapBackBtn')?.addEventListener('click',()=>{ closeMapScreen(); sfxSelect(); });
-  document.getElementById('shopBtn')?.addEventListener('click',()=>openPanel('shopScreen'));
+  document.getElementById('shopBtn')?.addEventListener('click',()=>{ restoreMochilaAfterShop=false; closeMochila(); openPanel('shopScreen'); });
   document.getElementById('mochilaBtn')?.addEventListener('click',()=>{
     const bag=document.getElementById('mochilaScreen');
     if(!bag) return;
@@ -10956,10 +11002,9 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
     sfxSelect();
   });
   document.getElementById('mochilaCloseBtn')?.addEventListener('click',()=>{
-    const bag=document.getElementById('mochilaScreen');
-    bag?.classList.remove('show'); bag?.setAttribute('aria-hidden','true'); sfxSelect();
+    closeMochila(); sfxSelect();
   });
-  document.getElementById('mochilaShopBtn')?.addEventListener('click',()=>{ openPanel('shopScreen'); sfxSelect(); });
+  document.getElementById('mochilaShopBtn')?.addEventListener('click',openShopFromMochila);
   /* Arena: nomes, superfícies do HUD e indicadores persistentes. */
   document.querySelectorAll('[data-options-tab]').forEach(tab=>tab.addEventListener('click',()=>{
     const selected=tab.dataset.optionsTab;
@@ -11284,7 +11329,7 @@ function renderGameFooters(){
   document.querySelectorAll('[data-footer-user]').forEach(node=>node.textContent=name);
   document.querySelectorAll('[data-footer-coins]').forEach(node=>node.textContent=`✦ ${formatKalegs(coins)}`);
   document.querySelectorAll('[data-footer-hope]').forEach(node=>node.textContent=`✧ ${amount}/${HOPE_MAX}`);
-  document.querySelectorAll('[data-footer-version]').forEach(node=>node.textContent=`${T('VERSÃO','VERSION','VERSIÓN')} ${(APP_VERSION||'v11.0.96').replace(/^v/i,'')}`);
+  document.querySelectorAll('[data-footer-version]').forEach(node=>node.textContent=`${T('VERSÃO','VERSION','VERSIÓN')} ${(APP_VERSION||'v11.0.97').replace(/^v/i,'')}`);
 }
 function updateNamePreview(){
   const nome=document.getElementById('obName')?.value||'';
