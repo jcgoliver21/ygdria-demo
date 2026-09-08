@@ -5430,9 +5430,9 @@ if(!['relic','simple','crystal'].includes(vizPrefs.boardStyle)) vizPrefs.boardSt
 /* O HUD R2 aprovado substitui a prévia compacta anterior. A migração é única:
    preserva escolhas feitas nesta versão, mas faz instalações antigas verem o
    modelo Joias do Reino que acompanha a nova composição. */
-if(localStorage.getItem('12r_battle_hud_defaults')!=='11.1.0'){
+if(localStorage.getItem('12r_battle_hud_defaults')!=='11.1.1'){
   vizPrefs.boardStyle='relic';
-  localStorage.setItem('12r_battle_hud_defaults','11.1.0');
+  localStorage.setItem('12r_battle_hud_defaults','11.1.1');
   localStorage.setItem('12r_viz',JSON.stringify(vizPrefs));
 }
 function saveViz(){ localStorage.setItem('12r_viz',JSON.stringify(vizPrefs)); applyVizSettings(); }
@@ -11352,7 +11352,7 @@ function renderGameFooters(){
   document.querySelectorAll('[data-footer-user]').forEach(node=>node.textContent=name);
   document.querySelectorAll('[data-footer-coins]').forEach(node=>node.textContent=`✦ ${formatKalegs(coins)}`);
   document.querySelectorAll('[data-footer-hope]').forEach(node=>node.textContent=`✧ ${amount}/${HOPE_MAX}`);
-  document.querySelectorAll('[data-footer-version]').forEach(node=>node.textContent=`${T('VERSÃO','VERSION','VERSIÓN')} ${(APP_VERSION||'v11.1.0').replace(/^v/i,'')}`);
+  document.querySelectorAll('[data-footer-version]').forEach(node=>node.textContent=`${T('VERSÃO','VERSION','VERSIÓN')} ${(APP_VERSION||'v11.1.1').replace(/^v/i,'')}`);
 }
 function updateNamePreview(){
   const nome=document.getElementById('obName')?.value||'';
