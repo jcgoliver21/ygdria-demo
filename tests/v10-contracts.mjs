@@ -20,13 +20,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.94/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.94/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.94/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.94/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.94/);
-  assert.match(config,/version:'v11\.0\.94'/);
-  assert.match(sw,/12r-v11\.0\.94/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.95/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.95/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.95/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.95/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.95/);
+  assert.match(config,/version:'v11\.0\.95'/);
+  assert.match(sw,/12r-v11\.0\.95/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -155,7 +155,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.94/);
+  assert.match(sw,/12r-v11\.0\.95/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -201,6 +201,7 @@ check('rodapé de jornada acompanha os destinos e sincroniza usuário, Kalegs e 
   assert.equal((html.match(/data-realm-footer/g)||[]).length,5,'rodapé deve existir no menu, mapa, fases, Torre e especiais');
   for(const needle of ['data-footer-user','data-footer-coins','data-footer-hope','data-footer-version','function renderGameFooters','data-footer-account']) assert.ok(html.includes(needle)||game.includes(needle),`${needle} ausente`);
   assert.ok(css.includes('.realm-footer')&&css.includes('.map-realm-footer'),'estilo compartilhado do rodapé ausente');
+  assert.ok(html.includes('class="realm-footer overlay-realm-footer" data-realm-footer')&&html.includes('class="realm-footer overlay-realm-footer map-realm-footer" data-realm-footer'),'menu e mapa devem reutilizar a mesma faixa de rodapé da Torre');
 });
 
 check('CSS inclui acessibilidade, qualidade e HUD de fase',()=>{
@@ -598,7 +599,7 @@ check('mapa vertical preserva geografia e expande somente o oceano lateral',()=>
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.94');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.95');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
