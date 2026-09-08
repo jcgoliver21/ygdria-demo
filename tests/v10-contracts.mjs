@@ -20,13 +20,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.93/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.93/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.93/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.93/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.93/);
-  assert.match(config,/version:'v11\.0\.93'/);
-  assert.match(sw,/12r-v11\.0\.93/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.94/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.94/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.94/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.94/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.94/);
+  assert.match(config,/version:'v11\.0\.94'/);
+  assert.match(sw,/12r-v11\.0\.94/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -155,7 +155,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.93/);
+  assert.match(sw,/12r-v11\.0\.94/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -193,6 +193,14 @@ check('opções profissionais estão ligadas à persistência',()=>{
     assert.ok(game.includes(`getElementById('${id}')`),`${id} sem integração no jogo`);
   }
   for(const key of ['12r_music_volume','12r_stage_music_volume','12r_sfx_volume','12r_quality','12r_high_contrast','12r_large_text','12r_reduce_flashes']) assert.ok(game.includes(key));
+  assert.ok(html.includes('options-dialog')&&html.includes('options-hero')&&html.includes('options-group'),'novo layout de Opções ausente');
+  assert.ok(css.includes('.options-grid')&&css.includes('.options-orb'),'estilo do novo layout de Opções ausente');
+});
+
+check('rodapé de jornada acompanha os destinos e sincroniza usuário, Kalegs e Esperança',()=>{
+  assert.equal((html.match(/data-realm-footer/g)||[]).length,5,'rodapé deve existir no menu, mapa, fases, Torre e especiais');
+  for(const needle of ['data-footer-user','data-footer-coins','data-footer-hope','data-footer-version','function renderGameFooters','data-footer-account']) assert.ok(html.includes(needle)||game.includes(needle),`${needle} ausente`);
+  assert.ok(css.includes('.realm-footer')&&css.includes('.map-realm-footer'),'estilo compartilhado do rodapé ausente');
 });
 
 check('CSS inclui acessibilidade, qualidade e HUD de fase',()=>{
@@ -249,8 +257,8 @@ check('inimigos exclusivos usam folhas reais, impactos e arena viva',()=>{
   for(const needle of ['enemyOriginalAttack','arena-petals','arena-cold-fog','arena-world-drift','.enemy-unit.dead .unit-ground-shadow','@keyframes enemyDefeatGroundedFallback']) assert.ok(css.includes(needle),`${needle} ausente`);
 });
 
-check('Prólogo e Reino dos Humanos usam trilhas autorais com troca para o confronto final',()=>{
-  for(const file of ['Ygdria_Prologo.mp3','Ygdria_Humanos_1_9.mp3','Ygdria_10_Sombras_Que_Devoram.mp3','Ygdria_10_Sombras_Que_Devoram_Final.mp3']){
+check('Prólogo, Humanos e Torre usam trilhas autorais com troca para o confronto final',()=>{
+  for(const file of ['Ygdria_Prologo.mp3','Ygdria_Humanos_1_9.mp3','Ygdria_Batalha_Capitulo_1.mp3','Ygdria_10_Sombras_Que_Devoram.mp3','Ygdria_10_Sombras_Que_Devoram_Final.mp3']){
     assert.ok(fs.existsSync(path.join(root,'assets','audio',file)),`${file}: trilha ausente`);
   }
   assert.match(html,/rel="preload" href="assets\/audio\/Ygdria_Prologo\.mp3"/);
@@ -260,6 +268,9 @@ check('Prólogo e Reino dos Humanos usam trilhas autorais com troca para o confr
   assert.match(game,/worldRun\.nivel===5\?'final':'base'/);
   assert.match(game,/prologue:\{src:'assets\/audio\/Ygdria_Prologo\.mp3'/);
   assert.match(game,/humanos:\{src:'assets\/audio\/Ygdria_Humanos_1_9\.mp3'/);
+  assert.match(game,/tower:\{src:'assets\/audio\/Ygdria_Batalha_Capitulo_1\.mp3'/);
+  assert.match(game,/if\(towerMode&&!dailyRunMode\) return 'tower'/);
+  assert.match(game,/prepareStageMusic\('tower'\)/);
   assert.match(game,/STAGE10_MUSIC_GAIN=\.24/);
   assert.match(game,/STAGE10_LOOP_CROSSFADE=\.8/);
   assert.match(game,/loopOut:\.95/);
@@ -587,7 +598,7 @@ check('mapa vertical preserva geografia e expande somente o oceano lateral',()=>
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.93');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.94');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);

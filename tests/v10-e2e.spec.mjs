@@ -2459,7 +2459,7 @@ test('Esperança cobra a campanha, recupera um ponto por hora e libera modos esp
     const freeModeFree=spendStoryHope()&&hopeState.amount===10;
     return {firstRun,afterFirst,replay,afterReplay,blocked,blockedMessage,afterSixHours,readyAtEight,afterFullRecovery,towerFree,freeModeFree,badge:document.getElementById('hopeBadge')?.textContent};
   });
-  expect(result).toMatchObject({firstRun:true,afterFirst:2,replay:true,afterReplay:0,blocked:false,blockedMessage:'Você está sem Esperança, não pode jogar agora.',afterSixHours:8,readyAtEight:true,afterFullRecovery:10,towerFree:true,freeModeFree:true});
+  expect(result).toMatchObject({firstRun:true,afterFirst:2,replay:true,afterReplay:0,blocked:false,blockedMessage:'Você está sem Esperança, descanse um pouco.',afterSixHours:8,readyAtEight:true,afterFullRecovery:10,towerFree:true,freeModeFree:true});
   expect(result.badge).toContain('10/10');
   expect(errors).toEqual([]);
 });
@@ -2478,6 +2478,11 @@ test('Prólogo e Reino dos Humanos usam trilhas licenciadas com mixagem protegid
     const prologueTrack=stageMusicActive;
     const prologue={key:stageMusicSelection,src:prologueTrack?.audio?.getAttribute('src'),loop:prologueTrack?.audio?.loop,gain:stageMusicTargetGain()};
     stopIntroMusic();
+    towerMode=true; dailyRunMode=false; worldRun={active:false};
+    playStageMusic(0);
+    const towerTrack=stageMusicActive;
+    const tower={key:stageMusicSelection,src:towerTrack?.audio?.getAttribute('src'),loop:towerTrack?.audio?.loop,gain:stageMusicTargetGain(),filter:towerTrack?.filter?.type};
+    stopMusic(); towerMode=false;
     worldRun={active:true,fase:0,nivel:1,storyMode:false};
     chosenIds=['adriel-jovem','berenice-jovem','galateia-jovem','acqua-jovem'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
     beginGame(0); skipStory();
@@ -2501,9 +2506,10 @@ test('Prólogo e Reino dos Humanos usam trilhas licenciadas com mixagem protegid
     playStageMusic(activeStageData.scene);
     const finalTrack=stageMusicActive;
     const final={key:stageMusicSelection,src:finalTrack?.audio?.getAttribute('src'),loop:finalTrack?.audio?.loop,gain:stageMusicTargetGain(),filter:finalTrack?.filter?.type,loopOut:finalTrack?.loopOut};
-    return {prologue,human,base,loop,paused,resume,final};
+    return {prologue,tower,human,base,loop,paused,resume,final};
   });
   expect(audio.prologue).toMatchObject({key:'prologue',src:'assets/audio/Ygdria_Prologo.mp3',loop:false});
+  expect(audio.tower).toMatchObject({key:'tower',src:'assets/audio/Ygdria_Batalha_Capitulo_1.mp3',loop:false,filter:'lowpass'});
   expect(audio.human).toMatchObject({key:'humanos',src:'assets/audio/Ygdria_Humanos_1_9.mp3',loop:false,filter:'lowpass'});
   expect(audio.base).toMatchObject({key:'base',src:'assets/audio/Ygdria_10_Sombras_Que_Devoram.mp3',loop:false});
   expect(audio.final).toMatchObject({key:'final',src:'assets/audio/Ygdria_10_Sombras_Que_Devoram_Final.mp3',loop:false,filter:'lowpass',loopOut:1.35});
@@ -2527,6 +2533,7 @@ test('Prólogo e Reino dos Humanos usam trilhas licenciadas com mixagem protegid
     return Promise.all([
       inspect('assets/audio/Ygdria_Prologo.mp3'),
       inspect('assets/audio/Ygdria_Humanos_1_9.mp3'),
+      inspect('assets/audio/Ygdria_Batalha_Capitulo_1.mp3'),
       inspect('assets/audio/Ygdria_10_Sombras_Que_Devoram.mp3'),
       inspect('assets/audio/Ygdria_10_Sombras_Que_Devoram_Final.mp3')
     ]);
@@ -3110,7 +3117,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.93');
+  expect(registration.caches).toContain('12r-v11.0.94');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -3274,7 +3281,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.93');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.94');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

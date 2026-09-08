@@ -730,6 +730,7 @@ const LICENSED_STAGE_MUSIC=Object.freeze({
   /* Cada master informa seu próprio ponto de reentrada, antes da cauda. */
   prologue:{src:'assets/audio/Ygdria_Prologo.mp3',loopOut:1.8},
   humanos:{src:'assets/audio/Ygdria_Humanos_1_9.mp3',loopOut:.9},
+  tower:{src:'assets/audio/Ygdria_Batalha_Capitulo_1.mp3',loopOut:1.1},
   base:{src:'assets/audio/Ygdria_10_Sombras_Que_Devoram.mp3',loopOut:.95},
   final:{src:'assets/audio/Ygdria_10_Sombras_Que_Devoram_Final.mp3',loopOut:1.35}
 });
@@ -737,6 +738,7 @@ let stageMusicActive=null;
 let stageMusicSelection=null;
 
 function stageMusicForWorldRun(){
+  if(towerMode&&!dailyRunMode) return 'tower';
   if(!worldRun?.active) return null;
   if(worldRun.fase>=0&&worldRun.fase<=8) return 'humanos';
   if(worldRun.fase===9) return worldRun.nivel===5?'final':'base';
@@ -1384,6 +1386,7 @@ function formatKalegs(value){ return `${Math.max(0,Math.round(Number(value)||0))
 function updateCoinBadge(){
   const el=document.getElementById('coinBadge');
   if(el) el.textContent=`✦ ${formatKalegs(coins)}`;
+  document.querySelectorAll('[data-footer-coins]').forEach(node=>{ if(node!==el) node.textContent=`✦ ${formatKalegs(coins)}`; });
   const el2=document.getElementById('shopCoins');
   if(el2) el2.textContent=`✦ ${formatKalegs(coins)}`;
 }
@@ -1421,10 +1424,12 @@ function showHopeToast(message){
 }
 function updateHopeBadge(now=Date.now()){
   const amount=hopeAmount(now), badge=document.getElementById('hopeBadge');
-  if(!badge) return amount;
-  badge.classList.toggle('full',amount===HOPE_MAX);
-  badge.querySelector('strong')?.replaceChildren(document.createTextNode(`${amount}/${HOPE_MAX}`));
-  badge.setAttribute('aria-label',T(`Esperança: ${amount} de ${HOPE_MAX}`,`Hope: ${amount} of ${HOPE_MAX}`,`Esperanza: ${amount} de ${HOPE_MAX}`));
+  if(badge){
+    badge.classList.toggle('full',amount===HOPE_MAX);
+    badge.querySelector('[data-footer-hope]')?.replaceChildren(document.createTextNode(`✧ ${amount}/${HOPE_MAX}`));
+    badge.setAttribute('aria-label',T(`Esperança: ${amount} de ${HOPE_MAX}`,`Hope: ${amount} of ${HOPE_MAX}`,`Esperanza: ${amount} de ${HOPE_MAX}`));
+  }
+  document.querySelectorAll('[data-footer-hope]').forEach(node=>{ if(node!==badge?.querySelector('[data-footer-hope]')) node.textContent=`✧ ${amount}/${HOPE_MAX}`; });
   return amount;
 }
 function reconcileHope(now=Date.now(),announce=false){
@@ -1445,7 +1450,7 @@ function spendStoryHope(){
   const amount=reconcileHope();
   if(amount<cost){
     showHopeToast(amount===0
-      ?T('Você está sem Esperança, não pode jogar agora.','You are out of Hope and cannot play now.','No tienes Esperanza, no puedes jugar ahora.')
+      ?T('Você está sem Esperança, descanse um pouco.','You are out of Hope. Rest for a while.','No tienes Esperanza, descansa un poco.')
       :T(`Você precisa de ${cost} Esperanças para iniciar esta fase.`,`You need ${cost} Hope to start this phase.`,`Necesitas ${cost} Esperanzas para iniciar esta fase.`));
     sfxInvalid(); return false;
   }
@@ -10931,7 +10936,7 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
     }
   }
   window.renderTowerScreen=renderTowerScreen;
-  document.getElementById('towerBtn')?.addEventListener('click',()=>{ renderTowerScreen(); openPanel('towerScreen'); sfxSelect(); });
+  document.getElementById('towerBtn')?.addEventListener('click',()=>{ renderTowerScreen(); prepareStageMusic('tower'); openPanel('towerScreen'); sfxSelect(); });
   document.getElementById('towerStartBtn')?.addEventListener('click',()=>{
     document.getElementById('towerScreen')?.classList.remove('show');
     towerMode=true; worldRun.active=false; bossRushMode=false; towerFloor=1; pendingStage=0;
@@ -11113,6 +11118,7 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
   document.getElementById('obFinish')?.addEventListener('click',finishOnboarding);
   // ---- Painel de conta ----
   document.getElementById('accountChip')?.addEventListener('click',()=>{ renderAccountPanel(); openPanel('accountScreen'); });
+  document.querySelectorAll('[data-footer-account]:not(#accountChip)').forEach(button=>button.addEventListener('click',()=>{ renderAccountPanel(); openPanel('accountScreen'); sfxSelect(); }));
   document.getElementById('accountLoginBtn')?.addEventListener('click',()=>{
     document.getElementById('accountScreen')?.classList.remove('show');
     document.getElementById('loginScreen')?.classList.add('show');
@@ -11233,11 +11239,7 @@ function logoutAccount(){
   document.getElementById('loginScreen')?.classList.add('show');
 }
 function renderAccountChip(){
-  const chip=document.getElementById('accountChip');
-  if(chip){
-    if(account?.username) chip.innerHTML=`👑 <b>${escapeHtml(account.username)}</b>`;
-    else chip.innerHTML=`🎭 ${T('Convidado — toque para entrar','Guest — tap to sign in','Invitado — toca para entrar')}`;
-  }
+  renderGameFooters();
   const hint=document.getElementById('profileHint');
   if(hint) hint.textContent=account?.username
     ? T('Sua conta, lendas e conquistas','Your account, legends and achievements','Tu cuenta, leyendas y logros')
@@ -11261,6 +11263,14 @@ function showOnboardStep(n){
     profile.querySelectorAll('[data-profile-step]').forEach(dot=>dot.classList.toggle('active',Number(dot.dataset.profileStep)<=n));
   }
   if(n===3) updateNamePreview();
+}
+function renderGameFooters(){
+  const name=account?.username||account?.displayName||T('Convidado','Guest','Invitado');
+  const amount=typeof hopeAmount==='function'?hopeAmount():HOPE_MAX;
+  document.querySelectorAll('[data-footer-user]').forEach(node=>node.textContent=name);
+  document.querySelectorAll('[data-footer-coins]').forEach(node=>node.textContent=`✦ ${formatKalegs(coins)}`);
+  document.querySelectorAll('[data-footer-hope]').forEach(node=>node.textContent=`✧ ${amount}/${HOPE_MAX}`);
+  document.querySelectorAll('[data-footer-version]').forEach(node=>node.textContent=`${T('VERSÃO','VERSION','VERSIÓN')} ${(APP_VERSION||'v11.0.94').replace(/^v/i,'')}`);
 }
 function updateNamePreview(){
   const nome=document.getElementById('obName')?.value||'';
