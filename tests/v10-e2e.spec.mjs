@@ -3139,7 +3139,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.98');
+  expect(registration.caches).toContain('12r-v11.0.99');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -3226,13 +3226,17 @@ test('menu não baixa elenco inteiro e batalha limita animações à equipe ativ
   expect(errors).toEqual([]);
 });
 
-test('Opções alterna blocos clássicos e cristais emblemáticos sem alterar os símbolos dos reinos',async({page})=>{
+test('Opções alterna Joias do Reino, esferas clássicas e cristais sem alterar os símbolos dos reinos',async({page})=>{
   const errors=await boot(page,'flow');
   await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
   await expect(page.locator('.board .gem')).toHaveCount(36);
   await page.locator('#pauseBtn').click();
   await page.locator('#pauseOptionsBtn').click();
   await page.locator('[data-options-tab="visual"]').click();
+  await expect.poll(()=>page.evaluate(()=>(
+    document.body.classList.contains('board-style-relic')
+    && JSON.parse(localStorage.getItem('12r_viz')||'{}').boardStyle==='relic'
+  ))).toBe(true);
   await page.locator('[data-board-orb-style="crystal"]').click();
   await expect.poll(()=>page.evaluate(()=>({
     crystal:document.body.classList.contains('board-style-crystal'),
@@ -3259,6 +3263,17 @@ test.describe('mobile',()=>{
     await expect(page.locator('.board')).toBeVisible();
     const battleOverflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
     expect(battleOverflow).toBeLessThanOrEqual(1);
+    const hud=await page.evaluate(()=>{
+      const rect=selector=>{const r=document.querySelector(selector).getBoundingClientRect();return {width:r.width,height:r.height,top:r.top,bottom:r.bottom};};
+      return {frame:rect('.game-frame'),arena:rect('.arena'),console:rect('.combat-console'),board:rect('.combat-console .board'),cards:rect('.combat-console .card-strip'),hp:rect('.vertical-hp'),dock:rect('.battle-info-dock'),cardsCount:document.querySelectorAll('.combat-console .mini-card').length};
+    });
+    expect(hud.frame.height).toBeLessThanOrEqual(846);
+    expect(hud.arena.height).toBeGreaterThan(520);
+    expect(hud.board.width).toBeGreaterThan(210);
+    expect(hud.board.height).toBeGreaterThan(210);
+    expect(hud.cardsCount).toBe(4);
+    expect(hud.cards.height).toBeGreaterThan(hud.board.height*.9);
+    expect(hud.hp.height).toBeGreaterThan(hud.board.height*.8);
     expect(errors).toEqual([]);
   });
 
@@ -3326,7 +3341,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.98');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.99');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

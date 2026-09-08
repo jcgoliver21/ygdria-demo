@@ -2485,8 +2485,9 @@ function pulseArenaLighting(color,target,kind='impact'){
   scheduleCombat(()=>arenaEl.classList.remove('arena-light-pulse'),kind==='critical'?680:460);
 }
 
-/* Cabeçalho compacto: mantém missão/relógio na primeira linha e objetivo,
-   recorde e controles na segunda, sem alterar os IDs usados pelos eventos. */
+/* HUD R2: cada bloco do cabeçalho é um painel próprio. Não reagrupamos os
+   relógios nem os controles dentro de outros painéis, pois isso esconderia
+   informação e quebraria a hierarquia visual da batalha. */
 function organizeMissionHeader(){
   const top=document.querySelector('.mission-topbar');
   const metrics=document.querySelector('.mission-metrics');
@@ -2495,16 +2496,11 @@ function organizeMissionHeader(){
   const nightmare=document.getElementById('nightmareTurnTimer');
   const phase=document.getElementById('battlePhaseChip');
   if(top&&metrics&&actions&&timer&&phase){
-    metrics.appendChild(actions);
-    let clockGroup=document.getElementById('missionClockGroup');
-    if(!clockGroup){
-      clockGroup=document.createElement('div');
-      clockGroup.id='missionClockGroup';
-      clockGroup.className='mission-clock-group';
-    }
-    clockGroup.append(phase,timer);
-    if(nightmare) clockGroup.append(nightmare);
-    top.appendChild(clockGroup);
+    const clockGroup=document.getElementById('missionClockGroup');
+    if(clockGroup) clockGroup.remove();
+    top.append(metrics,timer);
+    if(nightmare) top.append(nightmare);
+    top.append(phase,actions);
   }
 }
 organizeMissionHeader();
@@ -5419,7 +5415,7 @@ function resumeMissionClock(){
 /* 👁 Preferências de VISUALIZAÇÃO (menu Opções → Visualização) */
 /* Preferências padrão da apresentação de batalha: HUD superior discreto,
    heróis sem etiquetas e inimigos identificados abaixo do sprite. */
-let vizPrefs={heroNames:'off',enemyNames:'bottom',dmg:true,dps:true,timer:true,turnInfo:true,topHud:'transparent',infoBar:'transparent',boardStyle:'simple'};
+let vizPrefs={heroNames:'off',enemyNames:'bottom',dmg:true,dps:true,timer:true,turnInfo:true,topHud:'transparent',infoBar:'transparent',boardStyle:'relic'};
 try{ vizPrefs={...vizPrefs,...JSON.parse(localStorage.getItem('12r_viz')||'{}')}; }catch(e){}
 /* Migração de defaults visuais da campanha: aplica uma única vez para que
    versões anteriores não reintroduzam HUD sólido e nomes de heróis. */
@@ -5430,7 +5426,15 @@ if(localStorage.getItem('12r_viz_defaults')!=='9.3.9'){
 }
 if(!['solid','transparent','off'].includes(vizPrefs.topHud)) vizPrefs.topHud='solid';
 if(!['solid','transparent','off'].includes(vizPrefs.infoBar)) vizPrefs.infoBar='transparent';
-if(!['simple','crystal'].includes(vizPrefs.boardStyle)) vizPrefs.boardStyle='simple';
+if(!['relic','simple','crystal'].includes(vizPrefs.boardStyle)) vizPrefs.boardStyle='relic';
+/* O HUD R2 aprovado substitui a prévia compacta anterior. A migração é única:
+   preserva escolhas feitas nesta versão, mas faz instalações antigas verem o
+   modelo Joias do Reino que acompanha a nova composição. */
+if(localStorage.getItem('12r_battle_hud_defaults')!=='11.0.99'){
+  vizPrefs.boardStyle='relic';
+  localStorage.setItem('12r_battle_hud_defaults','11.0.99');
+  localStorage.setItem('12r_viz',JSON.stringify(vizPrefs));
+}
 function saveViz(){ localStorage.setItem('12r_viz',JSON.stringify(vizPrefs)); applyVizSettings(); }
 function applyVizSettings(){
   document.body.classList.toggle('viz-dmg-off',!vizPrefs.dmg);
@@ -5441,8 +5445,9 @@ function applyVizSettings(){
     document.body.classList.toggle(`viz-top-hud-${mode}`,vizPrefs.topHud===mode);
     document.body.classList.toggle(`viz-info-bar-${mode}`,vizPrefs.infoBar===mode);
   });
+  document.body.classList.toggle('board-style-relic',vizPrefs.boardStyle==='relic');
   document.body.classList.toggle('board-style-crystal',vizPrefs.boardStyle==='crystal');
-  document.body.classList.toggle('board-style-simple',vizPrefs.boardStyle!=='crystal');
+  document.body.classList.toggle('board-style-simple',vizPrefs.boardStyle==='simple');
   if(vizPrefs.topHud!=='off') document.body.classList.remove('hud-peek');
 }
 function vizNameLabel(v){ return v==='top'?T('Em cima','Top','Arriba'):v==='off'?T('Desabilitado','Disabled','Desactivado'):T('Embaixo','Bottom','Abajo'); }
@@ -9902,7 +9907,7 @@ document.getElementById('autoActivesToggle')?.addEventListener('click',()=>{
 });
 document.getElementById('restoreDefaultsBtn')?.addEventListener('click',()=>{
   ['12r_shake','12r_autoactives','12r_difficulty','12r_lang_set','12r_volume','12r_music_volume','12r_stage_music_volume','12r_sfx_volume','12r_quality','12r_high_contrast','12r_large_text','12r_reduce_flashes','12r_motion','12r_particles','12r_haptics','12r_tactical_grid'].forEach(k=>localStorage.removeItem(k));
-  vizPrefs.boardStyle='simple';
+  vizPrefs.boardStyle='relic';
   localStorage.setItem('12r_viz',JSON.stringify(vizPrefs));
   setBattleStatus?.(T('Padrões restaurados. Recarregue o jogo.','Defaults restored. Reload the game.','Valores restaurados. Recarga el juego.'));
   location.reload();
@@ -11052,7 +11057,7 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
   document.getElementById('vizInfoBar')?.addEventListener('click',()=>{ vizPrefs.infoBar=vizSurfaceCycle[vizPrefs.infoBar]||'transparent'; saveViz(); syncVizLabels(); sfxSelect(); });
   document.querySelectorAll('[data-board-orb-style]').forEach(button=>button.addEventListener('click',()=>{
     const style=button.dataset.boardOrbStyle;
-    if(!['simple','crystal'].includes(style)) return;
+    if(!['relic','simple','crystal'].includes(style)) return;
     vizPrefs.boardStyle=style;
     saveViz(); syncVizLabels();
     if(document.body.classList.contains('game-active')) renderBoard();
@@ -11347,7 +11352,7 @@ function renderGameFooters(){
   document.querySelectorAll('[data-footer-user]').forEach(node=>node.textContent=name);
   document.querySelectorAll('[data-footer-coins]').forEach(node=>node.textContent=`✦ ${formatKalegs(coins)}`);
   document.querySelectorAll('[data-footer-hope]').forEach(node=>node.textContent=`✧ ${amount}/${HOPE_MAX}`);
-  document.querySelectorAll('[data-footer-version]').forEach(node=>node.textContent=`${T('VERSÃO','VERSION','VERSIÓN')} ${(APP_VERSION||'v11.0.98').replace(/^v/i,'')}`);
+  document.querySelectorAll('[data-footer-version]').forEach(node=>node.textContent=`${T('VERSÃO','VERSION','VERSIÓN')} ${(APP_VERSION||'v11.0.99').replace(/^v/i,'')}`);
 }
 function updateNamePreview(){
   const nome=document.getElementById('obName')?.value||'';
@@ -11534,7 +11539,7 @@ async function runSmokeTest(){
     ok('áudio separado em música e efeitos', !!document.getElementById('musicVolumeRange') && !!document.getElementById('sfxVolumeRange'));
     ok('4 perfis de qualidade gráfica', V10.quality?.values?.length===4 && !!document.getElementById('qualitySelect'));
     ok('3 recursos de acessibilidade', ['highContrastToggle','largeTextToggle','reduceFlashesToggle'].every(id=>!!document.getElementById(id)));
-    ok('HUD superior e barra de informações configuráveis', ['vizTurnInfo','vizTopHud','vizInfoBar'].every(id=>!!document.getElementById(id)) && !!document.getElementById('missionClockGroup'));
+    ok('HUD superior e barra de informações configuráveis', ['vizTurnInfo','vizTopHud','vizInfoBar','missionTimer','nightmareTurnTimer','battlePhaseChip'].every(id=>!!document.getElementById(id)));
     worldRun.active=false;
   }catch(e){
     results.push({name:'exceção: '+e.message, pass:false});
