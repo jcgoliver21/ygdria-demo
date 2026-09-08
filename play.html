@@ -32,7 +32,7 @@
 <link rel="apple-touch-icon" href="assets/icon.svg">
 <link rel="preload" href="assets/audio/Ygdria_Prologo.mp3" as="audio" type="audio/mpeg">
 <link rel="preload" href="assets/audio/Ygdria_Humanos_1_9.mp3" as="audio" type="audio/mpeg">
-<link rel="stylesheet" href="styles-v10.css?v=11.0.95">
+<link rel="stylesheet" href="styles-v10.css?v=11.0.96">
 </head>
 <body>
 <div class="hope-toast" id="hopeToast" role="status" aria-live="polite"></div>
@@ -52,7 +52,7 @@
       <button class="menu-btn command-tile" id="optionsBtn" type="button" data-tap-guard-bypass><span class="menu-icon vfx-icon vfx-options" aria-hidden="true"></span><span class="menu-label"><span class="menu-title-line">Opções</span><small class="menu-hint">Som, imagem e acessibilidade</small></span></button>
       <button class="menu-btn command-tile command-library" id="galleryBtn"><span class="menu-icon vfx-icon vfx-library" aria-hidden="true"></span><span class="menu-label"><span class="menu-title-line">Biblioteca da Eternidade</span><small class="menu-hint">Crônicas, criaturas, NPCs e cartas</small></span></button>
     </nav>
-    <footer class="realm-footer overlay-realm-footer" data-realm-footer><button class="realm-footer-user" id="accountChip" data-footer-account type="button"><small>USUÁRIO</small><b data-footer-user>Convidado</b></button><span class="realm-footer-stat"><small>MOEDAS</small><b id="coinBadge" data-footer-coins>✦ 0Ks</b></span><span class="realm-footer-stat realm-footer-hope" id="hopeBadge" role="status" aria-label="Esperança: 10 de 10"><small>ESPERANÇA</small><b data-footer-hope>✧ 10/10</b></span><small class="realm-footer-version" id="menuVersion" data-footer-version>v11.0.95</small></footer>
+    <footer class="realm-footer overlay-realm-footer" data-realm-footer><button class="realm-footer-user" id="accountChip" data-footer-account type="button"><small>USUÁRIO</small><b data-footer-user>Convidado</b></button><span class="realm-footer-stat"><small>MOEDAS</small><b id="coinBadge" data-footer-coins>✦ 0Ks</b></span><span class="realm-footer-stat realm-footer-hope" id="hopeBadge" role="status" aria-label="Esperança: 10 de 10"><small>ESPERANÇA</small><b data-footer-hope>✧ 10/10</b></span><small class="realm-footer-version" id="menuVersion" data-footer-version>v11.0.96</small></footer>
   </div>
 </div>
 
@@ -244,7 +244,7 @@
         <span class="special-mission-content"><span class="special-mission-meta"><i>DESAFIO DE REINO</i><b>CHEFES</b></span><strong>Provação dos Chefes</strong><small id="bossRushHint">Enfrente os soberanos de Ygdria em sequência.</small><span class="special-mission-footer"><em>Elenco de chefes · mapa de Ygdria</em><span class="special-mission-action">Desafiar <i aria-hidden="true">›</i></span></span></span>
       </button>
     </div>
-    <footer class="realm-footer overlay-realm-footer" data-realm-footer><button class="realm-footer-user" data-footer-account type="button"><small>USUÁRIO</small><b data-footer-user>Convidado</b></button><span class="realm-footer-stat"><small>MOEDAS</small><b data-footer-coins>✦ 0Ks</b></span><span class="realm-footer-stat realm-footer-hope"><small>ESPERANÇA</small><b data-footer-hope>✧ 10/10</b></span><small class="realm-footer-version" data-footer-version>v11.0.95</small></footer>
+    <footer class="realm-footer overlay-realm-footer" data-realm-footer><button class="realm-footer-user" data-footer-account type="button"><small>USUÁRIO</small><b data-footer-user>Convidado</b></button><span class="realm-footer-stat"><small>MOEDAS</small><b data-footer-coins>✦ 0Ks</b></span><span class="realm-footer-stat realm-footer-hope"><small>ESPERANÇA</small><b data-footer-hope>✧ 10/10</b></span><small class="realm-footer-version" data-footer-version>v11.0.96</small></footer>
   </div>
 </div>
 <div class="pro-overlay" id="abilityPickerScreen" role="dialog" aria-modal="true" aria-labelledby="abilityPickerTitle">
@@ -269,14 +269,19 @@
   </div>
 </div>
 <div class="pro-overlay" id="accountScreen" role="dialog" aria-modal="true" aria-labelledby="accountTitle">
-  <div class="pro-dialog">
-    <div class="dialog-header"><h2 class="dialog-title" id="accountTitle">Minha Conta</h2><button class="ghost-btn" data-close="accountScreen">Fechar</button></div>
-    <div class="profile-stats" id="accountInfo"></div>
-    <p class="account-note" id="rankNote">🏆 Ranking Global: será ativado junto com o servidor. Seu nome de usuário já está reservado localmente.</p>
+  <div class="pro-dialog account-dialog">
+    <header class="dialog-header account-header"><div><small>IDENTIDADE DE YGDRIA</small><h2 class="dialog-title" id="accountTitle">Minha Conta</h2></div><button class="ghost-btn" data-close="accountScreen">Fechar</button></header>
+    <section class="account-hero">
+      <span class="account-sigil" aria-hidden="true"><i></i><i></i><i></i></span>
+      <div><small id="accountHeroKicker">JORNADA LOCAL</small><h3 id="accountHeroName">Convidado</h3><p id="accountHeroStatus">Entre para registrar sua lenda entre os 12 Reinos.</p></div>
+    </section>
+    <section class="account-ledger"><header><span>REGISTRO DO AVENTUREIRO</span><small>Seu progresso pertence à sua jornada.</small></header><div class="profile-stats account-stat-grid" id="accountInfo"></div></section>
+    <section class="account-roadmap"><b>Ranking mensal</b><p id="rankNote">O Ranking Global será ativado junto com o servidor. Seu nome de usuário já está reservado localmente.</p></section>
     <div class="account-actions">
       <button class="overlay-btn" id="accountLoginBtn" type="button">Entrar / Criar conta</button>
       <button class="ghost-btn" id="logoutBtn" type="button">Sair da conta</button>
     </div>
+    <footer class="realm-footer overlay-realm-footer" data-realm-footer><button class="realm-footer-user" data-footer-account type="button"><small>USUÁRIO</small><b data-footer-user>Convidado</b></button><span class="realm-footer-stat"><small>MOEDAS</small><b data-footer-coins>✦ 0Ks</b></span><span class="realm-footer-stat realm-footer-hope"><small>ESPERANÇA</small><b data-footer-hope>✧ 10/10</b></span><small class="realm-footer-version" data-footer-version>v11.0.96</small></footer>
   </div>
 </div>
 <div class="pro-overlay group-editor-overlay" id="editGroupScreen" role="dialog" aria-modal="true" aria-labelledby="editGroupTitle">
@@ -319,7 +324,7 @@
       <div id="towerRankBox"></div>
     </section>
     <button class="overlay-btn tower-start-btn" id="towerStartBtn" type="button"><span class="tower-start-vfx" aria-hidden="true"></span><span data-tower-start-label>Escalar a Torre</span><small data-tower-start-mode>Pesadelo</small></button>
-    <footer class="realm-footer overlay-realm-footer" data-realm-footer><button class="realm-footer-user" data-footer-account type="button"><small>USUÁRIO</small><b data-footer-user>Convidado</b></button><span class="realm-footer-stat"><small>MOEDAS</small><b data-footer-coins>✦ 0Ks</b></span><span class="realm-footer-stat realm-footer-hope"><small>ESPERANÇA</small><b data-footer-hope>✧ 10/10</b></span><small class="realm-footer-version" data-footer-version>v11.0.95</small></footer>
+    <footer class="realm-footer overlay-realm-footer" data-realm-footer><button class="realm-footer-user" data-footer-account type="button"><small>USUÁRIO</small><b data-footer-user>Convidado</b></button><span class="realm-footer-stat"><small>MOEDAS</small><b data-footer-coins>✦ 0Ks</b></span><span class="realm-footer-stat realm-footer-hope"><small>ESPERANÇA</small><b data-footer-hope>✧ 10/10</b></span><small class="realm-footer-version" data-footer-version>v11.0.96</small></footer>
   </div>
 </div>
 <aside class="battle-inventory-dock" id="mochilaScreen" aria-labelledby="mochilaTitle" aria-hidden="true">
@@ -333,28 +338,41 @@
 <div class="pro-overlay" id="optionsScreen" role="dialog" aria-modal="true" aria-labelledby="optionsTitle">
   <div class="pro-dialog options-dialog">
     <header class="dialog-header options-header"><div><small>SEU RITMO, SUA JORNADA</small><h2 class="dialog-title" id="optionsTitle">Opções</h2></div><button class="ghost-btn" data-close="optionsScreen">Fechar</button></header>
-    <section class="options-hero"><span class="options-orb" aria-hidden="true"></span><div><b>Prepare a sua travessia</b><p>Áudio, conforto visual e dados da jornada em um só lugar.</p></div></section>
-    <section class="options-group"><header class="option-section">Áudio e idioma</header><div class="options-grid">
+    <section class="options-hero"><div><b>Prepare a sua travessia</b><p>Personalize cada detalhe sem perder o foco na jornada.</p></div></section>
+    <nav class="options-tabs" role="tablist" aria-label="Categorias de opções">
+      <button class="options-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="optionsAudio" data-options-tab="audio">Áudio</button>
+      <button class="options-tab" type="button" role="tab" aria-selected="false" aria-controls="optionsVisual" data-options-tab="visual">Arena</button>
+      <button class="options-tab" type="button" role="tab" aria-selected="false" aria-controls="optionsComfort" data-options-tab="comfort">Conforto</button>
+    </nav>
+    <section class="options-tab-panel is-active" id="optionsAudio" role="tabpanel" data-options-panel="audio">
+    <details class="options-accordion" open><summary><span>Mixagem da jornada</span><small>Volume</small></summary><div class="options-group"><div class="options-grid">
       <label class="option-row"><span id="optMasterVolumeLabel">Volume geral</span><input id="volumeRange" type="range" min="0" max="100" value="70"></label>
       <label class="option-row"><span id="optMusicVolumeLabel">Música dinâmica</span><input id="musicVolumeRange" type="range" min="0" max="100" value="65"></label>
       <label class="option-row"><span id="optStageMusicVolumeLabel">Trilha da fase</span><input id="stageMusicVolumeRange" type="range" min="0" max="100" value="48"></label>
       <label class="option-row"><span id="optSfxVolumeLabel">Efeitos sonoros</span><input id="sfxVolumeRange" type="range" min="0" max="100" value="85"></label>
+    </div></div></details>
+    <details class="options-accordion"><summary><span>Idioma</span><small>PT-BR</small></summary><div class="options-group"><div class="options-grid">
       <div class="option-row option-row-wide"><span id="optLanguageLabel">Idioma / Language</span><div class="diff-group" id="langGroup"><button class="battle-tool" data-lang="pt" type="button">🇧🇷 PT</button><button class="battle-tool" data-lang="en" type="button">🇺🇸 EN</button><button class="battle-tool" data-lang="es" type="button">🇪🇸 ES</button></div></div>
-    </div></section>
-    <section class="options-group"><header class="option-section" id="vizSectionTitle">Arena e visualização</header><div class="options-grid">
+    </div></div></details></section>
+    <section class="options-tab-panel" id="optionsVisual" role="tabpanel" data-options-panel="visual" hidden>
+    <details class="options-accordion" open><summary><span>Arena e visualização</span><small>Leitura</small></summary><div class="options-group"><div class="options-grid">
       <label class="option-row option-row-wide"><span id="optQualityLabel">Qualidade gráfica</span><select id="qualitySelect" class="option-select"><option value="auto">Automática</option><option value="high">Alta</option><option value="medium">Média</option><option value="economy">Econômica</option></select></label>
       <div class="option-row"><span id="vizHeroLabel">Nome dos heróis</span><button class="battle-tool" id="vizHeroNames" type="button">Embaixo</button></div><div class="option-row"><span id="vizEnemyLabel">Nome dos inimigos</span><button class="battle-tool" id="vizEnemyNames" type="button">Embaixo</button></div>
       <div class="option-row"><span id="vizDmgLabel">Números de dano</span><button class="battle-tool" id="vizDmg" type="button">Mostrar</button></div><div class="option-row"><span id="vizDpsLabel">DPS nas mini-cartas</span><button class="battle-tool" id="vizDps" type="button">Mostrar</button></div>
       <div class="option-row"><span id="vizTimerLabel">Timer da missão</span><button class="battle-tool" id="vizTimer" type="button">Mostrar</button></div><div class="option-row"><span id="vizTurnInfoLabel">Indicador de turno</span><button class="battle-tool" id="vizTurnInfo" type="button">Mostrar</button></div>
       <div class="option-row"><span id="vizTopHudLabel">HUD superior</span><button class="battle-tool" id="vizTopHud" type="button">Ativo</button></div><div class="option-row"><span id="vizInfoBarLabel">Barra de informações</span><button class="battle-tool" id="vizInfoBar" type="button">Transparente</button></div>
-      <label class="option-row"><span id="optReduceLabel">Reduzir animações</span><input class="switch" id="reduceMotionToggle" type="checkbox"></label><label class="option-row"><span id="optParticlesLabel">Partículas de batalha</span><input class="switch" id="particlesToggle" type="checkbox" checked></label><label class="option-row option-row-wide"><span id="optHapticsLabel">Vibração em dispositivos móveis</span><input class="switch" id="hapticsToggle" type="checkbox" checked></label>
-    </div></section>
-    <section class="options-group"><header class="option-section">Acessibilidade e progresso</header><div class="options-grid">
+      <label class="option-row"><span id="optParticlesLabel">Partículas de batalha</span><input class="switch" id="particlesToggle" type="checkbox" checked></label>
+    </div></div></details></section>
+    <section class="options-tab-panel" id="optionsComfort" role="tabpanel" data-options-panel="comfort" hidden>
+    <details class="options-accordion" open><summary><span>Conforto de jogo</span><small>Acessibilidade</small></summary><div class="options-group"><div class="options-grid">
       <label class="option-row"><span id="optContrastLabel">Alto contraste</span><input class="switch" id="highContrastToggle" type="checkbox"></label><label class="option-row"><span id="optLargeTextLabel">Texto maior</span><input class="switch" id="largeTextToggle" type="checkbox"></label><label class="option-row"><span id="optFlashesLabel">Reduzir flashes</span><input class="switch" id="reduceFlashesToggle" type="checkbox"></label>
+      <label class="option-row"><span id="optReduceLabel">Reduzir animações</span><input class="switch" id="reduceMotionToggle" type="checkbox"></label><label class="option-row option-row-wide"><span id="optHapticsLabel">Vibração em dispositivos móveis</span><input class="switch" id="hapticsToggle" type="checkbox" checked></label>
       <div class="option-row"><span>Tremor de tela</span><button class="battle-tool" id="shakeToggle" type="button">Ligado</button></div><div class="option-row option-row-wide"><span>Auto-ativas (na auto-batalha)</span><button class="battle-tool" id="autoActivesToggle" type="button">Desligado</button></div>
+    </div></div></details>
+    <details class="options-accordion"><summary><span>Progresso local</span><small>Salvar</small></summary><div class="options-group"><div class="options-grid">
       <div class="option-row option-row-wide"><span id="optProgressLabel">Progresso</span><div class="diff-group"><button class="battle-tool" id="exportSaveBtn" type="button">Exportar</button><button class="battle-tool" id="importSaveBtn" type="button">Importar</button></div></div>
       <textarea id="saveCode" class="save-code option-row-wide" rows="3" placeholder="Exportar: gera e copia o código aqui. Importar: cole o código e toque em Importar."></textarea>
-    </div></section>
+    </div></div></details></section>
     <footer class="options-actions"><button class="ghost-btn" id="restoreDefaultsBtn" type="button">Restaurar padrões</button><button class="ghost-btn danger-option" id="resetProgressBtn" type="button">Apagar progresso local</button></footer>
   </div>
 </div>
@@ -468,11 +486,11 @@
         <div class="world-head" id="worldHead"></div>
         <div class="world-map" id="worldMap"></div>
         <p class="account-note" id="worldNote">Cada fase tem 5 níveis — o 5º guarda o CHEFE. Vença o chefe para desbloquear a próxima fase. Os demais reinos serão revelados em breve.</p>
-        <footer class="realm-footer overlay-realm-footer" data-realm-footer><button class="realm-footer-user" data-footer-account type="button"><small>USUÁRIO</small><b data-footer-user>Convidado</b></button><span class="realm-footer-stat"><small>MOEDAS</small><b data-footer-coins>✦ 0Ks</b></span><span class="realm-footer-stat realm-footer-hope"><small>ESPERANÇA</small><b data-footer-hope>✧ 10/10</b></span><small class="realm-footer-version" data-footer-version>v11.0.95</small></footer>
+        <footer class="realm-footer overlay-realm-footer" data-realm-footer><button class="realm-footer-user" data-footer-account type="button"><small>USUÁRIO</small><b data-footer-user>Convidado</b></button><span class="realm-footer-stat"><small>MOEDAS</small><b data-footer-coins>✦ 0Ks</b></span><span class="realm-footer-stat realm-footer-hope"><small>ESPERANÇA</small><b data-footer-hope>✧ 10/10</b></span><small class="realm-footer-version" data-footer-version>v11.0.96</small></footer>
       </div>
     </div>
   </div>
-  <footer class="realm-footer overlay-realm-footer map-realm-footer" data-realm-footer><button class="realm-footer-user" data-footer-account type="button"><small>USUÁRIO</small><b data-footer-user>Convidado</b></button><span class="realm-footer-stat"><small>MOEDAS</small><b data-footer-coins>✦ 0Ks</b></span><span class="realm-footer-stat realm-footer-hope"><small>ESPERANÇA</small><b data-footer-hope>✧ 10/10</b></span><small class="realm-footer-version" data-footer-version>v11.0.95</small></footer>
+  <footer class="realm-footer overlay-realm-footer map-realm-footer" data-realm-footer><button class="realm-footer-user" data-footer-account type="button"><small>USUÁRIO</small><b data-footer-user>Convidado</b></button><span class="realm-footer-stat"><small>MOEDAS</small><b data-footer-coins>✦ 0Ks</b></span><span class="realm-footer-stat realm-footer-hope"><small>ESPERANÇA</small><b data-footer-hope>✧ 10/10</b></span><small class="realm-footer-version" data-footer-version>v11.0.96</small></footer>
 </div>
 <div class="boot-screen" id="loginScreen">
   <div class="boot-card login-choice-card">
@@ -544,11 +562,11 @@
   </div>
 </div>
 <script>window.addEventListener('error',function(e){(window.__bootErrors=window.__bootErrors||[]).push({m:String(e.message).slice(0,200),l:e.lineno,c:e.colno})});</script>
-<script src="v10-config.js?v=11.0.95"></script>
-<script src="v10-animations.js?v=11.0.95"></script>
-<script src="humanos-lore-v10.js?v=11.0.95"></script>
+<script src="v10-config.js?v=11.0.96"></script>
+<script src="v10-animations.js?v=11.0.96"></script>
+<script src="humanos-lore-v10.js?v=11.0.96"></script>
 <script src="map-effects-v1.js?v=1.0.0" defer></script>
-<script src="game-v10.js?v=11.0.95" defer></script>
+<script src="game-v10.js?v=11.0.96" defer></script>
 
 </body>
 </html>

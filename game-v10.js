@@ -5824,7 +5824,7 @@ const STATIC_I18N=[
   ["#optReduceLabel","Reduzir animações","Reduce animations","Reducir animaciones"],
   ["#optParticlesLabel","Partículas de batalha","Battle particles","Partículas de batalla"],
   ["#optHapticsLabel","Vibração em dispositivos móveis","Vibration on mobile devices","Vibración en dispositivos móviles"],
-  ["#vizSectionTitle","👁 Visualização","👁 Display","👁 Visualización"],
+  ["#vizSectionTitle","Arena e visualização","Arena and display","Arena y visualización"],
   ["#vizHeroLabel","Nome dos heróis","Hero names","Nombre de los héroes"],
   ["#vizEnemyLabel","Nome dos inimigos","Enemy names","Nombre de los enemigos"],
   ["#vizDmgLabel","Números de dano","Damage numbers","Números de daño"],
@@ -10960,7 +10960,21 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
     bag?.classList.remove('show'); bag?.setAttribute('aria-hidden','true'); sfxSelect();
   });
   document.getElementById('mochilaShopBtn')?.addEventListener('click',()=>{ openPanel('shopScreen'); sfxSelect(); });
-  /* 👁 Visualização: nomes, superfícies do HUD e indicadores persistentes */
+  /* Arena: nomes, superfícies do HUD e indicadores persistentes. */
+  document.querySelectorAll('[data-options-tab]').forEach(tab=>tab.addEventListener('click',()=>{
+    const selected=tab.dataset.optionsTab;
+    document.querySelectorAll('[data-options-tab]').forEach(node=>{
+      const active=node===tab;
+      node.classList.toggle('is-active',active);
+      node.setAttribute('aria-selected',String(active));
+    });
+    document.querySelectorAll('[data-options-panel]').forEach(panel=>{
+      const active=panel.dataset.optionsPanel===selected;
+      panel.classList.toggle('is-active',active);
+      panel.hidden=!active;
+    });
+    sfxSelect();
+  }));
   const vizCycle={bottom:'top',top:'off',off:'bottom'};
   const vizSurfaceCycle={solid:'transparent',transparent:'off',off:'solid'};
   const syncVizLabels=()=>{
@@ -11270,7 +11284,7 @@ function renderGameFooters(){
   document.querySelectorAll('[data-footer-user]').forEach(node=>node.textContent=name);
   document.querySelectorAll('[data-footer-coins]').forEach(node=>node.textContent=`✦ ${formatKalegs(coins)}`);
   document.querySelectorAll('[data-footer-hope]').forEach(node=>node.textContent=`✧ ${amount}/${HOPE_MAX}`);
-  document.querySelectorAll('[data-footer-version]').forEach(node=>node.textContent=`${T('VERSÃO','VERSION','VERSIÓN')} ${(APP_VERSION||'v11.0.95').replace(/^v/i,'')}`);
+  document.querySelectorAll('[data-footer-version]').forEach(node=>node.textContent=`${T('VERSÃO','VERSION','VERSIÓN')} ${(APP_VERSION||'v11.0.96').replace(/^v/i,'')}`);
 }
 function updateNamePreview(){
   const nome=document.getElementById('obName')?.value||'';
@@ -11291,13 +11305,22 @@ async function finishOnboarding(){
 function renderAccountPanel(){
   const el=document.getElementById('accountInfo');
   if(!el) return;
+  const heroName=document.getElementById('accountHeroName');
+  const heroKicker=document.getElementById('accountHeroKicker');
+  const heroStatus=document.getElementById('accountHeroStatus');
   if(account?.username){
+    if(heroName) heroName.textContent=account.displayName||account.username;
+    if(heroKicker) heroKicker.textContent=T('AVENTUREIRO REGISTRADO','REGISTERED ADVENTURER','AVENTURERO REGISTRADO');
+    if(heroStatus) heroStatus.textContent=T('Sua identidade está pronta para entrar no ranking quando a jornada online despertar.','Your identity is ready for the ranking when the online journey awakens.','Tu identidad está lista para entrar al ranking cuando despierte la jornada en línea.');
     el.innerHTML=`
       <div class="pstat"><small>${T('Usuário (ranking)','Username (ranking)','Usuario (ranking)')}</small><b>${escapeHtml(account.username)}</b></div>
       <div class="pstat"><small>${T('Tratamento','Title','Tratamiento')}</small><b>${escapeHtml(L(account.title))}</b></div>
       <div class="pstat"><small>E-mail</small><b>${escapeHtml(account.email||'—')}</b></div>
       <div class="pstat"><small>${T('Nascimento','Birth date','Nacimiento')}</small><b>${String(account.birth.d).padStart(2,'0')}/${String(account.birth.m).padStart(2,'0')}/${account.birth.y}</b></div>`;
   }else{
+    if(heroName) heroName.textContent=T('Convidado','Guest','Invitado');
+    if(heroKicker) heroKicker.textContent=T('JORNADA LOCAL','LOCAL JOURNEY','JORNADA LOCAL');
+    if(heroStatus) heroStatus.textContent=T('Entre para registrar sua lenda entre os 12 Reinos.','Sign in to record your legend among the 12 Realms.','Inicia sesión para registrar tu leyenda entre los 12 Reinos.');
     el.innerHTML=`<p class="account-note">${T('Você joga como Convidado: sem ranking, sem salvamento na nuvem e sem PVP (em breve). Entre para garantir seu nome de usuário!','You play as a Guest: no ranking, no cloud save and no PVP (soon). Sign in to claim your username!','Juegas como Invitado: sin ranking, sin guardado en la nube y sin PVP (pronto). ¡Inicia sesión para reclamar tu usuario!')}</p>`;
   }
   const lb=document.getElementById('accountLoginBtn'), ob=document.getElementById('logoutBtn');
