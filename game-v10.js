@@ -5419,7 +5419,7 @@ function resumeMissionClock(){
 /* 👁 Preferências de VISUALIZAÇÃO (menu Opções → Visualização) */
 /* Preferências padrão da apresentação de batalha: HUD superior discreto,
    heróis sem etiquetas e inimigos identificados abaixo do sprite. */
-let vizPrefs={heroNames:'off',enemyNames:'bottom',dmg:true,dps:true,timer:true,turnInfo:true,topHud:'transparent',infoBar:'transparent'};
+let vizPrefs={heroNames:'off',enemyNames:'bottom',dmg:true,dps:true,timer:true,turnInfo:true,topHud:'transparent',infoBar:'transparent',boardStyle:'simple'};
 try{ vizPrefs={...vizPrefs,...JSON.parse(localStorage.getItem('12r_viz')||'{}')}; }catch(e){}
 /* Migração de defaults visuais da campanha: aplica uma única vez para que
    versões anteriores não reintroduzam HUD sólido e nomes de heróis. */
@@ -5430,6 +5430,7 @@ if(localStorage.getItem('12r_viz_defaults')!=='9.3.9'){
 }
 if(!['solid','transparent','off'].includes(vizPrefs.topHud)) vizPrefs.topHud='solid';
 if(!['solid','transparent','off'].includes(vizPrefs.infoBar)) vizPrefs.infoBar='transparent';
+if(!['simple','crystal'].includes(vizPrefs.boardStyle)) vizPrefs.boardStyle='simple';
 function saveViz(){ localStorage.setItem('12r_viz',JSON.stringify(vizPrefs)); applyVizSettings(); }
 function applyVizSettings(){
   document.body.classList.toggle('viz-dmg-off',!vizPrefs.dmg);
@@ -5440,6 +5441,8 @@ function applyVizSettings(){
     document.body.classList.toggle(`viz-top-hud-${mode}`,vizPrefs.topHud===mode);
     document.body.classList.toggle(`viz-info-bar-${mode}`,vizPrefs.infoBar===mode);
   });
+  document.body.classList.toggle('board-style-crystal',vizPrefs.boardStyle==='crystal');
+  document.body.classList.toggle('board-style-simple',vizPrefs.boardStyle!=='crystal');
   if(vizPrefs.topHud!=='off') document.body.classList.remove('hud-peek');
 }
 function vizNameLabel(v){ return v==='top'?T('Em cima','Top','Arriba'):v==='off'?T('Desabilitado','Disabled','Desactivado'):T('Embaixo','Bottom','Abajo'); }
@@ -9899,6 +9902,8 @@ document.getElementById('autoActivesToggle')?.addEventListener('click',()=>{
 });
 document.getElementById('restoreDefaultsBtn')?.addEventListener('click',()=>{
   ['12r_shake','12r_autoactives','12r_difficulty','12r_lang_set','12r_volume','12r_music_volume','12r_stage_music_volume','12r_sfx_volume','12r_quality','12r_high_contrast','12r_large_text','12r_reduce_flashes','12r_motion','12r_particles','12r_haptics','12r_tactical_grid'].forEach(k=>localStorage.removeItem(k));
+  vizPrefs.boardStyle='simple';
+  localStorage.setItem('12r_viz',JSON.stringify(vizPrefs));
   setBattleStatus?.(T('Padrões restaurados. Recarregue o jogo.','Defaults restored. Reload the game.','Valores restaurados. Recarga el juego.'));
   location.reload();
 });
@@ -11031,6 +11036,11 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
     const turn=document.getElementById('vizTurnInfo'); if(turn) turn.textContent=vizOnOff(vizPrefs.turnInfo);
     const hud=document.getElementById('vizTopHud'); if(hud) hud.textContent=vizSurfaceLabel(vizPrefs.topHud);
     const info=document.getElementById('vizInfoBar'); if(info) info.textContent=vizSurfaceLabel(vizPrefs.infoBar);
+    document.querySelectorAll('[data-board-orb-style]').forEach(button=>{
+      const active=button.dataset.boardOrbStyle===vizPrefs.boardStyle;
+      button.classList.toggle('is-active',active);
+      button.setAttribute('aria-pressed',String(active));
+    });
   };
   document.getElementById('vizHeroNames')?.addEventListener('click',()=>{ vizPrefs.heroNames=vizCycle[vizPrefs.heroNames]||'bottom'; saveViz(); syncVizLabels(); refreshVizBattle(); sfxSelect(); });
   document.getElementById('vizEnemyNames')?.addEventListener('click',()=>{ vizPrefs.enemyNames=vizCycle[vizPrefs.enemyNames]||'bottom'; saveViz(); syncVizLabels(); refreshVizBattle(); sfxSelect(); });
@@ -11040,6 +11050,14 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
   document.getElementById('vizTurnInfo')?.addEventListener('click',()=>{ vizPrefs.turnInfo=!vizPrefs.turnInfo; saveViz(); syncVizLabels(); sfxSelect(); });
   document.getElementById('vizTopHud')?.addEventListener('click',()=>{ vizPrefs.topHud=vizSurfaceCycle[vizPrefs.topHud]||'solid'; saveViz(); syncVizLabels(); sfxSelect(); });
   document.getElementById('vizInfoBar')?.addEventListener('click',()=>{ vizPrefs.infoBar=vizSurfaceCycle[vizPrefs.infoBar]||'transparent'; saveViz(); syncVizLabels(); sfxSelect(); });
+  document.querySelectorAll('[data-board-orb-style]').forEach(button=>button.addEventListener('click',()=>{
+    const style=button.dataset.boardOrbStyle;
+    if(!['simple','crystal'].includes(style)) return;
+    vizPrefs.boardStyle=style;
+    saveViz(); syncVizLabels();
+    if(document.body.classList.contains('game-active')) renderBoard();
+    sfxSelect();
+  }));
   document.getElementById('arena')?.addEventListener('click',event=>{
     if(vizPrefs.topHud!=='off') return;
     if(event.target.closest('button,[role="button"],.unit,.battle-feed-row,.status-tray,.battle-tools-panel,.mission-topbar')) return;
@@ -11329,7 +11347,7 @@ function renderGameFooters(){
   document.querySelectorAll('[data-footer-user]').forEach(node=>node.textContent=name);
   document.querySelectorAll('[data-footer-coins]').forEach(node=>node.textContent=`✦ ${formatKalegs(coins)}`);
   document.querySelectorAll('[data-footer-hope]').forEach(node=>node.textContent=`✧ ${amount}/${HOPE_MAX}`);
-  document.querySelectorAll('[data-footer-version]').forEach(node=>node.textContent=`${T('VERSÃO','VERSION','VERSIÓN')} ${(APP_VERSION||'v11.0.97').replace(/^v/i,'')}`);
+  document.querySelectorAll('[data-footer-version]').forEach(node=>node.textContent=`${T('VERSÃO','VERSION','VERSIÓN')} ${(APP_VERSION||'v11.0.98').replace(/^v/i,'')}`);
 }
 function updateNamePreview(){
   const nome=document.getElementById('obName')?.value||'';

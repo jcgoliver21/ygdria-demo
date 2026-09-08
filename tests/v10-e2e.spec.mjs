@@ -3139,7 +3139,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.0.97');
+  expect(registration.caches).toContain('12r-v11.0.98');
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
@@ -3226,6 +3226,29 @@ test('menu não baixa elenco inteiro e batalha limita animações à equipe ativ
   expect(errors).toEqual([]);
 });
 
+test('Opções alterna blocos clássicos e cristais emblemáticos sem alterar os símbolos dos reinos',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
+  await expect(page.locator('.board .gem')).toHaveCount(36);
+  await page.locator('#pauseBtn').click();
+  await page.locator('#pauseOptionsBtn').click();
+  await page.locator('[data-options-tab="visual"]').click();
+  await page.locator('[data-board-orb-style="crystal"]').click();
+  await expect.poll(()=>page.evaluate(()=>({
+    crystal:document.body.classList.contains('board-style-crystal'),
+    stored:JSON.parse(localStorage.getItem('12r_viz')||'{}').boardStyle,
+    icons:document.querySelectorAll('.board .orb-icon').length,
+    clip:getComputedStyle(document.querySelector('.board .orb')).clipPath
+  }))).toMatchObject({crystal:true,stored:'crystal',icons:36});
+  await page.locator('[data-board-orb-style="simple"]').click();
+  await expect.poll(()=>page.evaluate(()=>({
+    simple:document.body.classList.contains('board-style-simple'),
+    stored:JSON.parse(localStorage.getItem('12r_viz')||'{}').boardStyle,
+    radius:getComputedStyle(document.querySelector('.board .orb')).borderRadius
+  }))).toMatchObject({simple:true,stored:'simple'});
+  expect(errors).toEqual([]);
+});
+
 test.describe('mobile',()=>{
   test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
   test('menu, seleção e batalha não estouram a largura',async({page})=>{
@@ -3303,7 +3326,7 @@ test.describe('@production publicação real',()=>{
     await page.goto(`${baseURL}/play.html?seed=v10-production`,{waitUntil:'networkidle'});
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
-  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.97');
+  await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe('v11.0.98');
     await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 

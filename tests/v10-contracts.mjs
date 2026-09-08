@@ -20,13 +20,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.0\.97/);
-  assert.match(html,/v10-config\.js\?v=11\.0\.97/);
-  assert.match(html,/v10-animations\.js\?v=11\.0\.97/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.97/);
-  assert.match(html,/game-v10\.js\?v=11\.0\.97/);
-  assert.match(config,/version:'v11\.0\.97'/);
-  assert.match(sw,/12r-v11\.0\.97/);
+  assert.match(html,/styles-v10\.css\?v=11\.0\.98/);
+  assert.match(html,/v10-config\.js\?v=11\.0\.98/);
+  assert.match(html,/v10-animations\.js\?v=11\.0\.98/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.0\.98/);
+  assert.match(html,/game-v10\.js\?v=11\.0\.98/);
+  assert.match(config,/version:'v11\.0\.98'/);
+  assert.match(sw,/12r-v11\.0\.98/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -155,7 +155,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.0\.97/);
+  assert.match(sw,/12r-v11\.0\.98/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -293,6 +293,22 @@ check('Prólogo, Humanos e Torre usam trilhas autorais com troca para o confront
   assert.match(game,/filter\.type='lowpass'/);
   assert.match(game,/function playLicensedStageMusic\(key\)/);
   assert.match(game,/playLicensedStageMusic\('prologue'\)/);
+});
+
+check('HUD compacto mantém HP lateral, cartas verticais e dois estilos de blocos',()=>{
+  assert.match(html,/id="playerHpAnchor"/);
+  assert.match(html,/id="historyBtn"/);
+  assert.match(html,/id="missionTimer"/);
+  assert.match(html,/id="nightmareTurnTimer"/);
+  assert.match(html,/data-board-orb-style="simple"/);
+  assert.match(html,/data-board-orb-style="crystal"/);
+  assert.match(game,/boardStyle:'simple'/);
+  assert.match(game,/board-style-crystal/);
+  assert.match(game,/data-board-orb-style/);
+  assert.match(css,/HUD de batalha oficial/);
+  assert.match(css,/board-style-simple/);
+  assert.match(css,/board-style-crystal/);
+  assert.match(css,/grid-template-rows:repeat\(4,minmax\(0,1fr\)\)/);
 });
 
 check('Mercado Central usa acordeões de reino, Kalegs e compra integrada',()=>{
@@ -609,7 +625,7 @@ check('mapa vertical preserva geografia e expande somente o oceano lateral',()=>
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.0.97');
+  const deferredGame=html.indexOf('game-v10.js?v=11.0.98');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);
