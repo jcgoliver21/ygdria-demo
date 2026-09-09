@@ -20,6 +20,65 @@ async function boot(page,qa='all-specials'){
   return errors;
 }
 
+for(const viewport of [{width:360,height:800},{width:390,height:844},{width:1024,height:1536},{width:844,height:390}]){
+  test(`HUD ilustrado: encaixes e controles reais ${viewport.width}x${viewport.height}`,async({page})=>{
+    await page.setViewportSize(viewport);
+    const errors=await boot(page,'flow');
+    await page.evaluate(()=>{
+      towerMode=true;worldRun.active=false;towerFloor=1;difficulty='pesadelo';
+      chosenIds=['adriel-jovem','cedric','galateia-jovem','acqua-jovem'].map(id=>KINGDOMS.findIndex(k=>k.id===id));
+      beginGame(0);skipStory();
+    });
+    await expect(page.locator('.board .hud-gem-art')).toHaveCount(36);
+    const measures=await page.evaluate(()=>{
+      const bounds=s=>{const r=document.querySelector(s).getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,right:r.right,bottom:r.bottom};};
+      return {board:bounds('#board'),hp:bounds('.vertical-hp'),cards:bounds('.card-strip'),frame:bounds('.game-frame'),head:bounds('.mission-topbar'),cells:[...document.querySelectorAll('.board .cell')].map(c=>({w:c.clientWidth,h:c.clientHeight}))};
+    });
+    expect(measures.frame.width).toBe(viewport.width);
+    expect(measures.frame.height).toBeLessThanOrEqual(viewport.height+1);
+    expect(measures.head.right).toBeLessThanOrEqual(viewport.width+1);
+    expect(Math.abs(measures.board.height-measures.cards.height)).toBeLessThan(2);
+    expect(Math.abs(measures.board.height-measures.hp.height)).toBeLessThan(2);
+    expect(measures.board.bottom).toBeLessThanOrEqual(viewport.height);
+    expect(measures.cells.every(c=>c.w>=25&&c.h>=25)).toBe(true);
+    await expect.poll(()=>page.evaluate(()=>missionElapsed())).toBeGreaterThan(0);
+    await expect(page.locator('#missionTimer')).toContainText(/\d{2}:\d{2}/);
+    await expect(page.locator('#nightmareTurnTimer')).toContainText(/00:\d{2}/);
+    const direction=await page.locator('#party-adriel-jovem').getAttribute('data-facing');
+    await page.locator('.mini-rotate').first().click();
+    await expect(page.locator('#party-adriel-jovem')).not.toHaveAttribute('data-facing',direction);
+    await page.locator('.mini-zoom').first().click();
+    await expect(page.locator('#cardModal')).toHaveClass(/show/);
+    await page.locator('#closeCardModal').click();
+    await page.locator('#mochilaBtn').click();
+    await expect(page.locator('#mochilaScreen')).toHaveClass(/show/);
+    await page.locator('#mochilaCloseBtn').click();
+    await page.evaluate(()=>{
+      powerUps[cellKey(0,0)]={type:'striped',orientation:'horizontal'};
+      powerUps[cellKey(0,1)]={type:'wrapped'};renderBoard();
+    });
+    await expect(page.locator('.orb.power-striped')).toBeVisible();
+    await expect.poll(()=>page.locator('.orb.power-striped').evaluate(el=>getComputedStyle(el,'::after').display)).toBe('block');
+    await expect.poll(()=>page.locator('.orb.power-wrapped').evaluate(el=>getComputedStyle(el,'::after').display)).toBe('block');
+    expect(errors).toEqual([]);
+  });
+}
+
+test('HUD ilustrado: uma jogada real resolve o combate',async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  const errors=await boot(page,'flow');
+  await page.evaluate(()=>{chosenIds=[18,13,17,19];beginGame(0);skipStory();});
+  const before=await page.evaluate(()=>({board:JSON.stringify(board),hp:enemies.map(e=>e.hp).join(',')}));
+  const move=await page.evaluate(()=>findBestMove());
+  expect(move).toBeTruthy();
+  await page.locator(`.gem[data-r="${move[0].r}"][data-c="${move[0].c}"]`).click();
+  await expect(page.locator('.gem.selected')).toHaveCount(1);
+  await page.locator(`.gem[data-r="${move[1].r}"][data-c="${move[1].c}"]`).click();
+  await expect.poll(()=>page.evaluate(()=>JSON.stringify(board)),{timeout:10000}).not.toBe(before.board);
+  await expect.poll(()=>page.evaluate(()=>enemies.map(e=>e.hp).join(',')),{timeout:10000}).not.toBe(before.hp);
+  expect(errors).toEqual([]);
+});
+
 test('smoke v10 não registra erro de boot ou console',async({page})=>{
   const errors=await boot(page,'smoke');
   await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('12r_smoke')||'{}').results?.every(result=>result.pass)),{timeout:15000}).toBe(true);

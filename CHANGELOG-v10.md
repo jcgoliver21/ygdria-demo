@@ -1,5 +1,14 @@
 # 12 Reinos v10
 
+## v11.1.2 — HUD com componentes ilustrados
+
+- molduras pintadas independentes para cabeçalho, HP, peças, cartas e histórico;
+- grade proporcional, 4 cartas completas com lupa e rotação separadas;
+- joias vetoriais com símbolos oficiais e opções Cristais/Simples preservadas;
+- marcas dos power-ups restauradas acima dos materiais;
+- relógios atualizam valores sem recriar a arte; layout adaptado a paisagem curta;
+- cenário da Torre preserva a iluminação da ilustração e sprites escalam com a tela.
+
 Data: 2026-08-14
 
 ## v11.0.52 — Hierarquia dos destinos

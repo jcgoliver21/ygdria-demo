@@ -2505,6 +2505,14 @@ function organizeMissionHeader(){
 }
 organizeMissionHeader();
 
+// Stable text nodes keep the illustrated clock panel mounted between ticks.
+function setMissionClockValue(element,value){
+  if(!element) return;
+  let label=element.querySelector('.hud-clock-value');
+  if(!label){ element.textContent=''; label=document.createElement('span'); label.className='hud-clock-value'; element.append(label); }
+  if(label.textContent!==value) label.textContent=value;
+}
+
 boardEl.style.gridTemplateColumns = `repeat(${SIZE}, 1fr)`;
 boardEl.style.gridTemplateRows = `repeat(${SIZE}, 1fr)`;
 
@@ -4310,7 +4318,8 @@ function renderStageProgress(){
   }
   syncArenaFireworks(atmosphereKey);
   if(activeStageData?.bgUrl){
-    arenaEl.style.setProperty('background-image',`linear-gradient(rgba(6,3,13,.22),rgba(6,3,13,.5)),url('${activeStageData.bgUrl}')`,'important');
+    const sceneShade=towerMode?'linear-gradient(rgba(6,3,13,.04),rgba(6,3,13,.08))':'linear-gradient(rgba(6,3,13,.22),rgba(6,3,13,.5))';
+    arenaEl.style.setProperty('background-image',`${sceneShade},url('${activeStageData.bgUrl}')`,'important');
     arenaEl.style.setProperty('background-size','cover');
     arenaEl.style.setProperty('background-position','center');
   }else{
@@ -5354,7 +5363,7 @@ function renderNightmareTurnTimer(){
   el.hidden=!active;
   if(!active) return;
   const seconds=Math.max(0,Math.ceil(nightmareTurnRemainingMs/1000));
-  el.textContent=`⏳ ${String(seconds).padStart(2,'0')}`;
+  setMissionClockValue(el,`00:${String(seconds).padStart(2,'0')}`);
   el.classList.toggle('urgent',seconds<=7);
 }
 function stopNightmareTurnWindow(preserve=false){
@@ -5397,7 +5406,7 @@ function startMissionTimer(reset=true){
     startTempoSombrio();
   }
   clearInterval(missionTimerInt);
-  const tick=()=>{ const el=document.getElementById('missionTimer'); if(el) el.textContent='⏱ '+fmtTempo(missionElapsed()); };
+  const tick=()=>setMissionClockValue(document.getElementById('missionTimer'),fmtTempo(missionElapsed()));
   tick();
   missionTimerInt=setInterval(tick,1000);
 }
@@ -9434,6 +9443,7 @@ function renderCardStrip(){
     const direction=heroFacingDirection(k);
     mini.innerHTML = `
       <button class="mini-rotate" type="button" data-hero-index="${idx}" aria-pressed="${direction==='right'}" aria-label="${T(`${L(k.nome)} agora olha para a ${direction==='left'?'esquerda':'direita'}. Virar personagem.`,`${L(k.nome)} now faces ${direction}. Rotate character.`,`${L(k.nome)} ahora mira a la ${direction==='left'?'izquierda':'derecha'}. Girar personaje.`)}" title="${T('Virar personagem','Rotate character','Girar personaje')}">↻↺</button>
+      <button class="mini-zoom" type="button" aria-label="${T(`Ampliar carta de ${L(k.nome)}`,`Enlarge ${L(k.nome)}'s card`,`Ampliar la carta de ${L(k.nome)}`)}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg></button>
       <button class="mini-open-card" type="button" aria-label="${T(`Abrir carta de ${L(k.nome)}`,`Open ${L(k.nome)}'s card`,`Abrir la carta de ${L(k.nome)}`)}">
         <span class="mini-thumb"><img src="${THUMB(k.cardThumb||k.img)}"${THUMBF(k.cardThumb||k.img)} alt="${L(k.nome)}" decoding="async"></span>
         <span class="mini-card-copy">
@@ -9445,6 +9455,8 @@ function renderCardStrip(){
       </button>
     `;
     mini.querySelector('.mini-open-card').addEventListener('click', ()=>openCardModal(idx));
+    mini.querySelector('.mini-zoom').addEventListener('click', ()=>openCardModal(idx));
+    mini.querySelector('.mini-rotate').textContent='↻';
     mini.querySelector('.mini-rotate').addEventListener('click', ()=>toggleHeroFacing(idx));
     stripEl.appendChild(mini);
   });
