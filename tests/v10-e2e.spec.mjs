@@ -319,7 +319,8 @@ test('janela pública libera as dez fases humanas e prepara o prólogo final sem
   await page.locator('#mapCanvas .realm-pin.unlocked').click();
   await expect(page.locator('#worldMap .fase-node')).toHaveCount(10);
   await expect(page.locator('#worldMap .fase-node.locked')).toHaveCount(0);
-  expect(await page.locator('#worldNote').textContent()).toContain('Teste público');
+  await expect(page.locator('#worldNote')).not.toContainText('Teste público');
+  await expect(page.locator('#worldNote')).toContainText('Cada fase tem 5 níveis');
   await page.evaluate(()=>{
     /* A arena de auditoria usa cartas já conquistadas; o desbloqueio público
        das fases não deve, por si só, forçar cartas não obtidas na equipe. */
@@ -644,7 +645,29 @@ test('final humano encena prólogo, quedas e teleporte antes do epílogo canôni
   expect(preludePositions.bernyce.width).toBeGreaterThanOrEqual(100);
   expect(preludePositions.kalander.width).toBeGreaterThanOrEqual(100);
   expect(preludePositions.cedric.width).toBeGreaterThanOrEqual(60);
-  await page.evaluate(()=>YGDRIA_HUMAN_FINALE.run('victory',{speed:.02}));
+  await page.evaluate(()=>{
+    /* Capture the displayed lines at the DOM transition itself. Fixed sleeps
+       can observe the end of the accelerated scene on a busy test machine. */
+    window.__finaleLineProof=[];
+    const layer=document.getElementById('storyLayer');
+    let current=null;
+    const observer=new MutationObserver(()=>{
+      const text=document.getElementById('storyText').textContent;
+      const visible=layer.classList.contains('show')&&layer.dataset.finalCinematic==='1';
+      if(current&&(!visible||current.text!==text)){
+        current.duration=performance.now()-current.started;
+        current=null;
+      }
+      if(!visible||current) return;
+      current={text,name:document.getElementById('storyName').textContent,started:performance.now()};
+      window.__finaleLineProof.push(current);
+      document.getElementById('storySkip').click();
+      current.skipBlocked=layer.classList.contains('show')&&document.getElementById('storyText').textContent===text;
+    });
+    observer.observe(layer,{subtree:true,childList:true,attributes:true,characterData:true});
+    window.__finaleLineObserver=observer;
+    YGDRIA_HUMAN_FINALE.run('victory',{speed:.02});
+  });
   await expect(page.locator('.human-final-scene')).toBeVisible();
   const finalPositions=await page.evaluate(()=>{
     const arena=document.querySelector('#arena').getBoundingClientRect();
@@ -681,12 +704,18 @@ test('final humano encena prólogo, quedas e teleporte antes do epílogo canôni
   /* Cedric termina a conjuração antes de a narração assumir a cena. O marco
      persiste para auditar a passagem mesmo na prévia acelerada. */
   await expect(page.locator('.human-final-scene')).toHaveAttribute('data-final-cedric-line','shown');
-  await expect(page.locator('#storyLayer')).toHaveAttribute('data-final-cinematic','1');
-  await page.locator('#storySkip').evaluate(button=>button.click());
-  await expect(page.locator('#storyLayer')).toHaveClass(/show/);
-  await page.waitForTimeout(520);
-  await expect(page.locator('#storyLayer')).toHaveClass(/show/);
-  await expect(page.locator('#storyName')).toContainText('Narrador');
+  await page.waitForFunction(()=>humanFinaleOutcomeResolved);
+  const lineProof=await page.evaluate(()=>{
+    window.__finaleLineObserver.disconnect();
+    return window.__finaleLineProof;
+  });
+  expect(lineProof.map(line=>line.text)).toEqual([
+    'Viva Jovem!!! Seja nossa esperança!',
+    'E assim termina a primeira parte de nossa aventura! O que acontecerá com Adriel? Qual o paradeiro de Berenice? Quem é Julius?',
+    'Não percam o próximo capítulo dessa aventura!'
+  ]);
+  expect(lineProof.slice(1).every(line=>line.name==='Narrador')).toBe(true);
+  expect(lineProof.every(line=>line.skipBlocked&&line.duration>=480),JSON.stringify(lineProof)).toBe(true);
   await expect(page.locator('.human-final-scene')).toHaveAttribute('data-final-narration','active');
   expect(errors).toEqual([]);
 });
@@ -3200,7 +3229,7 @@ test('PWA abre o núcleo v10 sem rede depois da instalação',async({page,contex
     return {scope:ready.scope,caches:await caches.keys()};
   });
   expect(registration.scope).toContain('/');
-  expect(registration.caches).toContain('12r-v11.1.1');
+  expect(registration.caches).toContain(`12r-${expectedAppVersion}`);
   try{
     await context.setOffline(true);
     await page.reload({waitUntil:'domcontentloaded'});
