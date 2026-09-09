@@ -5105,11 +5105,11 @@ body.game-active .battle-row::before{
 /* v11.0.98 · HUD de batalha oficial: preserva o cabeçalho aprovado e devolve
    espaço ao cenário. O console é uma única faixa tática: HP global, tabuleiro
    6×6 e as quatro cartas completas empilhadas à direita. */
-body.game-active .game-frame:not(.victory-celebration) .arena{
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .arena{
   height:74dvh!important;
   flex:0 0 74dvh!important;
 }
-body.game-active .game-frame:not(.victory-celebration) .combat-console{
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console{
   flex:0 0 22dvh!important;
   height:22dvh!important;
   min-height:0!important;
@@ -5120,7 +5120,7 @@ body.game-active .game-frame:not(.victory-celebration) .combat-console{
     radial-gradient(ellipse at 50% 0%,rgba(79,54,109,.42),transparent 70%),
     linear-gradient(180deg,#0d0b19,#05040b)!important;
 }
-body.game-active .game-frame:not(.victory-celebration) .combat-console .board{
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .board{
   width:min(100%,calc(22dvh - 8px))!important;
   height:min(100%,calc(22dvh - 8px))!important;
   padding:3px!important;
@@ -5128,29 +5128,29 @@ body.game-active .game-frame:not(.victory-celebration) .combat-console .board{
   border-radius:9px!important;
   box-shadow:0 0 13px rgba(0,0,0,.48),inset 0 0 12px rgba(0,0,0,.62)!important;
 }
-body.game-active .game-frame:not(.victory-celebration) .combat-console .vertical-hp{
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .vertical-hp{
   width:38px!important;
   padding:3px 2px!important;
   border-radius:8px!important;
 }
-body.game-active .game-frame:not(.victory-celebration) .vertical-hp .hp-label{font-size:7px!important}
-body.game-active .game-frame:not(.victory-celebration) .vertical-hp .hp-status-icon{width:17px!important;height:17px!important;font-size:8px!important}
-body.game-active .game-frame:not(.victory-celebration) .vertical-hp .hp-outer{width:12px!important;min-height:34px!important}
-body.game-active .game-frame:not(.victory-celebration) .vertical-hp .hp-current{font-size:7px!important}
-body.game-active .game-frame:not(.victory-celebration) .vertical-hp .hp-total{font-size:5px!important}
-body.game-active .game-frame:not(.victory-celebration) .combat-console .card-strip{
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .vertical-hp .hp-label{font-size:7px!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .vertical-hp .hp-status-icon{width:17px!important;height:17px!important;font-size:8px!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .vertical-hp .hp-outer{width:12px!important;min-height:34px!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .vertical-hp .hp-current{font-size:7px!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .vertical-hp .hp-total{font-size:5px!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .card-strip{
   width:58px!important;
   grid-template-rows:repeat(4,minmax(0,1fr))!important;
   gap:3px!important;
 }
-body.game-active .game-frame:not(.victory-celebration) .combat-console .mini-card{
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .mini-card{
   grid-template-columns:13px minmax(0,1fr)!important;
   gap:2px!important;
   padding:1px!important;
   border-radius:5px!important;
   background:linear-gradient(135deg,rgba(66,36,78,.78),rgba(11,8,19,.94))!important;
 }
-body.game-active .game-frame:not(.victory-celebration) .combat-console .mini-rotate{
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .mini-rotate{
   width:11px!important;
   min-width:11px!important;
   height:100%!important;
@@ -5158,32 +5158,32 @@ body.game-active .game-frame:not(.victory-celebration) .combat-console .mini-rot
   font-size:5px!important;
   border-radius:3px!important;
 }
-body.game-active .game-frame:not(.victory-celebration) .combat-console .mini-open-card{
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .mini-open-card{
   display:block!important;
   height:100%!important;
   overflow:hidden!important;
 }
-body.game-active .game-frame:not(.victory-celebration) .combat-console .mini-open-card .mini-thumb{
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .mini-open-card .mini-thumb{
   display:block!important;
   width:100%!important;
   height:100%!important;
   border-radius:3px!important;
   background:rgba(3,2,7,.9)!important;
 }
-body.game-active .game-frame:not(.victory-celebration) .combat-console .mini-open-card .mini-thumb img{
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .mini-open-card .mini-thumb img{
   width:100%!important;
   height:100%!important;
   object-fit:contain!important;
   object-position:center!important;
 }
-body.game-active .game-frame:not(.victory-celebration) .combat-console .mini-card-copy{display:none!important}
-body.game-active .game-frame:not(.victory-celebration) .battle-info-dock{
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .mini-card-copy{display:none!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .battle-info-dock{
   flex:0 0 4dvh!important;
   min-height:27px!important;
   padding:2px 6px max(2px,env(safe-area-inset-bottom,0px))!important;
 }
-body.game-active .game-frame:not(.victory-celebration) .battle-info-dock .battle-status{font-size:8px!important}
-body.game-active .game-frame:not(.victory-celebration) .battle-info-dock .history-btn{min-height:24px!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .battle-info-dock .battle-status{font-size:8px!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .battle-info-dock .history-btn{min-height:24px!important}
 
 /* Esferas clássicas: leitura máxima, brilho contido e o símbolo oficial de
    cada reino. Este é sempre o padrão para uma instalação nova. */
@@ -5219,17 +5219,17 @@ body.board-style-crystal .board .orb:not(.power-colorbomb):not(.obstacle-block):
 body.board-style-crystal .board .orb:not(.power-colorbomb):not(.obstacle-block)::after{display:none!important}
 body.board-style-crystal .board .orb-icon{transform:none!important;width:45%!important;height:45%!important}
 body.board-style-crystal .board .gem.selected .orb{transform:scale(1.1)!important}
-#boardOrbStyleGroup .battle-tool.is-active{border-color:#ffe29d!important;color:#fff3cf!important;background:linear-gradient(135deg,rgba(211,94,150,.8),rgba(91,43,104,.94))!important;box-shadow:0 0 11px rgba(255,140,199,.33)!important}
+#boardOrbStyleGroup .battle-tool.is-active,#battleLayoutGroup .battle-tool.is-active{border-color:#ffe29d!important;color:#fff3cf!important;background:linear-gradient(135deg,rgba(211,94,150,.8),rgba(91,43,104,.94))!important;box-shadow:0 0 11px rgba(255,140,199,.33)!important}
 
 @media (max-height:700px){
-  body.game-active .game-frame:not(.victory-celebration) .arena{height:73dvh!important;flex-basis:73dvh!important}
-  body.game-active .game-frame:not(.victory-celebration) .combat-console{height:23dvh!important;flex-basis:23dvh!important}
-  body.game-active .game-frame:not(.victory-celebration) .combat-console .board{width:min(100%,calc(23dvh - 7px))!important;height:min(100%,calc(23dvh - 7px))!important}
+  body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .arena{height:73dvh!important;flex-basis:73dvh!important}
+  body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console{height:23dvh!important;flex-basis:23dvh!important}
+  body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .board{width:min(100%,calc(23dvh - 7px))!important;height:min(100%,calc(23dvh - 7px))!important}
 }
 
 /* v11.0.99 · HUD R2 aprovado. Não é uma redução do HUD anterior: toda a
    moldura foi recomposta para separar navegação, arena e console tático. */
-body.game-active .game-frame:not(.victory-celebration){
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration){
   width:min(100vw,620px)!important;
   height:100dvh!important;
   min-height:0!important;
@@ -5240,7 +5240,7 @@ body.game-active .game-frame:not(.victory-celebration){
 }
 /* O container mobile antigo reservava uma faixa superior e fazia o frame de
    100dvh transbordar. No HUD R2, a própria moldura ocupa a tela inteira. */
-body.game-active #gameScreen{
+body.battle-layout-2.game-active #gameScreen{
   width:100%!important;
   height:100dvh!important;
   min-height:0!important;
@@ -5253,12 +5253,12 @@ body.game-active #gameScreen{
 /* HUD R3 · arte de moldura própria. A textura foi produzida para esta tela,
    não é uma captura da proposta: ela fica acima do cenário e abaixo de todo
    controle interativo, unificando cabeçalho, arena e console. */
-body.game-active .game-frame:not(.victory-celebration){
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration){
   isolation:isolate!important;
   border:0!important;
   background:#07040d!important;
 }
-.battle-ornate-frame{
+body.battle-layout-2 .battle-ornate-frame{
   position:absolute!important;
   inset:0!important;
   z-index:220!important;
@@ -5271,7 +5271,7 @@ body.game-active .game-frame:not(.victory-celebration){
   opacity:.82!important;
   filter:saturate(1.08) contrast(1.05)!important;
 }
-body.game-active .mission-topbar{
+body.battle-layout-2.game-active .mission-topbar{
   z-index:230!important;
   height:82px!important;
   min-height:82px!important;
@@ -5285,51 +5285,51 @@ body.game-active .mission-topbar{
 /* A grade segue a proporção da referência: o nome da fase recebe prioridade,
    depois os relógios, o turno e os comandos. Nenhum título é cortado. */
 @media(max-width:420px){
-  body.game-active .mission-topbar{
+  body.battle-layout-2.game-active .mission-topbar{
     grid-template-columns:minmax(116px,1.62fr) 38px 34px 50px minmax(54px,.76fr) 48px!important;
   }
-  body.game-active .mission-identity{min-width:0!important;overflow:hidden!important}
-  body.game-active .arena-dungeon-title{display:block!important;max-width:100%!important;overflow:hidden!important;text-overflow:clip!important;word-break:normal!important;overflow-wrap:normal!important;white-space:normal!important;-webkit-line-clamp:2!important}
-  body.game-active .battle-phase-chip{width:50px!important;height:50px!important;font-size:7px!important}
-  body.game-active .mission-actions{padding:2px!important}
+  body.battle-layout-2.game-active .mission-identity{min-width:0!important;overflow:hidden!important}
+  body.battle-layout-2.game-active .arena-dungeon-title{display:block!important;max-width:100%!important;overflow:hidden!important;text-overflow:clip!important;word-break:normal!important;overflow-wrap:normal!important;white-space:normal!important;-webkit-line-clamp:2!important}
+  body.battle-layout-2.game-active .battle-phase-chip{width:50px!important;height:50px!important;font-size:7px!important}
+  body.battle-layout-2.game-active .mission-actions{padding:2px!important}
 }
-body.game-active .mission-topbar::before,
-body.game-active .mission-topbar::after{display:none!important}
-body.game-active .mission-identity,
-body.game-active .mission-metrics,
-body.game-active .mission-timer,
-body.game-active .nightmare-turn-timer,
-body.game-active .mission-actions{
+body.battle-layout-2.game-active .mission-topbar::before,
+body.battle-layout-2.game-active .mission-topbar::after{display:none!important}
+body.battle-layout-2.game-active .mission-identity,
+body.battle-layout-2.game-active .mission-metrics,
+body.battle-layout-2.game-active .mission-timer,
+body.battle-layout-2.game-active .nightmare-turn-timer,
+body.battle-layout-2.game-active .mission-actions{
   z-index:231!important;
   border:1px solid rgba(232,186,119,.75)!important;
   border-image:linear-gradient(135deg,#ffdb9c,#5c2a45 35%,#e4ac70) 1!important;
   background:linear-gradient(145deg,rgba(33,16,38,.92),rgba(5,4,10,.94))!important;
   box-shadow:inset 0 0 0 1px rgba(255,220,163,.12),inset 0 0 17px rgba(255,80,169,.08)!important;
 }
-body.game-active .mission-identity{padding:8px 12px 6px 15px!important}
-body.game-active .arena-stage-label{font-size:8px!important;color:#ffe0af!important}
-body.game-active .arena-dungeon-title{font-size:12px!important;line-height:1.07!important;text-shadow:0 1px 7px #000!important}
-body.game-active .mission-timer,body.game-active .nightmare-turn-timer{font:700 9px/1 Georgia,serif!important}
-body.game-active .battle-phase-chip{
+body.battle-layout-2.game-active .mission-identity{padding:8px 12px 6px 15px!important}
+body.battle-layout-2.game-active .arena-stage-label{font-size:8px!important;color:#ffe0af!important}
+body.battle-layout-2.game-active .arena-dungeon-title{font-size:12px!important;line-height:1.07!important;text-shadow:0 1px 7px #000!important}
+body.battle-layout-2.game-active .mission-timer,body.battle-layout-2.game-active .nightmare-turn-timer{font:700 9px/1 Georgia,serif!important}
+body.battle-layout-2.game-active .battle-phase-chip{
   position:relative!important;
   z-index:232!important;
   width:58px!important;height:58px!important;justify-self:center!important;
   background:radial-gradient(circle at 35% 28%,#c94d91 0 5%,#6e174f 35%,#2a092f 76%)!important;
   box-shadow:0 0 0 1px #efbd78,0 0 18px rgba(255,71,174,.52),inset 0 0 14px rgba(255,199,231,.21)!important;
 }
-body.game-active .mission-icons{gap:4px!important}
-body.game-active .mission-actions .icon-btn{
+body.battle-layout-2.game-active .mission-icons{gap:4px!important}
+body.battle-layout-2.game-active .mission-actions .icon-btn{
   border-radius:0!important;
   border:1px solid rgba(243,201,139,.72)!important;
   background:linear-gradient(145deg,#4e2949,#0b0713)!important;
   box-shadow:inset 0 0 8px rgba(255,158,213,.16)!important;
 }
-body.game-active .game-frame:not(.victory-celebration) .arena{
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .arena{
   height:64dvh!important;
   flex-basis:64dvh!important;
   border-inline:0!important;
 }
-body.game-active .game-frame:not(.victory-celebration) .combat-console{
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console{
   position:relative!important;
   z-index:221!important;
   height:31dvh!important;
@@ -5340,13 +5340,13 @@ body.game-active .game-frame:not(.victory-celebration) .combat-console{
   background:radial-gradient(ellipse at 48% 0%,rgba(105,39,88,.4),transparent 48%),linear-gradient(145deg,#170d20,#06040a 65%,#1b0b1d)!important;
   box-shadow:inset 0 1px rgba(255,216,154,.46),inset 0 0 34px rgba(0,0,0,.78)!important;
 }
-body.game-active .game-frame:not(.victory-celebration) .combat-console::before{top:4px!important;height:2px!important;background:linear-gradient(90deg,transparent,#da6da9 16%,#ffdda3 50%,#da6da9 84%,transparent)!important}
-body.game-active .game-frame:not(.victory-celebration) .combat-console .vertical-hp{
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console::before{top:4px!important;height:2px!important;background:linear-gradient(90deg,transparent,#da6da9 16%,#ffdda3 50%,#da6da9 84%,transparent)!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .vertical-hp{
   border:0!important;
   background:linear-gradient(145deg,rgba(41,16,44,.98),rgba(7,5,12,.98))!important;
   box-shadow:inset 0 0 0 1px rgba(239,189,119,.82),inset 0 0 16px rgba(255,98,171,.13)!important;
 }
-body.game-active .game-frame:not(.victory-celebration) .combat-console .board{
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .board{
   border:0!important;
   border-radius:0!important;
   padding:7px!important;
@@ -5354,20 +5354,20 @@ body.game-active .game-frame:not(.victory-celebration) .combat-console .board{
   background:linear-gradient(145deg,#2a1828,#07050b 54%,#291321)!important;
   box-shadow:inset 0 0 0 1px rgba(242,198,137,.85),inset 0 0 0 5px rgba(51,26,43,.96),inset 0 0 19px rgba(0,0,0,.84),0 4px 14px rgba(0,0,0,.6)!important;
 }
-body.game-active .game-frame:not(.victory-celebration) .combat-console .cell{
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .cell{
   border:1px solid rgba(230,190,133,.62)!important;
   background:radial-gradient(circle at 35% 24%,rgba(255,219,191,.12),transparent 30%),linear-gradient(145deg,#47283f,#110a13 68%)!important;
   box-shadow:inset 0 0 0 2px rgba(10,6,12,.75),inset 0 0 7px rgba(255,167,215,.09)!important;
 }
-body.game-active .game-frame:not(.victory-celebration) .combat-console .card-strip{gap:6px!important}
-body.game-active .game-frame:not(.victory-celebration) .combat-console .mini-card{
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .card-strip{gap:6px!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .mini-card{
   border:0!important;
   border-radius:0!important;
   padding:3px!important;
   background:linear-gradient(145deg,#361b36,#09050d)!important;
   box-shadow:inset 0 0 0 1px rgba(242,196,132,.8),inset 0 0 0 3px rgba(61,29,52,.75),inset 0 0 9px rgba(255,151,204,.16)!important;
 }
-body.game-active .game-frame:not(.victory-celebration) .battle-info-dock{
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .battle-info-dock{
   position:relative!important;
   z-index:221!important;
   height:5dvh!important;
@@ -5378,13 +5378,13 @@ body.game-active .game-frame:not(.victory-celebration) .battle-info-dock{
   box-shadow:inset 0 1px rgba(248,203,141,.62)!important;
 }
 @media(max-width:420px){
-  body.game-active .mission-topbar{height:76px!important;min-height:76px!important;padding:6px 9px!important}
-  body.game-active .arena-dungeon-title{font-size:10px!important}
-  body.game-active .game-frame:not(.victory-celebration) .arena{height:64dvh!important;flex-basis:64dvh!important}
-  body.game-active .game-frame:not(.victory-celebration) .combat-console{height:31dvh!important;flex-basis:31dvh!important;grid-template-columns:43px minmax(0,1fr) 65px!important;gap:6px!important;padding:8px 8px 6px!important}
-  body.game-active .game-frame:not(.victory-celebration) .combat-console .board{width:min(100%,calc(31dvh - 16px))!important;height:min(100%,calc(31dvh - 16px))!important;padding:5px!important;gap:3px!important}
+  body.battle-layout-2.game-active .mission-topbar{height:76px!important;min-height:76px!important;padding:6px 9px!important}
+  body.battle-layout-2.game-active .arena-dungeon-title{font-size:10px!important}
+  body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .arena{height:64dvh!important;flex-basis:64dvh!important}
+  body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console{height:31dvh!important;flex-basis:31dvh!important;grid-template-columns:43px minmax(0,1fr) 65px!important;gap:6px!important;padding:8px 8px 6px!important}
+  body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .board{width:min(100%,calc(31dvh - 16px))!important;height:min(100%,calc(31dvh - 16px))!important;padding:5px!important;gap:3px!important}
 }
-body.game-active .game-frame:not(.victory-celebration) .arena{
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .arena{
   height:66dvh!important;
   flex:0 0 66dvh!important;
   border-inline:1px solid rgba(242,205,138,.6)!important;
@@ -5394,7 +5394,7 @@ body.game-active .game-frame:not(.victory-celebration) .arena{
 }
 /* Cabeçalho segmentado com leitura de primeira camada: fase à esquerda,
    tempo/turno no centro e ações sempre agrupadas à direita. */
-body.game-active .mission-topbar{
+body.battle-layout-2.game-active .mission-topbar{
   z-index:150!important;
   min-height:76px!important;
   height:76px!important;
@@ -5411,47 +5411,47 @@ body.game-active .mission-topbar{
     linear-gradient(90deg,rgba(38,20,45,.98),rgba(9,7,16,.98) 35%,rgba(42,17,43,.98) 100%)!important;
   box-shadow:inset 0 1px rgba(255,235,178,.36),0 5px 15px rgba(0,0,0,.46)!important;
 }
-body.game-active .mission-topbar::before,
-body.game-active .mission-topbar::after{content:""!important;position:absolute!important;top:0!important;bottom:0!important;width:10px!important;z-index:1!important;pointer-events:none!important;background:linear-gradient(180deg,transparent,#eecb83 49%,transparent)!important;filter:drop-shadow(0 0 5px rgba(255,174,210,.7))!important}
-body.game-active .mission-topbar::before{left:0!important}body.game-active .mission-topbar::after{right:0!important}
-body.game-active .mission-identity,
-body.game-active .mission-metrics,
-body.game-active .mission-actions,
-body.game-active .battle-phase-chip{
+body.battle-layout-2.game-active .mission-topbar::before,
+body.battle-layout-2.game-active .mission-topbar::after{content:""!important;position:absolute!important;top:0!important;bottom:0!important;width:10px!important;z-index:1!important;pointer-events:none!important;background:linear-gradient(180deg,transparent,#eecb83 49%,transparent)!important;filter:drop-shadow(0 0 5px rgba(255,174,210,.7))!important}
+body.battle-layout-2.game-active .mission-topbar::before{left:0!important}body.battle-layout-2.game-active .mission-topbar::after{right:0!important}
+body.battle-layout-2.game-active .mission-identity,
+body.battle-layout-2.game-active .mission-metrics,
+body.battle-layout-2.game-active .mission-actions,
+body.battle-layout-2.game-active .battle-phase-chip{
   position:relative!important;
   min-width:0!important;
   border:1px solid rgba(244,206,139,.36)!important;
   background:linear-gradient(145deg,rgba(18,11,26,.88),rgba(8,6,14,.96))!important;
   box-shadow:inset 0 0 12px rgba(255,155,215,.07)!important;
 }
-body.game-active .mission-identity{grid-column:1!important;grid-row:1!important;padding:7px 8px 4px 13px!important;display:grid!important;align-content:center!important;gap:2px!important}
-body.game-active .arena-stage-label{font-size:8px!important;letter-spacing:.11em!important;color:#f9ddb0!important;white-space:nowrap!important}
-body.game-active .arena-dungeon-title{font-size:11px!important;line-height:1.04!important;color:#fff2d5!important;letter-spacing:.035em!important;-webkit-line-clamp:2!important;white-space:normal!important}
-body.game-active .arena-progress{margin-top:3px!important;height:4px!important;gap:3px!important}
-body.game-active .mission-metrics{grid-column:4!important;grid-row:1!important;display:grid!important;grid-template-columns:1fr!important;align-content:center!important;gap:4px!important;padding:4px 5px!important}
-body.game-active .stage-objective,body.game-active .combo-record{position:static!important;transform:none!important;max-width:none!important;overflow:hidden!important;text-overflow:ellipsis!important;border:0!important;background:transparent!important;box-shadow:none!important}
-body.game-active .stage-objective{font-size:7px!important;line-height:1.1!important;color:#f4e2bc!important;white-space:normal!important}
-body.game-active .combo-record{font-size:7px!important;color:#ffd68c!important;white-space:nowrap!important}
-body.game-active .battle-phase-chip{grid-column:3!important;grid-row:1!important;display:grid!important;place-items:center!important;padding:5px!important;text-align:center!important;color:#ffafd5!important;font:800 8px/1.04 Georgia,serif!important;letter-spacing:.075em!important;text-transform:uppercase!important;clip-path:polygon(50% 0,100% 24%,100% 76%,50% 100%,0 76%,0 24%)!important;border:0!important;background:linear-gradient(145deg,#8c275f,#270e35 72%)!important;box-shadow:0 0 0 1px #f3b15e,0 0 16px rgba(255,85,180,.42)!important}
-body.game-active .mission-actions{grid-column:5!important;grid-row:1!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-template-rows:repeat(2,minmax(0,1fr))!important;gap:3px!important;padding:3px!important}
-body.game-active .mission-actions .icon-btn{width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;border-radius:4px!important;border-color:rgba(245,207,144,.48)!important;background:linear-gradient(145deg,rgba(90,42,82,.85),rgba(20,11,31,.95))!important}
-body.game-active .mission-actions .icon-btn svg{width:14px!important;height:14px!important}
-body.game-active .mission-actions .mission-timer,
-body.game-active .mission-actions .nightmare-turn-timer{position:absolute!important;display:flex!important;align-items:center!important;justify-content:center!important;top:-1px!important;left:-58px!important;width:54px!important;height:calc(100% + 2px)!important;margin:0!important;padding:3px!important;border:1px solid rgba(245,207,144,.45)!important;background:linear-gradient(145deg,rgba(18,11,26,.94),rgba(8,6,14,.98))!important;color:#fff0cc!important;font-size:9px!important;white-space:nowrap!important}
-body.game-active .mission-actions .nightmare-turn-timer{left:-116px!important;color:#ff9bca!important}
-body.game-active .mission-actions .mission-timer:has(+.nightmare-turn-timer:not([hidden])){left:-58px!important}
+body.battle-layout-2.game-active .mission-identity{grid-column:1!important;grid-row:1!important;padding:7px 8px 4px 13px!important;display:grid!important;align-content:center!important;gap:2px!important}
+body.battle-layout-2.game-active .arena-stage-label{font-size:8px!important;letter-spacing:.11em!important;color:#f9ddb0!important;white-space:nowrap!important}
+body.battle-layout-2.game-active .arena-dungeon-title{font-size:11px!important;line-height:1.04!important;color:#fff2d5!important;letter-spacing:.035em!important;-webkit-line-clamp:2!important;white-space:normal!important}
+body.battle-layout-2.game-active .arena-progress{margin-top:3px!important;height:4px!important;gap:3px!important}
+body.battle-layout-2.game-active .mission-metrics{grid-column:4!important;grid-row:1!important;display:grid!important;grid-template-columns:1fr!important;align-content:center!important;gap:4px!important;padding:4px 5px!important}
+body.battle-layout-2.game-active .stage-objective,body.battle-layout-2.game-active .combo-record{position:static!important;transform:none!important;max-width:none!important;overflow:hidden!important;text-overflow:ellipsis!important;border:0!important;background:transparent!important;box-shadow:none!important}
+body.battle-layout-2.game-active .stage-objective{font-size:7px!important;line-height:1.1!important;color:#f4e2bc!important;white-space:normal!important}
+body.battle-layout-2.game-active .combo-record{font-size:7px!important;color:#ffd68c!important;white-space:nowrap!important}
+body.battle-layout-2.game-active .battle-phase-chip{grid-column:3!important;grid-row:1!important;display:grid!important;place-items:center!important;padding:5px!important;text-align:center!important;color:#ffafd5!important;font:800 8px/1.04 Georgia,serif!important;letter-spacing:.075em!important;text-transform:uppercase!important;clip-path:polygon(50% 0,100% 24%,100% 76%,50% 100%,0 76%,0 24%)!important;border:0!important;background:linear-gradient(145deg,#8c275f,#270e35 72%)!important;box-shadow:0 0 0 1px #f3b15e,0 0 16px rgba(255,85,180,.42)!important}
+body.battle-layout-2.game-active .mission-actions{grid-column:5!important;grid-row:1!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-template-rows:repeat(2,minmax(0,1fr))!important;gap:3px!important;padding:3px!important}
+body.battle-layout-2.game-active .mission-actions .icon-btn{width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;border-radius:4px!important;border-color:rgba(245,207,144,.48)!important;background:linear-gradient(145deg,rgba(90,42,82,.85),rgba(20,11,31,.95))!important}
+body.battle-layout-2.game-active .mission-actions .icon-btn svg{width:14px!important;height:14px!important}
+body.battle-layout-2.game-active .mission-actions .mission-timer,
+body.battle-layout-2.game-active .mission-actions .nightmare-turn-timer{position:absolute!important;display:flex!important;align-items:center!important;justify-content:center!important;top:-1px!important;left:-58px!important;width:54px!important;height:calc(100% + 2px)!important;margin:0!important;padding:3px!important;border:1px solid rgba(245,207,144,.45)!important;background:linear-gradient(145deg,rgba(18,11,26,.94),rgba(8,6,14,.98))!important;color:#fff0cc!important;font-size:9px!important;white-space:nowrap!important}
+body.battle-layout-2.game-active .mission-actions .nightmare-turn-timer{left:-116px!important;color:#ff9bca!important}
+body.battle-layout-2.game-active .mission-actions .mission-timer:has(+.nightmare-turn-timer:not([hidden])){left:-58px!important}
 
 /* Área de batalha larga. A cena ocupa a altura que havia sido prometida; o
    chão permanece visível até a transição natural para o console. */
-body.game-active .arena .battle-row{top:76px!important;bottom:0!important}
-body.game-active .arena .party-row{bottom:3%!important}
-body.game-active .arena .enemy-row{bottom:7%!important}
-body.game-active .arena .party-row .unit-stage{height:clamp(116px,19dvh,170px)!important}
-body.game-active .arena .enemy-row .unit-stage{height:clamp(120px,20dvh,175px)!important}
+body.battle-layout-2.game-active .arena .battle-row{top:76px!important;bottom:0!important}
+body.battle-layout-2.game-active .arena .party-row{bottom:3%!important}
+body.battle-layout-2.game-active .arena .enemy-row{bottom:7%!important}
+body.battle-layout-2.game-active .arena .party-row .unit-stage{height:clamp(116px,19dvh,170px)!important}
+body.battle-layout-2.game-active .arena .enemy-row .unit-stage{height:clamp(120px,20dvh,175px)!important}
 
 /* Console R2: a grade 6×6 recebe a maior área útil, as quatro cartas são
    miniaturas completas e o HP global fica como coluna independente. */
-body.game-active .game-frame:not(.victory-celebration) .combat-console{
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console{
   flex:0 0 29dvh!important;
   height:29dvh!important;
   display:grid!important;
@@ -5466,15 +5466,15 @@ body.game-active .game-frame:not(.victory-celebration) .combat-console{
   box-shadow:inset 0 1px rgba(255,224,159,.25),inset 0 0 28px rgba(0,0,0,.7)!important;
   box-sizing:border-box!important;
 }
-body.game-active .game-frame:not(.victory-celebration) .combat-console::before{content:""!important;position:absolute!important;left:12px!important;right:12px!important;top:3px!important;height:3px!important;background:linear-gradient(90deg,transparent,#ffbadb 18%,#f3ce82 50%,#ffbadb 82%,transparent)!important;opacity:.78!important}
-body.game-active .game-frame:not(.victory-celebration) .combat-console .vertical-hp{width:46px!important;padding:5px 4px!important;border-radius:0!important;border-color:rgba(250,215,151,.76)!important;background:linear-gradient(180deg,#21142a,#0b0710)!important;box-shadow:inset 0 0 15px rgba(255,110,177,.12),0 3px 8px rgba(0,0,0,.5)!important}
-body.game-active .game-frame:not(.victory-celebration) .vertical-hp .hp-label{font-size:8px!important;color:#ffe5bb!important}
-body.game-active .game-frame:not(.victory-celebration) .vertical-hp .hp-status-icon{width:18px!important;height:18px!important;background:#80254e!important;color:#ffe4f1!important;box-shadow:0 0 9px rgba(255,118,182,.65)!important}
-body.game-active .game-frame:not(.victory-celebration) .vertical-hp .hp-outer{width:17px!important;min-height:110px!important;border-radius:2px!important;border-color:#ffdfb4!important;background:#2a1024!important}
-body.game-active .game-frame:not(.victory-celebration) .vertical-hp .hp-inner{border-radius:1px!important;background:linear-gradient(0deg,#9a1f55,#fb548f 58%,#ffe2ed)!important;box-shadow:0 0 12px rgba(255,93,169,.75)!important}
-body.game-active .game-frame:not(.victory-celebration) .vertical-hp .hp-current{font-size:8px!important;color:#fff1d4!important}
-body.game-active .game-frame:not(.victory-celebration) .vertical-hp .hp-total{font-size:5px!important;color:#d7c5cd!important}
-body.game-active .game-frame:not(.victory-celebration) .combat-console .board{
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console::before{content:""!important;position:absolute!important;left:12px!important;right:12px!important;top:3px!important;height:3px!important;background:linear-gradient(90deg,transparent,#ffbadb 18%,#f3ce82 50%,#ffbadb 82%,transparent)!important;opacity:.78!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .vertical-hp{width:46px!important;padding:5px 4px!important;border-radius:0!important;border-color:rgba(250,215,151,.76)!important;background:linear-gradient(180deg,#21142a,#0b0710)!important;box-shadow:inset 0 0 15px rgba(255,110,177,.12),0 3px 8px rgba(0,0,0,.5)!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .vertical-hp .hp-label{font-size:8px!important;color:#ffe5bb!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .vertical-hp .hp-status-icon{width:18px!important;height:18px!important;background:#80254e!important;color:#ffe4f1!important;box-shadow:0 0 9px rgba(255,118,182,.65)!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .vertical-hp .hp-outer{width:17px!important;min-height:110px!important;border-radius:2px!important;border-color:#ffdfb4!important;background:#2a1024!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .vertical-hp .hp-inner{border-radius:1px!important;background:linear-gradient(0deg,#9a1f55,#fb548f 58%,#ffe2ed)!important;box-shadow:0 0 12px rgba(255,93,169,.75)!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .vertical-hp .hp-current{font-size:8px!important;color:#fff1d4!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .vertical-hp .hp-total{font-size:5px!important;color:#d7c5cd!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .board{
   width:min(100%,calc(29dvh - 14px))!important;
   height:min(100%,calc(29dvh - 14px))!important;
   padding:5px!important;
@@ -5484,15 +5484,15 @@ body.game-active .game-frame:not(.victory-celebration) .combat-console .board{
   background:linear-gradient(145deg,#211626,#09070e)!important;
   box-shadow:0 0 0 3px rgba(84,44,68,.8),inset 0 0 18px rgba(0,0,0,.7),0 6px 16px rgba(0,0,0,.45)!important;
 }
-body.game-active .game-frame:not(.victory-celebration) .combat-console .cell{border:1px solid rgba(245,214,157,.18)!important;background:linear-gradient(145deg,rgba(237,173,210,.08),rgba(8,7,14,.5))!important}
-body.game-active .game-frame:not(.victory-celebration) .combat-console .card-strip{width:74px!important;gap:5px!important}
-body.game-active .game-frame:not(.victory-celebration) .combat-console .mini-card{grid-template-columns:15px minmax(0,1fr)!important;gap:3px!important;padding:2px!important;border:1px solid rgba(244,207,139,.54)!important;border-radius:4px!important;background:linear-gradient(145deg,rgba(91,49,76,.94),rgba(16,10,22,.98))!important;box-shadow:inset 0 0 9px rgba(255,175,219,.12)!important}
-body.game-active .game-frame:not(.victory-celebration) .combat-console .mini-rotate{width:13px!important;min-width:13px!important;height:100%!important;border-radius:3px!important;color:#ffdfae!important;background:linear-gradient(180deg,#4c2a4d,#150c20)!important;font-size:6px!important}
-body.game-active .game-frame:not(.victory-celebration) .combat-console .mini-open-card .mini-thumb{border:1px solid rgba(255,226,176,.72)!important;border-radius:2px!important;background:#0a0610!important}
-body.game-active .game-frame:not(.victory-celebration) .combat-console .mini-open-card .mini-thumb::after{content:""!important;position:absolute!important;inset:2px!important;border:1px solid rgba(255,157,213,.42)!important;pointer-events:none!important}
-body.game-active .game-frame:not(.victory-celebration) .battle-info-dock{flex:0 0 5dvh!important;min-height:34px!important;padding:4px 10px max(4px,env(safe-area-inset-bottom,0px))!important;border:1px solid rgba(244,207,139,.7)!important;border-top:0!important;background:linear-gradient(90deg,#110a17,#2c1730 49%,#100914)!important;box-sizing:border-box!important}
-body.game-active .game-frame:not(.victory-celebration) .battle-info-dock .battle-status{font:italic 10px/1.15 Georgia,serif!important;color:#f6dfb5!important;border-color:rgba(242,206,143,.35)!important;background:rgba(5,4,10,.62)!important}
-body.game-active .game-frame:not(.victory-celebration) .battle-info-dock .history-btn{min-height:26px!important;border-color:rgba(247,213,151,.7)!important;color:#ffe2ad!important;background:linear-gradient(145deg,#5a2b54,#110a18)!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .cell{border:1px solid rgba(245,214,157,.18)!important;background:linear-gradient(145deg,rgba(237,173,210,.08),rgba(8,7,14,.5))!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .card-strip{width:74px!important;gap:5px!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .mini-card{grid-template-columns:15px minmax(0,1fr)!important;gap:3px!important;padding:2px!important;border:1px solid rgba(244,207,139,.54)!important;border-radius:4px!important;background:linear-gradient(145deg,rgba(91,49,76,.94),rgba(16,10,22,.98))!important;box-shadow:inset 0 0 9px rgba(255,175,219,.12)!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .mini-rotate{width:13px!important;min-width:13px!important;height:100%!important;border-radius:3px!important;color:#ffdfae!important;background:linear-gradient(180deg,#4c2a4d,#150c20)!important;font-size:6px!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .mini-open-card .mini-thumb{border:1px solid rgba(255,226,176,.72)!important;border-radius:2px!important;background:#0a0610!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .mini-open-card .mini-thumb::after{content:""!important;position:absolute!important;inset:2px!important;border:1px solid rgba(255,157,213,.42)!important;pointer-events:none!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .battle-info-dock{flex:0 0 5dvh!important;min-height:34px!important;padding:4px 10px max(4px,env(safe-area-inset-bottom,0px))!important;border:1px solid rgba(244,207,139,.7)!important;border-top:0!important;background:linear-gradient(90deg,#110a17,#2c1730 49%,#100914)!important;box-sizing:border-box!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .battle-info-dock .battle-status{font:italic 10px/1.15 Georgia,serif!important;color:#f6dfb5!important;border-color:rgba(242,206,143,.35)!important;background:rgba(5,4,10,.62)!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .battle-info-dock .history-btn{min-height:26px!important;border-color:rgba(247,213,151,.7)!important;color:#ffe2ad!important;background:linear-gradient(145deg,#5a2b54,#110a18)!important}
 
 /* Joias do Reino: novo modelo aprovado, com esfera-gema sobre bloco próprio.
    Os SVGs e as cores continuam sendo os dados canônicos de cada reino. */
@@ -5509,51 +5509,51 @@ body.board-style-relic .board .orb-icon{width:49%!important;height:49%!important
 body.board-style-relic .board .gem.selected .orb{transform:scale(1.12)!important;box-shadow:0 0 0 2px #fff2cd,inset -5px -6px 9px rgba(0,0,0,.46),0 0 13px var(--orb-light)!important}
 
 @media (max-width:420px){
-  body.game-active .mission-topbar{grid-template-columns:minmax(108px,1.35fr) 42px 48px 61px 58px!important;min-height:72px!important;height:72px!important}
-  body.game-active .arena .battle-row{top:72px!important}
-  body.game-active .arena-stage-label{font-size:7px!important}
-  body.game-active .arena-dungeon-title{font-size:10px!important}
-  body.game-active .mission-actions .mission-timer{left:-46px!important;width:43px!important;font-size:7px!important}
-  body.game-active .mission-actions .nightmare-turn-timer{left:-92px!important;width:43px!important;font-size:7px!important}
-  body.game-active .mission-metrics{padding-inline:3px!important}
-  body.game-active .stage-objective,body.game-active .combo-record{font-size:6px!important}
-  body.game-active .game-frame:not(.victory-celebration) .combat-console{grid-template-columns:43px minmax(0,1fr) 65px!important;gap:5px!important;padding:6px!important}
-  body.game-active .game-frame:not(.victory-celebration) .combat-console .vertical-hp{width:41px!important}
-  body.game-active .game-frame:not(.victory-celebration) .combat-console .card-strip{width:65px!important}
-  body.game-active .game-frame:not(.victory-celebration) .vertical-hp .hp-outer{min-height:96px!important}
+  body.battle-layout-2.game-active .mission-topbar{grid-template-columns:minmax(108px,1.35fr) 42px 48px 61px 58px!important;min-height:72px!important;height:72px!important}
+  body.battle-layout-2.game-active .arena .battle-row{top:72px!important}
+  body.battle-layout-2.game-active .arena-stage-label{font-size:7px!important}
+  body.battle-layout-2.game-active .arena-dungeon-title{font-size:10px!important}
+  body.battle-layout-2.game-active .mission-actions .mission-timer{left:-46px!important;width:43px!important;font-size:7px!important}
+  body.battle-layout-2.game-active .mission-actions .nightmare-turn-timer{left:-92px!important;width:43px!important;font-size:7px!important}
+  body.battle-layout-2.game-active .mission-metrics{padding-inline:3px!important}
+  body.battle-layout-2.game-active .stage-objective,body.battle-layout-2.game-active .combo-record{font-size:6px!important}
+  body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console{grid-template-columns:43px minmax(0,1fr) 65px!important;gap:5px!important;padding:6px!important}
+  body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .vertical-hp{width:41px!important}
+  body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .card-strip{width:65px!important}
+  body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .vertical-hp .hp-outer{min-height:96px!important}
 }
 @media (max-height:700px){
-  body.game-active .game-frame:not(.victory-celebration) .arena{height:65dvh!important;flex-basis:65dvh!important}
-  body.game-active .game-frame:not(.victory-celebration) .combat-console{height:30dvh!important;flex-basis:30dvh!important}
-  body.game-active .game-frame:not(.victory-celebration) .combat-console .board{width:min(100%,calc(30dvh - 14px))!important;height:min(100%,calc(30dvh - 14px))!important}
+  body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .arena{height:65dvh!important;flex-basis:65dvh!important}
+  body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console{height:30dvh!important;flex-basis:30dvh!important}
+  body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .board{width:min(100%,calc(30dvh - 14px))!important;height:min(100%,calc(30dvh - 14px))!important}
 }
 
 /* Estrutura sem sobreposição: relógios são painéis próprios do cabeçalho e as
    quatro ações continuam dentro de uma única moldura 2×2. */
-body.game-active .mission-topbar{grid-template-columns:minmax(112px,1.45fr) minmax(44px,.52fr) minmax(34px,.42fr) minmax(50px,.62fr) minmax(64px,.78fr) minmax(55px,.66fr)!important}
-body.game-active .mission-metrics{grid-column:5!important}
-body.game-active .battle-phase-chip{grid-column:4!important}
-body.game-active .mission-actions{grid-column:6!important;display:block!important;padding:3px!important}
-body.game-active .mission-icons{display:grid!important;width:100%!important;height:100%!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-template-rows:repeat(2,minmax(0,1fr))!important;gap:3px!important}
-body.game-active .mission-actions .icon-btn{width:100%!important;height:100%!important}
-body.game-active .mission-timer,body.game-active .nightmare-turn-timer{position:relative!important;display:flex!important;align-items:center!important;justify-content:center!important;grid-row:1!important;margin:0!important;padding:3px!important;border:1px solid rgba(245,207,144,.45)!important;background:linear-gradient(145deg,rgba(18,11,26,.94),rgba(8,6,14,.98))!important;color:#fff0cc!important;font-size:8px!important;white-space:nowrap!important}
-body.game-active .mission-timer{grid-column:2!important}
-body.game-active .nightmare-turn-timer{grid-column:3!important;color:#ff9bca!important}
+body.battle-layout-2.game-active .mission-topbar{grid-template-columns:minmax(112px,1.45fr) minmax(44px,.52fr) minmax(34px,.42fr) minmax(50px,.62fr) minmax(64px,.78fr) minmax(55px,.66fr)!important}
+body.battle-layout-2.game-active .mission-metrics{grid-column:5!important}
+body.battle-layout-2.game-active .battle-phase-chip{grid-column:4!important}
+body.battle-layout-2.game-active .mission-actions{grid-column:6!important;display:block!important;padding:3px!important}
+body.battle-layout-2.game-active .mission-icons{display:grid!important;width:100%!important;height:100%!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-template-rows:repeat(2,minmax(0,1fr))!important;gap:3px!important}
+body.battle-layout-2.game-active .mission-actions .icon-btn{width:100%!important;height:100%!important}
+body.battle-layout-2.game-active .mission-timer,body.battle-layout-2.game-active .nightmare-turn-timer{position:relative!important;display:flex!important;align-items:center!important;justify-content:center!important;grid-row:1!important;margin:0!important;padding:3px!important;border:1px solid rgba(245,207,144,.45)!important;background:linear-gradient(145deg,rgba(18,11,26,.94),rgba(8,6,14,.98))!important;color:#fff0cc!important;font-size:8px!important;white-space:nowrap!important}
+body.battle-layout-2.game-active .mission-timer{grid-column:2!important}
+body.battle-layout-2.game-active .nightmare-turn-timer{grid-column:3!important;color:#ff9bca!important}
 @media (max-width:420px){
-  body.game-active .mission-topbar{grid-template-columns:minmax(106px,1.36fr) 40px 30px 47px 58px 51px!important}
-  body.game-active .mission-timer,body.game-active .nightmare-turn-timer{font-size:6.5px!important;padding:2px!important}
+  body.battle-layout-2.game-active .mission-topbar{grid-template-columns:minmax(106px,1.36fr) 40px 30px 47px 58px 51px!important}
+  body.battle-layout-2.game-active .mission-timer,body.battle-layout-2.game-active .nightmare-turn-timer{font-size:6.5px!important;padding:2px!important}
 }
 
 /* HUD R4 · composição final da proposta aprovada.
    A moldura é uma arte independente; os painéis abaixo são dados reais do
    jogo. Nenhuma captura ou texto da proposta é usado como fundo. */
-body.game-active .battle-ornate-frame{
+body.battle-layout-2.game-active .battle-ornate-frame{
   z-index:100!important;
   opacity:.56!important;
   mix-blend-mode:screen!important;
   filter:saturate(1.14) contrast(1.08)!important;
 }
-body.game-active .mission-topbar{
+body.battle-layout-2.game-active .mission-topbar{
   z-index:160!important;
   height:76px!important;
   min-height:76px!important;
@@ -5565,39 +5565,39 @@ body.game-active .mission-topbar{
   background:linear-gradient(90deg,rgba(10,6,16,.98),rgba(33,13,35,.92) 48%,rgba(9,6,15,.98))!important;
   box-shadow:inset 0 -1px rgba(251,220,159,.78),0 7px 19px rgba(0,0,0,.58)!important;
 }
-body.game-active .mission-topbar::before,body.game-active .mission-topbar::after{
+body.battle-layout-2.game-active .mission-topbar::before,body.battle-layout-2.game-active .mission-topbar::after{
   width:17px!important;
   background:radial-gradient(circle at 50% 50%,#ffe8a8 0 6%,#e263ae 10% 21%,transparent 23%)!important;
   filter:drop-shadow(0 0 5px rgba(255,105,188,.65))!important;
 }
-body.game-active .mission-identity,body.game-active .mission-timer,body.game-active .nightmare-turn-timer,body.game-active .mission-metrics,body.game-active .mission-actions{
+body.battle-layout-2.game-active .mission-identity,body.battle-layout-2.game-active .mission-timer,body.battle-layout-2.game-active .nightmare-turn-timer,body.battle-layout-2.game-active .mission-metrics,body.battle-layout-2.game-active .mission-actions{
   border:1px solid rgba(250,216,153,.72)!important;
   border-image:linear-gradient(135deg,#f8d28b,#754253 46%,#f0be79) 1!important;
   background:linear-gradient(145deg,rgba(52,25,48,.78),rgba(9,6,15,.96) 62%)!important;
   box-shadow:inset 0 0 0 1px rgba(255,239,190,.09),inset 0 0 15px rgba(238,62,157,.09)!important;
 }
-body.game-active .mission-identity{padding:6px 8px 5px 13px!important}
-body.game-active .arena-stage-label{font-size:7px!important;letter-spacing:.13em!important;color:#ffe1a2!important}
-body.game-active .arena-dungeon-title{font-size:11px!important;line-height:1.02!important;color:#fff0d0!important;text-shadow:0 1px 5px #000!important}
-body.game-active .mission-timer,body.game-active .nightmare-turn-timer{font:700 8px/1 Georgia,serif!important;text-align:center!important}
-body.game-active .mission-timer::before{content:'TEMPO'!important;display:block!important;position:absolute!important;top:5px!important;left:0!important;right:0!important;color:#e3c98f!important;font:700 5px/1 Georgia,serif!important;letter-spacing:.09em!important}
-body.game-active .mission-timer{padding-top:15px!important}
-body.game-active .nightmare-turn-timer{font-size:0!important;background:radial-gradient(circle at 50% 40%,rgba(244,88,172,.43),rgba(30,8,37,.96) 66%)!important}
-body.game-active .nightmare-turn-timer::after{content:'ATAQUE'!important;color:#ffb3dc!important;font:700 5px/1 Georgia,serif!important;letter-spacing:.07em!important}
-body.game-active .battle-phase-chip{width:52px!important;height:52px!important;align-self:center!important;color:#ffe7cb!important;font-size:7px!important;background:linear-gradient(145deg,#a62b71,#300b38 72%)!important;box-shadow:0 0 0 1px #ffd889,0 0 15px rgba(246,79,174,.44),inset 0 0 13px rgba(255,211,239,.22)!important}
-body.game-active .mission-metrics{padding:5px!important}
-body.game-active .stage-objective{font-size:6.5px!important;line-height:1.1!important}
-body.game-active .combo-record{font-size:6.5px!important}
-body.game-active .mission-actions{padding:3px!important}
-body.game-active .mission-actions .icon-btn{border:1px solid rgba(255,219,158,.63)!important;border-radius:2px!important;background:linear-gradient(145deg,#572b54,#100916)!important;box-shadow:inset 0 0 7px rgba(255,160,218,.18)!important}
+body.battle-layout-2.game-active .mission-identity{padding:6px 8px 5px 13px!important}
+body.battle-layout-2.game-active .arena-stage-label{font-size:7px!important;letter-spacing:.13em!important;color:#ffe1a2!important}
+body.battle-layout-2.game-active .arena-dungeon-title{font-size:11px!important;line-height:1.02!important;color:#fff0d0!important;text-shadow:0 1px 5px #000!important}
+body.battle-layout-2.game-active .mission-timer,body.battle-layout-2.game-active .nightmare-turn-timer{font:700 8px/1 Georgia,serif!important;text-align:center!important}
+body.battle-layout-2.game-active .mission-timer::before{content:'TEMPO'!important;display:block!important;position:absolute!important;top:5px!important;left:0!important;right:0!important;color:#e3c98f!important;font:700 5px/1 Georgia,serif!important;letter-spacing:.09em!important}
+body.battle-layout-2.game-active .mission-timer{padding-top:15px!important}
+body.battle-layout-2.game-active .nightmare-turn-timer{font-size:0!important;background:radial-gradient(circle at 50% 40%,rgba(244,88,172,.43),rgba(30,8,37,.96) 66%)!important}
+body.battle-layout-2.game-active .nightmare-turn-timer::after{content:'ATAQUE'!important;color:#ffb3dc!important;font:700 5px/1 Georgia,serif!important;letter-spacing:.07em!important}
+body.battle-layout-2.game-active .battle-phase-chip{width:52px!important;height:52px!important;align-self:center!important;color:#ffe7cb!important;font-size:7px!important;background:linear-gradient(145deg,#a62b71,#300b38 72%)!important;box-shadow:0 0 0 1px #ffd889,0 0 15px rgba(246,79,174,.44),inset 0 0 13px rgba(255,211,239,.22)!important}
+body.battle-layout-2.game-active .mission-metrics{padding:5px!important}
+body.battle-layout-2.game-active .stage-objective{font-size:6.5px!important;line-height:1.1!important}
+body.battle-layout-2.game-active .combo-record{font-size:6.5px!important}
+body.battle-layout-2.game-active .mission-actions{padding:3px!important}
+body.battle-layout-2.game-active .mission-actions .icon-btn{border:1px solid rgba(255,219,158,.63)!important;border-radius:2px!important;background:linear-gradient(145deg,#572b54,#100916)!important;box-shadow:inset 0 0 7px rgba(255,160,218,.18)!important}
 
-body.game-active .game-frame:not(.victory-celebration) .arena{
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .arena{
   height:66dvh!important;
   flex:0 0 66dvh!important;
   border-inline:1px solid rgba(242,203,137,.68)!important;
   box-shadow:inset 11px 0 22px rgba(0,0,0,.4),inset -11px 0 22px rgba(0,0,0,.4)!important;
 }
-body.game-active .game-frame:not(.victory-celebration) .combat-console{
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console{
   z-index:130!important;
   height:29dvh!important;
   flex:0 0 29dvh!important;
@@ -5608,19 +5608,19 @@ body.game-active .game-frame:not(.victory-celebration) .combat-console{
   background:radial-gradient(ellipse at 50% 3%,rgba(152,53,114,.38),transparent 40%),linear-gradient(145deg,#160b1f,#05040a 61%,#170a1d)!important;
   box-shadow:inset 0 1px rgba(255,224,161,.68),inset 0 0 29px rgba(0,0,0,.77)!important;
 }
-body.game-active .game-frame:not(.victory-celebration) .combat-console::after{content:''!important;position:absolute!important;inset:5px!important;border:1px solid rgba(253,216,153,.44)!important;pointer-events:none!important}
-body.game-active .game-frame:not(.victory-celebration) .combat-console .vertical-hp{position:relative!important;z-index:1!important;width:48px!important;border:1px solid rgba(249,215,153,.8)!important;border-radius:0!important;background:linear-gradient(180deg,#33162f,#0b0611)!important;box-shadow:inset 0 0 0 3px rgba(72,28,58,.7),inset 0 0 14px rgba(255,105,181,.12)!important}
-body.game-active .game-frame:not(.victory-celebration) .combat-console .board{position:relative!important;z-index:1!important;width:min(100%,calc(29dvh - 16px))!important;height:min(100%,calc(29dvh - 16px))!important;padding:5px!important;gap:3px!important;border:1px solid rgba(255,220,158,.83)!important;border-radius:2px!important;background:linear-gradient(145deg,#321c31,#08060c 58%,#2b1428)!important;box-shadow:0 0 0 3px rgba(100,49,78,.9),inset 0 0 17px rgba(0,0,0,.82),0 4px 12px rgba(0,0,0,.56)!important}
-body.game-active .game-frame:not(.victory-celebration) .combat-console .cell{border:1px solid rgba(250,217,160,.3)!important;background:linear-gradient(145deg,rgba(236,179,215,.12),rgba(8,6,14,.58))!important;box-shadow:inset 0 0 0 1px rgba(2,2,7,.58)!important}
-body.game-active .game-frame:not(.victory-celebration) .combat-console .card-strip{position:relative!important;z-index:1!important;width:74px!important;gap:5px!important}
-body.game-active .game-frame:not(.victory-celebration) .combat-console .mini-card{border:1px solid rgba(250,216,153,.7)!important;border-radius:2px!important;background:linear-gradient(145deg,#4d2747,#0a0610)!important;box-shadow:inset 0 0 0 2px rgba(61,28,51,.8),inset 0 0 8px rgba(255,154,207,.17)!important}
-body.game-active .game-frame:not(.victory-celebration) .battle-info-dock{z-index:130!important;height:5dvh!important;flex:0 0 5dvh!important;border-inline:1px solid rgba(248,214,151,.65)!important;border-bottom:1px solid rgba(248,214,151,.65)!important;background:linear-gradient(90deg,#0f0815,#3a1834 50%,#0f0815)!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console::after{content:''!important;position:absolute!important;inset:5px!important;border:1px solid rgba(253,216,153,.44)!important;pointer-events:none!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .vertical-hp{position:relative!important;z-index:1!important;width:48px!important;border:1px solid rgba(249,215,153,.8)!important;border-radius:0!important;background:linear-gradient(180deg,#33162f,#0b0611)!important;box-shadow:inset 0 0 0 3px rgba(72,28,58,.7),inset 0 0 14px rgba(255,105,181,.12)!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .board{position:relative!important;z-index:1!important;width:min(100%,calc(29dvh - 16px))!important;height:min(100%,calc(29dvh - 16px))!important;padding:5px!important;gap:3px!important;border:1px solid rgba(255,220,158,.83)!important;border-radius:2px!important;background:linear-gradient(145deg,#321c31,#08060c 58%,#2b1428)!important;box-shadow:0 0 0 3px rgba(100,49,78,.9),inset 0 0 17px rgba(0,0,0,.82),0 4px 12px rgba(0,0,0,.56)!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .cell{border:1px solid rgba(250,217,160,.3)!important;background:linear-gradient(145deg,rgba(236,179,215,.12),rgba(8,6,14,.58))!important;box-shadow:inset 0 0 0 1px rgba(2,2,7,.58)!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .card-strip{position:relative!important;z-index:1!important;width:74px!important;gap:5px!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .mini-card{border:1px solid rgba(250,216,153,.7)!important;border-radius:2px!important;background:linear-gradient(145deg,#4d2747,#0a0610)!important;box-shadow:inset 0 0 0 2px rgba(61,28,51,.8),inset 0 0 8px rgba(255,154,207,.17)!important}
+body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .battle-info-dock{z-index:130!important;height:5dvh!important;flex:0 0 5dvh!important;border-inline:1px solid rgba(248,214,151,.65)!important;border-bottom:1px solid rgba(248,214,151,.65)!important;background:linear-gradient(90deg,#0f0815,#3a1834 50%,#0f0815)!important}
 @media(max-width:420px){
-  body.game-active .mission-topbar{grid-template-columns:minmax(102px,1.4fr) 40px 31px 47px minmax(53px,.76fr) 51px!important;height:72px!important;min-height:72px!important}
-  body.game-active .arena .battle-row{top:72px!important}
-  body.game-active .game-frame:not(.victory-celebration) .combat-console{grid-template-columns:43px minmax(0,1fr) 65px!important;gap:6px!important;padding:7px!important}
-  body.game-active .game-frame:not(.victory-celebration) .combat-console .vertical-hp{width:43px!important}
-  body.game-active .game-frame:not(.victory-celebration) .combat-console .card-strip{width:65px!important}
+  body.battle-layout-2.game-active .mission-topbar{grid-template-columns:minmax(102px,1.4fr) 40px 31px 47px minmax(53px,.76fr) 51px!important;height:72px!important;min-height:72px!important}
+  body.battle-layout-2.game-active .arena .battle-row{top:72px!important}
+  body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console{grid-template-columns:43px minmax(0,1fr) 65px!important;gap:6px!important;padding:7px!important}
+  body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .vertical-hp{width:43px!important}
+  body.battle-layout-2.game-active .game-frame:not(.victory-celebration) .combat-console .card-strip{width:65px!important}
 }
 
 /* v11.0.86 · Mercado Central: uma bancada de relíquias da Coroa, com saldo

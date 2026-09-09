@@ -7,6 +7,7 @@
     button: [933,1000,43,43], history: [24,1433,970,52], console: [0,974,1024,462],
   };
   let sequence = 0;
+  function enabled(){ return document.body.classList.contains('battle-layout-2'); }
   function jewel(orb) {
     if(orb.querySelector('.hud-gem-art')) return;
     const original=orb.querySelector('.orb-icon');
@@ -38,6 +39,7 @@
   function decorate() {
     const frame = document.querySelector('.game-frame');
     if (!frame) return;
+    if(!enabled()){ cleanup(frame); return; }
     frame.classList.add('hud-artwork');
     const mapping = {
       '.mission-identity':'title', '.mission-timer':'panel', '.nightmare-turn-timer':'panel',
@@ -56,6 +58,12 @@
       }
     }
   }
+  function cleanup(frame=document.querySelector('.game-frame')) {
+    if(!frame) return;
+    frame.classList.remove('hud-artwork');
+    frame.style.removeProperty('--hud-unit-factor');
+    frame.querySelectorAll('.hud-art,.hud-gem-art,.hud-action-label').forEach(node=>node.remove());
+  }
   let pending = false;
   function schedule() {
     if (pending) return;
@@ -65,14 +73,16 @@
   function start() {
     const frame = document.querySelector('.game-frame');
     if (!frame) return;
-    decorate();
+    if(enabled()) decorate(); else cleanup(frame);
     new ResizeObserver(entries=>{
       const width=entries[0].contentRect.width;
-      frame.style.setProperty('--hud-unit-factor',Math.max(1,Math.min(2.3,width/440)).toFixed(3));
+      if(enabled()) frame.style.setProperty('--hud-unit-factor',Math.max(1,Math.min(2.3,width/440)).toFixed(3));
+      else frame.style.removeProperty('--hud-unit-factor');
     }).observe(frame);
     new MutationObserver(records => {
       if (records.some(record => [...record.addedNodes,...record.removedNodes].some(node => !node.classList?.contains('hud-art')))) schedule();
     }).observe(frame,{childList:true,subtree:true});
+    document.addEventListener('ygdria:battle-layout',schedule);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start,{once:true});
   else start();

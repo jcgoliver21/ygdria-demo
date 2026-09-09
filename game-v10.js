@@ -2485,10 +2485,10 @@ function pulseArenaLighting(color,target,kind='impact'){
   scheduleCombat(()=>arenaEl.classList.remove('arena-light-pulse'),kind==='critical'?680:460);
 }
 
-/* HUD R2: cada bloco do cabeçalho é um painel próprio. Não reagrupamos os
-   relógios nem os controles dentro de outros painéis, pois isso esconderia
-   informação e quebraria a hierarquia visual da batalha. */
-function organizeMissionHeader(){
+/* A composição simplificada reproduz a estrutura da v11.0.97; o Layout 2.0
+   usa painéis independentes. A troca move os mesmos controles, preservando
+   IDs, listeners, relógios e estado da batalha. */
+function organizeMissionHeader(layout='simple'){
   const top=document.querySelector('.mission-topbar');
   const metrics=document.querySelector('.mission-metrics');
   const actions=document.querySelector('.mission-actions');
@@ -2497,17 +2497,43 @@ function organizeMissionHeader(){
   const phase=document.getElementById('battlePhaseChip');
   if(top&&metrics&&actions&&timer&&phase){
     const clockGroup=document.getElementById('missionClockGroup');
-    if(clockGroup) clockGroup.remove();
-    top.append(metrics,timer);
-    if(nightmare) top.append(nightmare);
-    top.append(phase,actions);
+    if(layout==='2'){
+      if(clockGroup) clockGroup.remove();
+      let icons=actions.querySelector(':scope > .mission-icons');
+      if(!icons){
+        icons=document.createElement('div');
+        icons.className='mission-icons';
+        actions.querySelectorAll(':scope > .icon-btn').forEach(button=>icons.appendChild(button));
+        actions.prepend(icons);
+      }
+      top.append(metrics,timer);
+      if(nightmare) top.append(nightmare);
+      top.append(phase,actions);
+      return;
+    }
+    const icons=actions.querySelector(':scope > .mission-icons');
+    if(icons){
+      [...icons.children].forEach(button=>actions.insertBefore(button,icons));
+      icons.remove();
+    }
+    metrics.appendChild(actions);
+    const legacyClock=clockGroup||document.createElement('div');
+    legacyClock.id='missionClockGroup';
+    legacyClock.className='mission-clock-group';
+    legacyClock.append(phase,timer);
+    if(nightmare) legacyClock.append(nightmare);
+    top.appendChild(legacyClock);
   }
 }
-organizeMissionHeader();
+organizeMissionHeader('simple');
 
 // Stable text nodes keep the illustrated clock panel mounted between ticks.
 function setMissionClockValue(element,value){
   if(!element) return;
+  if(!document.body.classList.contains('battle-layout-2')){
+    element.textContent=element.id==='nightmareTurnTimer'?`⏳ ${String(value).replace(/^00:/,'')}`:`⏱ ${value}`;
+    return;
+  }
   let label=element.querySelector('.hud-clock-value');
   if(!label){ element.textContent=''; label=document.createElement('span'); label.className='hud-clock-value'; element.append(label); }
   if(label.textContent!==value) label.textContent=value;
@@ -3354,6 +3380,40 @@ let humanFinalePreludeFinished=false;
 let humanFinaleOutcomeResolved=false;
 let humanFinaleResolvedOutcome='';
 let humanFinalePreviewSetup=false;
+let humanFinaleCourtAnchors=null;
+/* A missão 10/5 reutiliza exatamente a formação física da missão 10/4.
+   Guardamos as âncoras reais, já calculadas pelo motor responsivo, em vez de
+   duplicar percentuais frágeis na camada cinematográfica. */
+function captureHumanFinaleCourtAnchors(){
+  if(!(worldRun.active&&worldRun.fase===9&&worldRun.nivel===4)||!arenaEl) return false;
+  const arenaRect=arenaEl.getBoundingClientRect();
+  if(arenaRect.width<1||arenaRect.height<1) return false;
+  const actors={};
+  for(const id of ['bernyce','kalander']){
+    const index=enemies.findIndex(enemy=>enemy?.cardId===id);
+    const unit=index>=0?document.getElementById('enemy-'+index):null;
+    const rect=unit?.getBoundingClientRect();
+    if(!rect?.width) return false;
+    actors[id]={
+      left:(rect.left+rect.width*.5-arenaRect.left)/arenaRect.width*100,
+      bottom:(arenaRect.bottom-rect.bottom)/arenaRect.height*100,
+      width:rect.width/arenaRect.width*100
+    };
+  }
+  humanFinaleCourtAnchors={layout:vizPrefs.battleLayout,actors};
+  return true;
+}
+function applyHumanFinaleCourtAnchors(scene){
+  if(!scene||humanFinaleCourtAnchors?.layout!==vizPrefs.battleLayout) return false;
+  for(const [id,anchor] of Object.entries(humanFinaleCourtAnchors.actors||{})){
+    const actor=scene.querySelector(`[data-finale-actor^="${id}-"]`);
+    if(!actor) continue;
+    actor.style.left=anchor.left+'%';
+    actor.style.bottom=anchor.bottom+'%';
+    actor.style.width=anchor.width+'%';
+  }
+  return true;
+}
 function isHumanFinaleBattle(){
   return Boolean(worldRun.active&&worldRun.fase===9&&worldRun.nivel===5&&activeStageData?.bgUrl?.endsWith('fase-10.jpg'));
 }
@@ -3390,6 +3450,7 @@ function mountHumanFinaleScene(outcome='defeat'){
     ${finalSceneActor('julius','original')}
     <span class="human-final-teleport" aria-hidden="true"></span>`;
   arenaEl?.appendChild(scene);
+  applyHumanFinaleCourtAnchors(scene);
   return scene;
 }
 function setFinaleHeroDefeat(id){
@@ -3527,6 +3588,7 @@ function mountHumanFinalePrelude(){
     ${finalSceneActor('kalander','prelude-arena')}
     ${finalSceneActor('cedric','prelude')}`;
   arenaEl?.appendChild(scene);
+  applyHumanFinaleCourtAnchors(scene);
   return scene;
 }
 function triggerHumanFinalePrelude(options={}){
@@ -4449,6 +4511,9 @@ function applyFormationSlot(unit,slot,width){
     const prof=Math.max(0,Math.min(1,y/46));
     yFin=yMin+prof*Math.max(0,yMax-yMin);
     if(enemySlot) yFin=Math.max(0,yFin-3); /* sobe o grupo e mantém distância do HUD */
+    /* Na Torre, a faixa mais próxima terminava atrás do console em telas
+       baixas. O limite mantém os pés visíveis sem mudar a formação lateral. */
+    if(towerMode) yFin=Math.max(16,yFin);
   }
   /* y=0 é a faixa mais próxima da câmera e y=46 a mais distante. A curva
      linear evita qualquer pulsação corporal: ao trocar de posição, largura,
@@ -4772,6 +4837,7 @@ function renderEnemies(){
     else defeatEnemyAvatar(avatar,e);
   });
   applyBattleFormation();
+  captureHumanFinaleCourtAnchors();
 }
 
 /* == Cores aliadas de gemas: cartas do mesmo reino usam sempre o MESMO símbolo;
@@ -5424,7 +5490,7 @@ function resumeMissionClock(){
 /* 👁 Preferências de VISUALIZAÇÃO (menu Opções → Visualização) */
 /* Preferências padrão da apresentação de batalha: HUD superior discreto,
    heróis sem etiquetas e inimigos identificados abaixo do sprite. */
-let vizPrefs={heroNames:'off',enemyNames:'bottom',dmg:true,dps:true,timer:true,turnInfo:true,topHud:'transparent',infoBar:'transparent',boardStyle:'relic'};
+let vizPrefs={heroNames:'off',enemyNames:'bottom',dmg:true,dps:true,timer:true,turnInfo:true,topHud:'transparent',infoBar:'transparent',boardStyle:'relic',battleLayout:'simple'};
 try{ vizPrefs={...vizPrefs,...JSON.parse(localStorage.getItem('12r_viz')||'{}')}; }catch(e){}
 /* Migração de defaults visuais da campanha: aplica uma única vez para que
    versões anteriores não reintroduzam HUD sólido e nomes de heróis. */
@@ -5436,12 +5502,21 @@ if(localStorage.getItem('12r_viz_defaults')!=='9.3.9'){
 if(!['solid','transparent','off'].includes(vizPrefs.topHud)) vizPrefs.topHud='solid';
 if(!['solid','transparent','off'].includes(vizPrefs.infoBar)) vizPrefs.infoBar='transparent';
 if(!['relic','simple','crystal'].includes(vizPrefs.boardStyle)) vizPrefs.boardStyle='relic';
+if(!['simple','2'].includes(vizPrefs.battleLayout)) vizPrefs.battleLayout='simple';
 /* O HUD R2 aprovado substitui a prévia compacta anterior. A migração é única:
    preserva escolhas feitas nesta versão, mas faz instalações antigas verem o
    modelo Joias do Reino que acompanha a nova composição. */
 if(localStorage.getItem('12r_battle_hud_defaults')!=='11.1.1'){
   vizPrefs.boardStyle='relic';
   localStorage.setItem('12r_battle_hud_defaults','11.1.1');
+  localStorage.setItem('12r_viz',JSON.stringify(vizPrefs));
+}
+/* O layout ilustrado permanece disponível como Layout 2.0, mas o modelo
+   simplificado volta a ser a entrada padrão. Esta migração acontece uma vez:
+   depois da primeira abertura, a escolha do jogador é preservada. */
+if(localStorage.getItem('12r_battle_layout_defaults')!=='simple-v1'){
+  vizPrefs.battleLayout='simple';
+  localStorage.setItem('12r_battle_layout_defaults','simple-v1');
   localStorage.setItem('12r_viz',JSON.stringify(vizPrefs));
 }
 function saveViz(){ localStorage.setItem('12r_viz',JSON.stringify(vizPrefs)); applyVizSettings(); }
@@ -5454,9 +5529,16 @@ function applyVizSettings(){
     document.body.classList.toggle(`viz-top-hud-${mode}`,vizPrefs.topHud===mode);
     document.body.classList.toggle(`viz-info-bar-${mode}`,vizPrefs.infoBar===mode);
   });
-  document.body.classList.toggle('board-style-relic',vizPrefs.boardStyle==='relic');
-  document.body.classList.toggle('board-style-crystal',vizPrefs.boardStyle==='crystal');
-  document.body.classList.toggle('board-style-simple',vizPrefs.boardStyle==='simple');
+  const illustrated=vizPrefs.battleLayout==='2';
+  document.body.classList.toggle('board-style-relic',illustrated&&vizPrefs.boardStyle==='relic');
+  document.body.classList.toggle('board-style-crystal',illustrated&&vizPrefs.boardStyle==='crystal');
+  document.body.classList.toggle('board-style-simple',illustrated&&vizPrefs.boardStyle==='simple');
+  document.body.classList.toggle('battle-layout-2',vizPrefs.battleLayout==='2');
+  document.body.classList.toggle('battle-layout-simple',vizPrefs.battleLayout==='simple');
+  organizeMissionHeader(vizPrefs.battleLayout);
+  setMissionClockValue(document.getElementById('missionTimer'),fmtTempo(missionElapsed()));
+  renderNightmareTurnTimer();
+  document.dispatchEvent(new CustomEvent('ygdria:battle-layout',{detail:{layout:vizPrefs.battleLayout}}));
   if(vizPrefs.topHud!=='off') document.body.classList.remove('hud-peek');
 }
 function vizNameLabel(v){ return v==='top'?T('Em cima','Top','Arriba'):v==='off'?T('Desabilitado','Disabled','Desactivado'):T('Embaixo','Bottom','Abajo'); }
@@ -5875,6 +5957,9 @@ const STATIC_I18N=[
   ["#optLanguageLabel","Idioma / Language","Language / Idioma","Idioma / Language"],
   ["#optProgressLabel","Progresso","Progress","Progreso"],
   ["#optQualityLabel","Qualidade gráfica","Graphics quality","Calidad gráfica"],
+  ["#vizBattleLayoutLabel","Layout da batalha","Battle layout","Diseño de batalla"],
+  ["[data-battle-layout=\"simple\"]","Simplificado","Simplified","Simplificado"],
+  ["[data-battle-layout=\"2\"]","Layout 2.0","Layout 2.0","Diseño 2.0"],
   ["#optContrastLabel","Alto contraste","High contrast","Alto contraste"],
   ["#optLargeTextLabel","Texto maior","Larger text","Texto más grande"],
   ["#optFlashesLabel","Reduzir flashes","Reduce flashes","Reducir destellos"],
@@ -9920,6 +10005,7 @@ document.getElementById('autoActivesToggle')?.addEventListener('click',()=>{
 document.getElementById('restoreDefaultsBtn')?.addEventListener('click',()=>{
   ['12r_shake','12r_autoactives','12r_difficulty','12r_lang_set','12r_volume','12r_music_volume','12r_stage_music_volume','12r_sfx_volume','12r_quality','12r_high_contrast','12r_large_text','12r_reduce_flashes','12r_motion','12r_particles','12r_haptics','12r_tactical_grid'].forEach(k=>localStorage.removeItem(k));
   vizPrefs.boardStyle='relic';
+  vizPrefs.battleLayout='simple';
   localStorage.setItem('12r_viz',JSON.stringify(vizPrefs));
   setBattleStatus?.(T('Padrões restaurados. Recarregue o jogo.','Defaults restored. Reload the game.','Valores restaurados. Recarga el juego.'));
   location.reload();
@@ -11058,6 +11144,11 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
       button.classList.toggle('is-active',active);
       button.setAttribute('aria-pressed',String(active));
     });
+    document.querySelectorAll('[data-battle-layout]').forEach(button=>{
+      const active=button.dataset.battleLayout===vizPrefs.battleLayout;
+      button.classList.toggle('is-active',active);
+      button.setAttribute('aria-pressed',String(active));
+    });
   };
   document.getElementById('vizHeroNames')?.addEventListener('click',()=>{ vizPrefs.heroNames=vizCycle[vizPrefs.heroNames]||'bottom'; saveViz(); syncVizLabels(); refreshVizBattle(); sfxSelect(); });
   document.getElementById('vizEnemyNames')?.addEventListener('click',()=>{ vizPrefs.enemyNames=vizCycle[vizPrefs.enemyNames]||'bottom'; saveViz(); syncVizLabels(); refreshVizBattle(); sfxSelect(); });
@@ -11073,6 +11164,13 @@ function todayKey(){ const d=new Date(); return `${d.getFullYear()}-${String(d.g
     vizPrefs.boardStyle=style;
     saveViz(); syncVizLabels();
     if(document.body.classList.contains('game-active')) renderBoard();
+    sfxSelect();
+  }));
+  document.querySelectorAll('[data-battle-layout]').forEach(button=>button.addEventListener('click',()=>{
+    const layout=button.dataset.battleLayout;
+    if(!['simple','2'].includes(layout)) return;
+    vizPrefs.battleLayout=layout;
+    saveViz(); syncVizLabels();
     sfxSelect();
   }));
   document.getElementById('arena')?.addEventListener('click',event=>{

@@ -28,6 +28,7 @@ for(const viewport of [{width:360,height:800},{width:390,height:844},{width:1024
     const errors=await boot(page,'flow');
     await page.evaluate(()=>{
       towerMode=true;worldRun.active=false;towerFloor=1;difficulty='pesadelo';
+      vizPrefs.battleLayout='2';saveViz();
       chosenIds=['adriel-jovem','cedric','galateia-jovem','acqua-jovem'].map(id=>KINGDOMS.findIndex(k=>k.id===id));
       beginGame(0);skipStory();
     });
@@ -3318,7 +3319,7 @@ test('menu não baixa elenco inteiro e batalha limita animações à equipe ativ
 
 test('Opções alterna Joias do Reino, esferas clássicas e cristais sem alterar os símbolos dos reinos',async({page})=>{
   const errors=await boot(page,'flow');
-  await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
+  await page.evaluate(()=>{ vizPrefs.battleLayout='2';saveViz();chosenIds=[0,1,2,3];beginGame(0);skipStory(); });
   await expect(page.locator('.board .gem')).toHaveCount(36);
   await page.locator('#pauseBtn').click();
   await page.locator('#pauseOptionsBtn').click();
@@ -3343,13 +3344,62 @@ test('Opções alterna Joias do Reino, esferas clássicas e cristais sem alterar
   expect(errors).toEqual([]);
 });
 
+test('layout simplificado é o padrão e Layout 2.0 é opcional e persistente',async({page})=>{
+  const errors=await boot(page,'flow');
+  await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
+  await expect(page.locator('body')).toHaveClass(/battle-layout-simple/);
+  await expect(page.locator('body')).not.toHaveClass(/board-style-(relic|simple|crystal)/);
+  await expect(page.locator('.game-frame')).not.toHaveClass(/hud-artwork/);
+  await expect(page.locator('.game-frame .hud-art')).toHaveCount(0);
+  expect(await page.evaluate(()=>({
+    actionsParent:document.querySelector('.mission-actions')?.parentElement?.className,
+    clockParent:document.getElementById('missionTimer')?.parentElement?.id,
+    iconGroup:document.querySelectorAll('.mission-icons').length,
+    timer:document.getElementById('missionTimer')?.textContent
+  }))).toMatchObject({actionsParent:'mission-metrics',clockParent:'missionClockGroup',iconGroup:0,timer:'⏱ 00:00'});
+  await page.locator('#pauseBtn').click();
+  await page.locator('#pauseOptionsBtn').click();
+  await page.locator('[data-options-tab="visual"]').click();
+  await expect(page.locator('[data-battle-layout="simple"]')).toHaveAttribute('aria-pressed','true');
+  const combatBefore=await page.evaluate(()=>({board:JSON.stringify(board),hp:enemies.map(enemy=>enemy.hp),stage:stageIndex,phase:battlePhase}));
+  await page.locator('[data-battle-layout="2"]').click();
+  await expect(page.locator('body')).toHaveClass(/battle-layout-2/);
+  await expect(page.locator('.game-frame')).toHaveClass(/hud-artwork/);
+  await expect(page.locator('.game-frame .hud-art').first()).toBeAttached();
+  expect(await page.evaluate(()=>({
+    actionsParent:document.querySelector('.mission-actions')?.parentElement?.className,
+    timerParent:document.getElementById('missionTimer')?.parentElement?.className,
+    iconGroup:document.querySelectorAll('.mission-actions>.mission-icons').length
+  }))).toMatchObject({actionsParent:'mission-topbar',timerParent:'mission-topbar',iconGroup:1});
+  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('12r_viz')||'{}').battleLayout)).toBe('2');
+  expect(await page.evaluate(()=>({board:JSON.stringify(board),hp:enemies.map(enemy=>enemy.hp),stage:stageIndex,phase:battlePhase}))).toEqual(combatBefore);
+  await page.reload({waitUntil:'networkidle'});
+  await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
+  await expect(page.locator('body')).toHaveClass(/battle-layout-2/);
+  await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
+  await expect(page.locator('.game-frame')).toHaveClass(/hud-artwork/);
+  await page.locator('#pauseBtn').click();
+  await page.locator('#pauseOptionsBtn').click();
+  await page.locator('[data-options-tab="visual"]').click();
+  await page.locator('[data-battle-layout="simple"]').click();
+  await expect(page.locator('.game-frame')).not.toHaveClass(/hud-artwork/);
+  await expect(page.locator('.game-frame .hud-art')).toHaveCount(0);
+  await expect(page.locator('body')).not.toHaveClass(/board-style-(relic|simple|crystal)/);
+  expect(await page.evaluate(()=>({
+    actionsParent:document.querySelector('.mission-actions')?.parentElement?.className,
+    clockParent:document.getElementById('missionTimer')?.parentElement?.id,
+    iconGroup:document.querySelectorAll('.mission-icons').length
+  }))).toMatchObject({actionsParent:'mission-metrics',clockParent:'missionClockGroup',iconGroup:0});
+  expect(errors).toEqual([]);
+});
+
 test.describe('mobile',()=>{
   test.use({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
   test('menu, seleção e batalha não estouram a largura',async({page})=>{
     const errors=await boot(page);
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(1);
-    await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); });
+    await page.evaluate(()=>{ vizPrefs.battleLayout='2';saveViz();chosenIds=[0,1,2,3];beginGame(0); });
     await expect(page.locator('.board')).toBeVisible();
     const battleOverflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
     expect(battleOverflow).toBeLessThanOrEqual(1);

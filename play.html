@@ -32,8 +32,8 @@
 <link rel="apple-touch-icon" href="assets/icon.svg">
 <link rel="preload" href="assets/audio/Ygdria_Prologo.mp3" as="audio" type="audio/mpeg">
 <link rel="preload" href="assets/audio/Ygdria_Humanos_1_9.mp3" as="audio" type="audio/mpeg">
-<link rel="stylesheet" href="styles-v10.css?v=11.1.2">
-<link rel="stylesheet" href="battle-hud.css?v=11.1.2">
+<link rel="stylesheet" href="styles-v10.css?v=11.1.3">
+<link rel="stylesheet" href="battle-hud.css?v=11.1.3">
 </head>
 <body>
 <div class="hope-toast" id="hopeToast" role="status" aria-live="polite"></div>
@@ -361,6 +361,7 @@
     <section class="options-tab-panel" id="optionsVisual" role="tabpanel" data-options-panel="visual" hidden>
     <details class="options-accordion" open><summary><span>Arena e visualização</span><small>Leitura</small></summary><div class="options-group"><div class="options-grid">
       <label class="option-row option-row-wide"><span id="optQualityLabel">Qualidade gráfica</span><select id="qualitySelect" class="option-select"><option value="auto">Automática</option><option value="high">Alta</option><option value="medium">Média</option><option value="economy">Econômica</option></select></label>
+      <div class="option-row option-row-wide"><span id="vizBattleLayoutLabel">Layout da batalha</span><div class="diff-group" id="battleLayoutGroup" role="group" aria-labelledby="vizBattleLayoutLabel"><button class="battle-tool" data-battle-layout="simple" type="button">Simplificado</button><button class="battle-tool" data-battle-layout="2" type="button">Layout 2.0</button></div></div>
       <div class="option-row"><span id="vizHeroLabel">Nome dos heróis</span><button class="battle-tool" id="vizHeroNames" type="button">Embaixo</button></div><div class="option-row"><span id="vizEnemyLabel">Nome dos inimigos</span><button class="battle-tool" id="vizEnemyNames" type="button">Embaixo</button></div>
       <div class="option-row"><span id="vizDmgLabel">Números de dano</span><button class="battle-tool" id="vizDmg" type="button">Mostrar</button></div><div class="option-row"><span id="vizDpsLabel">DPS nas mini-cartas</span><button class="battle-tool" id="vizDps" type="button">Mostrar</button></div>
       <div class="option-row"><span id="vizTimerLabel">Timer da missão</span><button class="battle-tool" id="vizTimer" type="button">Mostrar</button></div><div class="option-row"><span id="vizTurnInfoLabel">Indicador de turno</span><button class="battle-tool" id="vizTurnInfo" type="button">Mostrar</button></div>
@@ -566,12 +567,12 @@
   </div>
 </div>
 <script>window.addEventListener('error',function(e){(window.__bootErrors=window.__bootErrors||[]).push({m:String(e.message).slice(0,200),l:e.lineno,c:e.colno})});</script>
-<script src="v10-config.js?v=11.1.2"></script>
-<script src="v10-animations.js?v=11.1.2"></script>
-<script src="humanos-lore-v10.js?v=11.1.2"></script>
+<script src="v10-config.js?v=11.1.3"></script>
+<script src="v10-animations.js?v=11.1.3"></script>
+<script src="humanos-lore-v10.js?v=11.1.3"></script>
 <script src="map-effects-v1.js?v=1.0.0" defer></script>
-<script src="game-v10.js?v=11.1.2" defer></script>
-<script src="battle-hud.js?v=11.1.2" defer></script>
+<script src="game-v10.js?v=11.1.3" defer></script>
+<script src="battle-hud.js?v=11.1.3" defer></script>
 
 </body>
 </html>

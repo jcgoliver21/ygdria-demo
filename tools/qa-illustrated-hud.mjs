@@ -23,6 +23,7 @@ for(const size of [{width:390,height:844},{width:1024,height:1536}]){
     saveCardUnlocks(KINGDOMS.map(h=>h.id));
     worldRun={active:false,fase:0,nivel:1,storyMode:false};
     towerMode=true; towerFloor=1; difficulty='pesadelo';
+    vizPrefs.battleLayout='2'; saveViz();
     chosenIds=['adriel-jovem','cedric','galateia-jovem','acqua-jovem'].map(id=>KINGDOMS.findIndex(h=>h.id===id)).filter(idx=>idx>=0);
     const chosen=chosenIds.map(idx=>KINGDOMS[idx].id);
     beginGame(0);skipStory();

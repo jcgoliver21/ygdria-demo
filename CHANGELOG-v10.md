@@ -1,5 +1,12 @@
 # 12 Reinos v10
 
+## v11.1.3 — HUD clássico e Layout 2.0 opcional
+
+- Restaura o visual Simplificado exatamente à estrutura e às proporções da v11.0.97.
+- Mantém o HUD robusto ilustrado disponível nas Opções como “Layout 2.0”.
+- Isola controles, blocos, molduras e estilos de esferas do Layout 2.0 para impedir vazamentos visuais no modo Simplificado.
+- Preserva a escolha do jogador e migra instalações existentes para o Simplificado como padrão desta revisão.
+
 ## v11.1.2 — HUD com componentes ilustrados
 
 - molduras pintadas independentes para cabeçalho, HP, peças, cartas e histórico;
