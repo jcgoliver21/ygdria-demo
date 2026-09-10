@@ -3,6 +3,9 @@
 const V10 = window.YGDRIA_V10 || {};
 const APP_VERSION = V10.version || 'v10';
 const APP_VERSION_LABEL = V10.label || 'VERSÃO 11';
+const DEV_MODE_STORAGE_KEY='12r_dev_mode_v1';
+let devMode=localStorage.getItem(DEV_MODE_STORAGE_KEY)==='1';
+function isDevMode(){ return devMode===true; }
 function animationAssetUrl(src){
   if(!src) return '';
   if(/^(?:data|blob):/i.test(src)) return src;
@@ -1373,6 +1376,7 @@ function storedNonnegativeInteger(key,max=1_000_000_000){
 }
 let coins=storedNonnegativeInteger('12r_coins');
 function grantCoins(n){
+  if(isDevMode()){ updateCoinBadge(); return; }
   const delta=Number(n);
   if(!Number.isFinite(delta)||!delta) return;
   coins=Math.min(1_000_000_000,Math.max(0,coins+Math.round(delta)));
@@ -1383,12 +1387,13 @@ function grantCoins(n){
    `12r_coins` para não apagar o saldo de ninguém; só a apresentação mudou. */
 const KALEGS_NAME='Kalegs';
 function formatKalegs(value){ return `${Math.max(0,Math.round(Number(value)||0))}Ks`; }
+function kalegsBalanceText(){ return isDevMode()?'∞Ks':formatKalegs(coins); }
 function updateCoinBadge(){
   const el=document.getElementById('coinBadge');
-  if(el) el.textContent=`✦ ${formatKalegs(coins)}`;
-  document.querySelectorAll('[data-footer-coins]').forEach(node=>{ if(node!==el) node.textContent=`✦ ${formatKalegs(coins)}`; });
+  if(el) el.textContent=`✦ ${kalegsBalanceText()}`;
+  document.querySelectorAll('[data-footer-coins]').forEach(node=>{ if(node!==el) node.textContent=`✦ ${kalegsBalanceText()}`; });
   const el2=document.getElementById('shopCoins');
-  if(el2) el2.textContent=`✦ ${formatKalegs(coins)}`;
+  if(el2) el2.textContent=`✦ ${kalegsBalanceText()}`;
 }
 /* Esperança é o limite diário da campanha: 1 ponto por hora, até 10. A
    marca de tempo só avança quando um ponto é recuperado, preservando horas
@@ -1406,6 +1411,7 @@ function loadHopeState(now=Date.now()){
 let hopeState=loadHopeState();
 function saveHopeState(){ localStorage.setItem(HOPE_STORAGE_KEY,JSON.stringify(hopeState)); }
 function hopeAmount(now=Date.now()){
+  if(isDevMode()) return HOPE_MAX;
   const previous=hopeState.amount;
   if(previous>=HOPE_MAX) return previous;
   const gained=Math.floor(Math.max(0,now-hopeState.updatedAt)/HOPE_HOUR_MS);
@@ -1424,12 +1430,13 @@ function showHopeToast(message){
 }
 function updateHopeBadge(now=Date.now()){
   const amount=hopeAmount(now), badge=document.getElementById('hopeBadge');
+  const display=isDevMode()?'∞':`${amount}/${HOPE_MAX}`;
   if(badge){
     badge.classList.toggle('full',amount===HOPE_MAX);
-    badge.querySelector('[data-footer-hope]')?.replaceChildren(document.createTextNode(`✧ ${amount}/${HOPE_MAX}`));
-    badge.setAttribute('aria-label',T(`Esperança: ${amount} de ${HOPE_MAX}`,`Hope: ${amount} of ${HOPE_MAX}`,`Esperanza: ${amount} de ${HOPE_MAX}`));
+    badge.querySelector('[data-footer-hope]')?.replaceChildren(document.createTextNode(`✧ ${display}`));
+    badge.setAttribute('aria-label',isDevMode()?T('Esperança infinita no Modo DEV','Infinite Hope in DEV Mode','Esperanza infinita en Modo DEV'):T(`Esperança: ${amount} de ${HOPE_MAX}`,`Hope: ${amount} of ${HOPE_MAX}`,`Esperanza: ${amount} de ${HOPE_MAX}`));
   }
-  document.querySelectorAll('[data-footer-hope]').forEach(node=>{ if(node!==badge?.querySelector('[data-footer-hope]')) node.textContent=`✧ ${amount}/${HOPE_MAX}`; });
+  document.querySelectorAll('[data-footer-hope]').forEach(node=>{ if(node!==badge?.querySelector('[data-footer-hope]')) node.textContent=`✧ ${display}`; });
   return amount;
 }
 function reconcileHope(now=Date.now(),announce=false){
@@ -1446,6 +1453,7 @@ function storyHopeCost(){
   return attempts[phase] ? 2 : 8;
 }
 function spendStoryHope(){
+  if(isDevMode()) return true;
   const cost=storyHopeCost(); if(!cost) return true;
   const amount=reconcileHope();
   if(amount<cost){
@@ -1484,6 +1492,7 @@ function profileLevel(){ return Math.min(99, 1+Math.floor(Math.sqrt(profileXp/12
 function profileXpForNext(){ const next=profileLevel()+1; return next>99?null:Math.pow(next-1,2)*120; }
 function heroAtkFor(idx){ const k=KINGDOMS[idx]; return (k.atk||BASE_ATK)+Math.floor((profileLevel()-1)/3); }
 function grantXp(amount){
+  if(isDevMode()) return [];
   const before=profileLevel();
   const value=Number(amount);
   if(!Number.isFinite(value)||value<=0) return [];
@@ -1525,6 +1534,7 @@ function sanitizeAchievementState(value){
 }
 let unlockedAch={}; try{ unlockedAch=sanitizeAchievementState(JSON.parse(localStorage.getItem('12r_ach')||'{}')); }catch(e){}
 function unlockAch(id){
+  if(isDevMode()) return;
   if(unlockedAch[id]) return;
   unlockedAch[id]={t:Date.now()};
   localStorage.setItem('12r_ach',JSON.stringify(unlockedAch));
@@ -1671,6 +1681,8 @@ if(localStorage.getItem('12r_inventory_catalog')!==INVENTORY_CATALOG_VERSION){
   localStorage.setItem('12r_inv',JSON.stringify(inventory));
 }
 function saveInventory(){ localStorage.setItem('12r_inv',JSON.stringify(inventory)); }
+function inventoryCount(id){ return isDevMode()?Infinity:Math.max(0,Number(inventory[id])||0); }
+function inventoryCountLabel(id){ return isDevMode()?'∞':String(inventoryCount(id)); }
 
 /* Progressão de cartas e recompensas da campanha humana. Cada dificuldade
    pode render sua própria premiação apenas uma vez; a carta é uma conquista
@@ -1725,7 +1737,7 @@ function reconcileHumanCardUnlocks(){
   if(changed) saveCardUnlocks(owned);
   return owned;
 }
-function cardOwned(id){ return HUMAN_STARTER_CARDS.includes(id)||cardUnlocks().has(id)||humanRewardCardUnlocks().has(id); }
+function cardOwned(id){ return isDevMode()||HUMAN_STARTER_CARDS.includes(id)||cardUnlocks().has(id)||humanRewardCardUnlocks().has(id); }
 function restoreRewardStorage(snapshot){
   Object.entries(snapshot).forEach(([key,value])=>{
     if(value===null) localStorage.removeItem(key);
@@ -1788,6 +1800,7 @@ function rewardSummary(reward,{claimed=false}={}){
   return `${claimed?T('Recompensa já recebida: ','Reward already claimed: ','Recompensa ya recibida: '):''}${parts.join(' · ')}`;
 }
 function claimHumanPhaseReward(fase,diff,{winner=true}={}){
+  if(isDevMode()) return {reward:null,claimed:false,summary:''};
   const reward=HUMAN_PHASE_REWARDS[fase]?.[diff];
   if(!reward||(!winner&&fase===9)) return {reward:null,claimed:false,summary:''};
   const key=`${fase+1}:${diff}`;
@@ -1824,10 +1837,12 @@ function renderPhaseReward(result){
 }
 function buyItem(id){
   const item=SHOP_ITEMS.find(i=>i.id===id); if(!item) return;
-  if(coins<item.preco){ sfxInvalid(); return; }
-  grantCoins(-item.preco);
-  inventory[id]=(inventory[id]||0)+1;
-  saveInventory();
+  if(!isDevMode()&&coins<item.preco){ sfxInvalid(); return; }
+  if(!isDevMode()){
+    grantCoins(-item.preco);
+    inventory[id]=(inventory[id]||0)+1;
+    saveInventory();
+  }
   renderShop();
   renderMochila();
   updateRestartControls();
@@ -1860,11 +1875,11 @@ function renderShop(){
         <span class="market-realm-chevron" aria-hidden="true">⌄</span>
       </button>
       <div class="market-realm-items">${items.map(i=>{
-        const owned=inventory[i.id]||0;
-        const affordable=coins>=i.preco;
+        const owned=inventoryCountLabel(i.id);
+        const affordable=isDevMode()||coins>=i.preco;
         return `<article class="shop-item market-relic rarity-${i.raridade.toLowerCase()}" data-item="${i.id}">
           <span class="market-item-art"><span class="shop-icon human-item-icon item-${i.id}" aria-hidden="true">${itemIconMarkup(i)}</span><small class="market-rarity">${L(i.raridade)}</small></span>
-          <div class="shop-copy"><div class="market-item-heading"><b>${L(i.nome)}</b></div><p>${L(i.desc)}</p><small class="shop-owned"><span>${T('NA MOCHILA','IN BAG','EN LA MOCHILA')}</span> ${owned}</small>${i.uso==='global'?`<button class="shop-use-global" type="button" data-use-global="${i.id}" ${owned>0?'':'disabled'}>${T('USAR AGORA','USE NOW','USAR AHORA')}</button>`:''}</div>
+          <div class="shop-copy"><div class="market-item-heading"><b>${L(i.nome)}</b></div><p>${L(i.desc)}</p><small class="shop-owned"><span>${T('NA MOCHILA','IN BAG','EN LA MOCHILA')}</span> ${owned}</small>${i.uso==='global'?`<button class="shop-use-global" type="button" data-use-global="${i.id}" ${inventoryCount(i.id)>0?'':'disabled'}>${T('USAR AGORA','USE NOW','USAR AHORA')}</button>`:''}</div>
           <button class="overlay-btn shop-buy" data-item="${i.id}" ${affordable?'':'disabled'}><small>${T('COMPRAR','BUY','COMPRAR')}</small><b>✦ ${formatKalegs(i.preco)}</b></button>
         </article>`;
       }).join('')}</div>
@@ -1898,8 +1913,8 @@ function consumeInventoryOnBattleStart(){
 function renderMochila(){
   const list=document.getElementById('mochilaList'); if(!list) return;
   const emBatalha=document.body.classList.contains('game-active');
-  const mc=document.getElementById('mochilaCoins'); if(mc) mc.textContent=`✦ ${formatKalegs(coins)}`;
-  const itens=SHOP_ITEMS.filter(i=>(inventory[i.id]||0)>0);
+  const mc=document.getElementById('mochilaCoins'); if(mc) mc.textContent=`✦ ${kalegsBalanceText()}`;
+  const itens=SHOP_ITEMS.filter(i=>inventoryCount(i.id)>0);
   if(!itens.length){
     list.innerHTML=`<p class="account-note">${T('Mochila vazia. Visite a loja e prepare-se para as batalhas!','Empty bag. Visit the shop and gear up for battle!','Mochila vacía. ¡Visita la tienda y prepárate!')}</p>`;
     return;
@@ -1907,7 +1922,7 @@ function renderMochila(){
   list.innerHTML=itens.map(i=>`
     <div class="shop-item">
       <span class="shop-icon human-item-icon item-${i.id}">${itemIconMarkup(i)}</span>
-      <div class="shop-copy"><b>${L(i.nome)} ×${inventory[i.id]}</b><small>${L(i.desc)}</small></div>
+      <div class="shop-copy"><b>${L(i.nome)} ×${inventoryCountLabel(i.id)}</b><small>${L(i.desc)}</small></div>
       ${i.uso==='batalha'||i.uso==='global'
         ? `<button class="overlay-btn shop-buy" data-usar="${i.id}" ${(i.uso==='global'||emBatalha)?'':'disabled'}>${T('Usar','Use','Usar')}</button>`
         : `<small class="shop-uso">${T('libera reinício','enables restart','habilita reinicio')}</small>`}
@@ -1948,7 +1963,8 @@ function playHopeRestoreVfx(){
   anchor.appendChild(fx); setTimeout(()=>fx.remove(),1100);
 }
 function useHopeItem(){
-  if((inventory.esperanca||0)<=0){ sfxInvalid(); return false; }
+  if(isDevMode()){ showHopeToast(T('A Esperança já é infinita no Modo DEV.','Hope is already infinite in DEV Mode.','La Esperanza ya es infinita en Modo DEV.')); return true; }
+  if(inventoryCount('esperanca')<=0){ sfxInvalid(); return false; }
   if(reconcileHope()>=HOPE_MAX){ showHopeToast(T('Sua Esperança já está completa.','Your Hope is already full.','Tu Esperanza ya está completa.')); sfxInvalid(); return false; }
   const nextInventory={...inventory,esperanca:Math.max(0,(inventory.esperanca||0)-1)};
   const previousInventory=inventory, previousHope={...hopeState};
@@ -1995,11 +2011,11 @@ async function closeMochilaBeforeItemUse(){
 }
 async function usarItemBatalha(id,mirrorHeroIdx=null){
   if(id==='esperanca'){
-    if((inventory.esperanca||0)<=0||reconcileHope()>=HOPE_MAX) return useHopeItem();
+    if(inventoryCount('esperanca')<=0||reconcileHope()>=HOPE_MAX) return useHopeItem();
     await closeMochilaBeforeItemUse();
     return useHopeItem();
   }
-  if(!document.body.classList.contains('game-active')||(inventory[id]||0)<=0){ sfxInvalid(); return; }
+  if(!document.body.classList.contains('game-active')||inventoryCount(id)<=0){ sfxInvalid(); return; }
   if(playerHP<=0||busy||battlePhase!=='idle'){ sfxInvalid(); return; }
   await closeMochilaBeforeItemUse();
   if(id==='espelho-ygdria'&&!Number.isInteger(mirrorHeroIdx)){ openMirrorHeroPicker(); return; }
@@ -2022,7 +2038,7 @@ async function usarItemBatalha(id,mirrorHeroIdx=null){
     case 'espelho-ygdria': mirrorCopyHeroIndex=mirrorHeroIdx; renderPartyArena(); renderStatusTray(); break;
     default: return;
   }
-  inventory[id]--; saveInventory();
+  if(!isDevMode()){ inventory[id]--; saveInventory(); }
   sfxPassive();
   setBattleStatus('🎒 '+nomeItem+' '+T('usado!','used!','¡usado!'),'support');
   renderMochila();
@@ -2078,6 +2094,7 @@ function towerMonthly(){
   catch(e){ return {}; }
 }
 function towerRecordMonthly(andaresVencidos){
+  if(isDevMode()) return;
   const tm=towerMonthly(); const mk=towerMonthKey();
   if((tm[mk]||0)<andaresVencidos){ tm[mk]=andaresVencidos; localStorage.setItem('12r_tower_month',JSON.stringify(tm)); }
 }
@@ -5268,6 +5285,7 @@ function sanitizeBestiary(value){
 }
 function bestiary(){ try{ return sanitizeBestiary(JSON.parse(localStorage.getItem('12r_bestiary')||'{}')); }catch(e){ return {}; } }
 function registerBestiary(nomePt){
+  if(isDevMode()) return;
   const b=bestiary(); b[nomePt]=(b[nomePt]||0)+1;
   localStorage.setItem('12r_bestiary',JSON.stringify(b));
 }
@@ -5294,6 +5312,7 @@ function sanitizeHeroIdList(value){
   return [...new Set(value.filter(id=>typeof id==='string'&&allowed.has(id)))];
 }
 function checkLoginReward(){
+  if(isDevMode()) return;
   let st={date:'',streak:0};
   try{ st=sanitizeLoginState(JSON.parse(localStorage.getItem('12r_login')||'{"date":"","streak":0}')); }catch(e){}
   const hoje=todayKey();
@@ -5353,6 +5372,7 @@ function sanitizeQuestsState(value,date=todayKey()){
   return base;
 }
 function questEvent(tipo,valor){
+  if(isDevMode()) return;
   const q=questsState();
   if(tipo==='win') q.prog.win2=Math.min(2,q.prog.win2+1);
   if(tipo==='combo'&&valor>=4) q.prog.combo4=1;
@@ -6054,6 +6074,46 @@ function applyLanguage(){
     `Pick 4 of ${totalCartas} cards. Tap a card to enlist; use the magnifier to open the art and read every ability.`,
     `Elige 4 de ${totalCartas} cartas. Toca la carta para alistar; usa la lupa para abrir el arte y leer todas las habilidades.`);
   document.querySelectorAll('#langGroup [data-lang], #langScreen [data-lang]').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
+  syncDevModeUI();
+}
+
+function syncDevModeUI(){
+  document.body.classList.toggle('dev-mode',isDevMode());
+  const btn=document.getElementById('devModeBtn');
+  if(btn){
+    btn.classList.toggle('active',isDevMode());
+    btn.setAttribute('aria-pressed',String(isDevMode()));
+    btn.setAttribute('aria-label',isDevMode()
+      ? T('Modo DEV ativado. Desativar modo de desenvolvimento.','DEV Mode enabled. Disable development mode.','Modo DEV activado. Desactivar modo de desarrollo.')
+      : T('Ativar Modo DEV.','Enable DEV Mode.','Activar Modo DEV.'));
+    const title=btn.querySelector('b'), state=btn.querySelector('small');
+    if(title) title.textContent='Modo DEV';
+    if(state) state.textContent=isDevMode()?T('Ativado','Enabled','Activado'):T('Desativado','Disabled','Desactivado');
+  }
+  const badge=document.getElementById('devModeBadge');
+  if(badge) badge.hidden=!isDevMode();
+  updateCoinBadge();
+  updateHopeBadge();
+  renderGameFooters();
+}
+function setDevMode(enabled){
+  devMode=Boolean(enabled);
+  localStorage.setItem(DEV_MODE_STORAGE_KEY,devMode?'1':'0');
+  if(!devMode&&typeof chosenIds!=='undefined'){
+    chosenIds=chosenIds.filter(index=>KINGDOMS[index]&&cardOwned(KINGDOMS[index].id));
+  }
+  syncDevModeUI();
+  refreshContinueButton();
+  if(document.getElementById('mapScreen')?.classList.contains('show')) renderMapScreen();
+  if(document.getElementById('worldScreen')?.classList.contains('show')) renderWorldMap();
+  if(document.getElementById('selectScreen')?.classList.contains('show')) showSelection();
+  renderShop();
+  renderMochila();
+  renderProfileStats();
+  setBattleStatus(isDevMode()
+    ? T('Modo DEV ativado: conteúdo e recursos liberados sem alterar seu progresso normal.','DEV Mode enabled: content and resources unlocked without changing normal progress.','Modo DEV activado: contenido y recursos desbloqueados sin alterar el progreso normal.')
+    : T('Modo normal restaurado: a campanha volta a respeitar sua progressão.','Normal mode restored: the campaign follows your progression again.','Modo normal restaurado: la campaña vuelve a respetar tu progreso.'),'system');
+  sfxSelect();
 }
 
 /* v9.1 · Diálogos de história pré-fase (pulados na Torre e durante o tutorial) */
@@ -6376,6 +6436,7 @@ let profile=normalizeProfile();
 try{ profile=normalizeProfile(JSON.parse(localStorage.getItem('12r_profile')||'{}')); }catch(e){}
 function saveProfile(){ localStorage.setItem('12r_profile',JSON.stringify(profile)); }
 function flushRunToProfile(won){
+  if(isDevMode()) return;
   if(won) profile.wins++; else profile.losses++;
   const dealt=Object.values(runStats.damage).reduce((a,b)=>a+b,0);
   profile.damage+=Math.max(0,dealt-(runStats._flushedDamage||0));
@@ -8346,7 +8407,7 @@ function handlePlayerDefeat(){
   if(towerMode){
     towerRecordMonthly(towerFloor-1);
     const best=Math.max(Number(localStorage.getItem('12r_tower_best')||0),towerFloor-1);
-    localStorage.setItem('12r_tower_best',String(best));
+    if(!isDevMode()) localStorage.setItem('12r_tower_best',String(best));
   }
   if(towerMode&&!dailyRunMode){
     /* A derrota da Torre é um Game Over no próprio andar: o grupo permanece
@@ -8571,6 +8632,7 @@ function getStars(){ try{ return JSON.parse(localStorage.getItem('12r_stars')||'
 function recordStars(stageIdx){
   const ratio=playerHP/PLAYER_MAX_HP;
   const stars=ratio>=.7?3:ratio>=.4?2:1;
+  if(isDevMode()) return stars;
   const all=getStars();
   if((all[stageIdx]||0)<stars){ all[stageIdx]=stars; localStorage.setItem('12r_stars',JSON.stringify(all)); }
   return stars;
@@ -8663,7 +8725,7 @@ function onStageCleared(){
     bossRushIdx++;
     grantCoins(coinsVitoria(25+bossRushIdx*8));
     const best=Math.max(Number(localStorage.getItem('12r_bossrush_best')||0),bossRushIdx);
-    localStorage.setItem('12r_bossrush_best',String(best));
+    if(!isDevMode()) localStorage.setItem('12r_bossrush_best',String(best));
     if(bossRushIdx>=BOSS_RUSH_ORDER.length){
       unlockAch('lenda');
       const gt=document.getElementById('grandClearTitle'), gx=document.getElementById('grandClearText');
@@ -8702,7 +8764,7 @@ function onStageCleared(){
       return;
     }
     // Chefe vencido — fase completa!
-    { const hoje=todayKey();
+    if(!isDevMode()){ const hoje=todayKey();
       if(localStorage.getItem('12r_firstwin')!==hoje){
         localStorage.setItem('12r_firstwin',hoje);
         grantCoins(20+worldRun.fase*5); /* dobra a recompensa base da primeira vitória do dia */
@@ -8712,16 +8774,16 @@ function onStageCleared(){
     questEvent('win');
     worldRun.turnosFase=(worldRun.turnosFase||0)+stageTurns;
     worldRun.tempoFase=(worldRun.tempoFase||0)+missionElapsed();
-    { /* F7 · recorde de turnos da fase */
+    if(!isDevMode()){ /* F7 · recorde de turnos da fase */
       const fb=faseBest();
       if(!fb[worldRun.fase]||worldRun.turnosFase<fb[worldRun.fase]){ fb[worldRun.fase]=worldRun.turnosFase; localStorage.setItem('12r_fase_best',JSON.stringify(fb)); }
     }
-    { /* ⏱ recorde de TEMPO da fase (ranking oficial de missões) */
+    if(!isDevMode()){ /* ⏱ recorde de TEMPO da fase (ranking oficial de missões) */
       const ft=faseTime();
       if(!ft[worldRun.fase]||worldRun.tempoFase<ft[worldRun.fase]){ ft[worldRun.fase]=worldRun.tempoFase; localStorage.setItem('12r_fase_time',JSON.stringify(ft)); }
     }
     /* M3 · última equipe vitoriosa vira a sugerida */
-    localStorage.setItem('12r_lastteam',JSON.stringify([...ACTIVE]));
+    if(!isDevMode()) localStorage.setItem('12r_lastteam',JSON.stringify([...ACTIVE]));
     /* M6 · prefetch da arte da próxima fase */
     { const prox=WORLDS[0].fases[worldRun.fase+1]; if(prox?.bg){ const im=new Image(); im.src=prox.bg; } }
     const prog=worldProg('humanos');
@@ -8797,7 +8859,7 @@ function onStageCleared(){
   }
   if(towerMode){
     const best=Math.max(Number(localStorage.getItem('12r_tower_best')||0),towerFloor);
-    localStorage.setItem('12r_tower_best',String(best));
+    if(!isDevMode()) localStorage.setItem('12r_tower_best',String(best));
     grantCoins(coinsVitoria(5+Math.floor(towerFloor/3)));
     grantXp((12+towerFloor*3)*(xpDoubleRun?2:1));
     checkAchievements('tower');
@@ -8816,7 +8878,7 @@ function onStageCleared(){
       if(!dailyRecord||typeof dailyRecord!=='object'||Array.isArray(dailyRecord)) dailyRecord={};
       if(dailyRecord.date!==todayKey()){
         grantCoins(150); grantXp(60);
-        localStorage.setItem('12r_daily',JSON.stringify({date:todayKey(),combo:runStats.maxCombo}));
+        if(!isDevMode()) localStorage.setItem('12r_daily',JSON.stringify({date:todayKey(),combo:runStats.maxCombo}));
         checkAchievements('daily');
       }
       /* O desafio diário é uma tentativa única. Depois do quinto andar, o
@@ -8846,7 +8908,7 @@ function onStageCleared(){
     return;
   }
   const unlocked = Math.max(Number(localStorage.getItem('12r_unlocked')||0),Math.min(DUNGEON.length-1,stageIndex+1));
-  localStorage.setItem('12r_unlocked',String(unlocked));
+  if(!isDevMode()) localStorage.setItem('12r_unlocked',String(unlocked));
   saveProgress(stageIndex<DUNGEON.length-1 ? stageIndex+1 : stageIndex);
   const earnedStars=recordStars(stageIndex);
   runStats.starsEarned=(runStats.starsEarned||0)+earnedStars;
@@ -8858,7 +8920,7 @@ function onStageCleared(){
     grantCoins(dailyRunMode?150:80);
     grantXp(60);
     checkAchievements('dungeon');
-    if(dailyRunMode) localStorage.setItem('12r_daily',JSON.stringify({date:todayKey(),combo:runStats.maxCombo}));
+    if(dailyRunMode&&!isDevMode()) localStorage.setItem('12r_daily',JSON.stringify({date:todayKey(),combo:runStats.maxCombo}));
     const shareBtn=document.getElementById('shareDailyBtn');
     if(shareBtn) shareBtn.style.display=dailyRunMode?'inline-block':'none';
     renderBattleReport('victoryReport');
@@ -8960,7 +9022,7 @@ function restartCurrentStage(){
   loadStage(stageIndex);
 }
 
-function hasEternityBlessing(){ return (inventory['bencao-eternidade']||0)>0; }
+function hasEternityBlessing(){ return inventoryCount('bencao-eternidade')>0; }
 function isCampaignPhaseDefeat(){
   return Boolean(worldRun?.active&&worldRun.storyMode!==false&&!towerMode&&!bossRushMode&&!dailyRunMode&&!isHumanFinaleBattle());
 }
@@ -9048,8 +9110,10 @@ async function restartFromControls(){
   busy=false;
   setBattlePhase('idle');
   try{
-    inventory['bencao-eternidade']=blessingCount-1;
-    saveInventory();
+    if(!isDevMode()){
+      inventory['bencao-eternidade']=blessingCount-1;
+      saveInventory();
+    }
     renderMochila();
     updateRestartControls();
     playConsumableVfx('bencao-eternidade');
@@ -9057,8 +9121,10 @@ async function restartFromControls(){
     await new Promise(resolve=>window.setTimeout(resolve,420));
     restartCurrentStage();
   }catch(error){
-    inventory['bencao-eternidade']=blessingCount;
-    saveInventory();
+    if(!isDevMode()){
+      inventory['bencao-eternidade']=blessingCount;
+      saveInventory();
+    }
     renderMochila();
     updateRestartControls();
     setBattleStatus(T('Não foi possível reiniciar a missão. A Benção foi preservada.','Could not restart the mission. The Blessing was preserved.','No se pudo reiniciar la misión. La Bendición fue preservada.'),'system');
@@ -9448,7 +9514,7 @@ function openCardModal(idx){
   document.getElementById('cardModal').classList.add('show');
   document.getElementById('cardModal').setAttribute('aria-hidden','false');
   document.getElementById('shareCardBtn').style.display='block';
-  try{ const v=sanitizeHeroIdList(JSON.parse(localStorage.getItem('12r_seen')||'[]')); if(!v.includes(k.id)){ v.push(k.id); localStorage.setItem('12r_seen',JSON.stringify(v)); } }catch(e){}
+  if(!isDevMode()) try{ const v=sanitizeHeroIdList(JSON.parse(localStorage.getItem('12r_seen')||'[]')); if(!v.includes(k.id)){ v.push(k.id); localStorage.setItem('12r_seen',JSON.stringify(v)); } }catch(e){}
   { const mi=document.getElementById('cardModalImg'); mi.onerror=()=>{ mi.onerror=null; mi.src=k.img; }; mi.src=IMGL(k.img); }
   document.getElementById('cardModalImg').alt = L(k.nome);
   document.getElementById('cardModalName').textContent = L(k.nome);
@@ -9559,7 +9625,7 @@ function getSavedProgress(){
 }
 
 function saveProgress(forcedStage){
-  if(towerMode||worldRun.active) return; // torre e mundos não tocam o save da campanha
+  if(isDevMode()||towerMode||worldRun.active) return; // DEV, torre e mundos não tocam o save da campanha
   if(ACTIVE.length!==4) return;
   const safeStage = Math.max(0,Math.min(DUNGEON.length-1,forcedStage??stageIndex));
   localStorage.setItem('12r_save',JSON.stringify({version:10,stage:safeStage,team:[...ACTIVE],hp:Math.max(1,playerHP),seed:seedText,updated:Date.now()}));
@@ -9574,6 +9640,11 @@ function refreshContinueButton(){
   try{ fases = WORLDS[0].fases; }
   catch(err){ btn.disabled = true; return; } /* chamada anterior à declaração de WORLDS (boot) */
   const prog = worldProg('humanos');
+  if(isDevMode()){
+    btn.disabled=false;
+    hint.textContent=T('Modo DEV · escolha qualquer fase','DEV Mode · choose any stage','Modo DEV · elige cualquier fase');
+    return;
+  }
   const faseIdx = Math.min(prog.unlocked, fases.length-1);
   btn.disabled = false;
   hint.textContent = `${T('Reino dos Humanos','Human Realm','Reino de los Humanos')} · ${T('Fase','Stage','Fase')} ${faseIdx+1} · ${L(fases[faseIdx].nome)}`;
@@ -9978,7 +10049,11 @@ window.YGDRIA_HUMAN_FINALE=Object.freeze({
 
 startBtnEl.addEventListener('click',()=>beginGame(pendingStage));
 document.getElementById('playBtn').addEventListener('click',()=>{ towerMode=false; bossRushMode=false; worldRun.active=false; pendingStage=0; openMapScreen(); });
-document.getElementById('continueBtn').addEventListener('click',()=>{ const prog=worldProg('humanos'); startWorldFase(Math.min(prog.unlocked, WORLDS[0].fases.length-1)); });
+document.getElementById('continueBtn').addEventListener('click',()=>{
+  if(isDevMode()){ openMapScreen(); return; }
+  const prog=worldProg('humanos'); startWorldFase(Math.min(prog.unlocked, WORLDS[0].fases.length-1));
+});
+document.getElementById('devModeBtn')?.addEventListener('click',()=>setDevMode(!isDevMode()));
 document.getElementById('replayStoryBtn')?.addEventListener('click',()=>{ if(pendingReplayPhase!==null) startWorldFase(pendingReplayPhase,{storyMode:true}); });
 document.getElementById('replayFreeBtn')?.addEventListener('click',()=>{ if(pendingReplayPhase!==null) startWorldFase(pendingReplayPhase,{storyMode:false}); });
 document.getElementById('replayHardBtn')?.addEventListener('click',()=>{ if(pendingReplayPhase!==null&&difficulty!=='pesadelo') startWorldFase(pendingReplayPhase,{storyMode:true,difficulty:nextDifficulty(difficulty)}); });
@@ -10757,8 +10832,27 @@ function storyMissionDone(f,n){
   if(worldRun?.storyMode===true) return false;
   return storyPhaseDone(f);
 }
-function markStoryMissionDone(f,n){ localStorage.setItem(storyMissionKey(f,n),'1'); }
-function markStoryPhaseDone(f){ localStorage.setItem(storyPhaseKey(f),'1'); }
+function markStoryMissionDone(f,n){ if(!isDevMode()) localStorage.setItem(storyMissionKey(f,n),'1'); }
+function markStoryPhaseDone(f){ if(!isDevMode()) localStorage.setItem(storyPhaseKey(f),'1'); }
+/* Reinício solicitado para a auditoria da progressão normal. É aplicado uma
+   única vez fora das rotas de QA e remove somente campanha, recompensas e
+   cartas conquistadas nela; conta, opções, Kalegs, mochila e perfil ficam
+   preservados. O Modo DEV nunca usa este marcador como progresso legítimo. */
+const NORMAL_PROGRESS_RESET_KEY='12r_normal_progress_reset_v1';
+function resetNormalCampaignProgress({force=false}={}){
+  if(!force&&localStorage.getItem(NORMAL_PROGRESS_RESET_KEY)==='1') return false;
+  [
+    '12r_world_humanos','12r_save','12r_unlocked','12r_stars','12r_fase_best','12r_fase_time','12r_lastteam',
+    '12r_human_phase_rewards',HUMAN_REWARD_LEDGER_KEY,'12r_card_unlocks',HOPE_ATTEMPTS_KEY,'12r_firstwin'
+  ].forEach(key=>localStorage.removeItem(key));
+  for(let index=localStorage.length-1;index>=0;index--){
+    const key=localStorage.key(index)||'';
+    if(/^12r_story_(?:phase_)?[^_]+_humanos_/.test(key)) localStorage.removeItem(key);
+  }
+  localStorage.setItem(NORMAL_PROGRESS_RESET_KEY,'1');
+  return true;
+}
+if(!new URLSearchParams(location.search).has('qa')) resetNormalCampaignProgress();
 function prepareStorySelection(){
   if(!worldRun.active||worldRun.storyMode===false) return;
   const rule=STORY_RULES[worldRun.fase];
@@ -10803,6 +10897,7 @@ const REALMS_MAP=[
 let mapMode='world'; /* 'world' = jogar fases · 'boss' = escolher reino do Desafio dos Chefes */
 function realmComplete(id){
   if(id!=='humanos') return false; /* demais reinos chegam com seus mundos */
+  if(isDevMode()) return true;
   const prog=worldProg('humanos');
   return !!(prog.stars&&prog.stars[9]); /* fase 10 vencida = reino finalizado */
 }
@@ -10893,13 +10988,15 @@ function worldProg(worldId){
     return {unlocked,stars,starsByDifficulty};
   }catch(e){ return {unlocked:0,stars:{},starsByDifficulty:{facil:{},normal:{},dificil:{},pesadelo:{}}}; }
 }
-function saveWorldProg(worldId,prog){ localStorage.setItem('12r_world_'+worldId,JSON.stringify(prog)); }
-/* Janela temporária de validação pública: libera a navegação por todas as
-   fases humanas, mas nunca grava falsamente o avanço do jogador. */
-const HUMANOS_PUBLIC_TEST_UNLOCK=true;
+function saveWorldProg(worldId,prog){ if(!isDevMode()) localStorage.setItem('12r_world_'+worldId,JSON.stringify(prog)); }
+/* O jogo normal respeita a progressão gravada. O acesso total existe somente
+   no Modo DEV ou na rota local determinística usada pela suíte automatizada. */
+const LOCAL_QA_PHASE_ACCESS=['127.0.0.1','localhost'].includes(location.hostname)
+  &&new URLSearchParams(location.search).has('qa')
+  &&new URLSearchParams(location.search).get('qa')!=='dev-mode';
 function worldAccessLimit(worldId,prog=worldProg(worldId)){
   const saved=Math.max(0,Number(prog?.unlocked)||0);
-  return worldId==='humanos'&&HUMANOS_PUBLIC_TEST_UNLOCK
+  return worldId==='humanos'&&(isDevMode()||LOCAL_QA_PHASE_ACCESS)
     ? Math.max(saved,WORLDS[0].fases.length-1)
     : saved;
 }
@@ -10952,7 +11049,8 @@ function nextDifficulty(value){ const i=DIFFICULTY_ORDER.indexOf(value); return 
 function difficultyLabel(value){ return {facil:'Fácil',normal:'Normal',dificil:'Difícil',pesadelo:'Pesadelo'}[value]||'Normal'; }
 function nightmareUnlockedForPhase(prog,phaseIdx){
   /* Pesadelo só aparece depois que a fase inteira (os cinco níveis) foi vencida. */
-  return storyPhaseDone(phaseIdx)
+  return isDevMode()
+    || storyPhaseDone(phaseIdx)
     || Number(prog?.stars?.[phaseIdx]||0)>0
     || DIFFICULTY_ORDER.some(d=>Number(prog?.starsByDifficulty?.[d]?.[phaseIdx]||0)>0);
 }
@@ -11460,8 +11558,8 @@ function renderGameFooters(){
   const name=account?.username||account?.displayName||T('Convidado','Guest','Invitado');
   const amount=typeof hopeAmount==='function'?hopeAmount():HOPE_MAX;
   document.querySelectorAll('[data-footer-user]').forEach(node=>node.textContent=name);
-  document.querySelectorAll('[data-footer-coins]').forEach(node=>node.textContent=`✦ ${formatKalegs(coins)}`);
-  document.querySelectorAll('[data-footer-hope]').forEach(node=>node.textContent=`✧ ${amount}/${HOPE_MAX}`);
+  document.querySelectorAll('[data-footer-coins]').forEach(node=>node.textContent=`✦ ${kalegsBalanceText()}`);
+  document.querySelectorAll('[data-footer-hope]').forEach(node=>node.textContent=`✧ ${isDevMode()?'∞':`${amount}/${HOPE_MAX}`}`);
   document.querySelectorAll('[data-footer-version]').forEach(node=>node.textContent=`${T('VERSÃO','VERSION','VERSIÓN')} ${(APP_VERSION||'v11.1.1').replace(/^v/i,'')}`);
 }
 function updateNamePreview(){

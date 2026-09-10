@@ -32,17 +32,18 @@
 <link rel="apple-touch-icon" href="assets/icon.svg">
 <link rel="preload" href="assets/audio/Ygdria_Prologo.mp3" as="audio" type="audio/mpeg">
 <link rel="preload" href="assets/audio/Ygdria_Humanos_1_9.mp3" as="audio" type="audio/mpeg">
-<link rel="stylesheet" href="styles-v10.css?v=11.1.3">
-<link rel="stylesheet" href="battle-hud.css?v=11.1.3">
+<link rel="stylesheet" href="styles-v10.css?v=11.1.4">
+<link rel="stylesheet" href="battle-hud.css?v=11.1.4">
 </head>
 <body>
 <div class="hope-toast" id="hopeToast" role="status" aria-live="polite"></div>
+<div class="dev-mode-badge" id="devModeBadge" role="status" hidden>MODO DEV</div>
 <div class="scene-bg" data-screen="menu"></div>
 <h1 class="maintitle">12 Reinos</h1>
 
 <div id="mainMenu" class="screen-panel">
   <div class="menu-card menu-command-center">
-    <header class="command-masthead"><img class="game-logo" src="assets/icon.svg" alt="Selo de Ygdria"><div><div class="menu-title">Ygdria</div><div class="menu-subtitle">Crônicas dos 12 Reinos</div></div></header>
+    <header class="command-masthead"><img class="game-logo" src="assets/icon.svg" alt="Selo de Ygdria"><div><div class="menu-title">Ygdria</div><div class="menu-subtitle">Crônicas dos 12 Reinos</div></div><button class="dev-mode-toggle" id="devModeBtn" type="button" aria-pressed="false"><i aria-hidden="true"></i><span><b>Modo DEV</b><small>Desativado</small></span></button></header>
     <section class="command-hero"><div class="command-kicker">O DESTINO DOS 12 REINOS</div><h2>Escolha o próximo capítulo.</h2><div class="command-hero-actions"><button class="menu-btn primary command-history" id="playBtn"><span class="menu-icon vfx-icon vfx-history" aria-hidden="true"></span><span class="menu-label"><span class="menu-title-line">História</span><small class="menu-hint">Explore o mapa oficial de Ygdria</small></span><span>›</span></button><button class="menu-btn command-continue" id="continueBtn" disabled><span class="menu-icon vfx-icon vfx-continue" aria-hidden="true"></span><span class="menu-label"><span class="menu-title-line">Continuar</span><small class="menu-hint" id="continueHint">Sem progresso salvo</small></span></button></div></section>
     <nav class="command-grid" aria-label="Destinos de Ygdria">
       <button class="menu-btn command-tile" id="dailyBtn"><span class="menu-icon vfx-icon vfx-special" aria-hidden="true"></span><span class="menu-label"><span class="menu-title-line">Missões Especiais</span><small class="menu-hint" id="dailyHint">Desafios únicos e recompensas</small></span></button>
@@ -567,12 +568,12 @@
   </div>
 </div>
 <script>window.addEventListener('error',function(e){(window.__bootErrors=window.__bootErrors||[]).push({m:String(e.message).slice(0,200),l:e.lineno,c:e.colno})});</script>
-<script src="v10-config.js?v=11.1.3"></script>
-<script src="v10-animations.js?v=11.1.3"></script>
-<script src="humanos-lore-v10.js?v=11.1.3"></script>
+<script src="v10-config.js?v=11.1.4"></script>
+<script src="v10-animations.js?v=11.1.4"></script>
+<script src="humanos-lore-v10.js?v=11.1.4"></script>
 <script src="map-effects-v1.js?v=1.0.0" defer></script>
-<script src="game-v10.js?v=11.1.3" defer></script>
-<script src="battle-hud.js?v=11.1.3" defer></script>
+<script src="game-v10.js?v=11.1.4" defer></script>
+<script src="battle-hud.js?v=11.1.4" defer></script>
 
 </body>
 </html>

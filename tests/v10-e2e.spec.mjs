@@ -88,6 +88,76 @@ test('smoke v10 não registra erro de boot ou console',async({page})=>{
   expect(errors).toEqual([]);
 });
 
+test('Modo DEV libera tudo, usa recursos infinitos e preserva o progresso normal zerado',async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  const errors=await boot(page,'dev-mode');
+  const normal=await page.evaluate(()=>{
+    localStorage.setItem('12r_world_humanos',JSON.stringify({unlocked:8,stars:{0:3}}));
+    localStorage.setItem('12r_story_11.0.1_humanos_1_1','1');
+    localStorage.setItem('12r_card_unlocks',JSON.stringify(KINGDOMS.map(hero=>hero.id)));
+    localStorage.setItem('12r_coins','321'); coins=321;
+    localStorage.setItem('12r_inv',JSON.stringify({regulacao:2})); inventory={regulacao:2};
+    hopeState={amount:4,updatedAt:Date.now()}; saveHopeState();
+    localStorage.setItem('12r_pxp','840');
+    localStorage.setItem('12r_profile',JSON.stringify({wins:7}));
+    resetNormalCampaignProgress({force:true});
+    return {
+      access:worldAccessLimit('humanos'),
+      world:localStorage.getItem('12r_world_humanos'),
+      story:localStorage.getItem('12r_story_11.0.1_humanos_1_1'),
+      cards:localStorage.getItem('12r_card_unlocks'),
+      coins:localStorage.getItem('12r_coins'),
+      inventory:localStorage.getItem('12r_inv'),
+      xp:localStorage.getItem('12r_pxp'),
+      profile:localStorage.getItem('12r_profile')
+    };
+  });
+  expect(normal).toEqual({access:0,world:null,story:null,cards:null,coins:'321',inventory:'{"regulacao":2}',xp:'840',profile:'{"wins":7}'});
+
+  await page.locator('#devModeBtn').click();
+  await expect(page.locator('#devModeBtn')).toHaveAttribute('aria-pressed','true');
+  await expect(page.locator('#devModeBadge')).toBeVisible();
+  await expect(page.locator('#coinBadge')).toContainText('∞Ks');
+  await expect(page.locator('#hopeBadge')).toContainText('∞');
+  const dev=await page.evaluate(()=>{
+    const watched=['12r_world_humanos','12r_card_unlocks','12r_coins','12r_inv','12r_pxp','12r_profile','12r_ach','12r_quests','12r_bestiary','12r_tower_best','12r_tower_month','12r_daily'];
+    const before=Object.fromEntries(watched.map(key=>[key,localStorage.getItem(key)]));
+    grantCoins(999); grantXp(999); unlockAch('primeira'); questEvent('win'); registerBestiary('Slime');
+    markStoryMissionDone(0,1); markStoryPhaseDone(0);
+    saveWorldProg('humanos',{unlocked:9,stars:{0:3}});
+    claimHumanPhaseReward(0,'pesadelo');
+    flushRunToProfile(true);
+    towerRecordMonthly(99);
+    checkLoginReward();
+    const after=Object.fromEntries(watched.map(key=>[key,localStorage.getItem(key)]));
+    return {
+      access:worldAccessLimit('humanos'),
+      allOwned:KINGDOMS.every(hero=>cardOwned(hero.id)),
+      allItems:SHOP_ITEMS.every(item=>inventoryCount(item.id)===Infinity),
+      nightmare:nightmareUnlockedForPhase(worldProg('humanos'),9),
+      bosses:realmComplete('humanos'),
+      hope:hopeAmount(),
+      before,after
+    };
+  });
+  expect(dev.access).toBe(9);
+  expect(dev.allOwned).toBe(true);
+  expect(dev.allItems).toBe(true);
+  expect(dev.nightmare).toBe(true);
+  expect(dev.bosses).toBe(true);
+  expect(dev.hope).toBe(10);
+  expect(dev.after).toEqual(dev.before);
+
+  await page.locator('#devModeBtn').click();
+  await expect(page.locator('#devModeBtn')).toHaveAttribute('aria-pressed','false');
+  await expect(page.locator('#devModeBadge')).toBeHidden();
+  const restored=await page.evaluate(()=>({access:worldAccessLimit('humanos'),owned:KINGDOMS.filter(hero=>cardOwned(hero.id)).map(hero=>hero.id),coins,hope:hopeAmount(),inventory:inventory.regulacao||0}));
+  expect(restored.access).toBe(0);
+  expect(restored.owned.sort()).toEqual(['acqua-jovem','adriel-jovem','berenice-jovem','galateia-jovem']);
+  expect(restored).toMatchObject({coins:321,hope:4,inventory:2});
+  expect(errors).toEqual([]);
+});
+
 test('premiação humana credita uma vez Kalegs, mochila e carta, inclusive recibo legado',async({page})=>{
   const errors=await boot(page,'reward-transaction');
   const result=await page.evaluate(()=>{
