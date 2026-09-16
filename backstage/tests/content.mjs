@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import {inspectContent} from '../public/validation.js';
+import {compileContent} from '../tools/compile-content.mjs';
+const c=JSON.parse(fs.readFileSync(new URL('../data/content.json',import.meta.url),'utf8'));
+assert.deepEqual(inspectContent(c).errors,[]);
+assert.equal(compileContent(c,{write:false}).ok,true);
+for(const bad of [null,{}, {schema:1,realms:'x'}, {...c,items:[null]}])assert.ok(inspectContent(bad).errors.length);
+const bad=structuredClone(c);bad.characters[0].sprites.idle={src:'assets/no.png',enabled:true,cols:2,rows:2,frames:8,fps:0};assert.ok(inspectContent(bad).errors.length);
+const duplicate=structuredClone(c);duplicate.items.push(duplicate.items[0]);assert.ok(inspectContent(duplicate).errors.length);
+const unsafe=structuredClone(c);unsafe.characters[0].card='../../secret';assert.ok(inspectContent(unsafe).errors.length);
+const context={};vm.runInNewContext(fs.readFileSync('humanos-lore-v10.js','utf8'),context);
+assert.equal(JSON.stringify(context.YGDRIA_HUMANOS_LORE.phases.map(p=>p.missions)),JSON.stringify(c.realms.find(r=>r.id==='humanos').phases.map(p=>p.missions)));
+assert.equal(JSON.stringify(context.YGDRIA_HUMANOS_LORE.phases.map(p=>p.after)),JSON.stringify(c.realms.find(r=>r.id==='humanos').phases.map(p=>p.after)));
+console.log('Backstage: estrutura, compilação, dados inválidos, duplicatas, caminhos e sincronização aprovados.');

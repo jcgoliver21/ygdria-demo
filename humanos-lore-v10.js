@@ -1,17 +1,18 @@
-/* Arquivo gerado por tools/sync-humanos-lore.mjs.
-   Fonte canônica: docs/REINO-HUMANOS-FASES-EDITAVEL.md. Não edite à mão. */
+/* Arquivo gerado pelo Backstage local de Ygdria. */
 (function(root){
   'use strict';
   root.YGDRIA_HUMANOS_LORE=Object.freeze({
   "schema": 1,
-  "source": "docs/REINO-HUMANOS-FASES-EDITAVEL.md",
-  "sourceHash": "c6c7d3ea45662f757cd7fa2b28587c5f5642cfa35f01d207571c96faa77b3956",
-  "generatedAt": "deterministic",
+  "source": "backstage/data/content.json",
+  "sourceHash": "8147d9d135a8a6ff6ea83fb7931290f104e26fca3ad0cee1a244f6a7825193c4",
+  "generatedAt": "backstage-local",
   "phases": [
     {
       "number": 1,
       "name": "Cidade das Cerejeiras",
       "subtitle": "O Encontro Predestinado na Capital de Ygdria",
+      "background": "",
+      "music": "",
       "bosses": [
         "Gareth"
       ],
@@ -143,6 +144,8 @@
       "number": 2,
       "name": "Catedral de Ygdria",
       "subtitle": "A Fuga",
+      "background": "",
+      "music": "",
       "bosses": [
         "Cedric"
       ],
@@ -264,6 +267,8 @@
       "number": 3,
       "name": "Palácio dos Reguladores",
       "subtitle": "A Arqueira Boa de Mira",
+      "background": "",
+      "music": "",
       "bosses": [
         "Elizier"
       ],
@@ -376,6 +381,8 @@
       "number": 4,
       "name": "Academia Real de Magia e Combate",
       "subtitle": "O Início da Jornada do Herói",
+      "background": "",
+      "music": "",
       "bosses": [
         "Roland"
       ],
@@ -492,6 +499,8 @@
       "number": 5,
       "name": "Mercado Central dos Reinos",
       "subtitle": "Tudo tem seu Preço",
+      "background": "",
+      "music": "",
       "bosses": [
         "Cedric",
         "Elizier",
@@ -621,6 +630,8 @@
       "number": 6,
       "name": "Praça das Doze Essências",
       "subtitle": "Doze pilares, doze reinos",
+      "background": "",
+      "music": "",
       "bosses": [
         "Jules",
         "The Joker"
@@ -753,6 +764,8 @@
       "number": 7,
       "name": "Biblioteca da Eternidade",
       "subtitle": "Estado de Emergência",
+      "background": "",
+      "music": "",
       "bosses": [
         "Bernyce"
       ],
@@ -874,6 +887,8 @@
       "number": 8,
       "name": "Muralha dos Heróis",
       "subtitle": "Do que um Herói de Verdade Precisa?",
+      "background": "",
+      "music": "",
       "bosses": [
         "Kalander"
       ],
@@ -988,6 +1003,8 @@
       "number": 9,
       "name": "Lendária Torre de Acesso à Eternidade",
       "subtitle": "O Prólogo do Fim",
+      "background": "",
+      "music": "",
       "bosses": [
         "Julius"
       ],
@@ -1116,6 +1133,8 @@
       "number": 10,
       "name": "Castelo da Coroa Humana",
       "subtitle": "A Sombra que Devora Tudo",
+      "background": "",
+      "music": "",
       "bosses": [
         "Julius"
       ],

@@ -29,6 +29,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm test
+      - run: node backstage/tests/api.mjs
 
   browser:
     runs-on: ubuntu-latest
@@ -59,6 +60,10 @@ jobs:
         env:
           BASE_URL: http://127.0.0.1:4177
         run: pnpm run test:e2e
+      - name: Check Backstage editor
+        env:
+          STUDIO_BASE: http://127.0.0.1:4177/backstage/public/
+        run: node backstage/tests/studio.mjs
       - name: Upload browser evidence on failure
         if: failure()
         uses: actions/upload-artifact@v4

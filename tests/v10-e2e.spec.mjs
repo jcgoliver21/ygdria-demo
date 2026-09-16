@@ -874,7 +874,7 @@ test('lore canônica controla fases, elencos, falas e atmosferas no runtime',asy
       missionFive
     };
   });
-  expect(probe.source).toBe('docs/REINO-HUMANOS-FASES-EDITAVEL.md');
+  expect(probe.source).toBe('backstage/data/content.json');
   expect(probe.hash).toMatch(/^[a-f0-9]{64}$/);
   expect(probe.names).toHaveLength(10);
   expect(probe.subtitles[0]).toBe('O Encontro Predestinado na Capital de Ygdria');
@@ -3552,7 +3552,7 @@ test.describe('@production publicação real',()=>{
     await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
     await expect(page.locator('#menuVersion')).toContainText('VERSÃO 11');
   await expect.poll(()=>page.evaluate(()=>window.YGDRIA_V10?.version)).toBe(expectedAppVersion);
-    await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'docs/REINO-HUMANOS-FASES-EDITAVEL.md',phases:10});
+    await expect.poll(()=>page.evaluate(()=>({source:window.YGDRIA_HUMANOS_LORE?.source,phases:window.YGDRIA_HUMANOS_LORE?.phases?.length,hash:window.YGDRIA_HUMANOS_LORE?.sourceHash}))).toMatchObject({source:'backstage/data/content.json',phases:10});
     expect(await page.evaluate(()=>window.YGDRIA_HUMANOS_LORE?.sourceHash)).toMatch(/^[a-f0-9]{64}$/);
 
     // Produção não expõe __12rQA: este trecho percorre somente controles reais.

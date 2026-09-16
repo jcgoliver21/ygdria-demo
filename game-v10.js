@@ -1,6 +1,7 @@
 
 /* ---------- Versão única do app (fonte da verdade) ---------- */
 const V10 = window.YGDRIA_V10 || {};
+const BACKSTAGE = window.YGDRIA_BACKSTAGE_CONTENT || {};
 const APP_VERSION = V10.version || 'v10';
 const APP_VERSION_LABEL = V10.label || 'VERSÃO 11';
 const DEV_MODE_STORAGE_KEY='12r_dev_mode_v1';
@@ -15,6 +16,27 @@ try {
   const _mv = document.getElementById('menuVersion');
   if (_mv) _mv.textContent = `${APP_VERSION_LABEL} · DEMO OFICIAL MOBILE`;
 } catch (e) {}
+
+/* Conteúdo editorial gerado pelo Backstage local. O HTML original continua
+   sendo um fallback seguro caso o arquivo editorial esteja ausente. */
+function applyBackstageMenuContent(){
+  if(!Array.isArray(BACKSTAGE.menus)) return;
+  BACKSTAGE.menus.forEach(entry=>{
+    const button=document.getElementById(entry.id);
+    if(!button) return;
+    button.hidden=entry.visible===false;
+    button.style.order=String(Number(entry.order)||0);
+    const label=button.querySelector('.menu-label');
+    if(!label) return;
+    const title=label.querySelector('.menu-title-line');
+    if(title&&entry.label) title.textContent=entry.label;
+    const textNode=[...label.childNodes].find(node=>node.nodeType===Node.TEXT_NODE);
+    if(textNode&&entry.label) textNode.nodeValue=entry.label+' ';
+    const hint=label.querySelector('.menu-hint');
+    if(hint&&typeof entry.hint==='string') hint.textContent=entry.hint;
+  });
+}
+applyBackstageMenuContent();
 
 const KINGDOMS = [
   {
@@ -735,7 +757,8 @@ const LICENSED_STAGE_MUSIC=Object.freeze({
   humanos:{src:'assets/audio/Ygdria_Humanos_1_9.mp3',loopOut:.9},
   tower:{src:'assets/audio/Ygdria_Batalha_Capitulo_1.mp3',loopOut:1.1},
   base:{src:'assets/audio/Ygdria_10_Sombras_Que_Devoram.mp3',loopOut:.95},
-  final:{src:'assets/audio/Ygdria_10_Sombras_Que_Devoram_Final.mp3',loopOut:1.35}
+  final:{src:'assets/audio/Ygdria_10_Sombras_Que_Devoram_Final.mp3',loopOut:1.35},
+  ...Object.fromEntries((window.YGDRIA_HUMANOS_LORE?.phases||[]).flatMap((phase,index)=>phase.music?[[`backstage-${index}`,{src:phase.music,loopOut:.5}]]:[]))
 });
 let stageMusicActive=null;
 let stageMusicSelection=null;
@@ -743,6 +766,7 @@ let stageMusicSelection=null;
 function stageMusicForWorldRun(){
   if(towerMode&&!dailyRunMode) return 'tower';
   if(!worldRun?.active) return null;
+  if(LICENSED_STAGE_MUSIC[`backstage-${worldRun.fase}`]) return `backstage-${worldRun.fase}`;
   if(worldRun.fase>=0&&worldRun.fase<=8) return 'humanos';
   if(worldRun.fase===9) return worldRun.nivel===5?'final':'base';
   return null;
@@ -1634,6 +1658,15 @@ const LEGACY_SHOP_ITEMS=[
   {id:'dado', uso:'batalha', nome:'Dado do Destino', desc:'Re-embaralha o tabuleiro e garante 1 power-up novo.', preco:80, icon:'🎲', en:{nome:'Die of Fate', desc:'Reshuffles the board and grants 1 new power-up.'}, es:{nome:'Dado del Destino', desc:'Rebaraja el tablero y garantiza 1 power-up nuevo.'}},
   {id:'olho', uso:'batalha', nome:'Olho de Barion', desc:'Revela as gemas ocultas e aponta a melhor jogada.', preco:70, icon:'🧿', en:{nome:'Eye of Barion', desc:'Reveals hidden gems and points out the best move.'}, es:{nome:'Ojo de Barion', desc:'Revela las gemas ocultas y señala la mejor jugada.'}}
 ];
+if(Array.isArray(BACKSTAGE.characters)){
+  BACKSTAGE.characters.forEach(editorCharacter=>{
+    const character=KINGDOMS.find(entry=>entry.id===editorCharacter.id);
+    if(!character) return;
+    if(editorCharacter.name) character.nome=editorCharacter.name;
+    if(editorCharacter.rarity) character.rarity=editorCharacter.rarity;
+    if(editorCharacter.card){ character.img=editorCharacter.card; character.cardThumb=editorCharacter.cardThumb||editorCharacter.card; }
+  });
+}
 /* v11.0.41 · Ícones ilustrados dos consumíveis do Reino dos Humanos. */
 const SHOP_ITEMS=[
   {id:'regulacao',reino:'humanos',uso:'batalha',raridade:'Comum',nome:'Cristais de Regulação',desc:'Embaralha o tabuleiro e cria 1 power-up aleatório.',preco:90,icon:'crystal',en:{nome:'Regulation Crystals',desc:'Shuffles the board and creates 1 random power-up.'},es:{nome:'Cristales de Regulación',desc:'Baraja el tablero y crea 1 potenciador aleatorio.'}},
@@ -1648,6 +1681,11 @@ const SHOP_ITEMS=[
   {id:'esperanca',reino:'luz',uso:'global',raridade:'Lendário',nome:'Esperança',desc:'Restaura 100% da Esperança para voltar à jornada imediatamente.',preco:360,icon:'hope',en:{nome:'Hope',desc:'Restores 100% Hope so you can return to the journey immediately.'},es:{nome:'Esperanza',desc:'Restaura el 100% de la Esperanza para volver a la aventura de inmediato.'}}
 ];
 const INVENTORY_CATALOG_VERSION='realm-consumables-v3';
+if(Array.isArray(BACKSTAGE.items))for(const item of BACKSTAGE.items){
+  const index=SHOP_ITEMS.findIndex(row=>row.id===item.id);
+  if(index>=0)Object.assign(SHOP_ITEMS[index],item);
+  else SHOP_ITEMS.push({...item,reino:item.reino||'humanos'});
+}
 const HUMAN_ITEM_ICONS={
   crystal:'<img src="assets/items/humanos/regulacao.png" alt="" draggable="false">',
   'bernyce-crystal':'<img src="assets/items/humanos/regulacao-bernyce.png" alt="" draggable="false">',
@@ -1662,7 +1700,7 @@ const LIGHT_ITEM_ICONS={
   'ygdria-mirror':'<img src="assets/items/luz/espelho-ygdria-vfx.png" alt="" draggable="false">',
   'hope':'<span class="light-item-art light-item-hope" aria-hidden="true"><i></i><b></b></span>'
 };
-function itemIconMarkup(item){ return HUMAN_ITEM_ICONS[item?.icon]||LIGHT_ITEM_ICONS[item?.icon]||'✦'; }
+function itemIconMarkup(item){ if(item?.image)return `<img src="${escapeHtml(item.image)}" alt="" draggable="false">`; return HUMAN_ITEM_ICONS[item?.icon]||LIGHT_ITEM_ICONS[item?.icon]||'✦'; }
 function sanitizeInventory(value){
   const clean={};
   if(!value||typeof value!=='object'||Array.isArray(value)) return clean;
@@ -1865,7 +1903,7 @@ function renderShop(){
   if(copy) copy.textContent=T('Escolha o que levar para sua mochila antes da batalha.','Choose what to carry into your backpack before battle.','Elige qué llevar a tu mochila antes de la batalla.');
   if(balanceNote) balanceNote.textContent=T('Tesouro de Kalegar','Kalegar treasury','Tesoro de Kalegar');
   list.innerHTML=MARKET_REALMS.map(realm=>{
-    const items=SHOP_ITEMS.filter(item=>item.reino===realm.id);
+    const items=SHOP_ITEMS.filter(item=>item.reino===realm.id&&item.visible!==false);
     const open=marketOpenRealms.has(realm.id);
     const label=T(...realm.name);
     return `<section class="market-realm market-realm-${realm.id}${open?' open':''}" data-realm="${realm.id}">
@@ -2027,7 +2065,16 @@ async function usarItemBatalha(id,mirrorHeroIdx=null){
   playConsumableVfx(id);
   await wait(420);
   if(epoch!==combatEpoch) return;
-  switch(id){
+  const effect=SHOP_ITEMS.find(i=>i.id===id)?.effect;
+  if(effect?.type&&effect.type!=='restartMission'){
+    switch(effect.type){
+      case 'shuffle': shuffleBoard(false);spawnRandomPowerUps(Number(effect.powerUps??1));break;
+      case 'royalShuffle': shuffleBoard(false);spawnRandomColorBombs(Number(effect.colorBombs??1));spawnRandomPowerUps(Number(effect.powerUps??1));if(effect.clearCorruption!==false)clearCorruptedBoardPieces();break;
+      case 'healPercent': healPlayer(Math.round(PLAYER_MAX_HP*Number(effect.value)));break;
+      case 'attackMultiplier': bannerAtkRun=Number(effect.value);renderStatusTray();break;
+      default: busy=false;setBattlePhase('idle');return;
+    }
+  }else switch(id){
     case 'regulacao': shuffleBoard(false); spawnRandomPowerUps(1); break;
     case 'regulacao-bernyce': shuffleBoard(false); spawnRandomColorBombs(1); spawnRandomPowerUps(1); clearCorruptedBoardPieces(); break;
     case 'flor-cerejeira': healPlayer(Math.round(PLAYER_MAX_HP*0.25)); break;
@@ -2375,7 +2422,17 @@ function planEnemyGridSlots(list=enemies,bossMission=enemyMissionHasBoss(list)){
 const V10_ANIMATIONS = window.YGDRIA_V10_ANIMATIONS || {};
 KINGDOMS.forEach(character=>{
   const animationSet=V10_ANIMATIONS[character.id];
-  if(animationSet) character.sprites=animationSet;
+  const editorSet=BACKSTAGE.characters?.find(entry=>entry.id===character.id)?.sprites||{};
+  const enabledEditorSet=Object.fromEntries(Object.entries(editorSet).filter(([,action])=>action?.enabled===true&&action.src).map(([name,action])=>[name,{
+    frames:Number(action.frames)||1,
+    cols:Number(action.cols)||1,
+    rows:Number(action.rows)||1,
+    duration:Math.max(80,Math.round((Number(action.frames)||1)*1000/Math.max(1,Number(action.fps)||10))),
+    format:'sheet',src:action.src,
+    ...(name==='idle'?{loop:true}:{}),
+    ...(['victory','defeat'].includes(name)?{hold:true}:{})
+  }]));
+  if(animationSet||Object.keys(enabledEditorSet).length) character.sprites={...(animationSet||{}),...enabledEditorSet};
 });
 
 /* Escala canônica de leitura em combate. A escala da animação continua sendo
@@ -6074,6 +6131,7 @@ function applyLanguage(){
     `Pick 4 of ${totalCartas} cards. Tap a card to enlist; use the magnifier to open the art and read every ability.`,
     `Elige 4 de ${totalCartas} cartas. Toca la carta para alistar; usa la lupa para abrir el arte y leer todas las habilidades.`);
   document.querySelectorAll('#langGroup [data-lang], #langScreen [data-lang]').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
+  if(lang==='pt') applyBackstageMenuContent();
   syncDevModeUI();
 }
 
@@ -10794,10 +10852,11 @@ const HUMAN_PHASE_TECH=WORLDS[0].fases.map(({bg,rec})=>({bg,rec}));
 WORLDS[0].fases=HUMAN_LORE.phases.map((phase,index)=>({
   nome:phase.name,
   sub:phase.subtitle,
-  bg:HUMAN_PHASE_TECH[index].bg,
+  bg:phase.background||HUMAN_PHASE_TECH[index].bg,
   chefe:phase.bosses.join(', '),
   rec:HUMAN_PHASE_TECH[index].rec,
   visual:phase.visual,
+  music:phase.music||'',
   loreSourceHash:HUMAN_LORE.sourceHash,
   dial:[],
   missoes:phase.missions.map(mission=>[...mission.enemies])

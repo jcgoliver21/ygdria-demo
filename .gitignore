@@ -11,3 +11,5 @@ node_modules/
 .playwright/
 .cache/
 .codex-stage-paths.txt
+backstage/qa/
+backstage/backups/
