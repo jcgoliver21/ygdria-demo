@@ -4,7 +4,7 @@
   root.YGDRIA_HUMANOS_LORE=Object.freeze({
   "schema": 1,
   "source": "backstage/data/content.json",
-  "sourceHash": "8147d9d135a8a6ff6ea83fb7931290f104e26fca3ad0cee1a244f6a7825193c4",
+  "sourceHash": "7e64d6d48eb041b044fca54579ac11989f22b0bf30ba8a58d7540a148dc09785",
   "generatedAt": "backstage-local",
   "phases": [
     {
@@ -45,7 +45,7 @@
             {
               "speaker": "Slime",
               "heroId": "",
-              "text": "Blub... ploc-ploc... splash!"
+              "text": "Blub... Blub... Blub...!"
             },
             {
               "speaker": "Adriel",

@@ -3,7 +3,7 @@
   'use strict';
   root.YGDRIA_BACKSTAGE_CONTENT=Object.freeze({
   "schema": 1,
-  "generatedAt": "2026-09-16T22:45:06.293Z",
+  "generatedAt": "2026-09-16T23:18:16.576Z",
   "menus": [
     {
       "id": "playBtn",

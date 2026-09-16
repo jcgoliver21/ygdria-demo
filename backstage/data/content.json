@@ -4,7 +4,7 @@
     "name": "Ygdria — 12 Reinos",
     "version": 1
   },
-  "updatedAt": "2026-09-16T22:45:06.293Z",
+  "updatedAt": "2026-09-16T23:18:16.576Z",
   "settings": {
     "gameTitle": "Ygdria",
     "versionLabel": "VERSÃO 11",
@@ -368,7 +368,7 @@
                 {
                   "speaker": "Slime",
                   "heroId": "",
-                  "text": "Blub... ploc-ploc... splash!"
+                  "text": "Blub... Blub... Blub...!"
                 },
                 {
                   "speaker": "Adriel",
