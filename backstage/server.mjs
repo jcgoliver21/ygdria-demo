@@ -27,6 +27,7 @@ async function bodyJson(req){
 }
 function readContent(){ return JSON.parse(fs.readFileSync(dataFile,'utf8')); }
 function run(command,args){
+  if(command==='git')args=['-c',`safe.directory=${projectRoot.replaceAll('\\','/')}`,...args];
   const result=spawnSync(command,args,{cwd:projectRoot,encoding:'utf8',shell:false,timeout:120000});
   return {ok:result.status===0,status:result.status,output:[result.stdout,result.stderr].filter(Boolean).join('\n').trim()};
 }
