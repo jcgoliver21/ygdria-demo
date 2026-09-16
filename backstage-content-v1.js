@@ -3,7 +3,7 @@
   'use strict';
   root.YGDRIA_BACKSTAGE_CONTENT=Object.freeze({
   "schema": 1,
-  "generatedAt": "2026-09-16T23:18:16.576Z",
+  "generatedAt": "2026-09-16T23:24:03.877Z",
   "menus": [
     {
       "id": "playBtn",
@@ -1581,6 +1581,13 @@
       "status": "published",
       "color": "#ff6fa5",
       "phaseCount": 10
+    },
+    {
+      "id": "reino-da-luz",
+      "name": "Reino da Luz",
+      "status": "draft",
+      "color": "#f2f4ff",
+      "phaseCount": 1
     }
   ]
 });

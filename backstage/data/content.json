@@ -4,7 +4,7 @@
     "name": "Ygdria — 12 Reinos",
     "version": 1
   },
-  "updatedAt": "2026-09-16T23:18:16.576Z",
+  "updatedAt": "2026-09-16T23:24:03.877Z",
   "settings": {
     "gameTitle": "Ygdria",
     "versionLabel": "VERSÃO 11",
@@ -1579,6 +1579,61 @@
               "text": "Não percam o próximo capitulo dessa aventura!"
             }
           ],
+          "afterSceneCues": []
+        }
+      ]
+    },
+    {
+      "id": "reino-da-luz",
+      "name": "Reino da Luz",
+      "status": "draft",
+      "color": "#f2f4ff",
+      "phases": [
+        {
+          "number": 1,
+          "name": "Nova fase 1",
+          "subtitle": "",
+          "bosses": [],
+          "visual": {
+            "description": "Nada",
+            "key": "none"
+          },
+          "before": "",
+          "allowed": [],
+          "fixed": [],
+          "missions": [
+            {
+              "number": 1,
+              "title": "Missão 1",
+              "enemies": [],
+              "lines": []
+            },
+            {
+              "number": 2,
+              "title": "Missão 2",
+              "enemies": [],
+              "lines": []
+            },
+            {
+              "number": 3,
+              "title": "Missão 3",
+              "enemies": [],
+              "lines": []
+            },
+            {
+              "number": 4,
+              "title": "Missão 4",
+              "enemies": [],
+              "lines": []
+            },
+            {
+              "number": 5,
+              "title": "Missão 5",
+              "enemies": [],
+              "lines": []
+            }
+          ],
+          "after": [],
           "afterSceneCues": []
         }
       ]
