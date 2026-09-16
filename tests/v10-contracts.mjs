@@ -127,19 +127,17 @@ check('Backstage preserva as dez fases humanas canônicas',()=>{
   assert.ok(payloadText,'payload canônico ausente');
   const payload=JSON.parse(payloadText);
   assert.equal(payload.phases.length,10);
-  assert.equal(payload.phases[0].subtitle,'O Encontro Predestinado na Capital de Ygdria');
-  assert.equal(payload.phases[5].missions[1].lines[0].speaker,'Gareth');
-  assert.equal(payload.phases[5].missions[2].lines[0].heroId,'gareth');
-  assert.equal(payload.phases[0].missions[4].lines[1].heroId,'');
+  const editorial=JSON.parse(read('backstage/data/content.json')).realms.find(realm=>realm.id==='humanos');
+  assert.ok(editorial,'fonte editorial ausente');
+  payload.phases.forEach((phase,index)=>{
+    const expected=editorial.phases[index];
+    for(const key of ['name','subtitle','before','bosses','allowed','fixed','missions','after']){
+      assert.deepEqual(phase[key],expected[key],`fase ${index+1}: ${key} deve refletir o conteúdo salvo no Backstage`);
+    }
+  });
   for(const phase of payload.phases){
     for(const mission of phase.missions) for(const line of mission.lines) if(line.heroId) assert.ok(phase.allowed.includes(line.heroId),`${line.speaker} marcado como herói fora do elenco da fase ${phase.number}`);
   }
-  assert.equal(payload.phases[7].fixed.length,3);
-  assert.deepEqual(payload.phases[9].allowed,['adriel-jovem','gareth','roland','elizier']);
-  assert.equal(payload.phases[9].visual.missionFive,'total-darkness');
-  assert.equal(payload.phases[9].after.at(-3).speaker,'Cedric');
-  assert.equal(payload.phases[0].missions[0].lines[0].text,'Blub... ploc-ploc... splash!');
-  assert.equal(payload.phases[0].missions[1].lines[1].text,'Grrrr... auuuuu!');
   for(const key of ['cherry-petals','sacred-pink-light','festival-confetti','shadow-fog','library-pages','fireworks','darkness','total-darkness']) assert.ok(css.includes(key),`efeito ${key} ausente`);
   assert.match(game,/const HUMAN_LORE=globalThis\.YGDRIA_HUMANOS_LORE/);
   assert.match(game,/canonicalAfterSequence/);

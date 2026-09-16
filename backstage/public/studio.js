@@ -1,3 +1,4 @@
+import {askText,askConfirm,showMessage} from './dialogs.js';
 import {portable,assetUrl,readLocal,writeLocal} from './storage.js';
 import {inspectContent} from './validation.js';
 let api,timer;
@@ -59,7 +60,7 @@ export function installStudio(callbacks){
       if(action==='checkpoint'){snapshot(c);api.render();api.toast('Ponto de recuperação criado');}
       if(action==='restore'){
         const selected=readLocal('history',[])[Number(b.dataset.index)];
-        if(!confirm('Restaurar esta versão como rascunho? A versão atual terá um ponto de recuperação.'))return;
+        if(!await askConfirm('Restaurar esta versão como rascunho? A versão atual terá um ponto de recuperação.'))return;
         snapshot(c,'Antes da restauração');api.replace(structuredClone(selected.content));
       }
       if(action==='duplicate'||action==='duplicate-phase'){
@@ -87,7 +88,7 @@ export function installStudio(callbacks){
         const blob=new Blob([JSON.stringify({format:'ygdria-backstage-package',version:1,content:c,assets},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob);
         const link=document.createElement('a');link.href=url;link.download=`ygdria-backstage-${new Date().toISOString().slice(0,10)}.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),10000);api.toast('Pacote exportado com as mídias enviadas');
       }
-    }catch(e){alert(e.message);}finally{b.disabled=false;}
+    }catch(e){await showMessage(e.message);}finally{b.disabled=false;}
   });
   document.addEventListener('change',async event=>{
     if(event.target.id!=='importProject')return;
@@ -95,7 +96,7 @@ export function installStudio(callbacks){
       const file=event.target.files[0];if(!file)return;if(file.size>100_000_000)throw new Error('Pacote maior que 100 MB.');
       const bundle=JSON.parse(await file.text()),next=bundle.format==='ygdria-backstage-package'?bundle.content:bundle;
       const report=inspectContent(next);if(report.errors.length)throw new Error(report.errors.join('\n'));
-      if(!confirm(`Importar ${next.realms.length} reinos e ${next.characters.length} personagens como rascunho?`))return;
+      if(!await askConfirm(`Importar ${next.realms.length} reinos e ${next.characters.length} personagens como rascunho?`))return;
       snapshot(api.get(),'Antes da importação');
       let encoded=JSON.stringify(next);for(const asset of bundle.assets||[]){
         const response=await api.fetch('/api/assets',{method:'POST',body:JSON.stringify({name:asset.name,category:asset.path?.split('/')[2]||'other',data:asset.data})}),result=await response.json();
@@ -103,6 +104,6 @@ export function installStudio(callbacks){
         encoded=encoded.split(JSON.stringify(asset.path)).join(JSON.stringify(result.asset.path));
       }
       await api.refreshAssets();api.replace(JSON.parse(encoded));api.toast('Importado como rascunho. Revise antes de salvar.');
-    }catch(e){alert(e.message);}
+    }catch(e){await showMessage(e.message);}
   });
 }

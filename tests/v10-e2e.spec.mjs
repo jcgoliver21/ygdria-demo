@@ -3,6 +3,7 @@ import {readFileSync} from 'node:fs';
 
 const baseURL=process.env.BASE_URL||'http://127.0.0.1:4177';
 const expectedAppVersion='v'+JSON.parse(readFileSync(new URL('../package.json',import.meta.url),'utf8')).version;
+const expectedHumanPhases=JSON.parse(readFileSync(new URL('../backstage/data/content.json',import.meta.url),'utf8')).realms.find(realm=>realm.id==='humanos').phases;
 
 async function boot(page,qa='all-specials'){
   const errors=[];
@@ -868,8 +869,8 @@ test('lore canônica controla fases, elencos, falas e atmosferas no runtime',asy
       subtitles:WORLDS[0].fases.map(phase=>phase.sub),
       allowed:HUMAN_STORY.map(phase=>phase.allowed),
       fixed:HUMAN_STORY.map(phase=>phase.fixed),
-      garethLine:HUMAN_STORY[5].missions[1][0],
-      finalSpeakers:HUMAN_STORY[9].after.map(step=>step.h||step.name),
+      dialogues:HUMAN_STORY.map(phase=>phase.missions),
+      endings:HUMAN_STORY.map(phase=>phase.after),
       atmospheres,
       missionFive
     };
@@ -877,15 +878,15 @@ test('lore canônica controla fases, elencos, falas e atmosferas no runtime',asy
   expect(probe.source).toBe('backstage/data/content.json');
   expect(probe.hash).toMatch(/^[a-f0-9]{64}$/);
   expect(probe.names).toHaveLength(10);
-  expect(probe.subtitles[0]).toBe('O Encontro Predestinado na Capital de Ygdria');
-  expect(probe.subtitles[8]).toBe('O Prólogo do Fim');
-  expect(probe.allowed[0]).toEqual(['adriel-jovem','berenice-jovem','galateia-jovem','acqua-jovem']);
-  expect(probe.fixed[7]).toEqual(['adriel-jovem','berenice-jovem','galateia-jovem']);
-  expect(probe.allowed[9]).toEqual(['adriel-jovem','gareth','roland','elizier']);
-  expect(probe.garethLine).toEqual({h:'gareth',t:'Não estou gostando nada disso pessoal.'});
-  expect(probe.finalSpeakers).toEqual(['Narrador','Cedric','Narrador','Narrador']);
-  expect(probe.atmospheres).toEqual(['cherry-petals','sacred-pink-light','none','none','festival-confetti','shadow-fog','library-pages','fireworks','darkness','none']);
-  expect(probe.missionFive).toBe('total-darkness');
+  expect(probe.names).toEqual(expectedHumanPhases.map(p=>p.name));
+  expect(probe.subtitles).toEqual(expectedHumanPhases.map(p=>p.subtitle));
+  expect(probe.allowed).toEqual(expectedHumanPhases.map(p=>p.allowed));
+  expect(probe.fixed).toEqual(expectedHumanPhases.map(p=>p.fixed));
+  const storyLine=line=>line.heroId?{h:line.heroId,t:line.text}:{name:line.speaker||'Narrador',t:line.text||''};
+  expect(probe.dialogues).toEqual(expectedHumanPhases.map(p=>p.missions.map(m=>m.lines.map(storyLine))));
+  expect(probe.endings).toEqual(expectedHumanPhases.map(p=>p.after.map(storyLine)));
+  expect(probe.atmospheres).toEqual(expectedHumanPhases.map(p=>p.visual?.key||'none'));
+  expect(probe.missionFive).toBe(expectedHumanPhases[9].visual?.missionFive||expectedHumanPhases[9].visual?.key||'none');
   expect(errors).toEqual([]);
 });
 
@@ -1037,7 +1038,7 @@ test('narrador mantém a caixa e falas de feras ou heróis acompanham o corpo',a
   await page.evaluate(()=>advanceStory());
   await expect(page.locator('#storyLayer')).toHaveClass(/speaker-bubble/);
   await expect(page.locator('#storyLayer')).toHaveAttribute('data-story-anchor','enemy-0');
-  await expect(page.locator('#storyText')).toHaveText('Blub... ploc-ploc... splash!');
+  await expect(page.locator('#storyText')).toHaveText(expectedHumanPhases[0].missions[0].lines[0].text);
   const beastBubble=await page.evaluate(()=>{
     const bubble=document.querySelector('#storyLayer .story-box').getBoundingClientRect();
     const anchor=document.getElementById('enemy-0').getBoundingClientRect();

@@ -1,5 +1,5 @@
-const CACHE='ygdria-backstage-2.0.0';
-const FILES=['./','./index.html','./styles.css','./app.js','./studio.js','./storage.js','./validation.js','../data/content.json'];
+const CACHE='ygdria-backstage-2.0.1';
+const FILES=['./','./index.html','./styles.css','./app.js','./studio.js','./storage.js','./validation.js','./dialogs.js','../data/content.json'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(self.clients.claim()));
 self.addEventListener('fetch',event=>{

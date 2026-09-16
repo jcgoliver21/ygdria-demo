@@ -1,3 +1,4 @@
+import {askText,askConfirm,showMessage} from './dialogs.js';
 import {portable,portableFetch,projectBase} from './storage.js';
 import {installStudio,studioView,enhance,snapshot} from './studio.js';
 const app=document.querySelector('#app');
@@ -89,13 +90,13 @@ async function save(){
   snapshot(state,'Antes de salvar');
   saveBtn.disabled=true; saveState.textContent='Salvando…';
   try{ const response=await apiFetch('/api/content',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(state)}); const result=await response.json(); if(!response.ok) throw new Error((result.errors||[result.error]).join('\n')); state.updatedAt=result.summary?.updatedAt||new Date().toISOString(); localStorage.removeItem('ygdria_backstage_draft'); setDirty(false); showToast(portable?'Rascunho salvo neste navegador':'Conteúdo salvo e compilado'); }
-  catch(error){ saveState.textContent='Erro ao salvar'; alert(error.message); }
+  catch(error){ saveState.textContent='Erro ao salvar'; await showMessage(error.message); }
   finally{ saveBtn.disabled=false; }
 }
 async function init(){
   const response=await apiFetch('/api/content'); const server=await response.json(); if(!response.ok) throw new Error(server.error||'Acesso negado.');
   const mediaResponse=await apiFetch('/api/assets'); if(mediaResponse.ok) mediaAssets=(await mediaResponse.json()).assets||[]; const draft=localStorage.getItem('ygdria_backstage_draft');
-  if(draft&&confirm('Existe um rascunho local não salvo. Deseja recuperá-lo?')){ try{ state=JSON.parse(draft); setDirty(true); }catch{ state=server; } } else state=server;
+  if(draft&&await askConfirm('Existe um rascunho local não salvo. Deseja recuperá-lo?')){ try{ state=JSON.parse(draft); setDirty(true); }catch{ state=server; } } else state=server;
   if(!dirty) setDirty(false); snapshot(state,'Ao abrir o projeto'); render();
 }
 document.addEventListener('input',event=>{
@@ -111,7 +112,7 @@ document.addEventListener('change',async event=>{
   const data=await new Promise((resolve,reject)=>{ const reader=new FileReader(); reader.onload=()=>resolve(reader.result); reader.onerror=reject; reader.readAsDataURL(file); });
   showToast('Enviando arquivo…'); input.disabled=true;
   const response=await apiFetch('/api/assets',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:file.name,category:slot==='card'?'cards':'sprites',data})}); const result=await response.json();
-  if(!response.ok){ input.disabled=false; alert(result.error||'Falha no envio.'); return; }
+  if(!response.ok){ input.disabled=false; await showMessage(result.error||'Falha no envio.'); return; }
   mediaAssets.push(result.asset);
   if(slot==='card'){ character.card=result.asset.path; character.cardThumb=result.asset.path; }
   else{
@@ -128,24 +129,24 @@ document.addEventListener('click',async event=>{
   const action=button.dataset.action;if(!action) return;
   const realm=state.realms[selectedRealm];
   if(action==='preview'){ if(dirty){showToast('Salve suas alterações antes de abrir a prévia');return;} window.open(portable?new URL('play.html',projectBase).href:'/game-preview','_blank'); if(portable)showToast('Abrindo o jogo publicado. Rascunhos só entram após publicação local.'); return; }
-  if(action==='add-realm'){ const name=prompt('Nome do novo reino:','Reino da Luz'); if(!name)return; state.realms.push({id:slug(name),name,status:'draft',color:'#f2f4ff',phases:[]}); selectedRealm=state.realms.length-1; setDirty(); render(); }
-  if(action==='delete-realm'&&confirm(`Excluir ${realm.name} do rascunho?`)){ state.realms.splice(selectedRealm,1); selectedRealm=Math.max(0,selectedRealm-1); setDirty(); render(); }
+  if(action==='add-realm'){ const name=await askText('Nome do novo reino:','Reino da Luz'); if(!name)return; state.realms.push({id:slug(name),name,status:'draft',color:'#f2f4ff',phases:[]}); selectedRealm=state.realms.length-1; setDirty(); render(); }
+  if(action==='delete-realm'&&await askConfirm(`Excluir ${realm.name} do rascunho?`)){ state.realms.splice(selectedRealm,1); selectedRealm=Math.max(0,selectedRealm-1); setDirty(); render(); }
   if(action==='add-phase'){ const n=(realm.phases?.length||0)+1; realm.phases??=[]; realm.phases.push({number:n,name:`Nova fase ${n}`,subtitle:'',bosses:[],visual:{description:'Nada',key:'none'},before:'',allowed:[],fixed:[],missions:[1,2,3,4,5].map(number=>({number,title:`Missão ${number}`,enemies:[],lines:[]})),after:[],afterSceneCues:[]}); setDirty(); render(); }
-  if(action==='delete-phase'&&confirm('Excluir esta fase?')){ realm.phases.splice(Number(button.dataset.phase),1); setDirty(); render(); }
+  if(action==='delete-phase'&&await askConfirm('Excluir esta fase?')){ realm.phases.splice(Number(button.dataset.phase),1); setDirty(); render(); }
   if(action==='add-mission'){ const phase=realm.phases[Number(button.dataset.phase)]; phase.missions.push({number:phase.missions.length+1,title:`Missão ${phase.missions.length+1}`,enemies:[],lines:[]}); setDirty(); render(); }
-  if(action==='delete-mission'&&confirm('Excluir esta missão?')){ realm.phases[Number(button.dataset.phase)].missions.splice(Number(button.dataset.index),1); setDirty(); render(); }
+  if(action==='delete-mission'&&await askConfirm('Excluir esta missão?')){ realm.phases[Number(button.dataset.phase)].missions.splice(Number(button.dataset.index),1); setDirty(); render(); }
   if(action==='add-line'){ getPath(button.dataset.base).push({speaker:'Narrador',heroId:'',text:''}); setDirty(); render(); }
   if(action==='delete-line'){ getPath(button.dataset.base).splice(Number(button.dataset.index),1); setDirty(); render(); }
   if(action==='add-after'){ realm.phases[Number(button.dataset.phase)].after.push({speaker:'Narrador',heroId:'',text:''}); setDirty(); render(); }
   if(action==='add-item'){ const id=`novo-item-${state.items.length+1}`; state.items.push({id,uso:'batalha',raridade:'Comum',nome:'Novo item',desc:'',preco:100,icon:'crystal',effect:{type:'healPercent',value:.1}}); setDirty(); render(); }
-  if(action==='delete-item'&&confirm('Excluir este item?')){ state.items.splice(Number(button.dataset.index),1); setDirty(); render(); }
-  if(action==='add-character'){ const name=prompt('Nome do personagem:','Novo personagem'); if(!name)return; const id=slug(name)||`personagem-${state.characters.length+1}`; state.characters.push({id,name,realmId:'humanos',rarity:'NORMAL',card:'',cardThumb:'',sprites:{}}); setDirty(); render(); }
-  if(action==='delete-character'&&confirm('Excluir este personagem do catálogo?')){ state.characters.splice(Number(button.dataset.index),1); setDirty(); render(); }
+  if(action==='delete-item'&&await askConfirm('Excluir este item?')){ state.items.splice(Number(button.dataset.index),1); setDirty(); render(); }
+  if(action==='add-character'){ const name=await askText('Nome do personagem:','Novo personagem'); if(!name)return; const id=slug(name)||`personagem-${state.characters.length+1}`; state.characters.push({id,name,realmId:'humanos',rarity:'NORMAL',card:'',cardThumb:'',sprites:{}}); setDirty(); render(); }
+  if(action==='delete-character'&&await askConfirm('Excluir este personagem do catálogo?')){ state.characters.splice(Number(button.dataset.index),1); setDirty(); render(); }
   if(action==='upload-media'){
     const file=document.querySelector('#mediaFile')?.files?.[0]; if(!file){ showToast('Escolha um arquivo'); return; }
     const data=await new Promise((resolve,reject)=>{ const reader=new FileReader(); reader.onload=()=>resolve(reader.result); reader.onerror=reject; reader.readAsDataURL(file); });
     button.disabled=true; const response=await apiFetch('/api/assets',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:file.name,category:document.querySelector('#mediaCategory').value,data})}); const result=await response.json(); button.disabled=false;
-    if(!response.ok){ alert(result.error||'Falha no envio.'); return; } mediaAssets.push(result.asset); render(); showToast('Arquivo adicionado ao projeto');
+    if(!response.ok){ await showMessage(result.error||'Falha no envio.'); return; } mediaAssets.push(result.asset); render(); showToast('Arquivo adicionado ao projeto');
   }
   if(action==='prepare-release'){
     const box=document.querySelector('#releaseResult'); box.innerHTML='<div class="notice">Executando validações…</div>';
@@ -153,8 +154,8 @@ document.addEventListener('click',async event=>{
     const output=[`RESULTADO: ${result.ok?'APROVADO':'REPROVADO'}`,result.errors?.join('\n')||'',result.compiled?`\nConteúdo: ${result.compiled.realms} reinos, ${result.compiled.phases} fases, ${result.compiled.items} itens.`:'',...Object.entries(result.checks||{}).map(([name,row])=>`\n[${row.ok?'OK':'ERRO'}] ${name}\n${row.output||''}`),`\n[ARQUIVOS]\n${result.git?.output||'Sem alterações detectadas.'}`].join('\n'); box.innerHTML=`<pre class="report">${esc(output)}</pre>`; if(result.ok){ state.updatedAt=result.compiled?.updatedAt||new Date().toISOString(); setDirty(false); }
   }
   if(action==='publish'){
-    if(!confirm('Publicar os ajustes no site de Ygdria? O painel executará os testes, criará uma versão e enviará para o GitHub Pages.')) return;
-    const message=prompt('Descrição curta desta publicação:','content: atualizar via Ygdria Backstage'); if(message===null) return;
+    if(!await askConfirm('Publicar os ajustes no site de Ygdria? O painel executará os testes, criará uma versão e enviará para o GitHub Pages.')) return;
+    const message=await askText('Descrição curta desta publicação:','content: atualizar via Ygdria Backstage'); if(message===null) return;
     const box=document.querySelector('#releaseResult'); box.innerHTML='<div class="notice">Validando e enviando a versão…</div>';
     const response=await apiFetch('/api/publish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({confirm:true,message,content:state})}); const result=await response.json();
     const output=result.ok?`${result.message}\n${result.revision?`Revisão: ${result.revision}\n`:''}${(result.files||[]).join('\n')}`:`PUBLICAÇÃO INTERROMPIDA\n${result.error||''}\n${result.details||''}`;

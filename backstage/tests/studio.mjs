@@ -24,16 +24,18 @@ for(const width of [390,1440]){
   await page.locator('[data-path="editorNotes"]').fill('Teste de recuperação');
   await page.getByRole('button',{name:'Criar ponto de recuperação'}).click();
   await page.locator('#saveBtn').click();
+  await page.waitForFunction(()=>document.querySelector('#saveState').textContent==='Salvo neste navegador');
   await page.reload({waitUntil:'networkidle'});
   await page.locator('.bottom-nav [data-view="studio"]').click();
   assert.equal(await page.locator('[data-path="editorNotes"]').inputValue(),'Teste de recuperação');
   const downloadPromise=page.waitForEvent('download');await page.getByRole('button',{name:'Baixar pacote com mídias'}).click();
   const download=await downloadPromise;const bundle=JSON.parse(fs.readFileSync(await download.path(),'utf8'));assert.equal(bundle.content.characters.length,25);
   await page.locator('#importProject').setInputFiles({name:'backup.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(bundle))});
+  await page.getByRole('dialog').getByRole('button',{name:'Confirmar',exact:true}).click();
   await page.waitForFunction(()=>document.querySelector('#toast').textContent.includes('Importado'));
   assert.deepEqual(errors,[]);
   await page.screenshot({path:`backstage/qa/oficina-${width}.png`,fullPage:false});
-  if(!process.env.STUDIO_BASE){await context.setOffline(true);await page.reload();await page.getByRole('heading',{name:'Controle o mundo de Ygdria'}).waitFor();}
+  if(!process.env.STUDIO_BASE){await context.setOffline(true);await page.reload();await page.getByRole('dialog').getByRole('button',{name:'Confirmar',exact:true}).click();await page.getByRole('heading',{name:'Controle o mundo de Ygdria'}).waitFor();}
   await context.close();
 }
 console.log('Studio: desktop/mobile, sprites, duplicação, persistência, exportação, importação e offline aprovados.');
