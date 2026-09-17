@@ -14,3 +14,8 @@ const context={};vm.runInNewContext(fs.readFileSync('humanos-lore-v10.js','utf8'
 assert.equal(JSON.stringify(context.YGDRIA_HUMANOS_LORE.phases.map(p=>p.missions)),JSON.stringify(c.realms.find(r=>r.id==='humanos').phases.map(p=>p.missions)));
 assert.equal(JSON.stringify(context.YGDRIA_HUMANOS_LORE.phases.map(p=>p.after)),JSON.stringify(c.realms.find(r=>r.id==='humanos').phases.map(p=>p.after)));
 console.log('Backstage: estrutura, compilação, dados inválidos, duplicatas, caminhos e sincronização aprovados.');
+
+const emptyRealm=structuredClone(c);emptyRealm.realms.push({id:'fogo',mapSlot:'fogo',mapEnabled:true,name:'Reino do Fogo',phases:[]});assert.deepEqual(inspectContent(emptyRealm).errors,[]);
+const collision=structuredClone(emptyRealm);collision.realms.at(-1).mapSlot='humanos';assert.ok(inspectContent(collision).errors.some(e=>e.includes('espaço humanos')));
+const activeRealm=structuredClone(emptyRealm),r=activeRealm.realms.at(-1);r.phases=[structuredClone(c.realms[0].phases[0])];r.phases[0].background='assets/bg/humanos/fase-01.jpg';assert.deepEqual(inspectContent(activeRealm).errors,[]);r.phases[0].missions[0]=null;assert.ok(inspectContent(activeRealm).errors.length);
+const missingMusic=structuredClone(c);missingMusic.realms[0].phases[0].missions[0].music='assets/audio/not-found.mp3';assert.equal(compileContent(missingMusic,{write:false}).ok,false);

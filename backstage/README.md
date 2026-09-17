@@ -4,7 +4,7 @@ Painel de conteúdo sem banco de dados. Os dados ficam em `backstage/data/conten
 
 ## Painel publicado
 
-Abra https://jcgoliver21.github.io/ygdria-demo/backstage/public/ no computador ou celular. Rascunhos e arquivos enviados ficam no armazenamento deste navegador. Depois do primeiro acesso, o editor pode abrir offline; imagens originais ainda não visitadas exigem conexão. Navegadores limitam o espaço local: use o painel local para mídias grandes.
+Abra https://jcgoliver21.github.io/ygdria-demo/backstage/public/ no computador ou celular. Rascunhos e arquivos enviados ficam no armazenamento deste navegador. Depois do primeiro acesso, o editor pode abrir offline; imagens originais ainda não visitadas exigem conexão. O botão de anexar aceita arquivos de até 20 MB. Navegadores compatíveis guardam as mídias em arquivos privados do aparelho; o limite total depende do espaço disponível. Exporte backups regularmente.
 
 Na **Oficina**, baixe um pacote JSON com o conteúdo e as mídias enviadas. Importe esse pacote no Backstage local, revise, salve e publique. O painel público não recebe credenciais, não modifica o site de outros usuários e não executa Git. A prévia na web abre a versão publicada, enquanto a prévia local mostra o conteúdo salvo.
 
@@ -45,8 +45,10 @@ O envio é bloqueado se os testes falharem, se a cópia local não partir da ver
 ## Limites atuais
 
 - O Reino dos Humanos é jogável e deve conservar dez fases nesta versão do runtime.
-- Novos reinos podem ser estruturados no painel como rascunhos; torná-los jogáveis exige os cenários, inimigos, personagens e regras correspondentes no runtime.
-- Imagens e músicas enviadas pelo painel ficam em `assets/backstage/` e podem ser vinculadas por seus caminhos.
+- Ao criar um reino, escolha um dos doze espaços do mapa. A opção **Habilitar no mapa ao publicar** ativa esse espaço após a publicação. Um reino vazio apresenta “Campanha em preparação”. Para jogar, cada fase precisa de cenário, cinco missões com inimigos e pelo menos quatro personagens habilitados. Reutiliza as mecânicas e os personagens já integrados ao jogo; conteúdo incompleto pode continuar como rascunho desmarcando a opção.
+- Falas, músicas, fases e progresso dos novos reinos ficam separados dos Humanos. A trilha da missão tem prioridade sobre a trilha da fase.
+- Anexe o cenário na própria fase, a música na fase ou missão, e as cartas/sprites em Personagens e cartas. Os caminhos são preenchidos automaticamente. Aceita PNG/JPG/WEBP para imagens, GIF para folhas e MP3/OGG/WAV para áudio.
+- O endereço público funciona fora da rede de casa. Sem servidor autenticado, as alterações não sincronizam entre aparelhos: exporte na Oficina e importe no painel local para publicar.
 - O catálogo inicial contém os 24 personagens já presentes no jogo. Cada registro aceita carta e folhas de repouso, ataque, conjuração, dano, vitória e derrota.
 - Uma folha de animação só substitui a publicada quando sua grade for informada, a opção de ativação for marcada e a validação for aprovada.
 - Itens novos podem reutilizar efeitos suportados: `shuffle`, `royalShuffle`, `healPercent` e `attackMultiplier`. O reinício continua exclusivo da Benção da Eternidade.

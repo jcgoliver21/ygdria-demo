@@ -3,6 +3,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import {inspectContent} from '../public/validation.js';
+import {realmSlot} from '../public/realm-slots.js';
 
 const backstageRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const projectRoot=path.resolve(backstageRoot,'..');
@@ -16,7 +17,7 @@ export function validateContent(content){
   if(structural.length)return structural;
   const required=[];
   for(const c of content.characters||[]){if(c.card)required.push(c.card);if(c.cardThumb)required.push(c.cardThumb);for(const s of Object.values(c.sprites||{}))if(s?.enabled&&s.src)required.push(s.src);}
-  for(const r of content.realms||[])for(const p of r.phases||[]){if(p.background)required.push(p.background);if(p.music)required.push(p.music);}
+  for(const r of content.realms||[])for(const p of r.phases||[]){if(p.background)required.push(p.background);if(p.music)required.push(p.music);for(const m of p.missions||[])if(m.music)required.push(m.music);}
   for(const item of content.items||[])if(item.image)required.push(item.image);
   for(const asset of new Set(required))if(!fs.existsSync(path.join(projectRoot,asset)))structural.push(`Arquivo não encontrado: ${asset}`);
   if(structural.length)return structural;
@@ -80,6 +81,7 @@ function normalizePhase(phase,index){
     missions:(phase.missions||[]).map((mission,missionIndex)=>({
       number:Number(mission.number||missionIndex+1),
       title:String(mission.title||`Missão ${missionIndex+1}`),
+      ...('music' in mission?{music:String(mission.music||'')}:{}),
       enemies:Array.isArray(mission.enemies)?mission.enemies.map(String):[],
       lines:(mission.lines||[]).map(line=>({speaker:String(line.speaker||'Narrador'),heroId:String(line.heroId||''),text:String(line.text||'')}))
     })),
@@ -105,7 +107,7 @@ export function compileContent(content,{write=true}={}){
     items:(content.items||[]).map(item=>({...item,preco:Number(item.preco||0)})),
     characters:(content.characters||[]).map(character=>({...character})),
     settings:content.settings||{},
-    realms:content.realms.map(({id,name,status,color,phases:realmPhases=[]})=>({id,name,status:status||'draft',color:color||'#d4af5a',phaseCount:realmPhases.length}))
+    realms:content.realms.map(({id,mapSlot,mapEnabled,name,status,color,phases:realmPhases=[]})=>({id,mapSlot:mapSlot||realmSlot(id),mapEnabled:mapEnabled??status==='published',name,status:status||'draft',color:color||'#d4af5a',phaseCount:realmPhases.length,phases:realmPhases.map(normalizePhase)}))
   };
   if(write){
     fs.mkdirSync(path.dirname(dataFile),{recursive:true});

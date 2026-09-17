@@ -1,6 +1,7 @@
 import {askText,askConfirm,showMessage} from './dialogs.js';
 import {portable,assetUrl,readLocal,writeLocal} from './storage.js';
 import {inspectContent} from './validation.js';
+import {realmSlots,realmSlot} from './realm-slots.js';
 let api,timer;
 const safe=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function snapshot(state,label='Ponto de recuperação'){
@@ -19,6 +20,18 @@ export function studioView(){
 export function enhance(view){
   clearInterval(timer);
   const root=document.querySelector('#app');
+  if(view==='realms'){
+    const realm=api.get().realms[api.realm()],card=root.querySelector('.realm-card');
+    if(card)card.insertAdjacentHTML('beforeend',`<div class="form-grid two"><label class="field"><span>Espaço no mapa</span><select data-path="realms.${api.realm()}.mapSlot" ${realm.id==='humanos'?'disabled':''}>${realmSlots.map(([id,name])=>`<option value="${id}" ${id===(realm.mapSlot||realmSlot(realm.id))?'selected':''}>${name}</option>`).join('')}</select></label><label class="toggle"><input type="checkbox" data-path="realms.${api.realm()}.mapEnabled" ${(realm.mapEnabled??realm.status==='published')?'checked':''}><span>Habilitar no mapa ao publicar</span></label></div>`);
+    for(const title of root.querySelectorAll('[data-path$=".missions.0.title"], [data-path$=".title"]'))if(title.dataset.path.includes('.missions.')){
+      const base=title.dataset.path.replace(/\.title$/,''),m=base.split('.').reduce((o,k)=>o[k],api.get());
+      title.closest('.form-grid').insertAdjacentHTML('beforeend',`<label class="field"><span>Música desta missão (opcional)</span><input data-path="${base}.music" value="${safe(m.music||'')}"></label>`);
+    }
+    for(const field of root.querySelectorAll('[data-path$=".background"],[data-path$=".music"]')){
+      const isAudio=field.dataset.path.endsWith('.music'),url=field.value?assetUrl(field.value):'';
+      field.closest('label').insertAdjacentHTML('afterend',`<div class="field"><span>${isAudio?'Anexar música':'Anexar cenário'} · até 20 MB</span><input type="file" data-slot-upload="${safe(field.dataset.path)}" accept="${isAudio?'audio/mpeg,audio/ogg,audio/wav,.mp3,.ogg,.wav':'image/png,image/jpeg,image/webp'}">${url?(isAudio?`<audio controls preload="none" src="${safe(url)}"></audio>`:`<img src="${safe(url)}" alt="Cenário selecionado" style="width:100%;max-height:180px;object-fit:contain">`):''}</div>`);
+    }
+  }
   root.querySelectorAll('img[src^="/project/"]').forEach(img=>img.src=assetUrl(img.getAttribute('src').slice(9)));
   if(view==='dashboard'){
     root.insertAdjacentHTML('beforeend','<section class="card" style="margin-top:16px"><h3>Oficina de conteúdo</h3><p>Backup com mídias, histórico, checklist e caderno de produção.</p><button data-view="studio">Abrir oficina</button></section>');
@@ -91,6 +104,19 @@ export function installStudio(callbacks){
     }catch(e){await showMessage(e.message);}finally{b.disabled=false;}
   });
   document.addEventListener('change',async event=>{
+    if(event.target.dataset.slotUpload){
+      const control=event.target,file=control.files?.[0];if(!file)return;
+      try{
+        if(file.size>20*1024*1024)throw new Error('Cada arquivo pode ter até 20 MB.');
+        control.disabled=true;api.toast('Enviando '+file.name+'…');
+        const data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file);});
+        const response=await api.fetch('/api/assets',{method:'POST',body:JSON.stringify({name:file.name,category:control.dataset.slotUpload.endsWith('.music')?'audio':'images',data})}),result=await response.json();
+        if(!response.ok)throw new Error(result.error||'Falha ao enviar.');
+        const opens=[...document.querySelectorAll('#app details')].map(d=>d.open);
+        const keys=control.dataset.slotUpload.split('.'),last=keys.pop();keys.reduce((o,k)=>o[k],api.get())[last]=result.asset.path;
+        await api.refreshAssets();api.replace(api.get());[...document.querySelectorAll('#app details')].forEach((d,i)=>d.open=opens[i]);api.toast('Arquivo anexado. Salve o conteúdo.');
+      }catch(e){await showMessage(e.message);}finally{control.disabled=false;}return;
+    }
     if(event.target.id!=='importProject')return;
     try{
       const file=event.target.files[0];if(!file)return;if(file.size>100_000_000)throw new Error('Pacote maior que 100 MB.');

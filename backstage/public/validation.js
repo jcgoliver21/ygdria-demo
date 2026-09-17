@@ -1,3 +1,4 @@
+import {realmSlots,realmSlot} from './realm-slots.js';
 export function inspectContent(c){
   const errors=[],warnings=[];
   const object=x=>x&&typeof x==='object'&&!Array.isArray(x);
@@ -15,7 +16,14 @@ export function inspectContent(c){
   if(errors.length) return {errors,warnings};
   const human=c.realms.find(r=>r.id==='humanos');
   if(!human||human.phases?.length!==10) errors.push('O jogo exige exatamente dez fases no Reino dos Humanos.');
+  const slots=new Set();
+  const playableHeroes=new Set(['humanos','luz','agua','fogo','natureza','terra','areia','sombras','raio','vento','chuvas','gelo','adriel-jovem','acqua-jovem','galateia-jovem','berenice-jovem','gareth','cedric','elizier','roland','jules','kalander','bernyce','julius']);
+  const enemies=new Set([...playableHeroes,'slimeCereja','loboRaivoso','soldado1','soldado2','capitao','vulto','espectro','morto','soldBib1','soldBib2','soldBib3','infantaria','cavalaria','comandante','trono']);
   for(const r of c.realms){
+    const slot=r.mapSlot||realmSlot(r.id);
+    if(r.id==='humanos'&&slot!=='humanos')errors.push('O Reino dos Humanos deve manter seu espaço original no mapa.');
+    if(!realmSlots.some(([id])=>id===slot))errors.push(`${r.name}: escolha um dos doze espaços do mapa.`);
+    if(slots.has(slot))errors.push(`O espaço ${slot} já pertence a outro reino.`);slots.add(slot);
     if(!Array.isArray(r.phases)){errors.push(`${r.name}: lista de fases inválida.`);continue;}
     const nums=new Set();
     for(const p of r.phases){
@@ -24,6 +32,14 @@ export function inspectContent(c){
       if(!p.name) errors.push(`${r.name}: fase sem nome.`);
       if(!Array.isArray(p.missions)||!Array.isArray(p.after)||!Array.isArray(p.allowed)||!Array.isArray(p.fixed)||!Array.isArray(p.bosses)){errors.push(`${r.name}/${p.number}: listas da fase inválidas.`);continue;}
       if(!p.before) warnings.push(`${r.name} / ${p.name}: escreva a abertura para contextualizar a missão.`);
+      if(r.id!=='humanos'&&r.mapEnabled!==false&&(r.mapEnabled===true||r.status==='published')){
+        if(p.missions.length!==5)errors.push(`${p.name}: a campanha usa cinco missões por fase.`);
+        if(!p.background)errors.push(`${p.name}: anexe o cenário para habilitar esta fase.`);
+        if(new Set(p.allowed).size<4||p.fixed.length>4||p.fixed.some(id=>!p.allowed.includes(id)))errors.push(`${p.name}: escolha pelo menos quatro heróis permitidos e até quatro obrigatórios dentre eles.`);
+        if(p.allowed.some(id=>!playableHeroes.has(id)))errors.push(`${p.name}: há heróis ainda não integrados ao combate.`);
+        if(p.missions.some(m=>!m?.enemies?.length))errors.push(`${p.name}: todas as missões precisam de inimigos.`);
+        if(p.missions.some(m=>Array.isArray(m?.enemies)&&m.enemies.some(id=>!enemies.has(id))))errors.push(`${p.name}: há inimigos não reconhecidos pelo jogo.`);
+      }
       const missions=new Set();
       for(const m of p.missions){
         if(!object(m)||!Number.isInteger(m.number)||m.number<1||missions.has(m.number)||!Array.isArray(m.lines)||!Array.isArray(m.enemies)){errors.push(`${r.name}/${p.number}: missão inválida ou repetida.`);continue;}

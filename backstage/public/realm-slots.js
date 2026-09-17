@@ -1,0 +1,2 @@
+export const realmSlots=[['humanos','Reino dos Humanos'],['luz','Reino da Luz'],['agua','Reino da Água'],['fogo','Reino do Fogo'],['natureza','Reino da Natureza'],['terra','Reino da Terra'],['areia','Reino da Areia'],['sombras','Reino das Sombras'],['raio','Reino do Raio'],['vento','Reino do Vento'],['chuvas','Reino das Chuvas'],['gelo','Reino do Gelo']];
+export const realmSlot=id=>String(id||'').replace(/^reino-(?:da|do|dos|das)-/,'');

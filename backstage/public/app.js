@@ -1,4 +1,5 @@
-import {askText,askConfirm,showMessage} from './dialogs.js';
+import {askText,askConfirm,showMessage,askChoice} from './dialogs.js';
+import {realmSlots,realmSlot} from './realm-slots.js';
 import {portable,portableFetch,projectBase} from './storage.js';
 import {installStudio,studioView,enhance,snapshot} from './studio.js';
 const app=document.querySelector('#app');
@@ -109,6 +110,7 @@ document.addEventListener('change',async event=>{
   const input=event.target.closest('[data-character-upload]'); if(!input) return;
   const file=input.files?.[0]; if(!file) return;
   const index=Number(input.dataset.characterUpload),slot=input.dataset.slot,character=state.characters[index];
+  if(file.size>20*1024*1024){await showMessage('Cada arquivo pode ter até 20 MB.');return;}
   const data=await new Promise((resolve,reject)=>{ const reader=new FileReader(); reader.onload=()=>resolve(reader.result); reader.onerror=reject; reader.readAsDataURL(file); });
   showToast('Enviando arquivo…'); input.disabled=true;
   const response=await apiFetch('/api/assets',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:file.name,category:slot==='card'?'cards':'sprites',data})}); const result=await response.json();
@@ -129,7 +131,13 @@ document.addEventListener('click',async event=>{
   const action=button.dataset.action;if(!action) return;
   const realm=state.realms[selectedRealm];
   if(action==='preview'){ if(dirty){showToast('Salve suas alterações antes de abrir a prévia');return;} window.open(portable?new URL('play.html',projectBase).href:'/game-preview','_blank'); if(portable)showToast('Abrindo o jogo publicado. Rascunhos só entram após publicação local.'); return; }
-  if(action==='add-realm'){ const name=await askText('Nome do novo reino:','Reino da Luz'); if(!name)return; state.realms.push({id:slug(name),name,status:'draft',color:'#f2f4ff',phases:[]}); selectedRealm=state.realms.length-1; setDirty(); render(); }
+  if(action==='add-realm'){
+    const available=realmSlots.filter(([id])=>!state.realms.some(r=>(r.mapSlot||realmSlot(r.id))===id));
+    if(!available.length){await showMessage('Todos os espaços do mapa já possuem um reino.');return;}
+    const id=await askChoice('Em qual espaço do mapa fica este reino?',available);if(!id)return;
+    const name=await askText('Nome do reino:',realmSlots.find(r=>r[0]===id)[1]);if(!name)return;
+    state.realms.push({id,mapSlot:id,name,status:'published',mapEnabled:true,color:'#f2f4ff',phases:[]});selectedRealm=state.realms.length-1;setDirty();render();
+  }
   if(action==='delete-realm'&&await askConfirm(`Excluir ${realm.name} do rascunho?`)){ state.realms.splice(selectedRealm,1); selectedRealm=Math.max(0,selectedRealm-1); setDirty(); render(); }
   if(action==='add-phase'){ const n=(realm.phases?.length||0)+1; realm.phases??=[]; realm.phases.push({number:n,name:`Nova fase ${n}`,subtitle:'',bosses:[],visual:{description:'Nada',key:'none'},before:'',allowed:[],fixed:[],missions:[1,2,3,4,5].map(number=>({number,title:`Missão ${number}`,enemies:[],lines:[]})),after:[],afterSceneCues:[]}); setDirty(); render(); }
   if(action==='delete-phase'&&await askConfirm('Excluir esta fase?')){ realm.phases.splice(Number(button.dataset.phase),1); setDirty(); render(); }
@@ -162,7 +170,7 @@ document.addEventListener('click',async event=>{
     box.innerHTML=`<pre class="report">${esc(output)}</pre>`;
   }
 });
-installStudio({get:()=>state,replace:next=>{state=next;selectedRealm=0;setDirty();render();},realm:()=>selectedRealm,assets:()=>mediaAssets,fetch:apiFetch,refreshAssets:async()=>{mediaAssets=(await (await apiFetch('/api/assets')).json()).assets||[];},render,save,toast:showToast});
+installStudio({get:()=>state,replace:next=>{state=next;selectedRealm=Math.min(selectedRealm,Math.max(0,next.realms.length-1));setDirty();render();},realm:()=>selectedRealm,assets:()=>mediaAssets,fetch:apiFetch,refreshAssets:async()=>{mediaAssets=(await (await apiFetch('/api/assets')).json()).assets||[];},render,save,toast:showToast});
 saveBtn.addEventListener('click',save);
 window.addEventListener('beforeunload',event=>{ if(dirty){ event.preventDefault(); event.returnValue=''; } });
 if(portable&&'serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});

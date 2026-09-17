@@ -1,0 +1,37 @@
+import {chromium} from '@playwright/test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const base=process.env.STUDIO_BASE||'http://127.0.0.1:4401/backstage/public/';
+const fixture=JSON.parse(fs.readFileSync('backstage/data/content.json','utf8'));
+fixture.realms=[fixture.realms.find(r=>r.id==='humanos'),{id:'reino-da-luz',mapSlot:'luz',name:'Reino da Luz',status:'draft',mapEnabled:false,color:'#ffffff',phases:[structuredClone(fixture.realms[0].phases[0])]}];
+const browser=await chromium.launch();
+const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/l9sAAAAASUVORK5CYII=','base64');
+const wav=Buffer.alloc(6*1024*1024+44);wav.write('RIFF');wav.writeUInt32LE(wav.length-8,4);wav.write('WAVEfmt ',8);wav.writeUInt32LE(16,16);wav.writeUInt16LE(1,20);wav.writeUInt16LE(1,22);wav.writeUInt32LE(44100,24);wav.writeUInt32LE(88200,28);wav.writeUInt16LE(2,32);wav.writeUInt16LE(16,34);wav.write('data',36);wav.writeUInt32LE(wav.length-44,40);
+try{for(const width of [390,1440]){
+ const context=await browser.newContext({viewport:{width,height:900},acceptDownloads:true});const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.addInitScript(c=>{if(!localStorage.getItem('ygdria_backstage_v2_content'))localStorage.setItem('ygdria_backstage_v2_content',JSON.stringify(c));},fixture);
+ await page.goto(base,{waitUntil:'networkidle'});
+ await page.locator('.bottom-nav [data-view="realms"]').click();
+ await page.locator('[data-realm="1"]').click();
+ await page.locator('#app details summary').first().click();
+ const bg='realms.1.phases.0.background',music='realms.1.phases.0.missions.0.music';
+ await page.locator(`[data-slot-upload="${bg}"]`).setInputFiles({name:'cenario-qa.png',mimeType:'image/png',buffer:png});
+ await page.waitForFunction(p=>document.querySelector(`[data-path="${p}"]`).value.includes('cenario-qa.png'),bg);
+ await page.locator(`[data-slot-upload="${music}"]`).setInputFiles({name:'musica-qa.wav',mimeType:'audio/wav',buffer:wav});
+ await page.waitForFunction(p=>document.querySelector(`[data-path="${p}"]`).value.includes('musica-qa.wav'),music);
+ await page.locator('#saveBtn').click();await page.waitForFunction(()=>document.querySelector('#saveState').textContent==='Salvo neste navegador');
+ const files=await page.evaluate(()=>JSON.parse(localStorage.getItem('ygdria_backstage_v2_assets')));assert.equal(files.length,2);assert.ok(files.every(a=>a.fileKey&&!a.data));assert.ok(files[1].size>5*1024*1024);
+ await page.reload({waitUntil:'networkidle'});await page.locator('.bottom-nav [data-view="realms"]').click();await page.locator('[data-realm="1"]').click();
+ assert.match(await page.locator(`[data-path="${bg}"]`).inputValue(),/cenario-qa/);
+ assert.ok(await page.evaluate(async()=>{const {assetUrl}=await import('./storage.js');const a=JSON.parse(localStorage.getItem('ygdria_backstage_v2_assets'))[1];return (await (await fetch(assetUrl(a.path))).blob()).size>5*1024*1024;}));
+ await page.locator('.bottom-nav [data-view="characters"]').click();
+ await page.locator('[data-character-upload="0"][data-slot="card"]').setInputFiles({name:'carta-qa.png',mimeType:'image/png',buffer:png});
+ await page.waitForFunction(()=>document.querySelector('[data-path="characters.0.card"]').value.includes('carta-qa'));
+ await page.locator('[data-character-upload="0"][data-slot="idle"]').setInputFiles({name:'sprite-1x1.png',mimeType:'image/png',buffer:png});
+ await page.waitForFunction(()=>document.querySelector('[data-path="characters.0.sprites.idle.src"]').value.includes('sprite-1x1'));
+ await page.locator('.bottom-nav [data-view="studio"]').click();
+ const d=page.waitForEvent('download');await page.getByRole('button',{name:'Baixar pacote com mídias'}).click();const download=await d;const bundle=JSON.parse(fs.readFileSync(await download.path()));assert.equal(bundle.assets.length,4);assert.ok(bundle.assets.every(a=>a.data.startsWith('data:')));
+ await page.locator('#importProject').setInputFiles({name:'pacote.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(bundle))});await page.getByRole('dialog').getByRole('button',{name:'Confirmar',exact:true}).click();await page.waitForFunction(()=>document.querySelector('#toast').textContent.includes('Importado'));
+ await page.locator('.bottom-nav [data-view="realms"]').click();await page.locator('[data-realm="1"]').click();await page.locator('#app details summary').first().click();
+ await page.screenshot({path:`backstage/qa/mobile-uploads-${width}.png`});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);assert.deepEqual(errors,[]);await context.close();
+}console.log('Arquivos: cenário, música de 6 MB, carta, sprite, recarga, exportação/importação aprovados em desktop e celular.');}finally{await browser.close();}

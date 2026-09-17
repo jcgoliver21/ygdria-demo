@@ -79,11 +79,13 @@ const server=http.createServer(async(req,res)=>{
       const safeName=path.basename(String(upload.name||'arquivo')).replace(/[^a-zA-Z0-9._-]+/g,'-');
       const extension=path.extname(safeName).toLowerCase();
       const allowed=new Set(['.png','.jpg','.jpeg','.webp','.gif','.mp3','.ogg','.wav']);
-      if(!allowed.has(extension)) return send(res,415,{ok:false,error:'Formato não permitido. Use PNG, JPG, WEBP, GIF, SVG, MP3, OGG ou WAV.'});
+      if(!allowed.has(extension)) return send(res,415,{ok:false,error:'Formato não permitido. Use PNG, JPG, WEBP, GIF, MP3, OGG ou WAV.'});
       const match=String(upload.data||'').match(/^data:[^;]+;base64,(.+)$/);
       if(!match) return send(res,400,{ok:false,error:'Arquivo inválido.'});
+      const bytes=Buffer.from(match[1],'base64');
+      if(bytes.length>20*1024*1024)return send(res,413,{ok:false,error:'Cada arquivo pode ter até 20 MB.'});
       const targetDir=path.join(projectRoot,'assets','backstage',category); fs.mkdirSync(targetDir,{recursive:true});
-      const target=path.join(targetDir,`${Date.now()}-${crypto.randomBytes(3).toString('hex')}-${safeName}`); fs.writeFileSync(target,Buffer.from(match[1],'base64'));
+      const target=path.join(targetDir,`${Date.now()}-${crypto.randomBytes(3).toString('hex')}-${safeName}`); fs.writeFileSync(target,bytes);
       return send(res,201,{ok:true,asset:{path:path.relative(projectRoot,target).replaceAll('\\','/'),name:path.basename(target),size:fs.statSync(target).size}});
     }
     if(url.pathname==='/api/content'&&req.method==='PUT'){

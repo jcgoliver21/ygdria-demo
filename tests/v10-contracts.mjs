@@ -20,13 +20,13 @@ const checks=[];
 function check(name,fn){ fn(); checks.push(name); }
 
 check('arquivos públicos apontam somente para v10',()=>{
-  assert.match(html,/styles-v10\.css\?v=11\.1\.5/);
-  assert.match(html,/v10-config\.js\?v=11\.1\.5/);
-  assert.match(html,/v10-animations\.js\?v=11\.1\.5/);
-  assert.match(html,/humanos-lore-v10\.js\?v=11\.1\.5/);
-  assert.match(html,/game-v10\.js\?v=11\.1\.5/);
-  assert.match(config,/version:'v11\.1\.5'/);
-  assert.match(sw,/12r-v11\.1\.5/);
+  assert.match(html,/styles-v10\.css\?v=11\.1\.6/);
+  assert.match(html,/v10-config\.js\?v=11\.1\.6/);
+  assert.match(html,/v10-animations\.js\?v=11\.1\.6/);
+  assert.match(html,/humanos-lore-v10\.js\?v=11\.1\.6/);
+  assert.match(html,/game-v10\.js\?v=11\.1\.6/);
+  assert.match(config,/version:'v11\.1\.6'/);
+  assert.match(sw,/12r-v11\.1\.6/);
   assert.match(workflow,/expected_asset="\$\(grep -oE 'game-v10\\\.js\\\?v=\[0-9\.\]\+'/);
   assert.match(workflow,/grep -Fq "\$\{expected_asset\}"/);
   assert.doesNotMatch(workflow,/game-v10\.js\?v=10\.0\.33/);
@@ -93,8 +93,8 @@ check('Modo DEV libera conteúdo sem adulterar o progresso normal e usa o trono 
   assert.match(game,/function saveWorldProg\(worldId,prog\)\{ if\(!isDevMode\(\)\)/);
   assert.doesNotMatch(game,/HUMANOS_PUBLIC_TEST_UNLOCK/);
   assert.match(game,/function worldAccessLimit\(/);
-  assert.match(game,/faseIdx>worldAccessLimit\('humanos',prog\)/);
-  assert.match(game,/idx>worldAccessLimit\('humanos',prog\)/);
+  assert.match(game,/faseIdx>worldAccessLimit\(currentRealmId\(\),prog\)/);
+  assert.match(game,/idx>worldAccessLimit\(currentRealmId\(\),prog\)/);
   assert.match(game,/function syncRoyalCourtSceneCast\(/);
   assert.match(game,/assets\/characters\/runtime-v10\/bernyce\/scene-seated\.png/);
   assert.match(css,/\.royal-court-cast/);
@@ -162,7 +162,7 @@ check('fogos da Muralha usam lançamento e física balística em canvas',()=>{
 });
 
 check('cache offline da v10 é isolado',()=>{
-  assert.match(sw,/12r-v11\.1\.5/);
+  assert.match(sw,/12r-v11\.1\.6/);
   for(const file of ['index.html','play.html','styles-v10.css','v10-config.js','v10-animations.js','humanos-lore-v10.js','game-v10.js','manifest.webmanifest','assets/icon.svg']){
     assert.ok(sw.includes(`'./${file}'`),`${file} ausente do núcleo offline`);
   }
@@ -641,7 +641,7 @@ check('mapa vertical preserva geografia e expande somente o oceano lateral',()=>
 
 check('menu inicial não bloqueia o primeiro toque',()=>{
   const earlyOptions=html.indexOf('data-early-options');
-  const deferredGame=html.indexOf('game-v10.js?v=11.1.5');
+  const deferredGame=html.indexOf('game-v10.js?v=11.1.6');
   assert.ok(earlyOptions>0&&earlyOptions<deferredGame,'ponte inicial de Opções precisa carregar antes do jogo principal');
   assert.match(html,/panel\.dataset\.earlyOpened='1'/);
   assert.match(html,/closest\(event\.target,'#optionsBtn,#pauseOptionsBtn'\)/);

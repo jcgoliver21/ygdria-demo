@@ -63,7 +63,13 @@ jobs:
       - name: Check Backstage editor
         env:
           STUDIO_BASE: http://127.0.0.1:4177/backstage/public/
-        run: node backstage/tests/studio.mjs
+        run: |
+          node backstage/tests/studio.mjs
+          node backstage/tests/uploads.mjs
+      - name: Check editable realms
+        env:
+          GAME_BASE: http://127.0.0.1:4177/
+        run: node backstage/tests/realms.mjs
       - name: Upload browser evidence on failure
         if: failure()
         uses: actions/upload-artifact@v4
