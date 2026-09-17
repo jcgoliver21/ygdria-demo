@@ -41,9 +41,11 @@ try{for(const width of [390,1440]){
  await page.getByRole('button',{name:'Reino da Luz',exact:true}).click();
  assert.equal(await page.evaluate(()=>worldProg(currentRealmId()).unlocked),1);
  await page.evaluate(()=>{closeAllPanels();openMapScreen('world');});
+ await page.waitForTimeout(550);
  await page.getByRole('button',{name:'Reino da Água',exact:true}).click();
  assert.match(await page.locator('#worldMap').innerText(),/Campanha em preparação/);
  await page.evaluate(()=>{closeAllPanels();openMapScreen('world');});
+ await page.waitForTimeout(550);
  await page.getByRole('button',{name:'Reino dos Humanos',exact:true}).click();
  assert.equal(await page.evaluate(()=>currentWorld().fases.length),10);
  assert.equal(await page.evaluate(()=>currentStory()[0].missions[0][0].t),data.realms[0].phases[0].missions[0].lines[0].text);
