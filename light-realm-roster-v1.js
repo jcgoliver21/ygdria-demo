@@ -90,7 +90,7 @@
     }),
     base('galateia-rainha',{
       nome:'Galatéia',classe:'Rainha Maga da Luz',atk:8,
-      rarity:'ULTRA RARO',stars:4,motionRole:'magic',
+      rarity:'ULTRA RARO',stars:4,motionRole:'magic',artKit:true,
       frase:'Vou te purificar com a luz divina.',
       abilities:[
         {kind:'passive',at:[25],name:'Brilho Intenso',tipo:'blind',turnos:2,desc:'Cega todos os inimigos por 2 turnos.'},
@@ -101,7 +101,7 @@
     }),
     base('aarthas-darke',{
       nome:'Aarthas & Darke',classe:'Gêmeos da Luz Branca e Negra · Cavaleiro Mago',atk:8,
-      rarity:'ULTRA RARO',stars:4,motionRole:'eclipse',
+      rarity:'ULTRA RARO',stars:4,motionRole:'eclipse',artKit:true,
       frase:'Destruiremos toda a luz desse mundo.',
       abilities:[
         {kind:'passive',at:[25],name:'Espada de Luz e Sombras',tipo:'critBase',mult:3,desc:'Sua espada vira uma aura de luz e outra de sombras, gerando um ataque crítico de 3× o ataque base.'},

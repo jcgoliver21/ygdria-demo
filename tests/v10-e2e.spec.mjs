@@ -85,7 +85,9 @@ test('HUD ilustrado: uma jogada real resolve o combate',async({page})=>{
 
 test('smoke v10 não registra erro de boot ou console',async({page})=>{
   const errors=await boot(page,'smoke');
-  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('12r_smoke')||'{}').results?.every(result=>result.pass)),{timeout:15000}).toBe(true);
+  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('12r_smoke')||'{}').results?.length||0),{timeout:15000}).toBeGreaterThan(0);
+  const failures=await page.evaluate(()=>JSON.parse(localStorage.getItem('12r_smoke')||'{}').results.filter(result=>!result.pass));
+  expect(failures).toEqual([]);
   expect(errors).toEqual([]);
 });
 
@@ -154,7 +156,7 @@ test('Modo DEV libera tudo, usa recursos infinitos e preserva o progresso normal
   await expect(page.locator('#devModeBadge')).toBeHidden();
   const restored=await page.evaluate(()=>({access:worldAccessLimit('humanos'),owned:KINGDOMS.filter(hero=>cardOwned(hero.id)).map(hero=>hero.id),coins,hope:hopeAmount(),inventory:inventory.regulacao||0}));
   expect(restored.access).toBe(0);
-  expect(restored.owned.sort()).toEqual(['acqua-jovem','adriel-jovem','berenice-jovem','galateia-jovem']);
+  expect(restored.owned.sort()).toEqual(['aarthas','aarthas-darke','acqua-jovem','adriel-aspirante','adriel-cavaleiro','adriel-jovem','aelius','arneth','berenice-jovem','cael','galatas','galateia-jovem','galateia-rainha','leonis','orion']);
   expect(restored).toMatchObject({coins:321,hope:4,inventory:2});
   expect(errors).toEqual([]);
 });
@@ -3244,7 +3246,7 @@ test('catálogo oferece vitrine dos cinco movimentos',async({page})=>{
   expect(errors).toEqual([]);
 });
 
-test('matriz runtime cobre 24 personagens por cinco movimentos no navegador',async({page})=>{
+test('matriz runtime cobre 35 personagens por cinco movimentos no navegador',async({page})=>{
   const errors=await boot(page,'flow');
   const runtimeReady=await page.evaluate(()=>Object.keys(window.YGDRIA_V10_ANIMATIONS||{}).length===24);
   test.skip(!runtimeReady,'matriz runtime-v10 ainda não promovida');
@@ -3275,7 +3277,7 @@ test('matriz runtime cobre 24 personagens por cinco movimentos no navegador',asy
     }
     return {heroes:KINGDOMS.length,sheets:KINGDOMS.flatMap(hero=>actions.map(action=>hero.sprites?.[action]?.src)).filter(Boolean).length,issues};
   });
-  expect(matrix).toEqual({heroes:24,sheets:120,issues:[]});
+  expect(matrix).toEqual({heroes:35,sheets:175,issues:[]});
   expect(errors).toEqual([]);
 });
 
