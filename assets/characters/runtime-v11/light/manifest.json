@@ -1,0 +1,248 @@
+{
+  "version": 1,
+  "realm": "luz",
+  "characters": {
+    "cael": {
+      "card": {
+        "src": "assets/cards/light/cael.webp",
+        "thumb": "assets/cards/light/cael-thumb.webp",
+        "source": "cael_guarda_da_alvorada.png",
+        "size": [
+          948,
+          1659
+        ],
+        "sha256": "f034af4cdd6a0a907b5ff7dca1862982bf1fb8fb47bb971a7460738ed636ae91"
+      },
+      "chibi": {
+        "src": "assets/characters/runtime-v11/light/cael/base.webp",
+        "source": "cavaleira_chibi_da_luz_em_batalha.png",
+        "size": [
+          1086,
+          1448
+        ],
+        "mode": "RGBA",
+        "sha256": "3ecda756e901045bbf3d5714587ffd9355ede3a6bcaaae020c28d139a91e59df"
+      }
+    },
+    "aelius": {
+      "card": {
+        "src": "assets/cards/light/aelius.webp",
+        "thumb": "assets/cards/light/aelius-thumb.webp",
+        "source": "aelius_o_sábio_da_aurora.png",
+        "size": [
+          948,
+          1659
+        ],
+        "sha256": "952e4d797445bb843bbfb6c0803cbd1c5e19f72304ba20f25a6f4e88f9e3849a"
+      },
+      "chibi": {
+        "src": "assets/characters/runtime-v11/light/aelius/base.webp",
+        "source": "aelius_mago_celestial_chibi.png",
+        "size": [
+          1086,
+          1448
+        ],
+        "mode": "RGBA",
+        "sha256": "9683bbe0912e84fc4d57c23daf2c5019417f5f00f9e10931c79e05501bae024b"
+      }
+    },
+    "orion": {
+      "card": {
+        "src": "assets/cards/light/orion.webp",
+        "thumb": "assets/cards/light/orion-thumb.webp",
+        "source": "órion_arqueiro_do_reino_da_luz.png",
+        "size": [
+          948,
+          1659
+        ],
+        "sha256": "f4b0d8abe5c1bf1f6f50b82686a7bc64f599006df80a28d54cec5cf46378c7d0"
+      },
+      "chibi": {
+        "src": "assets/characters/runtime-v11/light/orion/base.webp",
+        "source": "orion_arqueiro_do_reino_da_luz.png",
+        "size": [
+          1086,
+          1448
+        ],
+        "mode": "RGBA",
+        "sha256": "6b1615983b7df68831859ba9f12eaef2e8f39319b9b9fade84af3631acd7f23e"
+      }
+    },
+    "adriel-aspirante": {
+      "card": {
+        "src": "assets/cards/light/adriel-aspirante.webp",
+        "thumb": "assets/cards/light/adriel-aspirante-thumb.webp",
+        "source": "carta_de_adriel_cavaleiro_do_reino_da_luz.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "sha256": "407cd5a0f413cf277f4c7130e475836ff90d47ee48c1ff7acc7f4a7d3adc38f2"
+      },
+      "chibi": {
+        "src": "assets/characters/runtime-v11/light/adriel-aspirante/base.webp",
+        "source": "cavaleiro_chibi_de_manto_carmesim.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGBA",
+        "sha256": "77478362c90bea21d58238513d8a6fd3c022f50eb37a73fd34d164c2ca1767e6"
+      }
+    },
+    "arneth": {
+      "card": {
+        "src": "assets/cards/light/arneth.webp",
+        "thumb": "assets/cards/light/arneth-thumb.webp",
+        "source": "arneth_sentinela_da_luz.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "sha256": "3b8d26c4576464ce95abc3e6901b00eb7cb2861b26ea5b9eb135790ecd372b7a"
+      },
+      "chibi": {
+        "src": "assets/characters/runtime-v11/light/arneth/base.webp",
+        "source": "full_body_chibi_sd_character_illustration_on_a_tra.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGBA",
+        "sha256": "bc1813be59c6e7d33bd4c291cc41689801a97f2f037cda83a38132bba106e4f3"
+      }
+    },
+    "leonis": {
+      "card": {
+        "src": "assets/cards/light/leonis.webp",
+        "thumb": "assets/cards/light/leonis-thumb.webp",
+        "source": "cavaleira_das_lâminas_do_alvorecer.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "sha256": "762aab6df4b5b547fd31ac05c1daa6ba6d464353b1a2c8fd382f070b452a743d"
+      },
+      "chibi": {
+        "src": "assets/characters/runtime-v11/light/leonis/base.webp",
+        "source": "cavaleira_celestial_de_duas_espadas.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "mode": "RGBA",
+        "sha256": "f6a775d288b1eb2e94782838a17ac5727f96b607619c20e33ec1797790aec06f"
+      }
+    },
+    "aarthas": {
+      "card": {
+        "src": "assets/cards/light/aarthas.webp",
+        "thumb": "assets/cards/light/aarthas-thumb.webp",
+        "source": "aarthas_na_escadaria_celestial.png",
+        "size": [
+          948,
+          1659
+        ],
+        "sha256": "fd538c43abc859115a9267a3faf5163268f041c1ee295edac61590203de42fa4"
+      },
+      "chibi": {
+        "src": "assets/characters/runtime-v11/light/aarthas/base.webp",
+        "source": "aarthas_cavaleiro_mago_da_luz.png",
+        "size": [
+          1086,
+          1448
+        ],
+        "mode": "RGBA",
+        "sha256": "feb747124c8fc093587afe3d80314432b2d64b16ed629b6825a14a8962798a81"
+      }
+    },
+    "galatas": {
+      "card": {
+        "src": "assets/cards/light/galatas.webp",
+        "thumb": "assets/cards/light/galatas-thumb.webp",
+        "source": "gálatas_o_rei_mago_da_luz.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "sha256": "bd00ca6f856c3cdcb337c1bc614c525ac96e206ae260abc14192b4e22b0ee3f6"
+      },
+      "chibi": {
+        "src": "assets/characters/runtime-v11/light/galatas/base.webp",
+        "source": "rei_da_luz_branca_em_esplendor.png",
+        "size": [
+          1122,
+          1402
+        ],
+        "mode": "RGBA",
+        "sha256": "ce479ddee0c6e5bce8ddeef9e7e9e8053840d483173a6f0926cd9346822f94a4"
+      }
+    },
+    "adriel-cavaleiro": {
+      "card": {
+        "src": "assets/cards/light/adriel-cavaleiro.webp",
+        "thumb": "assets/cards/light/adriel-cavaleiro-thumb.webp",
+        "source": "adriel_cavaleiro_da_luz_espada_radiante.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "sha256": "32f5687591428458756c54eaa398921e82471d2fdd67ca72a881e5c1ae0ecb0d"
+      },
+      "chibi": {
+        "src": "assets/characters/runtime-v11/light/adriel-cavaleiro/base.webp",
+        "source": "adriel_paladino_da_espada_luminosa.png",
+        "size": [
+          1086,
+          1448
+        ],
+        "mode": "RGBA",
+        "sha256": "b82735a143fcdaabd5f9f1097dd2247bd77d63890660b8050960a22e4e8b0411"
+      }
+    },
+    "galateia-rainha": {
+      "card": {
+        "src": "assets/cards/light/galateia-rainha.webp",
+        "thumb": "assets/cards/light/galateia-rainha-thumb.webp",
+        "source": "galatéia_rainha_maga_da_luz.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "sha256": "3ad4bfc1162b799ae76a86a6d00ed8bbb5008bb86818bbaf158b8b54db78d52d"
+      },
+      "chibi": {
+        "src": "assets/characters/runtime-v11/light/galateia-rainha/base.webp",
+        "source": "galatéia_rainha_mística_celestial.png",
+        "size": [
+          1086,
+          1448
+        ],
+        "mode": "RGBA",
+        "sha256": "65dea77b523a56031b9031142574f7b8a6f95bf0a983d17d223ffaa91c2dba81"
+      }
+    },
+    "aarthas-darke": {
+      "card": {
+        "src": "assets/cards/light/aarthas-darke.webp",
+        "thumb": "assets/cards/light/aarthas-darke-thumb.webp",
+        "source": "aarthis_darke_gêmeos_do_eclipse.png",
+        "size": [
+          1024,
+          1536
+        ],
+        "sha256": "2514cc785728c7ceca6ebbfdf21d54529a035f7aa93777481ea602e490201a3f"
+      },
+      "chibi": {
+        "src": "assets/characters/runtime-v11/light/aarthas-darke/base.webp",
+        "source": "guerreiro_chibi_de_luz_e_sombra.png",
+        "size": [
+          1086,
+          1448
+        ],
+        "mode": "RGBA",
+        "sha256": "63d990176f58d3a90fd62171eabc4ca3baa0ce20231b99379d037c6d88f3c9cf"
+      }
+    }
+  }
+}

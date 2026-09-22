@@ -358,6 +358,24 @@ const KINGDOMS = [
   }
 ];
 
+const LIGHT_REALM_ROSTER=Array.isArray(window.YGDRIA_LIGHT_ROSTER)?window.YGDRIA_LIGHT_ROSTER:[];
+LIGHT_REALM_ROSTER.forEach(character=>{
+  if(!character?.id||KINGDOMS.some(existing=>existing.id===character.id)) return;
+  KINGDOMS.push({
+    ...character,
+    abilities:Array.isArray(character.abilities)?character.abilities.map(ability=>({...ability})):[],
+    sprites:character.sprites?Object.fromEntries(Object.entries(character.sprites).map(([action,spec])=>[action,{...spec}])):undefined
+  });
+});
+const LIGHT_REALM_CANONICAL_ORDER=new Map(LIGHT_REALM_ROSTER.map((character,index)=>[character.id,index]));
+function compareLightRealmCanonical(a,b){
+  const ai=LIGHT_REALM_CANONICAL_ORDER.get(a?.id),bi=LIGHT_REALM_CANONICAL_ORDER.get(b?.id);
+  if(ai!==undefined&&bi!==undefined) return ai-bi;
+  if(ai!==undefined) return 1;
+  if(bi!==undefined) return -1;
+  return 0;
+}
+
 const CHIBI_SVG = {
   fogo: `<svg viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -1733,6 +1751,10 @@ function inventoryCountLabel(id){ return isDevMode()?'∞':String(inventoryCount
    pode render sua própria premiação apenas uma vez; a carta é uma conquista
    única e nunca duplica. */
 const HUMAN_STARTER_CARDS=Object.freeze(['adriel-jovem','berenice-jovem','galateia-jovem','acqua-jovem']);
+/* O primeiro elenco publicado do Reino da Luz entra como conteúdo jogável
+   imediato. Recompensas futuras podem continuar usando 12r_card_unlocks sem
+   interferir na progressão já existente do Reino dos Humanos. */
+const LIGHT_REALM_PLAYABLE_CARDS=Object.freeze(LIGHT_REALM_ROSTER.map(character=>character.id));
 const HUMAN_PHASE_REWARDS=Object.freeze([
   {facil:{k:10,card:'gareth'},normal:{k:20,card:'gareth',items:{regulacao:1}},dificil:{k:30,card:'gareth',items:{regulacao:2}},pesadelo:{k:40,card:'gareth',items:{regulacao:3}}},
   {facil:{k:10,card:'cedric'},normal:{k:20,card:'cedric',items:{regulacao:1}},dificil:{k:30,card:'cedric',items:{regulacao:2}},pesadelo:{k:40,card:'cedric',items:{regulacao:3}}},
@@ -1782,7 +1804,7 @@ function reconcileHumanCardUnlocks(){
   if(changed) saveCardUnlocks(owned);
   return owned;
 }
-function cardOwned(id){ return isDevMode()||HUMAN_STARTER_CARDS.includes(id)||cardUnlocks().has(id)||humanRewardCardUnlocks().has(id); }
+function cardOwned(id){ return isDevMode()||HUMAN_STARTER_CARDS.includes(id)||LIGHT_REALM_PLAYABLE_CARDS.includes(id)||cardUnlocks().has(id)||humanRewardCardUnlocks().has(id); }
 function restoreRewardStorage(snapshot){
   Object.entries(snapshot).forEach(([key,value])=>{
     if(value===null) localStorage.removeItem(key);
@@ -3398,7 +3420,7 @@ function spawnCombatFx(kind,target,color='#fff',duration=650){
 /* Ataque comum: liga visualmente a origem ao alvo sem tocar no transform do
    sprite. Cada reino escolhe uma assinatura própria, enquanto o pool limita
    a quantidade de nós e o mesmo efeito serve para cartas e inimigos. */
-const BLADE_ATTACK_IDS=new Set(['adriel-jovem','gareth','roland','kalander','capitao','soldado1','soldado2','sold-bib1','sold-bib2','sold-bib3','infantaria','cavalaria','comandante','trono']);
+const BLADE_ATTACK_IDS=new Set(['adriel-jovem','gareth','roland','kalander','cael','adriel-aspirante','arneth','leonis','aarthas','adriel-cavaleiro','aarthas-darke','capitao','soldado1','soldado2','sold-bib1','sold-bib2','sold-bib3','infantaria','cavalaria','comandante','trono']);
 const CLAW_ATTACK_IDS=new Set(['lobo-raivoso','shadow-wolf','crimson-dragon']);
 const BODY_ATTACK_IDS=new Set(['slime-cereja','rune-slime','stone-sentinel']);
 /* O Reino dos Humanos usa a mesma assinatura rosa em ataque, fala e impacto.
@@ -3407,6 +3429,10 @@ const BODY_ATTACK_IDS=new Set(['slime-cereja','rune-slime','stone-sentinel']);
 const HUMAN_REALM_ATTACK_COLOR='#ed5b9c';
 const HUMAN_REALM_ATTACK_LIGHT='#ffe0ee';
 const HUMAN_REALM_ATTACK_IDS=new Set(['gareth','cedric','elizier','roland','berenice-jovem','adriel-jovem','jules','kalander','bernyce']);
+const LIGHT_REALM_ATTACK_IDS=new Set(['cael','aelius','orion','adriel-aspirante','arneth','leonis','aarthas','galatas','adriel-cavaleiro','galateia-rainha','aarthas-darke']);
+const LIGHT_REALM_PROJECTILE_IDS=new Set(['aelius','orion','galatas','galateia-rainha']);
+const LIGHT_REALM_ATTACK_SHEET='assets/vfx/v11-review/human/galateia-jovem/attack/processed/sheet-transparent.png';
+const LIGHT_REALM_MAGIC_SHEET='assets/vfx/v12-magic/humanos/galateia-jovem/cast/processed-v2/sheet-transparent.png';
 const HUMAN_CHAPTER_ATTACK_SHEETS=Object.freeze({
   gareth:'assets/vfx/v11-review/human/gareth/attack/processed/sheet-transparent.png',
   cedric:'assets/vfx/v11-review/human/cedric/attack/processed/sheet-transparent.png',
@@ -3427,11 +3453,12 @@ function isHumanRealmAttacker(attacker){
   return HUMAN_REALM_ATTACK_IDS.has(id)||attacker?.iconId==='humanos'||attacker?.deck==='humanos'||attacker?.reino==='Reino dos Humanos';
 }
 function attackSheetProfile(attacker){
-  const id=combatActorId(attacker),src=HUMAN_CHAPTER_ATTACK_SHEETS[id];
+  const id=combatActorId(attacker);
+  const src=HUMAN_CHAPTER_ATTACK_SHEETS[id]||(LIGHT_REALM_ATTACK_IDS.has(id)?LIGHT_REALM_ATTACK_SHEET:null);
   if(!src) return null;
-  const projectile=new Set(['cedric','elizier','acqua-jovem','jules','bernyce']).has(id);
+  const projectile=new Set(['cedric','elizier','acqua-jovem','jules','bernyce']).has(id)||LIGHT_REALM_PROJECTILE_IDS.has(id);
   return {
-    id,src,humanPink:isHumanRealmAttacker(attacker),shadow:id==='julius',projectile,
+    id,src,humanPink:isHumanRealmAttacker(attacker),shadow:id==='julius',lightRealm:LIGHT_REALM_ATTACK_IDS.has(id),projectile,
     /* A folha VFX é sempre uma extensão do golpe: inclusive o X de Kalander
        percorre a trajetória até o inimigo selecionado. */
     travelsToTarget:true,
@@ -3876,7 +3903,13 @@ function spawnCombatAttackFx(realmId,source,target,color='#fff',kind='impact',at
     fx.style.setProperty('--attack-sheet-travel',sheetTravel+'px');
     fx.style.setProperty('--attack-sheet-travel-28',(sheetTravel*.28)+'px');
     fx.style.setProperty('--attack-sheet-travel-58',(sheetTravel*.58)+'px');
-    fx.style.setProperty('--attack-sheet-filter',sheet.shadow?'grayscale(1) contrast(1.12) drop-shadow(0 0 6px rgba(212,220,234,.36))':sheet.humanPink?'grayscale(1) sepia(1) saturate(5) hue-rotate(284deg) brightness(1.08) contrast(1.04) drop-shadow(0 0 7px rgba(255,105,177,.86))':'drop-shadow(0 0 6px rgba(255,255,255,.42))');
+    fx.style.setProperty('--attack-sheet-filter',sheet.shadow
+      ? 'grayscale(1) contrast(1.12) drop-shadow(0 0 6px rgba(212,220,234,.36))'
+      : sheet.humanPink
+        ? 'grayscale(1) sepia(1) saturate(5) hue-rotate(284deg) brightness(1.08) contrast(1.04) drop-shadow(0 0 7px rgba(255,105,177,.86))'
+        : sheet.lightRealm
+          ? 'grayscale(1) sepia(1) saturate(3.2) hue-rotate(346deg) brightness(1.35) contrast(1.06) drop-shadow(0 0 8px rgba(255,239,166,.9))'
+          : 'drop-shadow(0 0 6px rgba(255,255,255,.42))');
   }
   /* O corpo nunca recebe o efeito: origem, trajetória e contato são elementos
      independentes na camada de VFX. Assim a leitura fica mais rica sem alterar
@@ -7715,9 +7748,10 @@ const HUMAN_MAGIC_FX_SHEETS=Object.freeze(Object.fromEntries([
   'adriel-jovem','acqua-jovem','jules','kalander','bernyce','julius'
 ].map(id=>[id,`assets/vfx/v12-magic/humanos/${id}/cast/processed-v2/sheet-transparent.png`])));
 function buildHumanMagicFx(el,characterId){
-  const src=HUMAN_MAGIC_FX_SHEETS[characterId];
+  const lightRealm=LIGHT_REALM_ATTACK_IDS.has(characterId);
+  const src=HUMAN_MAGIC_FX_SHEETS[characterId]||(lightRealm?LIGHT_REALM_MAGIC_SHEET:null);
   if(!src) return false;
-  el.innerHTML='<div class="human-magic-fx-sheet" aria-hidden="true"></div>';
+  el.innerHTML=`<div class="human-magic-fx-sheet${lightRealm?' light-realm-magic-fx':''}" aria-hidden="true"></div>`;
   const sheet=el.firstElementChild;
   sheet.style.backgroundImage=`url('${src}')`;
   return true;
@@ -9344,7 +9378,9 @@ function renderSelectGrid(){
     : chosenIds.map(idx=>KINGDOMS[idx]).filter(Boolean);
   const rosterCards=rosterSource.slice().sort((a,b)=>{
     const realmDelta=ordem.indexOf(a.deck||a.id)-ordem.indexOf(b.deck||b.id);
-    return realmDelta||((b.stars||0)-(a.stars||0))||L(a.nome).localeCompare(L(b.nome));
+    if(realmDelta) return realmDelta;
+    if((a.deck||a.id)==='luz') return compareLightRealmCanonical(a,b);
+    return ((b.stars||0)-(a.stars||0))||L(a.nome).localeCompare(L(b.nome));
   });
   rosterCards.forEach(k=>{
       const idx=KINGDOMS.indexOf(k);
@@ -9352,6 +9388,7 @@ function renderSelectGrid(){
       const availability=selectionAvailability(idx);
       const fixedStoryHero=isFixedStoryHero(idx);
       card.className = 'select-card constellation-card' + (chosenIds.includes(idx) ? ' chosen' : '') + (fixedStoryHero?' story-fixed':'') + (!availability.owned?' collection-locked':'') + (availability.owned&&!availability.allowed?' story-disabled':'');
+      card.dataset.characterId=k.id;
       card.setAttribute('aria-disabled',availability.selectable?'false':'true');
       card.style.setProperty('--realm',k.color);
       card.style.setProperty('--realm-light',k.colorLight);
@@ -9445,17 +9482,18 @@ const MOTION_ACTION_LABELS={
   attack:()=>T('Atacar','Attack','Atacar'),
   cast:()=>T('Conjurar','Cast','Conjurar'),
   hit:()=>T('Impacto','Hit','Impacto'),
-  victory:()=>T('Vitória','Victory','Victoria')
+  victory:()=>T('Vitória','Victory','Victoria'),
+  defeat:()=>T('Derrota','Defeat','Derrota')
 };
 function motionShowcaseFxSpec(k,action){
   if(action==='attack'){
-    const human=HUMAN_CHAPTER_ATTACK_SHEETS[k.id];
-    if(human) return {src:human,attack:true,humanPink:isHumanRealmAttacker(k),shadow:k.id==='julius'};
+    const human=HUMAN_CHAPTER_ATTACK_SHEETS[k.id]||(LIGHT_REALM_ATTACK_IDS.has(k.id)?LIGHT_REALM_ATTACK_SHEET:null);
+    if(human) return {src:human,attack:true,humanPink:isHumanRealmAttacker(k),shadow:k.id==='julius',lightRealm:LIGHT_REALM_ATTACK_IDS.has(k.id)};
     if(k.id==='agua') return {src:'assets/characters/runtime-v10/agua/attack-water-blast-3x2.png',attack:true};
   }
   if(action==='cast'){
-    const human=HUMAN_MAGIC_FX_SHEETS[k.id];
-    if(human) return {src:human,cast:true,humanPink:isHumanRealmAttacker(k),shadow:k.id==='julius'};
+    const human=HUMAN_MAGIC_FX_SHEETS[k.id]||(LIGHT_REALM_ATTACK_IDS.has(k.id)?LIGHT_REALM_MAGIC_SHEET:null);
+    if(human) return {src:human,cast:true,humanPink:isHumanRealmAttacker(k),shadow:k.id==='julius',lightRealm:LIGHT_REALM_ATTACK_IDS.has(k.id)};
     if(k.id==='agua') return {src:'assets/characters/runtime-v10/agua/cast-water-bubbles-3x2.png',cast:true};
   }
   return null;
@@ -9528,13 +9566,15 @@ function renderMotionShowcaseVfx(k,action){
   }
   const spec=motionShowcaseFxSpec(k,action);
   if(!spec) return;
-  fx.className='motion-showcase-vfx active'+(spec.attack?' attack':'')+(spec.humanPink?' human-pink':'')+(spec.shadow?' shadow-fx':'');
+  fx.className='motion-showcase-vfx active'+(spec.attack?' attack':'')+(spec.humanPink?' human-pink':'')+(spec.lightRealm?' light-realm-fx':'')+(spec.shadow?' shadow-fx':'');
   fx.style.backgroundImage=`url("${animationAssetUrl(spec.src)}")`;
   fx.style.setProperty('--showcase-fx-filter',spec.shadow
     ? 'grayscale(1) contrast(1.14) drop-shadow(0 0 7px rgba(204,214,225,.3))'
     : spec.humanPink
       ? 'grayscale(1) sepia(1) saturate(5) hue-rotate(284deg) brightness(1.08) contrast(1.04) drop-shadow(0 0 8px rgba(255,116,181,.84))'
-      : `drop-shadow(0 0 7px ${color})`);
+      : spec.lightRealm
+        ? 'grayscale(1) sepia(1) saturate(3.2) hue-rotate(346deg) brightness(1.35) contrast(1.06) drop-shadow(0 0 8px rgba(255,239,166,.9))'
+        : `drop-shadow(0 0 7px ${color})`);
   if(spec.attack){
     target.classList.add('visible');
     impact.classList.add('active');
@@ -9564,7 +9604,7 @@ function renderMotionShowcase(k){
       await Promise.all(sources.map(src=>preloadSpriteSource(src).catch(()=>{ markSpriteFailed(src); })));
       const modal=document.getElementById('cardModal');
       if(avatar.dataset.requestedAction!==action||avatar.dataset.showcaseGeneration!==showcaseToken||avatar.dataset.showcaseHero!==k.id||window.__modalIdx!==KINGDOMS.indexOf(k)||!modal?.classList.contains('show')) return;
-      animateHeroAvatar(avatar,k,action,{loop:action==='idle',hold:action==='victory'});
+      animateHeroAvatar(avatar,k,action,{loop:action==='idle'||action==='victory',hold:action==='defeat'});
       renderMotionShowcaseVfx(k,action);
   };
   actions.innerHTML=available.map(action=>`<button type="button" data-motion="${action}" aria-label="${MOTION_ACTION_LABELS[action]()} de ${L(k.nome)}">${MOTION_ACTION_LABELS[action]()}</button>`).join('');
@@ -9575,9 +9615,11 @@ function renderMotionShowcase(k){
 function openCardModal(idx){
   window.__modalIdx=idx;
   const k = KINGDOMS[idx];
-  document.getElementById('cardModal').classList.remove('character-view');
-  document.getElementById('cardModal').classList.add('show');
-  document.getElementById('cardModal').setAttribute('aria-hidden','false');
+  const modal=document.getElementById('cardModal');
+  modal.dataset.realm=k.deck||k.iconId||k.id;
+  modal.classList.remove('character-view');
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden','false');
   document.getElementById('shareCardBtn').style.display='block';
   if(!isDevMode()) try{ const v=sanitizeHeroIdList(JSON.parse(localStorage.getItem('12r_seen')||'[]')); if(!v.includes(k.id)){ v.push(k.id); localStorage.setItem('12r_seen',JSON.stringify(v)); } }catch(e){}
   { const mi=document.getElementById('cardModalImg'); mi.onerror=()=>{ mi.onerror=null; mi.src=k.img; }; mi.src=IMGL(k.img); }
@@ -9612,6 +9654,7 @@ function openCardModal(idx){
 function openCharacterModal(src,nome,detalhe){
   window.__modalIdx=null;
   const modal=document.getElementById('cardModal');
+  delete modal.dataset.realm;
   modal.classList.add('character-view');
   const img=document.getElementById('cardModalImg');
   img.onerror=null;
@@ -9897,13 +9940,16 @@ function renderGallery(){
     const dgrid=document.createElement('div');
     dgrid.className='deck-grid';
     const favs=(()=>{ try{ return sanitizeHeroIdList(JSON.parse(localStorage.getItem('12r_favs')||'[]')); }catch(e){ return []; } })();
-    /* Ordem: favoritas primeiro; depois maior raridade (estrelas) primeiro */
-    membros.sort((a,b)=>((favs.includes(b.id)?1:0)-(favs.includes(a.id)?1:0)) || ((b.stars||0)-(a.stars||0)));
+    /* O Reino da Luz preserva a ordem narrativa canônica. Os demais decks
+       mantêm favoritas primeiro e, depois, maior raridade. */
+    if(deckId==='luz') membros.sort(compareLightRealmCanonical);
+    else membros.sort((a,b)=>((favs.includes(b.id)?1:0)-(favs.includes(a.id)?1:0)) || ((b.stars||0)-(a.stars||0)));
     membros.forEach(k=>{
       const idx=KINGDOMS.indexOf(k);
       const card=document.createElement('div');
       const owned=cardOwned(k.id);
       card.className='gallery-card'+(favs.includes(k.id)?' fav':'')+(!owned?' collection-locked':'');
+      card.dataset.characterId=k.id;
       card.style.setProperty('--realm',k.color); card.style.setProperty('--realm-dark',k.colorDark);
       const vistos=(()=>{ try{ return sanitizeHeroIdList(JSON.parse(localStorage.getItem('12r_seen')||'[]')); }catch(e){ return []; } })();
       const zoom=owned?`<button class="gallery-zoom" type="button" aria-label="${T('Ampliar carta de','Enlarge card of','Ampliar la carta de')} ${k.nome}">🔍</button>`:'';
@@ -10341,13 +10387,13 @@ function preloadHeroActions(indices=ACTIVE){
   const sources=[...new Set([
     ...indices.flatMap(i=>allowedActions.map(action=>KINGDOMS[i]?.sprites?.[action]?.src)).filter(Boolean),
     /* A assinatura do golpe é parte da primeira ação, não um enfeite tardio. */
-    ...indices.map(i=>HUMAN_CHAPTER_ATTACK_SHEETS[KINGDOMS[i]?.id]).filter(Boolean)
+    ...indices.map(i=>HUMAN_CHAPTER_ATTACK_SHEETS[KINGDOMS[i]?.id]||(LIGHT_REALM_ATTACK_IDS.has(KINGDOMS[i]?.id)?LIGHT_REALM_ATTACK_SHEET:null)).filter(Boolean)
   ])];
   const load=(src,priority='auto')=>preloadSpriteSource(src,priority).then(()=>true).catch(()=>{ markSpriteFailed(src); return false; });
   const idles=[...new Set(indices.map(i=>KINGDOMS[i]?.sprites?.idle?.src).filter(Boolean))];
   const firstActions=[...new Set([
     ...indices.flatMap(i=>['attack','cast','hit'].map(action=>KINGDOMS[i]?.sprites?.[action]?.src)).filter(Boolean),
-    ...indices.map(i=>HUMAN_CHAPTER_ATTACK_SHEETS[KINGDOMS[i]?.id]).filter(Boolean)
+    ...indices.map(i=>HUMAN_CHAPTER_ATTACK_SHEETS[KINGDOMS[i]?.id]||(LIGHT_REALM_ATTACK_IDS.has(KINGDOMS[i]?.id)?LIGHT_REALM_ATTACK_SHEET:null)).filter(Boolean)
   ].filter(src=>!idles.includes(src)))];
   const criticalConcurrency=mobileViewport?2:4;
   return preloadSpriteBatch(idles,src=>load(src,'high'),criticalConcurrency).then(()=>

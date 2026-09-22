@@ -1,18 +1,20 @@
 /* 12 Reinos — service worker
    Núcleo (html/js/css/manifest): network-first com fallback ao cache (offline).
    Assets pesados (imagens): cache-first com atualização em segundo plano. */
-const CACHE = '12r-v11.1.6';
+const CACHE = '12r-v11.1.7';
 const CORE = [
   './index.html',
   './play.html',
   './styles-v10.css',
   './battle-hud.css',
+  './light-realm-v1.css',
   './battle-hud.js',
   './assets/ui/hud-ornament-atlas-v1.png',
   './v10-config.js',
   './v10-animations.js',
   './humanos-lore-v10.js',
   './backstage-content-v1.js',
+  './light-realm-roster-v1.js',
   './game-v10.js',
   './manifest.webmanifest',
   './assets/icon.svg'

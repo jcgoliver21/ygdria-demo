@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reino da Luz · Elenco e animações</title>
+  <link rel="stylesheet" href="../light-realm-v1.css?v=1.1.0">
+  <style>
+    :root{color-scheme:dark;font-family:Inter,system-ui,sans-serif;background:#080910;color:#f8f2de}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% -10%,#4f4b37 0,transparent 34%),linear-gradient(150deg,#090a12,#17131c 55%,#08090e)}
+    header{position:sticky;top:0;z-index:20;padding:18px 22px;border-bottom:1px solid #e9cf8266;background:#090a10e8;backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:space-between;gap:16px}
+    h1{font-family:Georgia,serif;font-size:clamp(22px,4vw,40px);font-weight:500;margin:0;color:#fff8d8}header p{margin:4px 0 0;color:#cfc7af;font-size:13px}.status{padding:8px 12px;border:1px solid #ead78d66;border-radius:999px;color:#f5e5a8;white-space:nowrap;font-size:12px}
+    main{width:min(1500px,100%);margin:auto;padding:22px}.benchmark{margin:0 0 24px;padding:18px;border:1px solid #ead78d66;border-radius:22px;background:linear-gradient(145deg,#24221f,#0d0e14);box-shadow:0 18px 46px #0009}.benchmark-copy h2{margin:0;font:600 25px Georgia,serif;color:#fff5c8}.benchmark-copy p{margin:6px 0 14px;color:#cfc7af;font-size:13px}.benchmark-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.benchmark-unit{min-height:330px;border:1px solid #ddc77138;border-radius:17px;overflow:hidden;background:radial-gradient(circle at 50% 38%,#fff1a31e,transparent 50%)}.benchmark-unit h3{position:relative;z-index:3;margin:0;padding:10px 12px;background:#090a10cc;font:600 15px Georgia,serif;color:#fff2bd}.benchmark-unit .stage{height:284px}.benchmark-actions{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;margin-top:12px}.benchmark-actions button{border:1px solid #ead78d66;background:#12131a;color:#e9dec1;padding:9px 4px;border-radius:10px;cursor:pointer}.benchmark-actions button.active{background:#d3b75f;color:#17130a}.roster{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px}.light-preview-card{position:relative;overflow:hidden;border:1px solid #ddc77155;border-radius:20px;background:linear-gradient(155deg,#1e1d20,#0e0f14);box-shadow:0 18px 40px #0008}
+    .pair{display:grid;grid-template-columns:41% 59%;height:355px;background:radial-gradient(circle at 68% 38%,#fff1a31c,transparent 48%)}.gallery-thumb-wrap{position:relative;overflow:hidden;border-right:1px solid #dec97b38}.gallery-thumb-wrap img{width:100%;height:100%;object-fit:cover;display:block}.stage{position:relative;display:grid;place-items:end center;overflow:hidden;padding:12px 5px 0}.stage:before{content:"";position:absolute;width:76%;aspect-ratio:1;border:1px solid #fff0a866;border-radius:50%;background:radial-gradient(circle,#fff5c92b,transparent 60%);filter:drop-shadow(0 0 13px #ffe68666);animation:halo 4s linear infinite}.stage:after{content:"";position:absolute;bottom:8px;width:70%;height:12px;background:#000b;filter:blur(6px);border-radius:50%}.stage .sprite{position:relative;z-index:2;width:min(100%,300px);height:auto;aspect-ratio:1;background-repeat:no-repeat;transform-origin:50% 100%;filter:drop-shadow(0 8px 8px #000b)}
+    .copy{padding:14px 15px 16px;border-top:1px solid #d8c06e38}.copy h2{font:600 22px Georgia,serif;margin:0;color:#fff5c8}.copy p{margin:4px 0 10px;color:#bfb8a7;font-size:12px;min-height:30px}.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.actions button{border:1px solid #ddc36d4d;background:#14141b;color:#ddd3b7;padding:7px 3px;border-radius:9px;font-size:11px;cursor:pointer}.actions button:hover,.actions button.active{background:#d3b75f;color:#17130a;border-color:#fff1ab}
+    @keyframes halo{to{transform:rotate(360deg)}}
+    @media(max-width:620px){header{align-items:flex-start;flex-direction:column}.pair{height:320px}main{padding:12px}.roster{grid-template-columns:1fr}.benchmark-grid{grid-template-columns:1fr}.benchmark-actions{grid-template-columns:repeat(3,1fr)}}
+    @media(prefers-reduced-motion:reduce){.stage:before{animation:none}}
+  </style>
+</head>
+<body>
+  <header><div><h1>Reino da Luz</h1><p>11 cartas + 11 chibis · seis estados completos por personagem</p></div><div class="status" id="status">11 personagens · 66 folhas quadro a quadro</div></header>
+  <main>
+    <section class="benchmark" aria-labelledby="benchmarkTitle">
+      <div class="benchmark-copy"><h2 id="benchmarkTitle">Padrão humano aprovado</h2><p>Galatéia Jovem é a referência técnica: mesma grade, duração, âncora nos pés e VFX separado. Cael executa o novo conjunto com o mesmo contrato.</p></div>
+      <div class="benchmark-grid">
+        <article class="benchmark-unit"><h3>Galatéia Jovem · Reino dos Humanos</h3><div class="stage"><div class="sprite" id="humanBenchmark" role="img" aria-label="Animação de referência de Galatéia Jovem"></div></div></article>
+        <article class="benchmark-unit"><h3>Cael · Reino da Luz</h3><div class="stage"><div class="sprite" id="lightBenchmark" role="img" aria-label="Nova animação de Cael"></div></div></article>
+      </div>
+      <div class="benchmark-actions" id="benchmarkActions"></div>
+    </section>
+    <div class="roster deck-luz" id="roster"></div>
+  </main>
+  <script src="../light-realm-roster-v1.js?v=1.1.0"></script>
+  <script>
+    const labels={idle:'Idle',attack:'Atacar',cast:'Conjurar',hit:'Impacto',victory:'Vitória',defeat:'Derrota'};
+    const roster=window.YGDRIA_LIGHT_ROSTER||[];
+    const root=document.getElementById('roster');
+    const humanReference={nome:'Galatéia Jovem',sprites:{
+      idle:{src:'assets/characters/runtime-v10/galateia-jovem/idle-2x2.png',frames:4,cols:2,rows:2,duration:2400,loop:true},
+      attack:{src:'assets/characters/runtime-v10/galateia-jovem/attack-3x2.png',frames:6,cols:3,rows:2,duration:720},
+      cast:{src:'assets/characters/runtime-v10/galateia-jovem/cast-3x2.png',frames:6,cols:3,rows:2,duration:840},
+      hit:{src:'assets/characters/runtime-v10/galateia-jovem/hit-2x2.png',frames:4,cols:2,rows:2,duration:360},
+      victory:{src:'assets/characters/runtime-v10/galateia-jovem/victory-2x2.png',frames:4,cols:2,rows:2,duration:1200,hold:true},
+      defeat:{src:'assets/characters/runtime-v10/galateia-jovem/defeat/processed/sheet-transparent.png',frames:4,cols:2,rows:2,duration:900,hold:true}
+    }};
+    const framePosition=(frame,cols,rows)=>{
+      const col=frame%cols,row=Math.floor(frame/cols);
+      const x=cols>1?(col*100/(cols-1)):0;
+      const y=rows>1?(row*100/(rows-1)):0;
+      return `${x}% ${y}%`;
+    };
+    const playAction=(sprite,character,action,onComplete)=>{
+      const spec=character.sprites[action];
+      clearTimeout(sprite._timer);
+      sprite.style.backgroundImage=`url("../${spec.src}")`;
+      sprite.style.backgroundSize=`${spec.cols*100}% ${spec.rows*100}%`;
+      sprite.style.backgroundPosition=framePosition(0,spec.cols,spec.rows);
+      sprite.style.transform=`scale(${spec.displayScale??1})`;
+      let frame=0;
+      const step=Math.max(70,spec.duration/spec.frames);
+      const tick=()=>{
+        frame+=1;
+        if(frame>=spec.frames){
+          if(spec.loop) frame=0;
+          else{
+            frame=spec.frames-1;
+            sprite.style.backgroundPosition=framePosition(frame,spec.cols,spec.rows);
+            if(!spec.hold&&onComplete) sprite._timer=setTimeout(onComplete,160);
+            return;
+          }
+        }
+        sprite.style.backgroundPosition=framePosition(frame,spec.cols,spec.rows);
+        sprite._timer=setTimeout(tick,step);
+      };
+      sprite._timer=setTimeout(tick,step);
+    };
+    const humanBenchmark=document.getElementById('humanBenchmark');
+    const lightBenchmark=document.getElementById('lightBenchmark');
+    const benchmarkActions=document.getElementById('benchmarkActions');
+    const cael=roster.find(character=>character.id==='cael');
+    const playBenchmark=action=>{
+      playAction(humanBenchmark,humanReference,action,()=>playBenchmark('idle'));
+      playAction(lightBenchmark,cael,action,()=>playBenchmark('idle'));
+      benchmarkActions.querySelectorAll('button').forEach(button=>button.classList.toggle('active',button.dataset.action===action));
+    };
+    Object.keys(labels).forEach(action=>{const button=document.createElement('button');button.type='button';button.textContent=labels[action];button.dataset.action=action;button.addEventListener('click',()=>playBenchmark(action));benchmarkActions.append(button)});
+    playBenchmark('idle');
+    roster.forEach(character=>{
+      const card=document.createElement('article');
+      card.className='light-preview-card gallery-card';
+      const pair=document.createElement('div'); pair.className='pair';
+      const cardWrap=document.createElement('div'); cardWrap.className='gallery-thumb-wrap';
+      const cardImage=document.createElement('img'); cardImage.src='../'+character.cardThumb; cardImage.alt='Carta de '+character.nome; cardWrap.append(cardImage);
+      const stage=document.createElement('div'); stage.className='stage'; stage.dataset.action='idle';
+      const chibi=document.createElement('div'); chibi.className='sprite'; chibi.dataset.motionRole=character.motionRole; chibi.setAttribute('role','img'); chibi.setAttribute('aria-label','Chibi animado de '+character.nome); stage.append(chibi); playAction(chibi,character,'idle');
+      pair.append(cardWrap,stage);
+      const copy=document.createElement('div'); copy.className='copy';
+      const title=document.createElement('h2'); title.textContent=character.nome;
+      const detail=document.createElement('p'); detail.textContent=character.rarity+' · '+character.classe;
+      const actions=document.createElement('div'); actions.className='actions';
+      Object.keys(labels).forEach(action=>{const button=document.createElement('button');button.type='button';button.textContent=labels[action];button.dataset.action=action;button.classList.toggle('active',action==='idle');button.addEventListener('click',()=>{stage.dataset.action=action;playAction(chibi,character,action,()=>{stage.dataset.action='idle';playAction(chibi,character,'idle');actions.querySelectorAll('button').forEach(item=>item.classList.toggle('active',item.dataset.action==='idle'));});actions.querySelectorAll('button').forEach(item=>item.classList.toggle('active',item===button));});actions.append(button)});
+      copy.append(title,detail,actions); card.append(pair,copy); root.append(card);
+    });
+    document.getElementById('status').textContent=roster.length+' personagens · '+(roster.length*6)+' folhas quadro a quadro';
+  </script>
+</body>
+</html>

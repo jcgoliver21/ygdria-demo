@@ -1,5 +1,15 @@
 # 12 Reinos v10
 
+## v11.1.7 — Elenco jogável do Reino da Luz
+
+- adiciona 11 personagens do Reino da Luz, cada um com carta, chibi e seis ações corporais quadro a quadro: idle, ataque, conjuração, impacto, vitória e derrota;
+- aplica VFX luminosos separados do corpo nos ataques, conjurações, cartas e vitrine de animações;
+- preserva a ordem narrativa canônica dos novos personagens no seletor, editor de grupo e galeria, sem reordenação por favoritos, raridade ou nome;
+- inclui contratos de integridade dos 66 sprites e teste visual desktop/mobile comparado ao padrão aprovado de Galatéia Jovem do Reino dos Humanos;
+- renova o cache PWA para `12r-v11.1.7`.
+
+Data: 2026-09-22
+
 ## v11.1.3 — HUD clássico e Layout 2.0 opcional
 
 - Restaura o visual Simplificado exatamente à estrutura e às proporções da v11.0.97.

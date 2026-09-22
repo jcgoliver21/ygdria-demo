@@ -1,0 +1,57 @@
+/* Reino da Luz · corpo animado exclusivamente pelas folhas quadro a quadro.
+   Este arquivo mantém apenas apresentação e VFX; não move o corpo por CSS. */
+.hero-sprite-image.light-realm-sprite{
+  --light-facing:1;
+  transform-origin:50% 100%!important;
+  object-fit:contain;
+  will-change:background-position,filter,opacity;
+}
+.hero-sprite-image.light-realm-sprite.flip{--light-facing:-1}
+
+/* Cartas do Reino da Luz: brilho de borda e varredura VFX sem alterar a arte. */
+.deck-luz .thumb-wrap,.deck-luz .gallery-thumb-wrap{position:relative;isolation:isolate;overflow:hidden}
+.deck-luz .thumb-wrap::before,.deck-luz .gallery-thumb-wrap::before{
+  content:"";position:absolute;z-index:2;inset:-35%;pointer-events:none;opacity:.42;
+  background:conic-gradient(from 0deg,transparent 0 22%,rgba(255,249,205,.76) 25%,transparent 28% 62%,rgba(205,226,255,.6) 65%,transparent 69%);
+  mix-blend-mode:screen;animation:lightCardHalo 6.4s linear infinite;
+}
+.deck-luz .thumb-wrap::after,.deck-luz .gallery-thumb-wrap::after{
+  content:"";position:absolute;z-index:3;top:-18%;bottom:-18%;left:-48%;width:28%;pointer-events:none;opacity:0;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.78),rgba(255,236,157,.26),transparent);
+  transform:skewX(-12deg);animation:lightCardSweep 4.8s ease-in-out infinite;
+}
+.deck-luz .select-card,.deck-luz .gallery-card{
+  box-shadow:0 0 0 1px rgba(255,240,177,.12),0 8px 22px rgba(116,98,42,.14);
+}
+#cardModal[data-realm="luz"] #cardModalImg{
+  animation:lightModalCard 3.8s ease-in-out infinite;
+  box-shadow:0 0 22px rgba(255,238,160,.2);
+}
+#cardModal[data-realm="luz"] .card-modal-inner{
+  border-color:#f2d883;
+  box-shadow:0 0 28px rgba(255,230,140,.18),inset 0 0 24px rgba(255,255,255,.035);
+}
+.human-magic-fx-sheet.light-realm-magic-fx{
+  filter:grayscale(1) sepia(1) saturate(3.2) hue-rotate(346deg) brightness(1.35) contrast(1.06) drop-shadow(0 0 9px rgba(255,239,166,.92));
+}
+@keyframes lightCardHalo{to{transform:rotate(360deg)}}
+@keyframes lightCardSweep{0%,54%{left:-48%;opacity:0}62%{opacity:.62}82%{left:122%;opacity:.34}100%{left:122%;opacity:0}}
+@keyframes lightModalCard{0%,100%{filter:contrast(1.045) saturate(1.035) brightness(1)}50%{filter:contrast(1.055) saturate(1.06) brightness(1.075) drop-shadow(0 0 7px rgba(255,244,195,.48))}}
+
+body.quality-economy .deck-luz .thumb-wrap::before,
+body.quality-economy .deck-luz .gallery-thumb-wrap::before,
+body.quality-economy .deck-luz .thumb-wrap::after,
+body.quality-economy .deck-luz .gallery-thumb-wrap::after{display:none}
+
+@media (prefers-reduced-motion:reduce){
+  .hero-sprite-image.light-realm-sprite{animation:none!important}
+  .deck-luz .thumb-wrap::before,.deck-luz .gallery-thumb-wrap::before,
+  .deck-luz .thumb-wrap::after,.deck-luz .gallery-thumb-wrap::after,
+  #cardModal[data-realm="luz"] #cardModalImg{animation:none!important}
+}
+body.reduce-motion .hero-sprite-image.light-realm-sprite,
+body.reduce-motion .deck-luz .thumb-wrap::before,
+body.reduce-motion .deck-luz .gallery-thumb-wrap::before,
+body.reduce-motion .deck-luz .thumb-wrap::after,
+body.reduce-motion .deck-luz .gallery-thumb-wrap::after,
+body.reduce-motion #cardModal[data-realm="luz"] #cardModalImg{animation:none!important}

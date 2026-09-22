@@ -1,6 +1,6 @@
 {
   "name": "ygdria-demo",
-  "version": "11.1.6",
+  "version": "11.1.7",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,12 +8,14 @@
     "sync:lore": "node backstage/tools/compile-content.mjs",
     "check:lore": "node backstage/tests/content.mjs",
     "pretest": "pnpm run sync:lore",
-    "check": "node --check humanos-lore-v10.js && node --check game-v10.js && node --check v10-config.js && node --check v10-animations.js && node --check sw.js && pnpm run check:lore",
+    "check": "node --check humanos-lore-v10.js && node --check game-v10.js && node --check v10-config.js && node --check v10-animations.js && node --check light-realm-roster-v1.js && node --check sw.js && pnpm run check:lore",
+    "test:light": "node tests/light-realm-contracts.mjs",
+    "test:light:visual": "node tests/light-realm-visual.mjs",
     "test:contracts": "node tests/v10-contracts.mjs",
     "test:assets": "node tests/v10-assets.mjs",
     "test:e2e": "playwright test --config=playwright.config.mjs",
     "test:e2e:production": "playwright test --config=playwright.config.mjs --grep @production",
-    "test": "pnpm run check && pnpm run test:contracts && pnpm run test:assets"
+    "test": "pnpm run check && pnpm run test:contracts && pnpm run test:assets && pnpm run test:light"
   },
   "devDependencies": {
     "@playwright/test": "1.62.1"
