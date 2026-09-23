@@ -63,7 +63,11 @@ await page.locator('body').evaluate(()=>scrollTo(0,0));
 await benchmark.screenshot({path:path.join(output,'benchmark-mobile.png')});
 
 await page.setViewportSize({width:1440,height:1000});
-await page.evaluate(()=>localStorage.setItem('12r_motion','full'));
+await page.evaluate(()=>{
+  localStorage.setItem('12r_motion','full');
+  localStorage.setItem('12r_tutorial_seen','true');
+  localStorage.setItem('12r_tutorial','1');
+});
 await page.goto(`${baseUrl}/play.html?qa=light-realm-runtime`,{waitUntil:'networkidle'});
 await page.waitForSelector('body[data-game-ready="1"]');
 await page.waitForTimeout(650);
@@ -130,8 +134,42 @@ for(const id of canonicalIds.slice(1)){
   assert.match(await runtimeVfx.evaluate(element=>element.style.backgroundImage),/v12-magic\/humanos\/galateia-jovem\/cast/);
   await page.locator('#closeCardModal').click();
 }
+
+// A galeria usa uma escala própria. Conferir também o tamanho real no
+// campo de batalha móvel, com os onze personagens em grupos jogáveis.
+await page.setViewportSize({width:390,height:844});
+const battleGroups=[
+  canonicalIds.slice(0,4),
+  canonicalIds.slice(4,8),
+  [...canonicalIds.slice(8),canonicalIds[0]],
+  ['cedric','cael','galateia-rainha','aarthas-darke'],
+  ['aarthas-darke','adriel-cavaleiro','adriel-aspirante','adriel-jovem']
+];
+for(let group=0;group<battleGroups.length;group+=1){
+  const ids=battleGroups[group];
+  const measures=await page.evaluate(characterIds=>{
+    chosenIds=characterIds.map(id=>KINGDOMS.findIndex(character=>character.id===id));
+    beginGame(0);
+    skipStory();
+    ACTIVE=[...chosenIds];
+    renderPartyArena();
+    applyBattleFormation();
+    return characterIds.map(id=>{
+      const unit=document.getElementById(`party-${id}`);
+      const sheet=unit?.querySelector('.hero-sprite-sheet');
+      return {id,visible:!!sheet,artScale:unit?.style.getPropertyValue('--unit-art-scale'),motionScale:sheet?.style.getPropertyValue('--sprite-scale')};
+    });
+  },ids);
+  for(const measure of measures){
+    assert.equal(measure.visible,true,`${measure.id}: sprite ausente da batalha móvel`);
+    assert.equal(Number(measure.artScale),measure.id==='adriel-jovem'?1:1.5,`${measure.id}: porte divergente`);
+    if(!['cedric','adriel-jovem'].includes(measure.id)) assert.ok(Number(measure.motionScale)>0.7&&Number(measure.motionScale)<0.9,`${measure.id}: correção corporal inválida`);
+  }
+  await page.waitForTimeout(350);
+  await page.locator('#arena').screenshot({path:path.join(output,`mobile-party-${group+1}.png`)});
+}
 assert.equal(resourceFailures.length,0,resourceFailures.join('\n'));
 assert.equal(consoleErrors.length,0,consoleErrors.join('\n'));
 
 await browser.close();
-console.log('light-realm-visual: preview desktop/mobile, canonical order and in-game attack/cast VFX for all 11 characters passed');
+console.log('light-realm-visual: 11 personagens, VFX e cinco formações móveis com porte humano aprovados');

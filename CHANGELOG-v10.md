@@ -1,5 +1,14 @@
 # 12 Reinos v10
 
+## v11.1.8 — Proporção do Reino da Luz no combate móvel
+
+- mede a altura visível do idle de cada um dos 11 chibis e ajusta individualmente a escala para o porte adulto de Cedric;
+- mantém a mesma escala em todas as seis ações de cada personagem, com os pés ancorados e os VFX em camada independente;
+- acrescenta verificação dos 11 personagens em formações móveis e comparação com o herói humano;
+- renova a versão pública e o cache PWA para `12r-v11.1.8`.
+
+Data: 2026-09-22
+
 ## v11.1.7 — Elenco jogável do Reino da Luz
 
 - adiciona 11 personagens do Reino da Luz, cada um com carta, chibi e seis ações corporais quadro a quadro: idle, ataque, conjuração, impacto, vitória e derrota;

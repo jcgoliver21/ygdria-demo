@@ -23,11 +23,11 @@ const preview=read('previews/reino-luz-elenco-v1.html');
 const expectedIds=['cael','aelius','orion','adriel-aspirante','arneth','leonis','aarthas','galatas','adriel-cavaleiro','galateia-rainha','aarthas-darke'];
 const actions=['idle','attack','cast','hit','victory','defeat'];
 const actionSpecs={
-  idle:{frames:4,cols:2,rows:2,duration:2400,loop:true,displayScale:.88},
-  attack:{frames:6,cols:3,rows:2,duration:720,displayScale:.88},
-  cast:{frames:6,cols:3,rows:2,duration:840,displayScale:.88},
-  hit:{frames:4,cols:2,rows:2,duration:360,displayScale:.88},
-  victory:{frames:4,cols:2,rows:2,duration:1200,hold:true,displayScale:.88},
+  idle:{frames:4,cols:2,rows:2,duration:2400,loop:true},
+  attack:{frames:6,cols:3,rows:2,duration:720},
+  cast:{frames:6,cols:3,rows:2,duration:840},
+  hit:{frames:4,cols:2,rows:2,duration:360},
+  victory:{frames:4,cols:2,rows:2,duration:1200,hold:true},
   defeat:{frames:4,cols:2,rows:2,duration:900,hold:true}
 };
 const checks=[];
@@ -65,10 +65,9 @@ check('cada personagem tem carta, miniatura, chibi e seis ações quadro a quadr
       for(const key of ['frames','cols','rows','duration']) assert.equal(spec[key],benchmark[key],`${character.id}/${action}: divergência da Galatéia Jovem em ${key}`);
       assert.equal(Boolean(spec.loop),Boolean(expected.loop),`${character.id}/${action}: loop`);
       assert.equal(Boolean(spec.hold),Boolean(expected.hold),`${character.id}/${action}: hold`);
-      assert.equal(spec.displayScale,expected.displayScale,`${character.id}/${action}: displayScale`);
+      assert.equal(spec.displayScale,character.sprites.idle.displayScale,`${character.id}/${action}: escala difere do idle`);
       assert.equal(Boolean(spec.loop),Boolean(benchmark.loop),`${character.id}/${action}: loop diverge da Galatéia Jovem`);
       assert.equal(Boolean(spec.hold),Boolean(benchmark.hold),`${character.id}/${action}: hold diverge da Galatéia Jovem`);
-      assert.equal(spec.displayScale,benchmark.displayScale,`${character.id}/${action}: escala diverge da Galatéia Jovem`);
       assert.ok(fs.existsSync(path.join(root,sheet)),`${sheet} ausente`);
       assert.deepEqual(pngSize(sheet),{width:expected.cols*256,height:expected.rows*256});
 
@@ -99,6 +98,18 @@ check('cada personagem tem carta, miniatura, chibi e seis ações quadro a quadr
     assertWebp(galleryThumb);
     assert.equal(sha256(entry.card.src),entry.card.sha256);
     assert.equal(sha256(entry.chibi.src),entry.chibi.sha256);
+  }
+});
+
+check('porte visível dos onze adultos acompanha Cedric e mantém os pés alinhados',()=>{
+  const humanVisibleHeight=145*1.0596;
+  for(const character of roster){
+    const meta=JSON.parse(read(`assets/characters/light-v1/${character.id}/idle/processed/pipeline-meta.json`));
+    const frame=meta.frames[0];
+    const visibleHeight=frame.aligned_bbox[3]-frame.aligned_bbox[1];
+    const apparentHeight=visibleHeight*character.sprites.idle.displayScale;
+    assert.ok(Math.abs(apparentHeight-humanVisibleHeight)<1.5,`${character.id}: corpo ${apparentHeight.toFixed(1)} px contra ${humanVisibleHeight.toFixed(1)} px`);
+    assert.equal(frame.anchor_target[1],233,`${character.id}: linha dos pés`);
   }
 });
 

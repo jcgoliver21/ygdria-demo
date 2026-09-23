@@ -6,13 +6,23 @@
   const card=(id)=>`assets/cards/light/${id}.webp`;
   const thumb=(id)=>`assets/cards/light/${id}-thumb.webp`;
   const motionSheet=(id,action)=>`assets/characters/light-v1/${id}/${action}/processed/sheet-transparent.png`;
+  /* Altura opaca do primeiro quadro idle, medida nos sheets de 256 px.
+     A referência adulta Cedric (145 px × 1.0596) mantém o porte da arena.
+     Cada ação usa a mesma escala do idle para não crescer ao atacar. */
+  const idleBodyHeights=Object.freeze({
+    cael:202,aelius:203,orion:206,'adriel-aspirante':206,
+    arneth:197,leonis:174,aarthas:205,galatas:206,
+    'adriel-cavaleiro':188,'galateia-rainha':209,'aarthas-darke':187
+  });
+  const humanAdultBodyHeight=145*1.0596;
+  const motionScale=id=>Number((humanAdultBodyHeight/idleBodyHeights[id]).toFixed(4));
   const motions=(id)=>({
-    idle:{src:motionSheet(id,'idle'),format:'sheet',frames:4,cols:2,rows:2,duration:2400,loop:true,displayScale:.88},
-    attack:{src:motionSheet(id,'attack'),format:'sheet',frames:6,cols:3,rows:2,duration:720,displayScale:.88},
-    cast:{src:motionSheet(id,'cast'),format:'sheet',frames:6,cols:3,rows:2,duration:840,displayScale:.88},
-    hit:{src:motionSheet(id,'hit'),format:'sheet',frames:4,cols:2,rows:2,duration:360,displayScale:.88},
-    victory:{src:motionSheet(id,'victory'),format:'sheet',frames:4,cols:2,rows:2,duration:1200,hold:true,displayScale:.88},
-    defeat:{src:motionSheet(id,'defeat'),format:'sheet',frames:4,cols:2,rows:2,duration:900,hold:true}
+    idle:{src:motionSheet(id,'idle'),format:'sheet',frames:4,cols:2,rows:2,duration:2400,loop:true,displayScale:motionScale(id)},
+    attack:{src:motionSheet(id,'attack'),format:'sheet',frames:6,cols:3,rows:2,duration:720,displayScale:motionScale(id)},
+    cast:{src:motionSheet(id,'cast'),format:'sheet',frames:6,cols:3,rows:2,duration:840,displayScale:motionScale(id)},
+    hit:{src:motionSheet(id,'hit'),format:'sheet',frames:4,cols:2,rows:2,duration:360,displayScale:motionScale(id)},
+    victory:{src:motionSheet(id,'victory'),format:'sheet',frames:4,cols:2,rows:2,duration:1200,hold:true,displayScale:motionScale(id)},
+    defeat:{src:motionSheet(id,'defeat'),format:'sheet',frames:4,cols:2,rows:2,duration:900,hold:true,displayScale:motionScale(id)}
   });
   const base=(id,fields)=>({
     id,iconId:'luz',deck:'luz',reino:'Reino da Luz',
