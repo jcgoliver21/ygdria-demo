@@ -19,9 +19,9 @@
       ],
       "is_empty": false,
       "aligned_bbox": [
-        29,
-        43,
-        227,
+        31,
+        37,
+        225,
         240
       ],
       "anchor_target": [
@@ -38,9 +38,9 @@
       ],
       "is_empty": false,
       "aligned_bbox": [
-        27,
-        77,
-        229,
+        30,
+        46,
+        225,
         240
       ],
       "anchor_target": [
@@ -57,9 +57,9 @@
       ],
       "is_empty": false,
       "aligned_bbox": [
-        30,
-        97,
-        225,
+        32,
+        92,
+        223,
         240
       ],
       "anchor_target": [
@@ -76,9 +76,9 @@
       ],
       "is_empty": false,
       "aligned_bbox": [
-        29,
-        56,
-        226,
+        30,
+        40,
+        225,
         240
       ],
       "anchor_target": [
@@ -98,7 +98,7 @@
     "empty_count": 0,
     "edge_touch_count": 0,
     "paste_clamped_count": 0,
-    "output_subject_height_mean": 171.75
+    "output_subject_height_mean": 186.25
   },
   "output_origin": [
     128.0,

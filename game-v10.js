@@ -3005,10 +3005,10 @@ function heroIsFlipped(k){
   const baseline=HERO_DEFAULT_RIGHT_FACING_IDS.has(k.id)?!initial:initial;
   return heroFacingOverrides.has(k.id)?!baseline:baseline;
 }
-/* A direção padrão é esquerda. Bernyce, Kalander e Jules/The Joker receberam
-   a inversão solicitada para quando entram como heróis; o botão do HUD segue
-   apenas alternando a base individual sem alterar a física do sprite. */
-const HERO_DEFAULT_RIGHT_FACING_IDS=new Set(['bernyce','kalander','jules']);
+/* A direção padrão é esquerda. Bernyce, Kalander, Jules/The Joker e
+   Aarthas & Darke usam a orientação aprovada voltada aos adversários.
+   O botão do HUD segue alternando a base individual sem alterar a física. */
+const HERO_DEFAULT_RIGHT_FACING_IDS=new Set(['bernyce','kalander','jules','aarthas-darke']);
 function heroFacingDirection(k){
   const baseline=HERO_DEFAULT_RIGHT_FACING_IDS.has(k.id)?'right':'left';
   return heroFacingOverrides.has(k.id)?(baseline==='left'?'right':'left'):baseline;

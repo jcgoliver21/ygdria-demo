@@ -19,9 +19,9 @@
       ],
       "is_empty": false,
       "aligned_bbox": [
-        42,
-        102,
-        213,
+        31,
+        52,
+        225,
         240
       ],
       "anchor_target": [
@@ -38,8 +38,8 @@
       ],
       "is_empty": false,
       "aligned_bbox": [
-        41,
-        36,
+        40,
+        37,
         215,
         240
       ],
@@ -57,9 +57,9 @@
       ],
       "is_empty": false,
       "aligned_bbox": [
-        44,
-        106,
-        212,
+        32,
+        55,
+        223,
         240
       ],
       "anchor_target": [
@@ -76,9 +76,9 @@
       ],
       "is_empty": false,
       "aligned_bbox": [
-        27,
-        72,
-        229,
+        28,
+        66,
+        227,
         240
       ],
       "anchor_target": [
@@ -95,9 +95,9 @@
       ],
       "is_empty": false,
       "aligned_bbox": [
-        33,
-        70,
-        222,
+        46,
+        68,
+        209,
         240
       ],
       "anchor_target": [
@@ -114,9 +114,9 @@
       ],
       "is_empty": false,
       "aligned_bbox": [
-        38,
-        73,
-        217,
+        32,
+        53,
+        223,
         240
       ],
       "anchor_target": [
@@ -136,7 +136,7 @@
     "empty_count": 0,
     "edge_touch_count": 0,
     "paste_clamped_count": 0,
-    "output_subject_height_mean": 163.5
+    "output_subject_height_mean": 184.83333333333334
   },
   "output_origin": [
     128.0,

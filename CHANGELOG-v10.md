@@ -1,5 +1,13 @@
 # 12 Reinos v10
 
+## v11.1.10 — Ângulo de combate de Aarthas & Darke
+
+- corrige os seis ciclos animados para preservar o ângulo da imagem aprovada pelo usuário, sobretudo no idle: ambas as espadas abertas, olhos voltados aos adversários e sem transformar a pose em perfil lateral;
+- mantém o número de quadros, os tempos, os VFX independentes, a transparência e a linha dos pés;
+- ajusta a escala individual ao novo quadro idle e renova o cache PWA para `12r-v11.1.10`.
+
+Data: 2026-09-23
+
 ## v11.1.9 — Novo sprite de Aarthas & Darke
 
 - substitui o chibi estático pelo visual enviado pelo usuário, com fundo transparente;

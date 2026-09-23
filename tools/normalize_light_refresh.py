@@ -9,7 +9,11 @@ from PIL import Image
 
 
 def normalize(
-    source: Path, destination: Path, columns: int, trim_bottom_row_top: int = 0
+    source: Path,
+    destination: Path,
+    columns: int,
+    trim_bottom_row_top: int = 0,
+    trim_frame_left: dict[int, int] | None = None,
 ) -> None:
     sheet = Image.open(source).convert("RGBA")
     if sheet.width % columns or sheet.height % 2:
@@ -36,6 +40,12 @@ def normalize(
                 cell.paste(
                     (0, 0, 0, 0), (0, 0, source_width, trim_bottom_row_top)
                 )
+            frame_index = row * columns + column
+            left_trim = (trim_frame_left or {}).get(frame_index, 0)
+            if left_trim:
+                # Remove spill from the preceding generated cell without
+                # changing the retained subject's common scale or anchor.
+                cell.paste((0, 0, 0, 0), (0, 0, left_trim, source_height))
             alpha = cell.getchannel("A")
             bbox = alpha.point(lambda value: 255 if value >= 24 else 0).getbbox()
             if bbox is None:
@@ -65,10 +75,16 @@ if __name__ == "__main__":
     parser.add_argument("destination", type=Path)
     parser.add_argument("--columns", type=int, choices=(2, 3), required=True)
     parser.add_argument("--trim-bottom-row-top", type=int, default=0)
+    parser.add_argument("--trim-frame-left", action="append", default=[])
     arguments = parser.parse_args()
+    frame_left = {}
+    for item in arguments.trim_frame_left:
+        frame, pixels = item.split(":", 1)
+        frame_left[int(frame)] = int(pixels)
     normalize(
         arguments.source,
         arguments.destination,
         arguments.columns,
         arguments.trim_bottom_row_top,
+        frame_left,
     )

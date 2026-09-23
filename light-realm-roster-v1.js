@@ -12,7 +12,7 @@
   const idleBodyHeights=Object.freeze({
     cael:202,aelius:203,orion:206,'adriel-aspirante':206,
     arneth:197,leonis:174,aarthas:205,galatas:206,
-    'adriel-cavaleiro':188,'galateia-rainha':209,'aarthas-darke':191
+    'adriel-cavaleiro':188,'galateia-rainha':209,'aarthas-darke':201
   });
   const humanAdultBodyHeight=145*1.0596;
   const motionScale=id=>Number((humanAdultBodyHeight/idleBodyHeights[id]).toFixed(4));

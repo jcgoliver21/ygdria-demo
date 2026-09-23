@@ -137,6 +137,7 @@ for(const id of canonicalIds.slice(1)){
     for(const action of ['idle','hit','victory','defeat','attack']){
       await page.locator(`#motionShowcaseActions button[data-motion="${action}"]`).click();
       await page.waitForFunction(({characterId,motion})=>document.querySelector('#motionShowcaseAvatar .hero-sprite-sheet.grid-sheet')?.dataset.hitSrc?.includes(`/${characterId}/${motion}/processed/sheet-transparent.png`),{characterId:id,motion:action});
+      if(action==='idle') await page.locator('.card-modal-inner').screenshot({path:path.join(output,'runtime-aarthas-darke-idle.png')});
     }
     await page.locator('.card-modal-inner').screenshot({path:path.join(output,'runtime-aarthas-darke-attack.png')});
   }
@@ -165,13 +166,17 @@ for(let group=0;group<battleGroups.length;group+=1){
     return characterIds.map(id=>{
       const unit=document.getElementById(`party-${id}`);
       const sheet=unit?.querySelector('.hero-sprite-sheet');
-      return {id,visible:!!sheet,artScale:unit?.style.getPropertyValue('--unit-art-scale'),motionScale:sheet?.style.getPropertyValue('--sprite-scale')};
+      return {id,visible:!!sheet,artScale:unit?.style.getPropertyValue('--unit-art-scale'),motionScale:sheet?.style.getPropertyValue('--sprite-scale'),facing:unit?.dataset.facing,flipped:sheet?.classList.contains('flip')};
     });
   },ids);
   for(const measure of measures){
     assert.equal(measure.visible,true,`${measure.id}: sprite ausente da batalha móvel`);
     assert.equal(Number(measure.artScale),measure.id==='adriel-jovem'?1:1.5,`${measure.id}: porte divergente`);
     if(!['cedric','adriel-jovem'].includes(measure.id)) assert.ok(Number(measure.motionScale)>0.7&&Number(measure.motionScale)<0.9,`${measure.id}: correção corporal inválida`);
+    if(measure.id==='aarthas-darke'){
+      assert.equal(measure.facing,'right','Aarthas & Darke deve olhar para os adversários');
+      assert.equal(measure.flipped,false,'a arte aprovada de Aarthas & Darke não deve ser espelhada');
+    }
   }
   await page.waitForTimeout(350);
   await page.locator('#arena').screenshot({path:path.join(output,`mobile-party-${group+1}.png`)});

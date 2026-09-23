@@ -1,6 +1,6 @@
 {
   "name": "ygdria-demo",
-  "version": "11.1.9",
+  "version": "11.1.10",
   "private": true,
   "type": "module",
   "scripts": {
