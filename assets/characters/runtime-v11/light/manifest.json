@@ -235,13 +235,13 @@
       },
       "chibi": {
         "src": "assets/characters/runtime-v11/light/aarthas-darke/base.webp",
-        "source": "guerreiro_chibi_de_luz_e_sombra.png",
-        "size": [
-          1086,
-          1448
-        ],
-        "mode": "RGBA",
-        "sha256": "63d990176f58d3a90fd62171eabc4ca3baa0ce20231b99379d037c6d88f3c9cf"
+          "source": "Photo 1.jpg (Aarthas & Darke; user-supplied refresh)",
+          "size": [
+            1199,
+            1312
+          ],
+          "mode": "RGBA",
+          "sha256": "918c2b5ada4c4e78b4c09b24f348610f32df3f293f9ee352c706e2cd7f3e1df0"
       }
     }
   }

@@ -1,5 +1,14 @@
 # 12 Reinos v10
 
+## v11.1.9 — Novo sprite de Aarthas & Darke
+
+- substitui o chibi estático pelo visual enviado pelo usuário, com fundo transparente;
+- refaz os seis spritesheets animados: idle, ataque, conjuração, impacto, vitória e derrota, preservando a quantidade de quadros, os tempos e os VFX separados do corpo;
+- normaliza todos os quadros em células de 256 px, com escala compartilhada e linha dos pés estável, e recalibra o porte no combate;
+- renova a versão pública e o cache PWA para `12r-v11.1.9`.
+
+Data: 2026-09-23
+
 ## v11.1.8 — Proporção do Reino da Luz no combate móvel
 
 - mede a altura visível do idle de cada um dos 11 chibis e ajusta individualmente a escala para o porte adulto de Cedric;

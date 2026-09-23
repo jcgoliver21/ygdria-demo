@@ -132,6 +132,14 @@ for(const id of canonicalIds.slice(1)){
   await page.locator('#motionShowcaseActions button[data-motion="cast"]').click();
   await page.waitForFunction(characterId=>document.querySelector('#motionShowcaseAvatar .hero-sprite-sheet.grid-sheet')?.dataset.hitSrc?.includes(`/${characterId}/cast/processed/sheet-transparent.png`),id);
   assert.match(await runtimeVfx.evaluate(element=>element.style.backgroundImage),/v12-magic\/humanos\/galateia-jovem\/cast/);
+  if(id==='aarthas-darke'){
+    await page.locator('.card-modal-inner').screenshot({path:path.join(output,'runtime-aarthas-darke-cast.png')});
+    for(const action of ['idle','hit','victory','defeat','attack']){
+      await page.locator(`#motionShowcaseActions button[data-motion="${action}"]`).click();
+      await page.waitForFunction(({characterId,motion})=>document.querySelector('#motionShowcaseAvatar .hero-sprite-sheet.grid-sheet')?.dataset.hitSrc?.includes(`/${characterId}/${motion}/processed/sheet-transparent.png`),{characterId:id,motion:action});
+    }
+    await page.locator('.card-modal-inner').screenshot({path:path.join(output,'runtime-aarthas-darke-attack.png')});
+  }
   await page.locator('#closeCardModal').click();
 }
 
