@@ -1,6 +1,6 @@
 {
   "name": "ygdria-demo",
-  "version": "11.1.10",
+  "version": "11.1.11",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,7 +9,7 @@
     "check:lore": "node backstage/tests/content.mjs",
     "pretest": "pnpm run sync:lore",
     "check": "node --check humanos-lore-v10.js && node --check game-v10.js && node --check v10-config.js && node --check v10-animations.js && node --check light-realm-roster-v1.js && node --check sw.js && pnpm run check:lore",
-    "test:light": "node tests/light-realm-contracts.mjs",
+    "test:light": "node tests/light-realm-contracts.mjs && node tests/light-realm-phases.mjs",
     "test:light:visual": "node tests/light-realm-visual.mjs",
     "test:contracts": "node tests/v10-contracts.mjs",
     "test:assets": "node tests/v10-assets.mjs",

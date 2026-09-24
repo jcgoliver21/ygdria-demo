@@ -1,5 +1,12 @@
 # 12 Reinos v10
 
+## v11.1.11 — Dez fases do Reino da Luz em Modo DEV
+
+- Integra os dez cenários enviados, na ordem original, como fases jogáveis com cinco missões cada.
+- Mantém Aarthas & Darke como único inimigo provisório em todas as missões, usando a animação corporal já publicada e voltado para a equipe adversária.
+- Deixa a campanha da Luz em rascunho no Backstage e bloqueia sua entrada fora do Modo DEV.
+- Normaliza as faixas de chão dos novos cenários, com verificação de conteúdo e fluxo jogável.
+
 ## v11.1.10 — Ângulo de combate de Aarthas & Darke
 
 - corrige os seis ciclos animados para preservar o ângulo da imagem aprovada pelo usuário, sobretudo no idle: ambas as espadas abertas, olhos voltados aos adversários e sem transformar a pose em perfil lateral;

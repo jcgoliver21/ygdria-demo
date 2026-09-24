@@ -3,7 +3,7 @@
   'use strict';
   root.YGDRIA_BACKSTAGE_CONTENT=Object.freeze({
   "schema": 1,
-  "generatedAt": "2026-09-16T23:24:03.877Z",
+  "generatedAt": "2026-09-24T19:33:04.535Z",
   "menus": [
     {
       "id": "playBtn",
@@ -2858,55 +2858,736 @@
     {
       "id": "reino-da-luz",
       "mapSlot": "luz",
-      "mapEnabled": false,
+      "mapEnabled": true,
       "name": "Reino da Luz",
       "status": "draft",
       "color": "#f2f4ff",
-      "phaseCount": 1,
+      "phaseCount": 10,
       "phases": [
         {
           "number": 1,
-          "name": "Nova fase 1",
+          "name": "Escola de Cavaleiros",
           "subtitle": "",
-          "background": "",
+          "background": "assets/bg/luz/fase-01.png",
           "music": "",
-          "bosses": [],
+          "bosses": [
+            "aarthas-darke"
+          ],
           "visual": {
             "description": "Nada",
             "key": "none"
           },
           "before": "",
-          "allowed": [],
+          "allowed": [
+            "cael",
+            "aelius",
+            "orion",
+            "adriel-aspirante",
+            "arneth",
+            "leonis",
+            "aarthas",
+            "galatas",
+            "adriel-cavaleiro",
+            "galateia-rainha",
+            "aarthas-darke"
+          ],
           "fixed": [],
           "missions": [
             {
               "number": 1,
               "title": "Missão 1",
-              "enemies": [],
+              "enemies": [
+                "aarthas-darke"
+              ],
               "lines": []
             },
             {
               "number": 2,
               "title": "Missão 2",
-              "enemies": [],
+              "enemies": [
+                "aarthas-darke"
+              ],
               "lines": []
             },
             {
               "number": 3,
               "title": "Missão 3",
-              "enemies": [],
+              "enemies": [
+                "aarthas-darke"
+              ],
               "lines": []
             },
             {
               "number": 4,
               "title": "Missão 4",
-              "enemies": [],
+              "enemies": [
+                "aarthas-darke"
+              ],
               "lines": []
             },
             {
               "number": 5,
               "title": "Missão 5",
-              "enemies": [],
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            }
+          ],
+          "after": [],
+          "afterSceneCues": []
+        },
+        {
+          "number": 2,
+          "name": "Salão da Luz Eterna",
+          "subtitle": "",
+          "background": "assets/bg/luz/fase-02.png",
+          "music": "",
+          "bosses": [
+            "aarthas-darke"
+          ],
+          "visual": {
+            "description": "Nada",
+            "key": "none"
+          },
+          "before": "",
+          "allowed": [
+            "cael",
+            "aelius",
+            "orion",
+            "adriel-aspirante",
+            "arneth",
+            "leonis",
+            "aarthas",
+            "galatas",
+            "adriel-cavaleiro",
+            "galateia-rainha",
+            "aarthas-darke"
+          ],
+          "fixed": [],
+          "missions": [
+            {
+              "number": 1,
+              "title": "Missão 1",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 2,
+              "title": "Missão 2",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 3,
+              "title": "Missão 3",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 4,
+              "title": "Missão 4",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 5,
+              "title": "Missão 5",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            }
+          ],
+          "after": [],
+          "afterSceneCues": []
+        },
+        {
+          "number": 3,
+          "name": "Lago de Cristal",
+          "subtitle": "",
+          "background": "assets/bg/luz/fase-03.png",
+          "music": "",
+          "bosses": [
+            "aarthas-darke"
+          ],
+          "visual": {
+            "description": "Nada",
+            "key": "none"
+          },
+          "before": "",
+          "allowed": [
+            "cael",
+            "aelius",
+            "orion",
+            "adriel-aspirante",
+            "arneth",
+            "leonis",
+            "aarthas",
+            "galatas",
+            "adriel-cavaleiro",
+            "galateia-rainha",
+            "aarthas-darke"
+          ],
+          "fixed": [],
+          "missions": [
+            {
+              "number": 1,
+              "title": "Missão 1",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 2,
+              "title": "Missão 2",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 3,
+              "title": "Missão 3",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 4,
+              "title": "Missão 4",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 5,
+              "title": "Missão 5",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            }
+          ],
+          "after": [],
+          "afterSceneCues": []
+        },
+        {
+          "number": 4,
+          "name": "Floresta de Cristal",
+          "subtitle": "",
+          "background": "assets/bg/luz/fase-04.png",
+          "music": "",
+          "bosses": [
+            "aarthas-darke"
+          ],
+          "visual": {
+            "description": "Nada",
+            "key": "none"
+          },
+          "before": "",
+          "allowed": [
+            "cael",
+            "aelius",
+            "orion",
+            "adriel-aspirante",
+            "arneth",
+            "leonis",
+            "aarthas",
+            "galatas",
+            "adriel-cavaleiro",
+            "galateia-rainha",
+            "aarthas-darke"
+          ],
+          "fixed": [],
+          "missions": [
+            {
+              "number": 1,
+              "title": "Missão 1",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 2,
+              "title": "Missão 2",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 3,
+              "title": "Missão 3",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 4,
+              "title": "Missão 4",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 5,
+              "title": "Missão 5",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            }
+          ],
+          "after": [],
+          "afterSceneCues": []
+        },
+        {
+          "number": 5,
+          "name": "Catedral de Luz",
+          "subtitle": "",
+          "background": "assets/bg/luz/fase-05.png",
+          "music": "",
+          "bosses": [
+            "aarthas-darke"
+          ],
+          "visual": {
+            "description": "Nada",
+            "key": "none"
+          },
+          "before": "",
+          "allowed": [
+            "cael",
+            "aelius",
+            "orion",
+            "adriel-aspirante",
+            "arneth",
+            "leonis",
+            "aarthas",
+            "galatas",
+            "adriel-cavaleiro",
+            "galateia-rainha",
+            "aarthas-darke"
+          ],
+          "fixed": [],
+          "missions": [
+            {
+              "number": 1,
+              "title": "Missão 1",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 2,
+              "title": "Missão 2",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 3,
+              "title": "Missão 3",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 4,
+              "title": "Missão 4",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 5,
+              "title": "Missão 5",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            }
+          ],
+          "after": [],
+          "afterSceneCues": []
+        },
+        {
+          "number": 6,
+          "name": "Salão dos Espelhos",
+          "subtitle": "",
+          "background": "assets/bg/luz/fase-06.png",
+          "music": "",
+          "bosses": [
+            "aarthas-darke"
+          ],
+          "visual": {
+            "description": "Nada",
+            "key": "none"
+          },
+          "before": "",
+          "allowed": [
+            "cael",
+            "aelius",
+            "orion",
+            "adriel-aspirante",
+            "arneth",
+            "leonis",
+            "aarthas",
+            "galatas",
+            "adriel-cavaleiro",
+            "galateia-rainha",
+            "aarthas-darke"
+          ],
+          "fixed": [],
+          "missions": [
+            {
+              "number": 1,
+              "title": "Missão 1",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 2,
+              "title": "Missão 2",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 3,
+              "title": "Missão 3",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 4,
+              "title": "Missão 4",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 5,
+              "title": "Missão 5",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            }
+          ],
+          "after": [],
+          "afterSceneCues": []
+        },
+        {
+          "number": 7,
+          "name": "Academia Militar da Luz Sagrada — Interior",
+          "subtitle": "",
+          "background": "assets/bg/luz/fase-07.png",
+          "music": "",
+          "bosses": [
+            "aarthas-darke"
+          ],
+          "visual": {
+            "description": "Nada",
+            "key": "none"
+          },
+          "before": "",
+          "allowed": [
+            "cael",
+            "aelius",
+            "orion",
+            "adriel-aspirante",
+            "arneth",
+            "leonis",
+            "aarthas",
+            "galatas",
+            "adriel-cavaleiro",
+            "galateia-rainha",
+            "aarthas-darke"
+          ],
+          "fixed": [],
+          "missions": [
+            {
+              "number": 1,
+              "title": "Missão 1",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 2,
+              "title": "Missão 2",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 3,
+              "title": "Missão 3",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 4,
+              "title": "Missão 4",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 5,
+              "title": "Missão 5",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            }
+          ],
+          "after": [],
+          "afterSceneCues": []
+        },
+        {
+          "number": 8,
+          "name": "Praça da Luz Eterna",
+          "subtitle": "",
+          "background": "assets/bg/luz/fase-08.png",
+          "music": "",
+          "bosses": [
+            "aarthas-darke"
+          ],
+          "visual": {
+            "description": "Nada",
+            "key": "none"
+          },
+          "before": "",
+          "allowed": [
+            "cael",
+            "aelius",
+            "orion",
+            "adriel-aspirante",
+            "arneth",
+            "leonis",
+            "aarthas",
+            "galatas",
+            "adriel-cavaleiro",
+            "galateia-rainha",
+            "aarthas-darke"
+          ],
+          "fixed": [],
+          "missions": [
+            {
+              "number": 1,
+              "title": "Missão 1",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 2,
+              "title": "Missão 2",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 3,
+              "title": "Missão 3",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 4,
+              "title": "Missão 4",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 5,
+              "title": "Missão 5",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            }
+          ],
+          "after": [],
+          "afterSceneCues": []
+        },
+        {
+          "number": 9,
+          "name": "Trono de Luz",
+          "subtitle": "",
+          "background": "assets/bg/luz/fase-09.png",
+          "music": "",
+          "bosses": [
+            "aarthas-darke"
+          ],
+          "visual": {
+            "description": "Nada",
+            "key": "none"
+          },
+          "before": "",
+          "allowed": [
+            "cael",
+            "aelius",
+            "orion",
+            "adriel-aspirante",
+            "arneth",
+            "leonis",
+            "aarthas",
+            "galatas",
+            "adriel-cavaleiro",
+            "galateia-rainha",
+            "aarthas-darke"
+          ],
+          "fixed": [],
+          "missions": [
+            {
+              "number": 1,
+              "title": "Missão 1",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 2,
+              "title": "Missão 2",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 3,
+              "title": "Missão 3",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 4,
+              "title": "Missão 4",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 5,
+              "title": "Missão 5",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            }
+          ],
+          "after": [],
+          "afterSceneCues": []
+        },
+        {
+          "number": 10,
+          "name": "Limites da Cidadela",
+          "subtitle": "",
+          "background": "assets/bg/luz/fase-10.png",
+          "music": "",
+          "bosses": [
+            "aarthas-darke"
+          ],
+          "visual": {
+            "description": "Nada",
+            "key": "none"
+          },
+          "before": "",
+          "allowed": [
+            "cael",
+            "aelius",
+            "orion",
+            "adriel-aspirante",
+            "arneth",
+            "leonis",
+            "aarthas",
+            "galatas",
+            "adriel-cavaleiro",
+            "galateia-rainha",
+            "aarthas-darke"
+          ],
+          "fixed": [],
+          "missions": [
+            {
+              "number": 1,
+              "title": "Missão 1",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 2,
+              "title": "Missão 2",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 3,
+              "title": "Missão 3",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 4,
+              "title": "Missão 4",
+              "enemies": [
+                "aarthas-darke"
+              ],
+              "lines": []
+            },
+            {
+              "number": 5,
+              "title": "Missão 5",
+              "enemies": [
+                "aarthas-darke"
+              ],
               "lines": []
             }
           ],

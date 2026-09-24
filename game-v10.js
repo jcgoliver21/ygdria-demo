@@ -2314,7 +2314,7 @@ function enemyAnimationKey(e){
    Slime de Cerejeira, Lobo Raivoso e Elizier como adversária encaram a
    esquerda em todas as poses. */
 const ENEMY_LEFT_FACING_KEYS=new Set(['slime-cereja','lobo-raivoso']);
-const ENEMY_LEFT_FACING_CARD_IDS=new Set(['elizier']);
+const ENEMY_LEFT_FACING_CARD_IDS=new Set(['elizier','aarthas-darke']);
 function enemyFacingDirection(e){return ENEMY_LEFT_FACING_KEYS.has(enemyAnimationKey(e))||ENEMY_LEFT_FACING_CARD_IDS.has(e?.cardId)?'left':'right'}
 /* A direção tática e a orientação nativa de cada arte são coisas distintas.
    O card do Roland/Julius precisa ser espelhado para encarar a equipe; já o
@@ -4474,13 +4474,13 @@ function renderStageProgress(){
      piso pintado, sem deslocar os demais cenários que também usam scene-4. */
   arenaEl.className = 'arena scene-'+((activeStageData&&Number.isFinite(activeStageData.scene))?activeStageData.scene:4)+(towerMode?' tower-stage':'');
   syncCerejeiraTacticalGrid();
-  const mood=worldRun.active?'humanos':towerMode?'eternidade':bossRushMode?'boss':`scene-${activeStageData?.scene??4}`;
+  const mood=worldRun.active?currentRealmId():towerMode?'eternidade':bossRushMode?'boss':`scene-${activeStageData?.scene??4}`;
   arenaEl.dataset.realmMood=mood;
   const canonicalVisual=worldRun.active?currentWorld()?.fases?.[worldRun.fase]?.visual:null;
   const atmosphereKey=worldRun.active
     ? ((worldRun.nivel===5&&canonicalVisual?.missionFive)||canonicalVisual?.key||'none')
     : (towerMode?'cold-mist':bossRushMode?'ember-ash':'scene-drift');
-  arenaEl.dataset.worldScene=worldRun.active?`humanos-${worldRun.fase}`:(towerMode?'tower':bossRushMode?'boss':'other');
+  arenaEl.dataset.worldScene=worldRun.active?`${currentRealmId()}-${worldRun.fase}`:(towerMode?'tower':bossRushMode?'boss':'other');
   arenaEl.dataset.missionAtmosphere=atmosphereKey;
   arenaEl.style.setProperty('--atmosphere-progress',String(worldRun.active?Math.max(1,Math.min(5,Number(worldRun.nivel)||1)):1));
   arenaEl.classList.toggle('boss-presence',Boolean(bossRushMode||worldRun.active&&worldRun.nivel===5));
@@ -4581,7 +4581,9 @@ function applyBattleFormation(){
    e onde termina (moldura decorativa na base, se houver). Medido arte por arte. */
 const SCENE_GROUND={
   humanos:[ [0.60,1],[0.63,1],[0.64,1],[0.64,1],[0.65,1],
-            [0.60,1],[0.62,1],[0.63,0.86],[0.75,1],[0.66,1] ]
+            [0.60,1],[0.62,1],[0.63,0.86],[0.75,1],[0.66,1] ],
+  'reino-da-luz':[[0.55,1],[0.54,1],[0.62,1],[0.62,1],[0.57,1],
+                   [0.55,1],[0.55,1],[0.55,1],[0.53,1],[0.54,1]]
 };
 /* A praça da Torre de Acesso à Eternidade começa visualmente mais abaixo na
    composição. Sem esta faixa dedicada, o fallback genérico (55%) suspendia as
@@ -4589,7 +4591,7 @@ const SCENE_GROUND={
 const TOWER_GROUND=[0.57,1];
 function groundBand(){
   let top=0.55, bot=1;
-  if(worldRun.active){ const g=SCENE_GROUND.humanos[worldRun.fase]; if(g){ top=g[0]; bot=g[1]; } }
+  if(worldRun.active){ const g=SCENE_GROUND[currentRealmId()]?.[worldRun.fase]; if(g){ top=g[0]; bot=g[1]; } }
   else if(towerMode){ [top,bot]=TOWER_GROUND; }
   return {top,bot};
 }
@@ -5734,7 +5736,7 @@ function loadStage(idx){
   document.getElementById('sombraHud')?.remove();
   enemyBlindTurns = 0; shieldTurns = 0; reflectTurns = 0; invulnerableTurns = 0;
   lifestealCharges = 0; lifestealMult = 0; lastDragonRitual = {before:0,after:0,converted:0};
-  const phaseKey=worldRun.active?`humanos-${worldRun.fase}`:(towerMode?`tower-${towerFloor}`:`stage-${idx}`);
+  const phaseKey=worldRun.active?`${currentRealmId()}-${worldRun.fase}`:(towerMode?`tower-${towerFloor}`:`stage-${idx}`);
   if(incineratePhaseKey!==phaseKey){ incinerateActive=false; incinerateStacks=0; incineratePhaseKey=phaseKey; }
   enemyVulnerableTurns = 0; enemyVulnerableMult = 1;
   stoneArmorTurns = 0;
@@ -6197,6 +6199,10 @@ function syncDevModeUI(){
 function setDevMode(enabled){
   devMode=Boolean(enabled);
   localStorage.setItem(DEV_MODE_STORAGE_KEY,devMode?'1':'0');
+  if(!devMode&&selectedRealmId==='reino-da-luz'){
+    location.reload(); // encerra qualquer fase DEV antes de voltar ao jogo normal
+    return;
+  }
   if(!devMode&&typeof chosenIds!=='undefined'){
     chosenIds=chosenIds.filter(index=>KINGDOMS[index]&&cardOwned(KINGDOMS[index].id));
   }
@@ -11053,14 +11059,15 @@ function renderMapScreen(){
     const k=KINGDOMS.find(kk=>kk.id===r.id);
     if(!k) return;
     const configured=WORLDS.find(world=>(world.mapSlot||world.id)===r.id);
-    const liberado=mapMode==='boss'?realmComplete(r.id):!!configured;
+    const liberado=mapMode==='boss'?realmComplete(r.id):!!configured&&(r.id!=='luz'||isDevMode());
+    const devOnly=mapMode==='world'&&r.id==='luz'&&!!configured&&!isDevMode();
     const pin=document.createElement('button');
     pin.type='button';
     pin.className='realm-pin'+(liberado?' unlocked':' locked')+(mapMode==='boss'?' pin-boss':'');
     pin.style.left=Math.max(4.5,Math.min(94,r.x))+'%';
     pin.style.top=Math.max(5,Math.min(95,r.y))+'%';
     pin.style.setProperty('--realm-c',k.color);
-    pin.setAttribute('aria-label',L(k.reino)+(liberado?'':' — '+(mapMode==='boss'?T('finalize o reino para liberar','finish the realm to unlock','termina el reino para desbloquear'):T('em breve','coming soon','próximamente'))));
+    pin.setAttribute('aria-label',L(k.reino)+(liberado?'':' — '+(mapMode==='boss'?T('finalize o reino para liberar','finish the realm to unlock','termina el reino para desbloquear'):devOnly?T('disponível apenas no Modo DEV','available only in DEV Mode','disponible solo en Modo DEV'):T('em breve','coming soon','próximamente'))));
     pin.innerHTML=`
       <span class="realm-copy">
         <span class="realm-name">${escapeHtml(L(k.reino))}</span>
@@ -11074,6 +11081,7 @@ function renderMapScreen(){
         pin.classList.remove('deny'); void pin.offsetWidth; pin.classList.add('deny');
         showMapTip(mapMode==='boss'
           ? T('Finalize o ','Finish the ','Termina el ')+L(k.reino)+T(' para liberar o Desafio dos Chefes.',' to unlock its Boss Challenge.',' para desbloquear su Desafío de Jefes.')
+          : devOnly?T('Ative o Modo DEV para entrar no Reino da Luz.','Enable DEV Mode to enter the Light Realm.','Activa el Modo DEV para entrar en el Reino de la Luz.')
           : T('Em breve: ','Coming soon: ','Próximamente: ')+L(k.reino));
         return;
       }
@@ -11142,7 +11150,7 @@ function buildWorldLevel(){
   const keys=fase.missoes[n-1]||['soldado1'];
   const enemies=keys.map((key)=>{
     const hero=KINGDOMS.find(row=>row.id===key);
-    if(hero&&!HUMANOS_CARDS[key])return {name:hero.nome,hp:Math.round(250*hpMult),atk:Math.round((hero.atk||20)*atkMult),cardId:key,sprite:hero.img,isCard:true};
+    if(hero&&!HUMANOS_CARDS[key])return {name:hero.nome,hp:Math.round(250*hpMult),atk:Math.round((hero.atk||20)*atkMult),cardId:key,sprite:hero.sprite||hero.img,isCard:!hero.sprites?.idle?.src,flip:key==='aarthas-darke'};
     const c=HUMANOS_CARDS[key];
     if(c){
       const e={name:c.nome, hp:Math.round(c.hp*hpMult), atk:Math.round(c.atk*atkMult), cardId:key};
@@ -11195,6 +11203,7 @@ function phaseDifficultyMarkup(selected,nightmareUnlocked){
   return DIFFICULTY_ORDER.map(d=>`<span class="fase-diff${selected===d?' on':''}${d==='pesadelo'&&!nightmareUnlocked?' is-locked':''}" data-d="${d}" role="button" tabindex="0" aria-pressed="${selected===d?'true':'false'}" aria-disabled="${d==='pesadelo'&&!nightmareUnlocked?'true':'false'}" title="${d==='pesadelo'&&!nightmareUnlocked?T('Conclua todos os níveis para liberar Pesadelo','Complete all levels to unlock Nightmare','Completa todos los niveles para desbloquear Pesadilla'):difficultyLabel(d)}">${difficultyInitial(d)}</span>`).join('');
 }
 function startWorldFase(faseIdx,options={}){
+  if(currentRealmId()==='reino-da-luz'&&!isDevMode()){ sfxInvalid(); return; }
   if(!currentWorld().fases[faseIdx])return;
   armTapGuard();
   const prog=worldProg(currentRealmId());

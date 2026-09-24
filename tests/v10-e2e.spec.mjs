@@ -161,6 +161,74 @@ test('Modo DEV libera tudo, usa recursos infinitos e preserva o progresso normal
   expect(errors).toEqual([]);
 });
 
+test('Reino da Luz: dez fases na ordem, mapa só DEV e Aarthas & Darke animado em batalha',async({page})=>{
+  test.setTimeout(90_000);
+  await page.setViewportSize({width:390,height:844});
+  const errors=await boot(page,'light-realm-phases');
+  await page.evaluate(()=>openMapScreen());
+  const lightPin=page.locator('.realm-pin').nth(11);
+  await expect(lightPin).toHaveClass(/locked/);
+  await expect(lightPin).toHaveAttribute('aria-label',/Reino da Luz.*Modo DEV/);
+  const before=await page.evaluate(()=>{
+    selectedRealmId='reino-da-luz';
+    startWorldFase(0);
+    const denied=!worldRun.active;
+    selectedRealmId='humanos';
+    return denied;
+  });
+  expect(before).toBe(true);
+  await page.evaluate(()=>setDevMode(true));
+  await expect(lightPin).toHaveClass(/unlocked/);
+  await lightPin.click();
+  await expect(page.locator('#worldScreen')).toHaveClass(/show/);
+  await expect(page.locator('.fase-node')).toHaveCount(10);
+  const stages=await page.evaluate(()=>{
+    const world=currentWorld();
+    return world.fases.map((phase,index)=>{
+      worldRun={active:true,fase:index,nivel:1,storyMode:true};
+      const encounter=buildWorldLevel();
+      return {name:phase.nome,bg:phase.bg,enemy:encounter.enemies.map(enemy=>enemy.cardId),sprite:encounter.enemies[0]?.sprite,isCard:encounter.enemies[0]?.isCard,flip:encounter.enemies[0]?.flip};
+    });
+  });
+  expect(stages.map(stage=>stage.name)).toEqual([
+    'Escola de Cavaleiros','Salão da Luz Eterna','Lago de Cristal','Floresta de Cristal',
+    'Catedral de Luz','Salão dos Espelhos','Academia Militar da Luz Sagrada — Interior',
+    'Praça da Luz Eterna','Trono de Luz','Limites da Cidadela'
+  ]);
+  expect(stages.every((stage,index)=>stage.bg===`assets/bg/luz/fase-${String(index+1).padStart(2,'0')}.png`)).toBe(true);
+  expect(stages.every(stage=>stage.enemy.length===1&&stage.enemy[0]==='aarthas-darke'&&stage.sprite.endsWith('/aarthas-darke/base.webp')&&stage.isCard===false&&stage.flip===true)).toBe(true);
+  const loadedScenes=await page.evaluate(()=>Promise.all(currentWorld().fases.map(phase=>new Promise(resolve=>{
+    const image=new Image();
+    image.onload=()=>resolve(image.naturalWidth===1672&&image.naturalHeight===941);
+    image.onerror=()=>resolve(false);
+    image.src=phase.bg;
+  }))));
+  expect(loadedScenes).toEqual(Array(10).fill(true));
+  await page.evaluate(()=>{
+    worldRun.active=false;
+    chosenIds=['cael','aelius','orion','arneth'].map(id=>KINGDOMS.findIndex(hero=>hero.id===id));
+    startWorldFase(0);
+    beginGame(0);
+    skipStory();
+  });
+  await expect(page.locator('#enemy-0')).toBeVisible();
+  await expect(page.locator('#enemyPortrait-0')).toHaveAttribute('data-action','idle');
+  const enemySheet=page.locator('#enemyPortrait-0 .hero-sprite-sheet.grid-sheet');
+  await expect(enemySheet).toBeVisible();
+  await expect(enemySheet).toHaveClass(/flip/);
+  await expect(page.locator('#enemy-0')).toHaveAttribute('data-facing','left');
+  const initialFrame=await enemySheet.evaluate(sheet=>sheet.style.getPropertyValue('--sprite-bg-x')+sheet.style.getPropertyValue('--sprite-bg-y'));
+  await expect.poll(()=>enemySheet.evaluate(sheet=>sheet.style.getPropertyValue('--sprite-bg-x')+sheet.style.getPropertyValue('--sprite-bg-y'))).not.toBe(initialFrame);
+  await expect(page.locator('#enemy-0')).not.toHaveClass(/enemy-card-unit/);
+  await expect.poll(()=>page.evaluate(()=>getComputedStyle(document.querySelector('#arena')).backgroundImage)).toContain('fase-01.png');
+  await page.evaluate(()=>setDevMode(false));
+  await expect(page.locator('body')).toHaveAttribute('data-game-ready','1');
+  expect(await page.evaluate(()=>({realm:currentRealmId(),dev:isDevMode()}))).toEqual({realm:'humanos',dev:false});
+  await page.evaluate(()=>openMapScreen());
+  await expect(page.locator('.realm-pin').nth(11)).toHaveClass(/locked/);
+  expect(errors).toEqual([]);
+});
+
 test('premiação humana credita uma vez Kalegs, mochila e carta, inclusive recibo legado',async({page})=>{
   const errors=await boot(page,'reward-transaction');
   const result=await page.evaluate(()=>{

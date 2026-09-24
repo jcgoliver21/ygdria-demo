@@ -20,6 +20,8 @@ try{for(const width of [390,1440]){
  await page.goto(base+'play.html?qa=flow&seed=realm-test',{waitUntil:'networkidle'});
  await page.waitForFunction(()=>document.body.dataset.gameReady==='1');
  await page.evaluate(()=>{saveCardUnlocks(KINGDOMS.map(h=>h.id));localStorage.setItem('12r_tutorial_seen','true');localStorage.setItem('12r_tutorial','true');openMapScreen('world');});
+ assert.match(await page.getByRole('button',{name:/Reino da Luz/}).getAttribute('class'),/locked/);
+ await page.evaluate(()=>setDevMode(true));
  await page.getByRole('button',{name:'Reino da Luz',exact:true}).click();
  assert.match(await page.locator('#worldHead').innerText(),/Reino da Luz/);
  assert.match(await page.locator('#worldMap').innerText(),/Santuário da Luz QA/);
@@ -31,15 +33,15 @@ try{for(const width of [390,1440]){
  assert.equal(await page.evaluate(()=>enemies[0].etype),'slimeCereja');
  const humanBefore=await page.evaluate(()=>localStorage.getItem('12r_world_humanos'));
  await page.evaluate(()=>{worldRun.nivel=5;worldRun.storyMode=false;stageTransitioning=false;onStageCleared();});
- assert.equal(await page.evaluate(()=>worldProg('reino-da-luz').unlocked),1);
+ assert.equal(await page.evaluate(()=>worldProg('reino-da-luz').unlocked),0);
  assert.equal(await page.evaluate(()=>localStorage.getItem('12r_world_humanos')),humanBefore);
- assert.ok(await page.evaluate(()=>localStorage.getItem('12r_fase_time_reino-da-luz')));
+ assert.equal(await page.evaluate(()=>localStorage.getItem('12r_world_reino-da-luz')),null);
+ assert.equal(await page.evaluate(()=>localStorage.getItem('12r_fase_time_reino-da-luz')),null);
  assert.ok(await page.evaluate(()=>isExportableSaveKey('12r_fase_time_reino-da-luz')));
- await page.evaluate(()=>validateImportedSaveEntry('12r_fase_time_reino-da-luz',localStorage.getItem('12r_fase_time_reino-da-luz')));
  await page.reload({waitUntil:'networkidle'});
  await page.evaluate(()=>openMapScreen('world'));
  await page.getByRole('button',{name:'Reino da Luz',exact:true}).click();
- assert.equal(await page.evaluate(()=>worldProg(currentRealmId()).unlocked),1);
+ assert.equal(await page.evaluate(()=>worldAccessLimit(currentRealmId())),1);
  await page.evaluate(()=>{closeAllPanels();openMapScreen('world');});
  await page.waitForTimeout(550);
  await page.getByRole('button',{name:'Reino da Água',exact:true}).click();
@@ -50,4 +52,4 @@ try{for(const width of [390,1440]){
  assert.equal(await page.evaluate(()=>currentWorld().fases.length),10);
  assert.equal(await page.evaluate(()=>currentStory()[0].missions[0][0].t),data.realms[0].phases[0].missions[0].lines[0].text);
  assert.deepEqual(errors,[]);await context.close();
-}console.log('Novos reinos: mapa, narrativa, combate, música, progresso isolado, recarga e reino vazio aprovados em celular/desktop.');}finally{await browser.close();}
+}console.log('Novos reinos: bloqueio DEV da Luz, narrativa, combate, música, progresso preservado, recarga e reino vazio aprovados em celular/desktop.');}finally{await browser.close();}

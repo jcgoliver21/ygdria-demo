@@ -17,7 +17,7 @@ export function inspectContent(c){
   const human=c.realms.find(r=>r.id==='humanos');
   if(!human||human.phases?.length!==10) errors.push('O jogo exige exatamente dez fases no Reino dos Humanos.');
   const slots=new Set();
-  const playableHeroes=new Set(['humanos','luz','agua','fogo','natureza','terra','areia','sombras','raio','vento','chuvas','gelo','adriel-jovem','acqua-jovem','galateia-jovem','berenice-jovem','gareth','cedric','elizier','roland','jules','kalander','bernyce','julius']);
+  const playableHeroes=new Set(['humanos','luz','agua','fogo','natureza','terra','areia','sombras','raio','vento','chuvas','gelo','adriel-jovem','acqua-jovem','galateia-jovem','berenice-jovem','gareth','cedric','elizier','roland','jules','kalander','bernyce','julius','cael','aelius','orion','adriel-aspirante','arneth','leonis','aarthas','galatas','adriel-cavaleiro','galateia-rainha','aarthas-darke']);
   const enemies=new Set([...playableHeroes,'slimeCereja','loboRaivoso','soldado1','soldado2','capitao','vulto','espectro','morto','soldBib1','soldBib2','soldBib3','infantaria','cavalaria','comandante','trono']);
   for(const r of c.realms){
     const slot=r.mapSlot||realmSlot(r.id);
