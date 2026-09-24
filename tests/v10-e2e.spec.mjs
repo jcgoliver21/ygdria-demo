@@ -2178,16 +2178,15 @@ test('pausa preserva callbacks, reinício invalida callback antigo e revive dest
   const errors=await boot(page);
   await page.evaluate(()=>{ chosenIds=[0,1,2,3]; beginGame(0); skipStory(); });
   await page.locator('#helpScreen [data-close]').click({force:true}).catch(()=>{});
-  const before=await page.evaluate(()=>window.__12rQA.scheduleProbe(600));
+  const before=await page.evaluate(()=>window.__12rQA.scheduleProbe(2000));
   await page.click('#pauseBtn');
-  await page.waitForTimeout(260);
+  await page.waitForTimeout(2200);
+  expect((await page.evaluate(()=>window.__12rQA.snapshot())).stageTurns).toBe(before.before);
   await page.click('#resumeBtn');
   await page.waitForTimeout(120);
   const immediatelyAfterResume=await page.evaluate(()=>window.__12rQA.snapshot());
   expect(immediatelyAfterResume.stageTurns).toBe(before.before);
-  await page.waitForTimeout(620);
-  const afterPause=await page.evaluate(()=>window.__12rQA.snapshot());
-  expect(afterPause.stageTurns).toBe(before.before+1);
+  await expect.poll(()=>page.evaluate(()=>window.__12rQA.snapshot().stageTurns),{timeout:3000}).toBe(before.before+1);
 
   const probe=await page.evaluate(()=>window.__12rQA.scheduleProbe(180));
   await page.evaluate(()=>window.__12rQA.restart());
