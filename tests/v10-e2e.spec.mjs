@@ -1714,6 +1714,13 @@ test('galeria individual cobre as cinco poses e os VFX das doze cartas humanas',
   const errors=await boot(page,'flow');
   const audit=await page.evaluate(async()=>{
     const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+    const waitForPose=async action=>{
+      for(let attempt=0;attempt<100;attempt++){
+        if(document.getElementById('motionShowcaseAvatar')?.dataset.action===action)return;
+        await wait(25);
+      }
+      throw new Error(`Pose ${action} não ficou visível na galeria.`);
+    };
     const ids=['gareth','cedric','elizier','roland','berenice-jovem','galateia-jovem','adriel-jovem','acqua-jovem','jules','kalander','bernyce','julius'];
     const actions=['idle','attack','cast','hit','victory'];
     const rows=[];
@@ -1724,7 +1731,7 @@ test('galeria individual cobre as cinco poses e os VFX das doze cartas humanas',
       const row={id,poses:{},attackFx:'',castFx:'',aura:''};
       for(const action of actions){
         document.querySelector(`#motionShowcaseActions [data-motion="${action}"]`)?.click();
-        await wait(84);
+        await waitForPose(action);
         row.poses[action]=document.getElementById('motionShowcaseAvatar')?.dataset.action||'';
         if(action==='attack') row.attackFx=getComputedStyle(document.getElementById('motionShowcaseVfx')).backgroundImage;
         if(action==='cast'){
