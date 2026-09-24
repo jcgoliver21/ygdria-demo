@@ -10,6 +10,7 @@ async function boot(page,qa='all-specials'){
   page.on('pageerror',error=>errors.push(error.message));
   page.on('console',message=>{ if(message.type()==='error') errors.push(message.text()); });
   await page.addInitScript(()=>{
+    sessionStorage.setItem('ygdria_gate','ok');
     localStorage.setItem('12r_tutorial_seen','true');
     localStorage.setItem('12r_tutorial','true');
   });

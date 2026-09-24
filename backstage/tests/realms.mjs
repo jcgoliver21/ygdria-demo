@@ -16,6 +16,7 @@ const browser=await chromium.launch();
 try{for(const width of [390,1440]){
  const context=await browser.newContext({viewport:{width,height:900},serviceWorkers:'block'}),page=await context.newPage(),errors=[];
  page.on('pageerror',e=>errors.push(e.message));
+ await page.addInitScript(()=>sessionStorage.setItem('ygdria_gate','ok'));
  await page.route('**/backstage-content-v1.js*',route=>route.fulfill({contentType:'text/javascript',body:'window.YGDRIA_BACKSTAGE_CONTENT='+JSON.stringify(data)}));
  await page.goto(base+'play.html?qa=flow&seed=realm-test',{waitUntil:'networkidle'});
  await page.waitForFunction(()=>document.body.dataset.gameReady==='1');
@@ -40,8 +41,12 @@ try{for(const width of [390,1440]){
  assert.ok(await page.evaluate(()=>isExportableSaveKey('12r_fase_time_reino-da-luz')));
  await page.reload({waitUntil:'networkidle'});
  await page.evaluate(()=>openMapScreen('world'));
+ await page.waitForTimeout(550);
  await page.getByRole('button',{name:'Reino da Luz',exact:true}).click();
- assert.equal(await page.evaluate(()=>worldAccessLimit(currentRealmId())),1);
+ const reloaded=await page.evaluate(()=>({realm:currentRealmId(),phases:currentWorld().fases.length,access:worldAccessLimit(currentRealmId())}));
+ assert.equal(reloaded.realm,'reino-da-luz',JSON.stringify(reloaded));
+ assert.equal(reloaded.phases,2,JSON.stringify(reloaded));
+ assert.equal(reloaded.access,1,JSON.stringify(reloaded));
  await page.evaluate(()=>{closeAllPanels();openMapScreen('world');});
  await page.waitForTimeout(550);
  await page.getByRole('button',{name:'Reino da Água',exact:true}).click();
