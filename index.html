@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Ygdria mudou de endereço</title>
+  <style>
+    :root{color-scheme:dark;font-family:Georgia,serif}
+    *{box-sizing:border-box}
+    body{min-height:100svh;margin:0;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 0%,#50306b 0,#1b122b 43%,#080610 80%);color:#f7edda}
+    main{width:min(100%,560px);padding:clamp(28px,7vw,52px);text-align:center;border:1px solid #b8955b;border-radius:24px;background:#171020ec;box-shadow:0 24px 80px #0008,0 0 60px #b061bc20}
+    .symbol{font-size:46px;color:#f2cf81;text-shadow:0 0 22px #d77cc8}
+    h1{margin:12px 0 8px;font-size:clamp(34px,8vw,52px);letter-spacing:.08em;color:#f7dd9c}
+    h2{margin:0 0 18px;font:600 clamp(18px,4vw,25px)/1.25 system-ui,sans-serif}
+    p{font:16px/1.6 system-ui,sans-serif;color:#e8dceb}
+    a{display:inline-block;margin:12px 0 20px;padding:15px 22px;border-radius:12px;background:#f1ce7c;color:#281929;font:700 15px/1.2 system-ui,sans-serif;text-decoration:none}
+    a:hover,a:focus-visible{background:#ffe5a8;outline:3px solid #b66fd3;outline-offset:3px}
+    small{display:block;font:13px/1.5 system-ui,sans-serif;color:#c5b4ca}
+  </style>
+</head>
+<body>
+  <main>
+    <div class="symbol" aria-hidden="true">✦</div>
+    <h1>YGDRIA</h1>
+    <h2>O jogo mudou de endereço</h2>
+    <p>Esta publicação foi encerrada. A versão piloto para jogadores está disponível no novo endereço.</p>
+    <a href="https://ygdria.148-113-251-111.sslip.io/">Abrir versão piloto</a>
+    <small>O progresso salvo neste endereço permanece neste navegador e não é transferido automaticamente para o piloto. Para preservá-lo, não apague os dados deste site.</small>
+  </main>
+  <script>
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.getRegistrations().then(registrations=>registrations.forEach(registration=>registration.unregister())).catch(()=>{});
+    }
+    if('caches' in window){
+      caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('12r-')).map(key=>caches.delete(key)))).catch(()=>{});
+    }
+  </script>
+</body>
+</html>
